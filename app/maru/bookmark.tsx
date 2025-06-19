@@ -16,10 +16,18 @@ export default function Bookmark() {
           padding: 20,
         }}
       >
-        <Text style={{ fontSize: 13, color: "#716C69" }}>총 6개</Text>
+        <Text
+          style={{ fontSize: 13, color: "#716C69", fontFamily: "SUIT-500" }}
+        >
+          총 6개
+        </Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
           <Image source={require("@/assets/images/filter.png")} />
-          <Text style={{ fontSize: 13, color: "#716C69" }}>필터</Text>
+          <Text
+            style={{ fontSize: 13, color: "#716C69", fontFamily: "SUIT-500" }}
+          >
+            필터
+          </Text>
         </View>
       </View>
       <View style={{ flexDirection: "row", gap: 5 }}>

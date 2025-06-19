@@ -46,6 +46,9 @@
     "@types/react-native": "^0.72.8",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~9.2.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.0",
+    "prettier": "^3.5.3",
     "react-native-svg-transformer": "^1.5.1",
     "typescript": "~5.8.3"
   },

@@ -1,11 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { View } from 'react-native';
+import { View } from "react-native";
 export default function RootLayout() {
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar style="auto" animated/>
+      <StatusBar style="auto" animated />
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: "#000000",
@@ -13,7 +13,7 @@ export default function RootLayout() {
           headerShown: false,
           tabBarStyle: {
             padding: 0,
-          }
+          },
         }}
       >
         <Tabs.Screen

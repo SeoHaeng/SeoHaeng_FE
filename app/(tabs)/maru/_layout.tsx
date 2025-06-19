@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   tabText: {
-    fontSize: 20,
+    fontSize: 17,
     color: "#716C69",
     fontFamily: "SUIT-700",
   },

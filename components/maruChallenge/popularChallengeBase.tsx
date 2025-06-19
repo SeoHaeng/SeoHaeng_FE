@@ -1,40 +1,58 @@
-// components/PopularChallenge.tsx
-import { Image, StyleSheet, Text, View } from "react-native";
+// components/challenge/PopularChallengeBase.tsx
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-interface PopularChallengeItemProps {
+export interface PopularChallengeProps {
   userName: string;
   date: string;
   text: string;
-  imageSource?: any;
-  bookImageSource?: any;
   bookName: string;
   bookAuthor: string;
   year: string;
+  variant?: "default" | "total";
   onPress?: () => void;
 }
 
-export default function PopularChallenge({
+export default function PopularChallengeBase({
   userName,
   date,
   text,
   bookName,
   bookAuthor,
   year,
+  variant = "default",
   onPress,
-}: PopularChallengeItemProps) {
+}: PopularChallengeProps) {
+  const isTotal = variant === "total";
+
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("@/assets/images/인기챌린지 사진.png")}
-        style={styles.profileImage}
-      />
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={onPress}
+      style={[styles.container, isTotal && styles.totalContainer]}
+    >
+      {!isTotal && (
+        <Image
+          source={require("@/assets/images/인기챌린지 사진.png")}
+          style={styles.profileImage}
+        />
+      )}
 
       <View style={styles.contentContainer}>
         <View style={styles.userInfoContainer}>
-          <View style={styles.userInfo}>
-            <View style={styles.userHeader}>
-              <Text style={styles.username}>{userName}</Text>
-              <Text style={styles.timeStamp}>{date}일 전</Text>
+          <View
+            style={{ flexDirection: "column", justifyContent: "space-between" }}
+          >
+            <View style={[styles.userInfo, isTotal && styles.userInfoTotal]}>
+              {isTotal && (
+                <Image
+                  source={require("@/assets/images/인기챌린지 사진.png")}
+                  style={styles.totalProfileImage}
+                />
+              )}
+              <View style={styles.userHeader}>
+                <Text style={styles.username}>{userName}</Text>
+                <Text style={styles.timeStamp}>{date}일 전</Text>
+              </View>
             </View>
             <Text style={styles.description}>{text}</Text>
           </View>
@@ -68,7 +86,7 @@ export default function PopularChallenge({
           />
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -85,6 +103,9 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
   },
+  totalContainer: {
+    width: 356,
+  },
   profileImage: {
     position: "absolute",
     top: -40,
@@ -92,6 +113,10 @@ const styles = StyleSheet.create({
     left: 15,
     width: 60,
     height: 60,
+  },
+  totalProfileImage: {
+    width: 43,
+    height: 43,
   },
   contentContainer: {
     flexDirection: "column",
@@ -106,11 +131,15 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
   },
-  userHeader: {
+  userInfoTotal: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginTop: 10,
+  },
+  userHeader: {
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 5,
   },
   username: {
     fontSize: 14,
@@ -126,6 +155,7 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#716C69",
     width: 190,
+    lineHeight: 15,
   },
   bookImage: {
     width: 87,

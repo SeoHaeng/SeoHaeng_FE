@@ -80,13 +80,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   tabText: {
-    fontFamily: "SUIT-Variable",
     fontSize: 20,
-    fontWeight: "700",
     color: "#716C69",
+    fontFamily: "SUIT-700",
   },
   activeTabText: {
     color: "#000000",
+    fontFamily: "SUIT-700",
   },
   activeIndicator: {
     marginTop: 5,

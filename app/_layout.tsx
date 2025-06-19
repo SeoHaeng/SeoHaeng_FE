@@ -1,8 +1,31 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
 import { Tabs } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import { View } from "react-native";
+
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
+  const [loaded, error] = useFonts({
+    "SUIT-400": require("@/assets/fonts/SUIT-Regular.ttf"),
+    "SUIT-500": require("@/assets/fonts/SUIT-Medium.ttf"),
+    "SUIT-600": require("@/assets/fonts/SUIT-SemiBold.ttf"),
+    "SUIT-700": require("@/assets/fonts/SUIT-Bold.ttf"),
+  });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style="auto" animated />
@@ -13,6 +36,9 @@ export default function RootLayout() {
           headerShown: false,
           tabBarStyle: {
             padding: 0,
+          },
+          tabBarLabelStyle: {
+            fontFamily: "SUIT-500",
           },
         }}
       >

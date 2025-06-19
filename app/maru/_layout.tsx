@@ -41,18 +41,19 @@ function CustomHeader() {
 // 메인 레이아웃
 export default function MaruLayout() {
   return (
-    <Stack
-      screenOptions={{
-        header: () => <CustomHeader />,
-        contentStyle: { 
-          backgroundColor: '#FFFFFF'
-        }
-      }}
-    >
-      
-      <Stack.Screen name="bookmark" />
-      <Stack.Screen name="challenge" />
-    </Stack>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+      <CustomHeader />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: '#FFFFFF' },
+          animation: 'none'
+        }}
+      >
+        <Stack.Screen name="bookmark" />
+        <Stack.Screen name="challenge" />
+      </Stack>
+    </View>
   );
 }
 
@@ -61,15 +62,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
+    paddingTop: 50,
+    paddingHorizontal: 10,
   },
   tab: {
     position: 'relative',
+    height: 50,
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
   tabText: {
     fontFamily: 'SUIT-Variable',
-    fontSize: 16,
+    fontSize: 20,
+    fontWeight: '700',
     color: '#716C69',
   },
   activeTabText: {
@@ -78,7 +83,7 @@ const styles = StyleSheet.create({
   activeIndicator: {
     marginTop: 5,
     height: 2,
-    width: '60%',
+    width: '50%',
     backgroundColor: '#000000',
     alignSelf: 'center',
     borderRadius: 5,

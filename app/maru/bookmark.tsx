@@ -35,6 +35,9 @@ export default function Bookmark() {
           <Image source={require("@/assets/images/마루 목업.png")} />
           <Image source={require("@/assets/images/마루 목업.png")} />
           <Image source={require("@/assets/images/마루 목업.png")} />
+          <Image source={require("@/assets/images/마루 목업.png")} />
+          <Image source={require("@/assets/images/마루 목업.png")} />
+          <Image source={require("@/assets/images/마루 목업.png")} />
         </View>
         <View style={{ flexDirection: "column", gap: 5, paddingTop: 50 }}>
           <Image source={require("@/assets/images/마루 목업.png")} />

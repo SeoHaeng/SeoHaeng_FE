@@ -1,4 +1,3 @@
-// components/PopularChallenge.tsx
 import { Image, StyleSheet, Text, View } from "react-native";
 
 interface PopularChallengeItemProps {
@@ -13,7 +12,7 @@ interface PopularChallengeItemProps {
   onPress?: () => void;
 }
 
-export default function PopularChallenge({
+export default function PopularChallengeTotal({
   userName,
   date,
   text,
@@ -24,18 +23,22 @@ export default function PopularChallenge({
 }: PopularChallengeItemProps) {
   return (
     <View style={styles.container}>
-      <Image
-        source={require("@/assets/images/인기챌린지 사진.png")}
-        style={styles.profileImage}
-      />
-
       <View style={styles.contentContainer}>
         <View style={styles.userInfoContainer}>
-          <View style={styles.userInfo}>
-            <View style={styles.userHeader}>
-              <Text style={styles.username}>{userName}</Text>
-              <Text style={styles.timeStamp}>{date}일 전</Text>
+          <View
+            style={{ flexDirection: "column", justifyContent: "space-between" }}
+          >
+            <View style={styles.userInfo}>
+              <Image
+                source={require("@/assets/images/인기챌린지 사진.png")}
+                style={styles.profileImage}
+              />
+              <View style={styles.userHeader}>
+                <Text style={styles.username}>{userName}</Text>
+                <Text style={styles.timeStamp}>{date}일 전</Text>
+              </View>
             </View>
+
             <Text style={styles.description}>{text}</Text>
           </View>
           <Image
@@ -74,7 +77,7 @@ export default function PopularChallenge({
 
 const styles = StyleSheet.create({
   container: {
-    width: 334,
+    width: 356,
     height: 236,
     backgroundColor: "#EEE9E6",
     borderRadius: 5,
@@ -86,12 +89,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   profileImage: {
-    position: "absolute",
-    top: -40,
-    zIndex: 100,
-    left: 15,
-    width: 60,
-    height: 60,
+    width: 43,
+    height: 43,
   },
   contentContainer: {
     flexDirection: "column",
@@ -103,14 +102,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   userInfo: {
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-  userHeader: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginTop: 10,
+  },
+  userHeader: {
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 5,
   },
   username: {
     fontSize: 14,
@@ -126,6 +125,7 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#716C69",
     width: 190,
+    lineHeight: 15,
   },
   bookImage: {
     width: 87,

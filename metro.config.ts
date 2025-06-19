@@ -1,16 +1,7 @@
-const { getDefaultConfig, mergeConfig } = require("@react-native/metro-config");
+/* eslint-env node */
+const { getDefaultConfig } = require("expo/metro-config");
 
-const defaultConfig = getDefaultConfig(__dirname);
-const { assetExts, sourceExts } = defaultConfig.resolver;
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname);
 
-const config = {
-  transformer: {
-    babelTransformerPath: require.resolve("react-native-svg-transformer")
-  },
-  resolver: {
-    assetExts: assetExts.filter((ext: string) => ext !== "svg"),
-    sourceExts: [...sourceExts, "svg"]
-  }
-};
-
-module.exports = mergeConfig(defaultConfig, config);
+module.exports = config;

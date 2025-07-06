@@ -109,7 +109,16 @@ export default function Challenge() {
           style={styles.scrollView}
         >
           {challenges.map((challenge) => (
-            <PopularChallenge key={challenge.id} {...challenge} />
+            <PopularChallenge
+              key={challenge.id}
+              {...challenge}
+              onPress={() =>
+                router.push({
+                  pathname: "/popularity/[id]",
+                  params: { id: challenge.id },
+                })
+              }
+            />
           ))}
         </ScrollView>
       </View>

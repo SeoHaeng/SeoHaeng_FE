@@ -2,6 +2,7 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export interface PopularChallengeProps {
+  id: number;
   userName: string;
   date: string;
   text: string;
@@ -13,6 +14,7 @@ export interface PopularChallengeProps {
 }
 
 export default function PopularChallengeBase({
+  id,
   userName,
   date,
   text,

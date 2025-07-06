@@ -60,6 +60,7 @@ export default function MaruLayout() {
       >
         <Stack.Screen name="bookmark" />
         <Stack.Screen name="challenge" />
+        <Stack.Screen name="popularity/[id]" />
       </Stack>
     </View>
   );

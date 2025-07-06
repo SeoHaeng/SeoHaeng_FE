@@ -82,7 +82,16 @@ export default function Popularity() {
           </View>
         </View>
         {challenges.map((challenge) => (
-          <PopularChallengeTotal key={challenge.id} {...challenge} />
+          <PopularChallengeTotal
+            key={challenge.id}
+            {...challenge}
+            onPress={() =>
+              router.push({
+                pathname: "/popularity/[id]",
+                params: { id: challenge.id },
+              })
+            }
+          />
         ))}
       </ScrollView>
     </SafeAreaView>

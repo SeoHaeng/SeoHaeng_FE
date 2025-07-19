@@ -1,4 +1,4 @@
-// app/maru/popularity/[id].tsx
+// app/popularity/[id].tsx
 import ChallengeComment from "@/components/maruChallenge/detail/comment";
 import GiftBook from "@/components/maruChallenge/detail/giftBook";
 import { useNavigation } from "expo-router";
@@ -198,81 +198,65 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 25,
   },
-  profileImage: {
-    width: 43,
-    height: 43,
-  },
   userInfo: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    marginBottom: 20,
+    marginBottom: 15,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
   },
   userHeader: {
     flexDirection: "column",
-    gap: 5,
   },
   username: {
     fontSize: 14,
     fontFamily: "SUIT-700",
+    color: "#000000",
   },
   timeStamp: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 50,
-    paddingBottom: 15,
-  },
-  title: {
-    fontSize: 18,
-    fontFamily: "SUIT-700",
-  },
-  container: {
-    flex: 1,
-    padding: 20,
-  },
   description: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
+    color: "#000000",
     lineHeight: 20,
+    marginBottom: 15,
   },
-
   commentInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: "#C5BFBB",
-    borderTopWidth: 1,
-    borderTopColor: "#E8E3E0",
-    gap: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    backgroundColor: "#FFFFFF",
+    borderTopWidth: 0.5,
+    borderColor: "#C5BFBB",
   },
   commentInput: {
     flex: 1,
-    height: 45,
-    width: "100%",
-    backgroundColor: "#F5F2F0",
-    borderRadius: 10,
-    paddingHorizontal: 12,
+    height: 40,
+    backgroundColor: "#F5F3F2",
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    fontSize: 14,
     fontFamily: "SUIT-500",
-    fontSize: 13,
+    marginRight: 10,
   },
   sendButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    position: "absolute",
-    right: 16,
-    top: 16,
+    backgroundColor: "#000000",
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
   sendButtonText: {
-    color: "#302E2D",
+    color: "#FFFFFF",
+    fontSize: 14,
     fontFamily: "SUIT-700",
-    fontSize: 13,
   },
 });

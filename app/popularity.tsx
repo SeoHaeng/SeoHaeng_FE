@@ -1,4 +1,4 @@
-// app/maru/popularity.tsx
+// app/popularity.tsx
 import PopularChallengeTotal from "@/components/maruChallenge/popularChallengeTotal";
 import { useRouter } from "expo-router";
 import {

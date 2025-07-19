@@ -122,6 +122,7 @@ export default function BookstoreDetail() {
           >
             <Image source={require("@/assets/images/Back.png")} />
           </TouchableOpacity>
+          <Text style={styles.headerTitle}>북챌린지 서점</Text>
         </View>
 
         {/* 메인 이미지 */}
@@ -212,16 +213,25 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   header: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    zIndex: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
   backButton: {
     width: 40,
     height: 40,
-    justifyContent: "center",
-    alignItems: "center",
+    position: "absolute",
+    left: 20,
+    top: 20,
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontFamily: "SUIT-700",
+    color: "#000000",
+    flex: 1,
+    textAlign: "center",
   },
   imageContainer: {
     position: "relative",

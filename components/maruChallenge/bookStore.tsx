@@ -15,15 +15,15 @@ export default function BookStoreItem({
   onPress,
 }: BookStoreItemProps) {
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image
         source={imageSource || require("@/assets/images/북챌린지 사진.png")}
       />
       <Text style={styles.storeName}>{name}</Text>
-      <TouchableOpacity style={styles.locationButton} onPress={onPress}>
+      <View style={styles.locationButton}>
         <Text style={styles.locationText}>{location}</Text>
-      </TouchableOpacity>
-    </View>
+      </View>
+    </TouchableOpacity>
   );
 }
 

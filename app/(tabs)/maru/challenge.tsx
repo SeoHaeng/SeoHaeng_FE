@@ -82,7 +82,12 @@ export default function Challenge() {
               key={store.id}
               name={store.name}
               location={store.location}
-              onPress={() => {}}
+              onPress={() =>
+                router.push({
+                  pathname: "/bookstore/[id]",
+                  params: { id: store.id },
+                })
+              }
             />
           ))}
           <View style={styles.moreButton}>

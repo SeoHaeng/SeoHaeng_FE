@@ -16,12 +16,13 @@ function CustomHeader() {
         <Text
           style={[
             styles.tabText,
-            pathname === "/maru/bookmark" && styles.activeTabText,
+            (pathname === "/maru/bookmark" || pathname === "/maru") &&
+              styles.activeTabText,
           ]}
         >
           공간책갈피
         </Text>
-        {pathname === "/maru/bookmark" && (
+        {(pathname === "/maru/bookmark" || pathname === "/maru") && (
           <View style={styles.activeIndicator} />
         )}
       </TouchableOpacity>
@@ -58,9 +59,9 @@ export default function MaruLayout() {
           animation: "none",
         }}
       >
+        <Stack.Screen name="index" />
         <Stack.Screen name="bookmark" />
         <Stack.Screen name="challenge" />
-        <Stack.Screen name="popularity/[id]" />
       </Stack>
     </View>
   );

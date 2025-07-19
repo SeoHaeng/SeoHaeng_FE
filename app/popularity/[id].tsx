@@ -1,8 +1,8 @@
 // app/popularity/[id].tsx
 import ChallengeComment from "@/components/maruChallenge/detail/comment";
 import GiftBook from "@/components/maruChallenge/detail/giftBook";
-import { useNavigation } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import {
   Image,
   Keyboard,
@@ -22,7 +22,18 @@ import {
 export default function ChallengeDetail() {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
+  const router = useRouter();
+
+  // 네비게이션 스택 안정화를 위한 focus effect
+  useFocusEffect(
+    useCallback(() => {
+      // 페이지가 포커스될 때 네비게이션 스택 상태 확인
+      return () => {
+        // 페이지가 포커스를 잃을 때 정리 작업
+      };
+    }, []),
+  );
+
   useEffect(() => {
     const showListener = Keyboard.addListener(
       Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
@@ -62,7 +73,14 @@ export default function ChallengeDetail() {
         showsVerticalScrollIndicator={false}
       >
         <TouchableOpacity
-          onPress={navigation.goBack}
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              // 네비게이션 스택이 비어있으면 기본적으로 인기챌린지 목록으로
+              router.push("/popularity");
+            }
+          }}
           style={{ position: "absolute", top: 20, left: 20, zIndex: 1 }}
         >
           <Image source={require("@/assets/images/BackWhite.png")} />
@@ -176,14 +194,25 @@ export default function ChallengeDetail() {
           },
         ]}
       >
-        <TextInput
-          style={styles.commentInput}
-          placeholder="댓글을 남겨주세요"
-          placeholderTextColor="#9D9896"
-        />
-        <TouchableOpacity style={styles.sendButton}>
-          <Text style={styles.sendButtonText}>등록</Text>
-        </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "#F8F4F2",
+            width: "100%",
+            height: 45,
+            borderRadius: 10,
+          }}
+        >
+          <TextInput
+            style={styles.commentInput}
+            placeholder="댓글을 남겨주세요"
+            placeholderTextColor="#9D9896"
+          />
+          <TouchableOpacity style={styles.sendButton}>
+            <Text style={styles.sendButtonText}>등록</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       {/*  </KeyboardAvoidingView> */}
     </SafeAreaView>
@@ -234,28 +263,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: "#FFFFFF",
-    borderTopWidth: 0.5,
-    borderColor: "#C5BFBB",
+    backgroundColor: "#DBD6D3",
   },
   commentInput: {
     flex: 1,
     height: 40,
-    backgroundColor: "#F5F3F2",
-    borderRadius: 20,
+    backgroundColor: "#F8F4F2",
+    borderRadius: 10,
     paddingHorizontal: 15,
     fontSize: 14,
     fontFamily: "SUIT-500",
     marginRight: 10,
   },
   sendButton: {
-    backgroundColor: "#000000",
+    backgroundColor: "#F5F3F2",
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
   sendButtonText: {
-    color: "#FFFFFF",
+    color: "#302E2D",
     fontSize: 14,
     fontFamily: "SUIT-700",
   },

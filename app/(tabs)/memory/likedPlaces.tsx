@@ -1,11 +1,11 @@
 import React from "react";
 import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 export default function LikedPlaces() {
@@ -13,7 +13,8 @@ export default function LikedPlaces() {
   const places = [
     {
       id: 1,
-      name: "한낮의 바다 독립서점",
+      name: "한낮의 바다",
+      type: "독립서점",
       rating: 4.2,
       reviewCount: 103,
       distance: "1.2 km",
@@ -22,7 +23,8 @@ export default function LikedPlaces() {
     },
     {
       id: 2,
-      name: "한낮의 바다 독립서점",
+      name: "한낮의 바다",
+      type: "독립서점",
       rating: 4.2,
       reviewCount: 103,
       distance: "1.2 km",
@@ -35,24 +37,30 @@ export default function LikedPlaces() {
     <View key={place.id} style={styles.placeItem}>
       <View style={styles.placeImageContainer}>
         <Image source={place.image} style={styles.placeImage} />
-        <TouchableOpacity style={styles.bookmarkIcon}>
-          <Text style={styles.bookmarkText}>🔖</Text>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.placeInfo}>
-        <Text style={styles.placeName}>{place.name}</Text>
+        <View style={styles.nameContainer}>
+          <Text style={styles.placeName}>{place.name}</Text>
+          <Text style={styles.placeType}>{place.type}</Text>
+        </View>
+        <Image
+          source={require("@/assets/images/scrap.png")}
+          style={styles.scrapIcon}
+        />
 
         <View style={styles.ratingContainer}>
-          <Text style={styles.starIcon}>⭐</Text>
-          <Text style={styles.ratingText}>
-            {place.rating}({place.reviewCount})
-          </Text>
+          <Image
+            source={require("@/assets/images/Star.png")}
+            style={styles.starIcon}
+          />
+          <Text style={styles.ratingText}>{place.rating}</Text>
+          <Text style={styles.reviewCountText}>({place.reviewCount})</Text>
           <Text style={styles.distanceText}>{place.distance}</Text>
         </View>
 
         <View style={styles.addressContainer}>
-          <Text style={styles.locationIcon}>📍</Text>
+          <Image source={require("@/assets/images/place.png")} />
           <Text style={styles.addressText}>{place.address}</Text>
         </View>
 
@@ -78,6 +86,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+    paddingHorizontal: 10,
   },
   countContainer: {
     paddingHorizontal: 20,
@@ -90,18 +99,21 @@ const styles = StyleSheet.create({
   },
   placeItem: {
     flexDirection: "row",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    backgroundColor: "#EEE9E6",
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
+    borderRadius: 5,
+    marginBottom: 10,
   },
   placeImageContainer: {
     position: "relative",
     marginRight: 15,
   },
   placeImage: {
-    width: 80,
-    height: 80,
+    width: 101,
+    height: 101,
     borderRadius: 8,
   },
   bookmarkIcon: {
@@ -121,59 +133,85 @@ const styles = StyleSheet.create({
   placeInfo: {
     flex: 1,
     justifyContent: "space-between",
+    paddingVertical: 3,
+    height: 101,
+  },
+  nameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 5,
   },
   placeName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333333",
-    marginBottom: 5,
+    fontSize: 17,
+    color: "#262423",
     fontFamily: "SUIT-700",
+    marginRight: 8,
+  },
+  placeType: {
+    fontSize: 12,
+    color: "#716C69",
+    fontFamily: "SUIT-500",
+  },
+  scrapIcon: {
+    width: 14,
+    height: 22,
+    position: "absolute",
+    top: 5,
+    right: 5,
   },
   ratingContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 5,
+    marginBottom: 8,
   },
   starIcon: {
-    fontSize: 14,
+    width: 12,
+    height: 12,
     marginRight: 4,
   },
   ratingText: {
-    fontSize: 14,
-    color: "#666666",
+    fontSize: 13,
+    color: "#313131",
+    marginRight: 4,
+    fontFamily: "SUIT-700",
+  },
+  reviewCountText: {
+    fontSize: 13,
+    color: "#7E7E7E",
     marginRight: 8,
     fontFamily: "SUIT-500",
   },
   distanceText: {
-    fontSize: 14,
-    color: "#666666",
-    fontFamily: "SUIT-500",
+    fontSize: 13,
+    color: "#262423",
+    fontFamily: "SUIT-700",
   },
   addressContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
   },
   locationIcon: {
     fontSize: 12,
     marginRight: 4,
   },
   addressText: {
-    fontSize: 12,
-    color: "#999999",
+    fontSize: 13,
+    color: "#716C69",
+    marginLeft: 5,
     flex: 1,
-    fontFamily: "SUIT-400",
+    fontFamily: "SUIT-500",
   },
   likedButton: {
     alignSelf: "flex-end",
-    backgroundColor: "#F5F5F5",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
+    backgroundColor: "#C5BFBB",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 5,
+    marginTop: 5,
   },
   likedButtonText: {
-    fontSize: 12,
-    color: "#666666",
+    fontSize: 13,
+    color: "#EEE9E6",
     fontFamily: "SUIT-500",
   },
 });

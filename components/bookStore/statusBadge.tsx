@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "rgba(56, 113, 224, 0.3)",
     paddingHorizontal: 5,
-    paddingVertical: 3,
-    borderRadius: 5,
+    paddingVertical: 2,
+    borderRadius: 6,
   },
   statusText: {
     fontSize: 11,

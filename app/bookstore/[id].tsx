@@ -104,7 +104,7 @@ export default function BookstoreDetail() {
 
         {/* 탭 네비게이션 */}
         <View style={styles.tabContainer}>
-          {["상세 정보", "후기", "사진", "이벤트"].map((tab) => (
+          {["상세 정보", "사진", "후기", "이벤트"].map((tab) => (
             <TouchableOpacity
               key={tab}
               style={[styles.tab, activeTab === tab && styles.activeTab]}

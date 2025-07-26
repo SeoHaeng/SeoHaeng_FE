@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import SpaceView from "./space";
 import StampView from "./stamp";
 
 export default function MemoryLayout() {
@@ -8,9 +9,9 @@ export default function MemoryLayout() {
   return (
     <View style={styles.container}>
       {/* 상단 탭 */}
-      <View style={styles.tabContainer}>
+      <View style={styles.header}>
         <TouchableOpacity
-          style={[styles.tab, activeTab === "내 공간" && styles.activeTab]}
+          style={styles.tab}
           onPress={() => setActiveTab("내 공간")}
         >
           <Text
@@ -21,9 +22,10 @@ export default function MemoryLayout() {
           >
             내 공간
           </Text>
+          {activeTab === "내 공간" && <View style={styles.activeIndicator} />}
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tab, activeTab === "스탬프" && styles.activeTab]}
+          style={styles.tab}
           onPress={() => setActiveTab("스탬프")}
         >
           <Text
@@ -34,18 +36,12 @@ export default function MemoryLayout() {
           >
             스탬프
           </Text>
+          {activeTab === "스탬프" && <View style={styles.activeIndicator} />}
         </TouchableOpacity>
       </View>
 
       {/* 메인 콘텐츠 */}
-      {activeTab === "스탬프" ? (
-        <StampView />
-      ) : (
-        <View style={styles.spaceContainer}>
-          <Text style={styles.spaceText}>내 공간</Text>
-          <Text style={styles.spaceSubtext}>준비 중...</Text>
-        </View>
-      )}
+      {activeTab === "스탬프" ? <StampView /> : <SpaceView />}
     </View>
   );
 }
@@ -53,30 +49,37 @@ export default function MemoryLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#FFFFFF",
   },
-  tabContainer: {
+  header: {
     flexDirection: "row",
-    backgroundColor: "#fff",
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 15,
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    paddingTop: 50,
+    paddingHorizontal: 10,
   },
   tab: {
-    marginRight: 30,
-    paddingBottom: 10,
-  },
-  activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: "#000",
+    position: "relative",
+    height: 50,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
   tabText: {
-    fontSize: 16,
-    color: "#666",
+    fontSize: 17,
+    color: "#716C69",
+    fontFamily: "SUIT-700",
   },
   activeTabText: {
-    color: "#000",
-    fontWeight: "600",
+    color: "#000000",
+    fontFamily: "SUIT-700",
+  },
+  activeIndicator: {
+    marginTop: 5,
+    height: 2,
+    width: "50%",
+    backgroundColor: "#000000",
+    alignSelf: "center",
+    borderRadius: 5,
   },
   spaceContainer: {
     flex: 1,

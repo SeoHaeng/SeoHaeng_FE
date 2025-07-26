@@ -11,6 +11,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import DetailTab from "./detail";
+import EventTab from "./event";
+import PhotoTab from "./photo";
+import ReviewTab from "./review";
 
 export default function BookstoreDetail() {
   const [activeTab, setActiveTab] = useState("이벤트");
@@ -19,91 +23,15 @@ export default function BookstoreDetail() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "상세 정보":
-        return (
-          <View style={styles.tabContent}>
-            <Text style={styles.tabTitle}>서점 정보</Text>
-            <Text style={styles.description}>
-              이스트씨네는 강릉에 위치한 독립서점입니다. 영화와 책을 사랑하는
-              사람들이 모이는 공간으로, 다양한 독립영화와 독서 문화를 즐길 수
-              있습니다.
-            </Text>
-            <Text style={styles.tabTitle}>영업시간</Text>
-            <Text style={styles.description}>
-              평일: 10:00 - 22:00{"\n"}주말: 10:00 - 22:00
-            </Text>
-            <Text style={styles.tabTitle}>연락처</Text>
-            <Text style={styles.infoText}>033-123-4567</Text>
-          </View>
-        );
+        return <DetailTab />;
       case "후기":
-        return (
-          <View style={styles.tabContent}>
-            <Text style={styles.tabTitle}>서점 후기</Text>
-            <View style={styles.reviewItem}>
-              <View style={styles.reviewHeader}>
-                <Text style={styles.reviewerName}>책벌레123</Text>
-                <Text style={styles.reviewDate}>2024.01.15</Text>
-              </View>
-              <Text style={styles.reviewText}>
-                정말 아늑한 분위기의 서점이에요! 영화와 책을 동시에 즐길 수
-                있어서 좋았습니다.
-              </Text>
-            </View>
-            <View style={styles.reviewItem}>
-              <View style={styles.reviewHeader}>
-                <Text style={styles.reviewerName}>독서광</Text>
-                <Text style={styles.reviewDate}>2024.01.10</Text>
-              </View>
-              <Text style={styles.reviewText}>
-                북챌린지 이벤트도 진행하고 있어서 더욱 특별한 경험이었어요.
-              </Text>
-            </View>
-          </View>
-        );
+        return <ReviewTab />;
       case "사진":
-        return (
-          <View style={styles.tabContent}>
-            <Text style={styles.tabTitle}>서점 사진</Text>
-            <View style={styles.photoGrid}>
-              <Image
-                source={require("@/assets/images/서점.png")}
-                style={styles.photoItem}
-              />
-              <Image
-                source={require("@/assets/images/독립서점.png")}
-                style={styles.photoItem}
-              />
-            </View>
-          </View>
-        );
+        return <PhotoTab />;
       case "이벤트":
-        return (
-          <View style={styles.tabContent}>
-            <Text style={styles.tabTitle}>북챌린지 이벤트</Text>
-            <Text style={styles.description}>
-              3월 16일부터 이스트 씨네에서도 북 챌린지 이벤트를 진행합니다!
-              이유는 없습니다. 다들 하길래 저희도 하는겁니다 ㅎㅎ 많은 참여
-              부탁드려요~!!
-            </Text>
-            <Text style={styles.tabTitle}>챌린지 리워드</Text>
-            <View style={styles.rewardContainer}>
-              <View style={styles.rewardItem} />
-              <View style={styles.rewardItem} />
-              <View style={styles.rewardItem} />
-            </View>
-            <Text style={styles.description}>
-              챌린지에 참여하는 모든 분들께 이스트씨네의 책갈피를 드립니다
-            </Text>
-            <Text style={styles.tabTitle}>사장님 한 마디</Text>
-            <Text style={styles.description}>
-              3월 16일부터 이스트 씨네에서도 북 챌린지 이벤트를 진행합니다!
-              이유는 없습니다. 다들 하길래 저희도 하는겁니다 ㅎㅎ 많은 참여
-              부탁드려요~!!
-            </Text>
-          </View>
-        );
+        return <EventTab />;
       default:
-        return null;
+        return <EventTab />;
     }
   };
 
@@ -347,76 +275,5 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
-  },
-  tabContent: {
-    minHeight: 400,
-  },
-  tabTitle: {
-    fontSize: 13,
-    fontFamily: "SUIT-700",
-    color: "262423",
-    marginBottom: 15,
-  },
-  description: {
-    fontSize: 14,
-    fontFamily: "SUIT-500",
-    color: "#262423",
-    lineHeight: 20,
-    marginBottom: 50,
-  },
-  infoText: {
-    fontSize: 14,
-    fontFamily: "SUIT-500",
-    color: "#716C69",
-    marginBottom: 4,
-  },
-  reviewItem: {
-    marginBottom: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E8E3E0",
-  },
-  reviewHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  reviewerName: {
-    fontSize: 14,
-    fontFamily: "SUIT-700",
-    color: "#000000",
-  },
-  reviewDate: {
-    fontSize: 12,
-    fontFamily: "SUIT-500",
-    color: "#716C69",
-  },
-  reviewText: {
-    fontSize: 14,
-    fontFamily: "SUIT-500",
-    color: "#000000",
-    lineHeight: 20,
-  },
-  photoGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  photoItem: {
-    width: "48%",
-    height: 150,
-    borderRadius: 8,
-  },
-  rewardContainer: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 15,
-  },
-  rewardItem: {
-    flex: 1,
-    height: 80,
-    backgroundColor: "#F5F3F2",
-    borderRadius: 8,
   },
 });

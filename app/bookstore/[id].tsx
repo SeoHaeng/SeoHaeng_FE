@@ -17,7 +17,7 @@ import PhotoTab from "./photo";
 import ReviewTab from "./review";
 
 export default function BookstoreDetail() {
-  const [activeTab, setActiveTab] = useState("이벤트");
+  const [activeTab, setActiveTab] = useState("상세 정보");
   const router = useRouter();
 
   const renderTabContent = () => {
@@ -31,7 +31,7 @@ export default function BookstoreDetail() {
       case "이벤트":
         return <EventTab />;
       default:
-        return <EventTab />;
+        return <DetailTab />;
     }
   };
 

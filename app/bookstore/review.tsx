@@ -1,45 +1,166 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function ReviewTab() {
+  const reviews = [
+    {
+      id: 1,
+      username: "유딘딘",
+      date: "2025.05.13 토",
+      rating: 5,
+      text: "너무너무 좋았어요!!!\n다음에 또 올게욤~ 그때까지 망하지 말아주세요 ㅎㅎ",
+      images: [require("@/assets/images/인기챌린지 사진.png")],
+    },
+    {
+      id: 2,
+      username: "독서광",
+      date: "2025.05.12 금",
+      rating: 4,
+      text: "분위기가 정말 좋아요! 책도 많고 커피도 맛있어요.\n다음에 친구들과 함께 올 예정입니다.",
+      images: [
+        require("@/assets/images/인기챌린지 사진.png"),
+        require("@/assets/images/북챌린지 사진.png"),
+        require("@/assets/images/인기챌린지 책.png"),
+      ],
+    },
+    {
+      id: 3,
+      username: "책벌레123",
+      date: "2025.05.10 수",
+      rating: 5,
+      text: "북챌린지 이벤트도 진행하고 있어서 더욱 특별한 경험이었어요.\n정말 추천합니다!",
+      images: [require("@/assets/images/북챌린지 사진.png")],
+    },
+  ];
+
+  const renderStars = (rating: number) => {
+    return (
+      <View style={styles.starsContainer}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Image
+            key={star}
+            source={require("@/assets/images/Star.png")}
+            style={[
+              styles.star,
+              { tintColor: star <= rating ? "#FFD700" : "#E0E0E0" },
+            ]}
+          />
+        ))}
+      </View>
+    );
+  };
+
   return (
-    <View style={styles.tabContent}>
-      <Text style={styles.tabTitle}>서점 후기</Text>
-      <View style={styles.reviewItem}>
-        <View style={styles.reviewHeader}>
-          <Text style={styles.reviewerName}>책벌레123</Text>
-          <Text style={styles.reviewDate}>2024.01.15</Text>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* 리뷰 요약 */}
+      <View style={styles.reviewSummary}>
+        <Text style={styles.reviewCount}>리뷰 212</Text>
+        <View style={styles.ratingContainer}>
+          <Text style={styles.ratingText}>4.2</Text>
+          <Image
+            source={require("@/assets/images/Star.png")}
+            style={[styles.star, { tintColor: "#FFD700" }]}
+          />
         </View>
-        <Text style={styles.reviewText}>
-          정말 아늑한 분위기의 서점이에요! 영화와 책을 동시에 즐길 수 있어서
-          좋았습니다.
-        </Text>
       </View>
-      <View style={styles.reviewItem}>
-        <View style={styles.reviewHeader}>
-          <Text style={styles.reviewerName}>독서광</Text>
-          <Text style={styles.reviewDate}>2024.01.10</Text>
+
+      {/* 후기 남기기 버튼 */}
+      <TouchableOpacity style={styles.writeReviewButton}>
+        <Text style={styles.writeReviewText}>나도 후기 남기기 {">"}</Text>
+      </TouchableOpacity>
+
+      {/* 개별 리뷰들 */}
+      {reviews.map((review) => (
+        <View key={review.id} style={styles.reviewItem}>
+          {/* 사용자 정보 */}
+          <View style={styles.reviewHeader}>
+            <View style={styles.userInfo}>
+              <View style={styles.userAvatar} />
+              <Text style={styles.username}>{review.username}</Text>
+            </View>
+            <View style={styles.reviewMeta}>
+              <Text style={styles.reviewDate}>{review.date}</Text>
+              {renderStars(review.rating)}
+            </View>
+          </View>
+
+          {/* 리뷰 텍스트 */}
+          <Text style={styles.reviewText}>{review.text}</Text>
+
+          {/* 리뷰 이미지들 */}
+          {review.images.length > 0 && (
+            <View style={styles.imagesContainer}>
+              {review.images.map((image, index) => (
+                <Image
+                  key={index}
+                  source={image}
+                  style={[
+                    styles.reviewImage,
+                    review.images.length === 1
+                      ? styles.singleImage
+                      : styles.multipleImage,
+                  ]}
+                />
+              ))}
+            </View>
+          )}
         </View>
-        <Text style={styles.reviewText}>
-          북챌린지 이벤트도 진행하고 있어서 더욱 특별한 경험이었어요.
-        </Text>
-      </View>
-    </View>
+      ))}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  tabContent: {
-    minHeight: 400,
+  container: {
+    flex: 1,
   },
-  tabTitle: {
-    fontSize: 13,
-    fontFamily: "SUIT-700",
-    color: "#262423",
+  reviewSummary: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 15,
   },
-  reviewItem: {
+  reviewCount: {
+    fontSize: 14,
+    fontFamily: "SUIT-700",
+    color: "#262423",
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  ratingText: {
+    fontSize: 14,
+    fontFamily: "SUIT-700",
+    color: "#262423",
+  },
+  star: {
+    width: 16,
+    height: 16,
+  },
+  writeReviewButton: {
+    backgroundColor: "#F5F5F5",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
     marginBottom: 20,
+    alignItems: "center",
+  },
+  writeReviewText: {
+    fontSize: 14,
+    fontFamily: "SUIT-600",
+    color: "#262423",
+  },
+  reviewItem: {
+    marginBottom: 25,
     paddingBottom: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#E8E3E0",
@@ -47,23 +168,58 @@ const styles = StyleSheet.create({
   reviewHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
+    alignItems: "flex-start",
+    marginBottom: 12,
   },
-  reviewerName: {
+  userInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  userAvatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#9D9896",
+  },
+  username: {
     fontSize: 14,
     fontFamily: "SUIT-700",
-    color: "#000000",
+    color: "#262423",
+  },
+  reviewMeta: {
+    alignItems: "flex-end",
+    gap: 5,
   },
   reviewDate: {
     fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
+  starsContainer: {
+    flexDirection: "row",
+    gap: 2,
+  },
   reviewText: {
     fontSize: 14,
     fontFamily: "SUIT-500",
-    color: "#000000",
+    color: "#262423",
     lineHeight: 20,
+    marginBottom: 12,
+  },
+  imagesContainer: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  reviewImage: {
+    borderRadius: 8,
+  },
+  singleImage: {
+    width: 200,
+    height: 150,
+  },
+  multipleImage: {
+    width: 80,
+    height: 80,
   },
 });

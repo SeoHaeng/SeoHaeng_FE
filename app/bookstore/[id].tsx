@@ -83,15 +83,26 @@ export default function BookstoreDetail() {
               </TouchableOpacity>
             </View>
           </View>
-          <Text style={styles.storeStats}>
-            리뷰 <Text style={styles.reviewCount}>212</Text>
-            {"    "}⭐ 4.2{"  "}
-            <Image
-              source={require("@/assets/images/서점 리뷰 더보기 화살표.png")}
-            />
-          </Text>
+          <View style={styles.storeStats}>
+            <Text style={styles.reviewText}>
+              리뷰 <Text style={styles.reviewCount}>212</Text>
+            </Text>
+            <View style={styles.ratingContainer}>
+              <Image
+                source={require("@/assets/images/Star.png")}
+                style={[{ tintColor: "#FF9900", width: 14, height: 14 }]}
+              />
+              <Text style={styles.ratingText}>4.2</Text>
+              <Image
+                source={require("@/assets/images/서점 리뷰 더보기 화살표.png")}
+              />
+            </View>
+          </View>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
-            <Image source={require("@/assets/images/place.png")} />
+            <Image
+              source={require("@/assets/images/place.png")}
+              style={{ width: 11, height: 15 }}
+            />
             <Text style={styles.storeLocation}>
               강원 강릉시 강동면 현화로 973 1층
             </Text>
@@ -230,10 +241,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   storeStats: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 4,
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  ratingText: {
     fontSize: 13,
     fontFamily: "SUIT-700",
     color: "#000000",
-    marginBottom: 4,
+  },
+  reviewText: {
+    fontSize: 13,
+    fontFamily: "SUIT-600",
+    color: "#000000",
   },
   reviewCount: {
     color: "#9D9896",
@@ -242,7 +268,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#262423",
-    marginBottom: 4,
   },
   storeStatus: {
     fontSize: 12,

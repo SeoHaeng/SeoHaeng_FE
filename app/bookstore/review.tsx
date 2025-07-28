@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import React from "react";
 import {
   Image,
@@ -9,6 +10,7 @@ import {
 } from "react-native";
 
 export default function ReviewTab() {
+  const router = useRouter();
   const reviews = [
     {
       id: 1,
@@ -72,7 +74,10 @@ export default function ReviewTab() {
       </View>
 
       {/* 후기 남기기 버튼 */}
-      <TouchableOpacity style={styles.writeReviewButton}>
+      <TouchableOpacity
+        style={styles.writeReviewButton}
+        onPress={() => router.push("/bookstore/writeReview")}
+      >
         <Text style={styles.writeReviewText}>나도 후기 남기기</Text>
         <Image
           source={require("@/assets/images/서점 리뷰 더보기 화살표.png")}

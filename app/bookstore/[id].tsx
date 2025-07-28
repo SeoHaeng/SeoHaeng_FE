@@ -1,5 +1,6 @@
 // app/bookstore/[id].tsx
 import StatusBadge from "@/components/bookStore/statusBadge";
+import BookstoreBadge from "@/components/BookstoreBadge";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -69,10 +70,7 @@ export default function BookstoreDetail() {
           <View style={styles.storeHeader}>
             <View style={styles.storeTitleContainer}>
               <Text style={styles.storeName}>이스트씨네</Text>
-              <View style={styles.badgeContainer}>
-                <Image source={require("@/assets/images/bookStoreBadge.png")} />
-                <Text style={styles.badgeText}>독립서점</Text>
-              </View>
+              <BookstoreBadge />
             </View>
             <View style={styles.actionButtons}>
               <TouchableOpacity style={styles.actionButton}>

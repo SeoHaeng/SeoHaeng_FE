@@ -1,3 +1,4 @@
+import BookstoreBadge from "@/components/BookstoreBadge";
 import DatePickerModal from "@/components/DatePickerModal";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -73,10 +74,7 @@ export default function WriteReview() {
           <View style={styles.bookstoreDetails}>
             <View style={styles.bookstoreHeader}>
               <Text style={styles.bookstoreName}>이스트씨네</Text>
-              <View style={styles.badgeContainer}>
-                <Image source={require("@/assets/images/bookStoreBadge.png")} />
-                <Text style={styles.badgeText}>독립서점</Text>
-              </View>
+              <BookstoreBadge />
             </View>
             <View style={styles.locationContainer}>
               <Image
@@ -125,7 +123,7 @@ export default function WriteReview() {
               {formatSelectedDate(selectedDate)}
             </Text>
             <Image
-              source={require("@/assets/images/three_dote.png")}
+              source={require("@/assets/images/calendar.png")}
               style={{ width: 16, height: 16 }}
             />
           </TouchableOpacity>
@@ -201,8 +199,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   bookstoreImage: {
-    width: 80,
-    height: 80,
+    width: 52,
+    height: 52,
     backgroundColor: "#E8E3E0",
     borderRadius: 8,
     marginRight: 15,

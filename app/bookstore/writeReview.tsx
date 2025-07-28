@@ -4,6 +4,8 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
     Image,
+    KeyboardAvoidingView,
+    Platform,
     ScrollView,
     StyleSheet,
     Text,
@@ -53,106 +55,117 @@ export default function WriteReview() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        {/* 헤더 */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backButton}
-          >
-            <Image source={require("@/assets/images/Back.png")} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>후기 작성</Text>
-        </View>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* 헤더 */}
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={styles.backButton}
+            >
+              <Image source={require("@/assets/images/Back.png")} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>후기 작성</Text>
+          </View>
 
-        {/* 서점 정보 */}
-        <View style={styles.bookstoreInfo}>
-          <View style={styles.bookstoreImage} />
-          <View style={styles.bookstoreDetails}>
-            <View style={styles.bookstoreHeader}>
-              <Text style={styles.bookstoreName}>이스트씨네</Text>
-              <BookstoreBadge />
+          {/* 서점 정보 */}
+          <View style={styles.bookstoreInfo}>
+            <View style={styles.bookstoreImage} />
+            <View style={styles.bookstoreDetails}>
+              <View style={styles.bookstoreHeader}>
+                <Text style={styles.bookstoreName}>이스트씨네</Text>
+                <BookstoreBadge />
+              </View>
+              <View style={styles.locationContainer}>
+                <Image
+                  source={require("@/assets/images/place.png")}
+                  style={{ width: 11, height: 15 }}
+                />
+                <Text style={styles.locationText}>
+                  강원 강릉시 강동면 현화로 973 1층
+                </Text>
+              </View>
             </View>
-            <View style={styles.locationContainer}>
+          </View>
+
+          {/* 평점 섹션 */}
+          <View style={styles.ratingSection}>
+            {renderStars()}
+            <View style={styles.ratingTooltip}>
+              <View style={styles.tooltipTriangle} />
+              <Text style={styles.tooltipText}>공간에 만족하셨나요?</Text>
+            </View>
+          </View>
+
+          {/* 이미지 업로드 섹션 */}
+          <View style={styles.imageSection}>
+            <Text style={styles.sectionTitle}>이미지를 추가해주세요</Text>
+            <TouchableOpacity style={styles.imageUploadButton}>
+              <Image source={require("@/assets/images/Camera enhance.png")} />
+              <Text style={styles.imageCount}>{imageCount}/10</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 방문 날짜 섹션 */}
+          <View style={styles.dateSection}>
+            <Text style={styles.sectionTitle}>언제 방문했나요?</Text>
+            <TouchableOpacity
+              style={styles.dateInput}
+              onPress={() => setIsDatePickerVisible(true)}
+            >
+              <Text
+                style={[
+                  styles.datePlaceholder,
+                  selectedDate && styles.selectedDateText,
+                ]}
+              >
+                {formatSelectedDate(selectedDate)}
+              </Text>
               <Image
-                source={require("@/assets/images/place.png")}
-                style={{ width: 12, height: 12 }}
+                source={require("@/assets/images/calendar.png")}
+                style={{ width: 16, height: 16 }}
               />
-              <Text style={styles.locationText}>
-                강원 강릉시 강동면 현화로 973 1층
+            </TouchableOpacity>
+          </View>
+
+          {/* 후기 작성 섹션 */}
+          <View style={styles.reviewSection}>
+            <Text style={styles.sectionTitle}>후기를 작성해주세요</Text>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="책을 읽고 느꼈던 생각이나, 장소에 대한 감정을 간단히 적어보세요. 책과 여행의 여운이 더 오래 남을 거예요."
+                placeholderTextColor="#9D9896"
+                multiline
+                value={reviewText}
+                onChangeText={setReviewText}
+                maxLength={200}
+              />
+              <Text style={styles.characterCount}>
+                {reviewText.length}/200 자
               </Text>
             </View>
           </View>
-        </View>
 
-        {/* 평점 섹션 */}
-        <View style={styles.ratingSection}>
-          {renderStars()}
-          <View style={styles.ratingTooltip}>
-            <Text style={styles.tooltipText}>공간에 만족하셨나요?</Text>
-          </View>
-        </View>
+          {/* 스크롤 끝에 여백 추가 */}
+          <View style={styles.bottomPadding} />
+        </ScrollView>
 
-        {/* 이미지 업로드 섹션 */}
-        <View style={styles.imageSection}>
-          <Text style={styles.sectionTitle}>이미지를 추가해주세요</Text>
-          <TouchableOpacity style={styles.imageUploadButton}>
-            <View style={styles.uploadIcon}>
-              <Text style={styles.plusIcon}>+</Text>
-            </View>
-            <Text style={styles.imageCount}>{imageCount}/10</Text>
+        {/* 작성 완료 버튼 - 고정 */}
+        <View style={styles.fixedButtonContainer}>
+          <TouchableOpacity style={styles.completeButton}>
+            <Text style={styles.completeButtonText}>작성 완료</Text>
           </TouchableOpacity>
         </View>
-
-        {/* 방문 날짜 섹션 */}
-        <View style={styles.dateSection}>
-          <Text style={styles.sectionTitle}>언제 방문했나요?</Text>
-          <TouchableOpacity
-            style={styles.dateInput}
-            onPress={() => setIsDatePickerVisible(true)}
-          >
-            <Text
-              style={[
-                styles.datePlaceholder,
-                selectedDate && styles.selectedDateText,
-              ]}
-            >
-              {formatSelectedDate(selectedDate)}
-            </Text>
-            <Image
-              source={require("@/assets/images/calendar.png")}
-              style={{ width: 16, height: 16 }}
-            />
-          </TouchableOpacity>
-        </View>
-
-        {/* 후기 작성 섹션 */}
-        <View style={styles.reviewSection}>
-          <Text style={styles.sectionTitle}>후기를 작성해주세요</Text>
-          <View style={styles.textInputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="책을 읽고 느꼈던 생각이나, 장소에 대한 감정을 간단히 적어보세요. 책과 여행의 여운이 더 오래 남을 거예요."
-              placeholderTextColor="#9D9896"
-              multiline
-              value={reviewText}
-              onChangeText={setReviewText}
-              maxLength={200}
-            />
-            <Text style={styles.characterCount}>
-              {reviewText.length}/200 자
-            </Text>
-          </View>
-        </View>
-
-        {/* 작성 완료 버튼 */}
-        <TouchableOpacity style={styles.completeButton}>
-          <Text style={styles.completeButtonText}>작성 완료</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* 달력 모달 */}
       <DatePickerModal
@@ -167,17 +180,21 @@ export default function WriteReview() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
   scrollView: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: "#FFFFFF",
   },
   backButton: {
     width: 40,
@@ -195,8 +212,9 @@ const styles = StyleSheet.create({
   bookstoreInfo: {
     flexDirection: "row",
     padding: 20,
-    backgroundColor: "#FFFFFF",
     marginBottom: 10,
+    borderBottomWidth: 7,
+    borderBottomColor: "#EEE9E6",
   },
   bookstoreImage: {
     width: 52,
@@ -240,43 +258,55 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   locationText: {
-    fontSize: 13,
-    fontFamily: "SUIT-500",
-    color: "#716C69",
+    fontSize: 14,
+    fontFamily: "SUIT-600",
+    color: "#262423",
   },
   ratingSection: {
-    backgroundColor: "#FFFFFF",
     padding: 20,
-    marginBottom: 10,
     alignItems: "center",
   },
   starsContainer: {
     flexDirection: "row",
     gap: 10,
-    marginBottom: 15,
+    marginBottom: 20,
   },
   star: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
   },
   ratingTooltip: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#262423",
     paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 15,
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    position: "relative",
+  },
+  tooltipTriangle: {
+    width: 0,
+    height: 0,
+    backgroundColor: "transparent",
+    borderStyle: "solid",
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderBottomWidth: 6,
+    borderLeftColor: "transparent",
+    borderRightColor: "transparent",
+    borderBottomColor: "#262423",
+    position: "absolute",
+    top: -6,
   },
   tooltipText: {
     fontSize: 13,
-    fontFamily: "SUIT-500",
-    color: "#716C69",
+    fontFamily: "SUIT-600",
+    color: "#FFFFFF",
   },
   imageSection: {
-    backgroundColor: "#FFFFFF",
     padding: 20,
-    marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#000000",
     marginBottom: 15,
@@ -284,35 +314,21 @@ const styles = StyleSheet.create({
   imageUploadButton: {
     alignItems: "center",
     justifyContent: "center",
-    width: 100,
-    height: 100,
-    backgroundColor: "#F5F5F5",
+    width: 70,
+    height: 70,
+    backgroundColor: "#EEE9E6",
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E8E3E0",
-    borderStyle: "dashed",
+    borderColor: "#DBD6D3",
   },
-  uploadIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#E8E3E0",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  plusIcon: {
-    fontSize: 20,
-    color: "#9D9896",
-    fontWeight: "bold",
-  },
+
   imageCount: {
-    fontSize: 12,
-    fontFamily: "SUIT-500",
+    fontSize: 13,
+    fontFamily: "SUIT-600",
     color: "#9D9896",
+    marginTop: 2,
   },
   dateSection: {
-    backgroundColor: "#FFFFFF",
     padding: 20,
     marginBottom: 10,
   },
@@ -322,8 +338,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 15,
     paddingVertical: 12,
-    backgroundColor: "#F5F5F5",
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
     borderRadius: 8,
+    backgroundColor: "#EEE9E6",
   },
   datePlaceholder: {
     fontSize: 14,
@@ -334,7 +352,6 @@ const styles = StyleSheet.create({
     color: "#000000",
   },
   reviewSection: {
-    backgroundColor: "#FFFFFF",
     padding: 20,
     marginBottom: 20,
   },
@@ -342,9 +359,11 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   textInput: {
-    height: 120,
+    minHeight: 120,
     padding: 15,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#EEE9E6",
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
     borderRadius: 8,
     fontSize: 14,
     fontFamily: "SUIT-500",
@@ -360,16 +379,30 @@ const styles = StyleSheet.create({
     color: "#9D9896",
   },
   completeButton: {
-    backgroundColor: "#E8E3E0",
+    backgroundColor: "#C5BFBB",
     paddingVertical: 15,
     marginHorizontal: 20,
-    borderRadius: 8,
+    borderRadius: 5,
     alignItems: "center",
-    marginBottom: 30,
+    marginTop: 10,
   },
   completeButtonText: {
     fontSize: 16,
     fontFamily: "SUIT-600",
-    color: "#716C69",
+    color: "#ffffff",
+  },
+  fixedButtonContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    paddingBottom: 5,
+    backgroundColor: "#FFFFFF",
+    borderTopWidth: 1,
+    borderTopColor: "#EEE9E6",
+  },
+  bottomPadding: {
+    height: 100, // Adjust as needed to push content to top
   },
 });

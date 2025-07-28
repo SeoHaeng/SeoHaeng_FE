@@ -34,6 +34,7 @@ export default function RootLayout() {
     "SUIT-500": require("@/assets/fonts/SUIT-Medium.ttf"),
     "SUIT-600": require("@/assets/fonts/SUIT-SemiBold.ttf"),
     "SUIT-700": require("@/assets/fonts/SUIT-Bold.ttf"),
+    "SUIT-800": require("@/assets/fonts/SUIT-ExtraBold.ttf"),
   });
 
   useEffect(() => {

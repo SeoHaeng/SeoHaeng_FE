@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 13,
-    fontFamily: "SUIT-700",
+    fontFamily: "SUIT-800",
     color: "#000000",
   },
   reviewText: {

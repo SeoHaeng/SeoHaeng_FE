@@ -1,6 +1,13 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 
 // 한국어 로케일 설정
@@ -85,13 +92,13 @@ export default function DatePickerModal({
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
+          <TouchableOpacity onPress={onClose} style={styles.backButton}>
+            <Image source={require("@/assets/images/Back.png")} />
+          </TouchableOpacity>
           {/* 헤더 */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={onClose} style={styles.backButton}>
-              <Text style={styles.backButtonText}>←</Text>
-            </TouchableOpacity>
             <Text style={styles.headerTitle}>
-              매장 방문 일자를 선택해주세요.
+              매장 방문 일자를{"\n"} 선택해주세요.
             </Text>
             <Text style={styles.selectedDateText}>
               {formatSelectedDate(selectedDate)}
@@ -159,22 +166,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingTop: 20,
+    paddingTop: 30,
     paddingBottom: 30,
-    minHeight: "70%",
+    minHeight: "75%",
   },
   header: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
+    paddingHorizontal: 25,
     paddingBottom: 20,
+    marginTop: 10,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
+    marginLeft: 20,
   },
   backButtonText: {
     fontSize: 20,
@@ -182,15 +186,15 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    fontSize: 16,
-    fontFamily: "SUIT-600",
+    fontSize: 22,
+    fontFamily: "SUIT-700",
     color: "#000000",
-    textAlign: "center",
+    lineHeight: 30,
   },
   selectedDateText: {
-    fontSize: 14,
-    fontFamily: "SUIT-500",
-    color: "#4D4947",
+    fontSize: 16,
+    fontFamily: "SUIT-700",
+    color: "#262423",
   },
   calendar: {
     marginHorizontal: 20,

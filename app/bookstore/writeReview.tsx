@@ -1,17 +1,18 @@
 import BookstoreBadge from "@/components/BookstoreBadge";
 import DatePickerModal from "@/components/DatePickerModal";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -19,9 +20,31 @@ export default function WriteReview() {
   const router = useRouter();
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
-  const [imageCount, setImageCount] = useState(0);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+
+  const pickImage = async () => {
+    if (selectedImages.length >= 10) {
+      alert("최대 10장까지 선택할 수 있습니다.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      const newImages = result.assets.map((asset) => asset.uri);
+      setSelectedImages((prev) => [...prev, ...newImages].slice(0, 10));
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const renderStars = () => {
     return (
@@ -108,10 +131,39 @@ export default function WriteReview() {
           {/* 이미지 업로드 섹션 */}
           <View style={styles.imageSection}>
             <Text style={styles.sectionTitle}>이미지를 추가해주세요</Text>
-            <TouchableOpacity style={styles.imageUploadButton}>
-              <Image source={require("@/assets/images/Camera enhance.png")} />
-              <Text style={styles.imageCount}>{imageCount}/10</Text>
-            </TouchableOpacity>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.imageScrollContainer}
+            >
+              {selectedImages.length < 10 && (
+                <TouchableOpacity
+                  style={styles.imageUploadButton}
+                  onPress={pickImage}
+                >
+                  <Image
+                    source={require("@/assets/images/Camera enhance.png")}
+                  />
+                  <Text style={styles.imageCount}>
+                    {selectedImages.length}/10
+                  </Text>
+                </TouchableOpacity>
+              )}
+              {selectedImages.map((uri, index) => (
+                <View key={index} style={styles.selectedImageWrapper}>
+                  <View style={styles.selectedImageContainer}>
+                    <Image source={{ uri }} style={styles.selectedImage} />
+                    <Text style={styles.representativeText}>대표사진</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.removeImageButton}
+                    onPress={() => removeImage(index)}
+                  >
+                    <Text style={styles.removeImageText}>×</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
           </View>
 
           {/* 방문 날짜 섹션 */}
@@ -141,7 +193,12 @@ export default function WriteReview() {
             <Text style={styles.sectionTitle}>후기를 작성해주세요</Text>
             <View style={styles.textInputContainer}>
               <TextInput
-                style={styles.textInput}
+                style={[
+                  styles.textInput,
+                  reviewText.length > 0 &&
+                    reviewText.length < 10 &&
+                    styles.textInputError,
+                ]}
                 placeholder="책을 읽고 느꼈던 생각이나, 장소에 대한 감정을 간단히 적어보세요. 책과 여행의 여운이 더 오래 남을 거예요."
                 placeholderTextColor="#9D9896"
                 multiline
@@ -153,6 +210,11 @@ export default function WriteReview() {
                 {reviewText.length}/200 자
               </Text>
             </View>
+            {reviewText.length > 0 && reviewText.length < 10 && (
+              <Text style={styles.errorMessage}>
+                최소 10자 이상 입력해주세요.
+              </Text>
+            )}
           </View>
 
           {/* 스크롤 끝에 여백 추가 */}
@@ -161,8 +223,16 @@ export default function WriteReview() {
 
         {/* 작성 완료 버튼 - 고정 */}
         <View style={styles.fixedButtonContainer}>
-          <TouchableOpacity style={styles.completeButton}>
-            <Text style={styles.completeButtonText}>작성 완료</Text>
+          <TouchableOpacity
+            style={[
+              styles.completeButton,
+              rating > 0 && selectedDate && reviewText.length >= 10
+                ? styles.completeButtonActive
+                : styles.completeButtonDisabled,
+            ]}
+            disabled={!(rating > 0 && selectedDate && reviewText.length >= 10)}
+          >
+            <Text style={[styles.completeButtonText]}>작성 완료</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -180,15 +250,19 @@ export default function WriteReview() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#FFFFFF",
   },
   keyboardAvoidingView: {
     flex: 1,
+    backgroundColor: "#FFFFFF",
   },
   scrollView: {
     flex: 1,
+    backgroundColor: "#FFFFFF",
   },
   scrollContent: {
     flexGrow: 1,
+    backgroundColor: "#FFFFFF",
   },
   header: {
     flexDirection: "row",
@@ -197,10 +271,9 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
+    position: "absolute",
+    left: 20,
+    top: 10,
   },
   headerTitle: {
     flex: 1,
@@ -311,6 +384,57 @@ const styles = StyleSheet.create({
     color: "#000000",
     marginBottom: 15,
   },
+  imageScrollContainer: {
+    // Add any specific styles for the ScrollView if needed
+  },
+  selectedImageWrapper: {
+    position: "relative",
+    marginRight: 8,
+    paddingTop: 7,
+    paddingRight: 7,
+  },
+  selectedImageContainer: {
+    position: "relative",
+  },
+  selectedImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 8,
+    backgroundColor: "#EEE9E6",
+  },
+  removeImageButton: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    backgroundColor: "#4D4947",
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ffffff",
+    zIndex: 1,
+    padding: 0,
+  },
+  removeImageText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontFamily: "SUIT-700",
+    textAlign: "center",
+    includeFontPadding: false,
+    textAlignVertical: "center",
+  },
+  representativeText: {
+    position: "absolute",
+    bottom: -15,
+    left: 0,
+    right: 0,
+    textAlign: "center",
+    fontSize: 10,
+    fontFamily: "SUIT-500",
+    color: "#9D9896",
+  },
   imageUploadButton: {
     alignItems: "center",
     justifyContent: "center",
@@ -320,8 +444,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#DBD6D3",
+    marginRight: 8,
+    marginTop: 7,
   },
-
   imageCount: {
     fontSize: 13,
     fontFamily: "SUIT-600",
@@ -378,19 +503,33 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
+  textInputError: {
+    borderColor: "#FF0000",
+  },
+  errorMessage: {
+    fontSize: 12,
+    fontFamily: "SUIT-500",
+    color: "#FF0000",
+    marginTop: 5,
+  },
   completeButton: {
-    backgroundColor: "#C5BFBB",
     paddingVertical: 15,
-    marginHorizontal: 20,
     borderRadius: 5,
     alignItems: "center",
     marginTop: 10,
+  },
+  completeButtonActive: {
+    backgroundColor: "#4D4947",
+  },
+  completeButtonDisabled: {
+    backgroundColor: "#C5BFBB",
   },
   completeButtonText: {
     fontSize: 16,
     fontFamily: "SUIT-600",
     color: "#ffffff",
   },
+
   fixedButtonContainer: {
     position: "absolute",
     bottom: 0,

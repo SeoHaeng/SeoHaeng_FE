@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function EventTab() {
   return (
@@ -10,11 +10,18 @@ export default function EventTab() {
         없습니다. 다들 하길래 저희도 하는겁니다 ㅎㅎ 많은 참여 부탁드려요~!!
       </Text>
       <Text style={styles.tabTitle}>챌린지 리워드</Text>
-      <View style={styles.rewardContainer}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.rewardContainer}
+        contentContainerStyle={styles.rewardContentContainer}
+      >
         <View style={styles.rewardItem} />
         <View style={styles.rewardItem} />
         <View style={styles.rewardItem} />
-      </View>
+        <View style={styles.rewardItem} />
+        <View style={styles.rewardItem} />
+      </ScrollView>
       <Text style={styles.description}>
         챌린지에 참여하는 모든 분들께 이스트씨네의 책갈피를 드립니다
       </Text>
@@ -45,13 +52,15 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   rewardContainer: {
-    flexDirection: "row",
-    gap: 10,
     marginBottom: 15,
   },
+  rewardContentContainer: {
+    paddingHorizontal: 20,
+    gap: 10,
+  },
   rewardItem: {
-    flex: 1,
-    height: 80,
+    width: 145,
+    height: 145,
     backgroundColor: "#F5F3F2",
     borderRadius: 8,
   },

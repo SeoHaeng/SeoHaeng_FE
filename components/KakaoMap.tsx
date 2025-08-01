@@ -1,5 +1,5 @@
 import Constants from "expo-constants";
-import React from "react";
+import React, { forwardRef, useImperativeHandle } from "react";
 import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 
@@ -8,10 +8,15 @@ type KakaoMapProps = {
   longitude: number;
 };
 
-export default function KakaoMap({ latitude, longitude }: KakaoMapProps) {
-  const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
+export interface KakaoMapRef {
+  postMessage: (message: string) => void;
+}
 
-  const htmlContent = `
+const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
+  ({ latitude, longitude }, ref) => {
+    const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
+
+    const htmlContent = `
     <!DOCTYPE html>
     <html>
       <head>
@@ -26,6 +31,9 @@ export default function KakaoMap({ latitude, longitude }: KakaoMapProps) {
       <body>
         <div id="map"></div>
         <script>
+          let map;
+          let marker;
+          
           window.onload = function() {
             console.log('Kakao Map API Loaded');
             if (typeof kakao !== 'undefined' && kakao.maps) {
@@ -35,11 +43,11 @@ export default function KakaoMap({ latitude, longitude }: KakaoMapProps) {
                 center: new kakao.maps.LatLng(${latitude}, ${longitude}),
                 level: 3
               };
-              const map = new kakao.maps.Map(mapContainer, mapOption);
+              map = new kakao.maps.Map(mapContainer, mapOption);
 
               // 마커 추가 (선택 사항)
               const markerPosition = new kakao.maps.LatLng(${latitude}, ${longitude});
-              const marker = new kakao.maps.Marker({
+              marker = new kakao.maps.Marker({
                 position: markerPosition
               });
               marker.setMap(map);
@@ -47,33 +55,62 @@ export default function KakaoMap({ latitude, longitude }: KakaoMapProps) {
               console.error('Kakao Maps is not available');
             }
           };
+          
+          // React Native에서 메시지 받기
+          window.addEventListener('message', function(event) {
+            try {
+              const data = JSON.parse(event.data);
+              if (data.type === 'updateLocation' && map && marker) {
+                const newPosition = new kakao.maps.LatLng(data.latitude, data.longitude);
+                map.setCenter(newPosition);
+                marker.setPosition(newPosition);
+                console.log('Location updated:', data.latitude, data.longitude);
+              }
+            } catch (error) {
+              console.error('Error parsing message:', error);
+            }
+          });
         </script>
       </body>
     </html>
   `;
 
-  console.log("Kakao Map JS Key:", apiKey);
+    console.log("Kakao Map JS Key:", apiKey);
 
-  return (
-    <View style={styles.container}>
-      <WebView
-        originWhitelist={["*"]}
-        source={{ html: htmlContent }}
-        style={styles.webview}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        onLoad={() => console.log("WebView loaded successfully")}
-        onError={(e) => console.error("WebView error: ", e.nativeEvent)}
-        injectedJavaScript={`(function() {
+    const webViewRef = React.useRef<WebView>(null);
+
+    useImperativeHandle(ref, () => ({
+      postMessage: (message: string) => {
+        webViewRef.current?.postMessage(message);
+      },
+    }));
+
+    return (
+      <View style={styles.container}>
+        <WebView
+          ref={webViewRef}
+          originWhitelist={["*"]}
+          source={{ html: htmlContent }}
+          style={styles.webview}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          onLoad={() => console.log("WebView loaded successfully")}
+          onError={(e) => console.error("WebView error: ", e.nativeEvent)}
+          injectedJavaScript={`(function() {
           window.console.log = function(message) {
             window.ReactNativeWebView.postMessage(message);
           }
         })();`}
-        onMessage={(event) => console.log(event.nativeEvent.data)}
-      />
-    </View>
-  );
-}
+          onMessage={(event) => console.log(event.nativeEvent.data)}
+        />
+      </View>
+    );
+  },
+);
+
+KakaoMap.displayName = "KakaoMap";
+
+export default KakaoMap;
 
 const styles = StyleSheet.create({
   container: {

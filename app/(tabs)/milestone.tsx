@@ -1,6 +1,7 @@
 // app/milestone.tsx
 import KakaoMap, { KakaoMapRef } from "@/components/KakaoMap";
 import * as Location from "expo-location";
+import { router } from "expo-router";
 import { useRef, useState } from "react";
 import {
   Alert,
@@ -62,19 +63,23 @@ export default function Milestone() {
       />
 
       {/* 상단 검색바 */}
-      <View style={styles.searchBar}>
+      <TouchableOpacity
+        style={styles.searchBar}
+        onPress={() => router.push("/search")}
+      >
         <TextInput
           style={styles.searchInput}
           placeholder="서점, 책방, 공간 검색"
           placeholderTextColor="#999999"
+          editable={false}
         />
-        <TouchableOpacity style={styles.searchButton}>
+        <View style={styles.searchButton}>
           <Image
             source={require("@/assets/images/Search.png")}
             style={styles.searchIcon}
           />
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
 
       {/* 필터 버튼들 */}
       <View style={styles.filterContainer}>

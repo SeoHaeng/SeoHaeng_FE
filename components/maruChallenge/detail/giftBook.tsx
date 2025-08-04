@@ -1,4 +1,5 @@
 // components/GiftBook.tsx
+import ThreeDotsIcon from "@/components/icons/ThreeDotsIcon";
 import { Image, StyleSheet, Text, View } from "react-native";
 
 type BookStatus = "선물받은 책" | "선물할 책";
@@ -17,10 +18,7 @@ export default function GiftBook({ title, author, status }: GiftBookProps) {
           source={require("@/assets/images/물고기는 존재하지 않는다.png")}
           style={styles.bookImage}
         />
-        <Image
-          source={require("@/assets/images/three_dote.png")}
-          style={styles.menuIcon}
-        />
+        <ThreeDotsIcon style={styles.menuIcon} />
         <View style={styles.bookInfo}>
           <Text style={styles.bookTitle}>{title}</Text>
           <Text style={styles.bookAuthor}>{author}</Text>

@@ -1,6 +1,9 @@
+import BusinessHoursIcon from "@/components/icons/BusinessHoursIcon";
+import StoreInfoIcon from "@/components/icons/StoreInfoIcon";
+import StoreIntroIcon from "@/components/icons/StoreIntroIcon";
+import WebsiteIcon from "@/components/icons/WebsiteIcon";
 import React from "react";
 import {
-  Image,
   Linking,
   StyleSheet,
   Text,
@@ -16,12 +19,12 @@ export default function DetailTab() {
   return (
     <View style={styles.tabContent}>
       <View style={styles.tabTitleContainer}>
-        <Image source={require("@/assets/images/영업 시간.png")} />
+        <BusinessHoursIcon />
         <Text style={styles.tabTitle}>영업 시간</Text>
       </View>
       <Text style={styles.description}>13:00 - 22:00</Text>
       <View style={styles.tabTitleContainer}>
-        <Image source={require("@/assets/images/웹사이트.png")} />
+        <WebsiteIcon />
         <Text style={styles.tabTitle}>웹사이트</Text>
       </View>
       <TouchableOpacity onPress={handleWebsitePress}>
@@ -30,7 +33,7 @@ export default function DetailTab() {
         </Text>
       </TouchableOpacity>
       <View style={styles.tabTitleContainer}>
-        <Image source={require("@/assets/images/매장소개.png")} />
+        <StoreIntroIcon />
         <Text style={styles.tabTitle}>매장 소개</Text>
       </View>
       <Text style={styles.description}>
@@ -38,7 +41,7 @@ export default function DetailTab() {
         모이는 공간으로, 다양한 독립영화와 독서 문화를 즐길 수 있습니다.
       </Text>
       <View style={styles.tabTitleContainer}>
-        <Image source={require("@/assets/images/매장정보.png")} />
+        <StoreInfoIcon />
         <Text style={styles.tabTitle}>매장 정보</Text>
       </View>
       <Text style={styles.infoText}>033-123-4567</Text>

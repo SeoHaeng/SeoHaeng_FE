@@ -1,6 +1,10 @@
 import BookstoreBadge from "@/components/BookstoreBadge";
 import DatePickerModal from "@/components/DatePickerModal";
 import BackIcon from "@/components/icons/BackIcon";
+import CalendarIcon from "@/components/icons/CalendarIcon";
+import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
+import PlaceIcon from "@/components/icons/PlaceIcon";
+import StarIcon from "@/components/icons/StarIcon";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -52,12 +56,10 @@ export default function WriteReview() {
       <View style={styles.starsContainer}>
         {[1, 2, 3, 4, 5].map((star) => (
           <TouchableOpacity key={star} onPress={() => setRating(star)}>
-            <Image
-              source={require("@/assets/images/Star.png")}
-              style={[
-                styles.star,
-                { tintColor: star <= rating ? "#FF9900" : "#C5BFBB" },
-              ]}
+            <StarIcon
+              size={34}
+              color={star <= rating ? "#FF9900" : "#C5BFBB"}
+              style={styles.star}
             />
           </TouchableOpacity>
         ))}
@@ -109,10 +111,7 @@ export default function WriteReview() {
                 <BookstoreBadge />
               </View>
               <View style={styles.locationContainer}>
-                <Image
-                  source={require("@/assets/images/place.png")}
-                  style={{ width: 11, height: 15 }}
-                />
+                <PlaceIcon width={11} height={15} />
                 <Text style={styles.locationText}>
                   강원 강릉시 강동면 현화로 973 1층
                 </Text>
@@ -142,9 +141,7 @@ export default function WriteReview() {
                   style={styles.imageUploadButton}
                   onPress={pickImage}
                 >
-                  <Image
-                    source={require("@/assets/images/Camera enhance.png")}
-                  />
+                  <CameraEnhanceIcon />
                   <Text style={styles.imageCount}>
                     {selectedImages.length}/10
                   </Text>
@@ -182,10 +179,7 @@ export default function WriteReview() {
               >
                 {formatSelectedDate(selectedDate)}
               </Text>
-              <Image
-                source={require("@/assets/images/calendar.png")}
-                style={{ width: 16, height: 16 }}
-              />
+              <CalendarIcon width={16} height={16} />
             </TouchableOpacity>
           </View>
 
@@ -273,8 +267,13 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    left: 20,
-    top: 10,
+    left: 10,
+    top: 5,
+    width: 44,
+    height: 44,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
   },
   headerTitle: {
     flex: 1,
@@ -287,8 +286,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 20,
     marginBottom: 10,
-    borderBottomWidth: 7,
-    borderBottomColor: "#EEE9E6",
   },
   bookstoreImage: {
     width: 52,
@@ -350,7 +347,7 @@ const styles = StyleSheet.create({
     height: 35,
   },
   ratingTooltip: {
-    backgroundColor: "#262423",
+    backgroundColor: "#8A8582",
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 5,
@@ -367,7 +364,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 6,
     borderLeftColor: "transparent",
     borderRightColor: "transparent",
-    borderBottomColor: "#262423",
+    borderBottomColor: "#8A8582",
     position: "absolute",
     top: -6,
   },

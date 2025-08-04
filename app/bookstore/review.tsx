@@ -1,3 +1,5 @@
+import ReviewMoreArrowIcon from "@/components/icons/ReviewMoreArrowIcon";
+import StarIcon from "@/components/icons/StarIcon";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
@@ -46,13 +48,10 @@ export default function ReviewTab() {
     return (
       <View style={styles.starsContainer}>
         {[1, 2, 3, 4, 5].map((star) => (
-          <Image
+          <StarIcon
             key={star}
-            source={require("@/assets/images/Star.png")}
-            style={[
-              styles.star,
-              { tintColor: star <= rating ? "#FF9900 " : "#C5BFBB" },
-            ]}
+            size={15}
+            style={[styles.star, { opacity: star <= rating ? 1 : 0.3 }]}
           />
         ))}
       </View>
@@ -65,10 +64,7 @@ export default function ReviewTab() {
       <View style={styles.reviewSummary}>
         <Text style={styles.reviewCount}>리뷰 212</Text>
         <View style={styles.ratingContainer}>
-          <Image
-            source={require("@/assets/images/Star.png")}
-            style={[styles.star, { tintColor: "#FFD700" }]}
-          />
+          <StarIcon size={15} style={styles.star} />
           <Text style={styles.ratingText}>4.2</Text>
         </View>
       </View>
@@ -79,10 +75,7 @@ export default function ReviewTab() {
         onPress={() => router.push("/bookstore/writeReview")}
       >
         <Text style={styles.writeReviewText}>나도 후기 남기기</Text>
-        <Image
-          source={require("@/assets/images/서점 리뷰 더보기 화살표.png")}
-          style={{ tintColor: "#4D4947" }}
-        />
+        <ReviewMoreArrowIcon color="#4D4947" />
       </TouchableOpacity>
 
       {/* 개별 리뷰들 */}

@@ -4,7 +4,7 @@ import SpaceView from "./space";
 import StampView from "./stamp";
 
 export default function MemoryLayout() {
-  const [activeTab, setActiveTab] = useState("스탬프");
+  const [activeTab, setActiveTab] = useState("내 공간");
 
   return (
     <View style={styles.container}>

@@ -82,7 +82,17 @@ export default function ChallengeDetail() {
               router.push("/popularity");
             }
           }}
-          style={{ position: "absolute", top: 20, left: 20, zIndex: 1 }}
+          style={{
+            position: "absolute",
+            top: 20,
+            left: 20,
+            zIndex: 1,
+            width: 44,
+            height: 44,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 10,
+          }}
         >
           <BackIcon color="#FFFFFF" />
         </TouchableOpacity>

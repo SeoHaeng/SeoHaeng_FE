@@ -1,4 +1,6 @@
 // components/challenge/PopularChallengeBase.tsx
+import ScrapIcon from "@/components/icons/ScrapIcon";
+import ThreeDotsIcon from "@/components/icons/ThreeDotsIcon";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export interface PopularChallengeProps {
@@ -77,15 +79,12 @@ export default function PopularChallengeBase({
                   <Text style={styles.tagText}>{year}</Text>
                 </View>
                 <View style={styles.scrapButton}>
-                  <Image source={require("@/assets/images/scrap.png")} />
+                  <ScrapIcon />
                 </View>
               </View>
             </View>
           </View>
-          <Image
-            source={require("@/assets/images/three_dote.png")}
-            style={styles.menuIcon}
-          />
+          <ThreeDotsIcon style={styles.menuIcon} />
         </View>
       </View>
     </TouchableOpacity>

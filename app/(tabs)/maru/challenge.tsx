@@ -72,6 +72,8 @@ export default function Challenge() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={true}
           contentContainerStyle={styles.horizontalScroll}
         >
           {bookstores.map((store) => (
@@ -196,6 +198,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 20,
     height: 140,
+    flexDirection: "row",
+    alignItems: "center",
   },
   moreButton: {
     width: 82,

@@ -1,14 +1,14 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function SearchScreen() {
@@ -38,6 +38,15 @@ export default function SearchScreen() {
 
   const handleSearch = (text: string) => {
     setSearchText(text);
+  };
+
+  const handleSelectLocation = (location: any) => {
+    // 검색 결과를 이정표 화면으로 전달하고 이동
+    router.push({
+      pathname: "/(tabs)/milestone",
+      params: { selectedLocation: JSON.stringify(location) },
+    });
+    console.log("Selected location:", location);
   };
 
   const handleRemoveRecent = (index: number) => {
@@ -108,7 +117,7 @@ export default function SearchScreen() {
               <TouchableOpacity
                 key={index}
                 style={styles.suggestionItem}
-                onPress={() => handleSearch(item.text)}
+                onPress={() => handleSelectLocation(item)}
               >
                 <View style={styles.suggestionContent}>
                   <Image

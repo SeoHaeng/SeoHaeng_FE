@@ -1,11 +1,17 @@
 // app/milestone.tsx
 import KakaoMap, { KakaoMapRef } from "@/components/KakaoMap";
+import BookCafeIcon from "@/components/icons/BookCafeIcon";
+import BookStayIcon from "@/components/icons/BookStayIcon";
+import IndependentBookstoreIcon from "@/components/icons/IndependentBookstoreIcon";
+import MyLocationIcon from "@/components/icons/MyLocationIcon";
+import PreferenceBookstoreIcon from "@/components/icons/PreferenceBookstoreIcon";
+import SearchIcon from "@/components/icons/SearchIcon";
+import SpaceBookmarkIcon from "@/components/icons/SpaceBookmarkIcon";
 import * as Location from "expo-location";
-import { router } from "expo-router";
-import { useRef, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
-  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -14,12 +20,30 @@ import {
 } from "react-native";
 
 export default function Milestone() {
+  const params = useLocalSearchParams();
   const [currentLocation, setCurrentLocation] = useState({
     latitude: 37.8228, // 강원도 춘천시
     longitude: 127.7322,
   });
   const [selectedFilter, setSelectedFilter] = useState("가볼만한 관광지");
+  const [selectedLocation, setSelectedLocation] = useState<{
+    name: string;
+    type: string;
+    distance?: string;
+  } | null>(null);
   const webViewRef = useRef<KakaoMapRef>(null);
+
+  // URL 파라미터에서 선택된 위치 정보 처리
+  useEffect(() => {
+    if (params.selectedLocation) {
+      try {
+        const location = JSON.parse(params.selectedLocation as string);
+        setSelectedLocation(location);
+      } catch (error) {
+        console.error("Error parsing selected location:", error);
+      }
+    }
+  }, [params.selectedLocation]);
 
   const getCurrentLocation = async () => {
     try {
@@ -69,50 +93,41 @@ export default function Milestone() {
       >
         <TextInput
           style={styles.searchInput}
+          value={selectedLocation ? selectedLocation.name : ""}
           placeholder="서점, 책방, 공간 검색"
           placeholderTextColor="#999999"
           editable={false}
         />
-        <View style={styles.searchButton}>
-          <Image
-            source={require("@/assets/images/Search.png")}
-            style={styles.searchIcon}
-          />
-        </View>
+        {selectedLocation ? (
+          <TouchableOpacity
+            style={styles.clearButton}
+            onPress={() => setSelectedLocation(null)}
+          >
+            <Text style={styles.clearButtonText}>×</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.searchButton}>
+            <SearchIcon style={styles.searchIcon} color="#999999" />
+          </View>
+        )}
       </TouchableOpacity>
 
       {/* 필터 버튼들 */}
       <View style={styles.filterContainer}>
         <TouchableOpacity style={styles.filterButton}>
-          <Image
-            source={require("@/assets/images/이정표/bookStay.png")}
-            style={styles.filterIcon}
-            resizeMode="contain"
-          />
+          <BookStayIcon style={styles.filterIcon} color="#716C69" />
           <Text style={styles.filterText}>북스테이</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.filterButton}>
-          <Image
-            source={require("@/assets/images/이정표/독립서점.png")}
-            style={styles.filterIcon}
-            resizeMode="contain"
-          />
+          <IndependentBookstoreIcon style={styles.filterIcon} color="#716C69" />
           <Text style={styles.filterText}>독립서점</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.filterButton}>
-          <Image
-            source={require("@/assets/images/이정표/공간책갈피.png")}
-            style={styles.filterIcon}
-            resizeMode="contain"
-          />
+          <SpaceBookmarkIcon style={styles.filterIcon} color="#716C69" />
           <Text style={styles.filterText}>공간책갈피</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.filterButton}>
-          <Image
-            source={require("@/assets/images/이정표/bookCafe.png")}
-            style={styles.filterIcon}
-            resizeMode="contain"
-          />
+          <BookCafeIcon style={styles.filterIcon} color="#716C69" />
           <Text style={styles.filterText}>북카페</Text>
         </TouchableOpacity>
       </View>
@@ -122,18 +137,16 @@ export default function Milestone() {
         style={styles.myLocationButton}
         onPress={getCurrentLocation}
       >
-        <Image
-          source={require("@/assets/images/이정표/myLocation.png")}
-          style={styles.myLocationIcon}
-        />
+        <MyLocationIcon style={styles.myLocationIcon} color="#716C69" />
       </TouchableOpacity>
+
       {/* 버튼 컨테이너 */}
       <View style={styles.buttonContainer}>
         {/* 메인 액션 버튼 */}
         <TouchableOpacity style={styles.mainActionButton}>
-          <Image
-            source={require("@/assets/images/이정표/취향독립서점.png")}
+          <PreferenceBookstoreIcon
             style={styles.actionButtonIcon}
+            color="#262423"
           />
           <Text style={styles.actionButtonText}>
             내 취향에 맞는 독립서점 찾기
@@ -147,7 +160,9 @@ export default function Milestone() {
 
       {/* 하단 카드 */}
       <View style={styles.bottomCard}>
-        <Text style={styles.locationName}>옥천동</Text>
+        <Text style={styles.locationName}>
+          {selectedLocation ? selectedLocation.name : "옥천동"}
+        </Text>
 
         {/* 하단 필터 버튼들 */}
         <View style={styles.bottomFilterContainer}>
@@ -209,6 +224,14 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
+  clearButton: {
+    marginLeft: 10,
+    padding: 5,
+  },
+  clearButtonText: {
+    fontSize: 18,
+    color: "#999999",
+  },
   filterContainer: {
     position: "absolute",
     top: 90,
@@ -235,8 +258,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   filterIcon: {
-    width: 13,
-    height: 13,
+    width: 16,
+    height: 16,
   },
   filterText: {
     fontSize: 13,
@@ -363,6 +386,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   actionButtonIcon: {
+    width: 20,
+    height: 20,
     marginRight: 8,
   },
   actionButtonText: {

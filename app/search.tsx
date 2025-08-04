@@ -1,3 +1,4 @@
+import BackIcon from "@/components/icons/BackIcon";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -59,10 +60,7 @@ export default function SearchScreen() {
       {/* 검색바 */}
       <View style={styles.searchBar}>
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Image
-            source={require("@/assets/images/Back.png")}
-            style={styles.backIcon}
-          />
+          <BackIcon style={styles.backIcon} />
         </TouchableOpacity>
         <TextInput
           style={styles.searchInput}

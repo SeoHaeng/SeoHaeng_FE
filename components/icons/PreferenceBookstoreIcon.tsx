@@ -1,5 +1,5 @@
 import React from "react";
-import Svg, { Circle, Path, SvgProps } from "react-native-svg";
+import Svg, { Path, SvgProps } from "react-native-svg";
 
 interface PreferenceBookstoreIconProps extends SvgProps {
   color?: string;
@@ -10,34 +10,24 @@ const PreferenceBookstoreIcon: React.FC<PreferenceBookstoreIconProps> = ({
   ...props
 }) => {
   return (
-    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
-      <Path d="M4 6L12 4L20 6V18H4V6Z" fill="white" />
-      <Path d="M4 6H20" stroke={color} strokeWidth="1" strokeLinecap="round" />
+    <Svg width="14" height="18" viewBox="0 0 14 18" fill="none">
       <Path
-        d="M8 10H16"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M2.29479e-05 6.40869C2.32548e-05 2.89785 2.98566 1.00886e-06 6.66027 1.3301e-06C10.2775 1.64634e-06 13.2632 2.89785 13.2632 6.40869C13.2632 9.58327 10.4845 13.4796 8.09361 16.3415C7.35246 17.2286 5.98814 17.2112 5.24704 16.324C2.83718 13.4391 2.26573e-05 9.73269 2.29479e-05 6.40869Z"
+        fill="white"
       />
       <Path
-        d="M8 13H14"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        d="M4.26318 6.86816H9.00003"
+        stroke="#716C69"
+        stroke-width="1.8"
+        stroke-linecap="round"
       />
       <Path
-        d="M8 16H12"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <Circle cx="17" cy="10" r="1" fill={color} />
-      <Path
-        d="M12 20L14 18L16 20"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M6.63379 4.5L6.63379 9.23684"
+        stroke="#716C69"
+        stroke-width="1.8"
+        stroke-linecap="round"
       />
     </Svg>
   );

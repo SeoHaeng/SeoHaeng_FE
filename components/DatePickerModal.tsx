@@ -1,13 +1,7 @@
+import BackIcon from "@/components/icons/BackIcon";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  Image,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 
 // 한국어 로케일 설정
@@ -93,7 +87,7 @@ export default function DatePickerModal({
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <TouchableOpacity onPress={onClose} style={styles.backButton}>
-            <Image source={require("@/assets/images/Back.png")} />
+            <BackIcon />
           </TouchableOpacity>
           {/* 헤더 */}
           <View style={styles.header}>

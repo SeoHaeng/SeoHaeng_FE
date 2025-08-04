@@ -1,4 +1,5 @@
 // app/popularity/[id].tsx
+import BackIcon from "@/components/icons/BackIcon";
 import ChallengeComment from "@/components/maruChallenge/detail/comment";
 import GiftBook from "@/components/maruChallenge/detail/giftBook";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -83,7 +84,7 @@ export default function ChallengeDetail() {
           }}
           style={{ position: "absolute", top: 20, left: 20, zIndex: 1 }}
         >
-          <Image source={require("@/assets/images/BackWhite.png")} />
+          <BackIcon color="#FFFFFF" />
         </TouchableOpacity>
         <Image
           source={require("@/assets/images/인기챌린지 책.png")}

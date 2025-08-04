@@ -1,8 +1,8 @@
+import EmptyBookIcon from "@/components/icons/EmptyBookIcon";
 import BookStoreItem from "@/components/maruChallenge/bookStore";
 import PopularChallenge from "@/components/maruChallenge/popularChallenge";
 import { useRouter } from "expo-router";
 import {
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -58,10 +58,7 @@ export default function Challenge() {
       <View style={styles.emptyBookContainer}>
         <Text style={styles.emptyBookText}>아직 책이 오지 않았어요</Text>
         <Text style={styles.bookComingText}>어떤 책이 올까요?</Text>
-        <Image
-          source={require("@/assets/images/empty_book.png")}
-          style={styles.emptyBookImage}
-        />
+        <EmptyBookIcon style={styles.emptyBookImage} />
       </View>
 
       <View style={styles.bookStoreSection}>

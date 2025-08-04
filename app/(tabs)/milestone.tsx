@@ -2,11 +2,14 @@
 import KakaoMap, { KakaoMapRef } from "@/components/KakaoMap";
 import BookCafeIcon from "@/components/icons/BookCafeIcon";
 import BookStayIcon from "@/components/icons/BookStayIcon";
+import HotPlaceIcon from "@/components/icons/HotPlaceIcon";
 import IndependentBookstoreIcon from "@/components/icons/IndependentBookstoreIcon";
 import MyLocationIcon from "@/components/icons/MyLocationIcon";
 import PreferenceBookstoreIcon from "@/components/icons/PreferenceBookstoreIcon";
+import RestaurantIcon from "@/components/icons/RestaurantIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
 import SpaceBookmarkIcon from "@/components/icons/SpaceBookmarkIcon";
+import TouristSpotIcon from "@/components/icons/TouristSpotIcon";
 import * as Location from "expo-location";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -26,6 +29,8 @@ export default function Milestone() {
     longitude: 127.7322,
   });
   const [selectedFilter, setSelectedFilter] = useState("가볼만한 관광지");
+  const [selectedBottomFilter, setSelectedBottomFilter] =
+    useState("가볼만한 관광지");
   const [selectedLocation, setSelectedLocation] = useState<{
     name: string;
     type: string;
@@ -166,19 +171,80 @@ export default function Milestone() {
 
         {/* 하단 필터 버튼들 */}
         <View style={styles.bottomFilterContainer}>
-          <View style={styles.bottomFilterButton}>
-            <Text style={styles.bottomFilterText}>주변 맛집</Text>
-          </View>
-          <View
-            style={[styles.bottomFilterButton, styles.selectedFilterButton]}
+          <TouchableOpacity
+            style={[
+              styles.bottomFilterButton,
+              selectedBottomFilter === "주변 맛집" &&
+                styles.selectedFilterButton,
+            ]}
+            onPress={() => setSelectedBottomFilter("주변 맛집")}
           >
-            <Text style={[styles.bottomFilterText, styles.selectedFilterText]}>
+            <RestaurantIcon
+              style={styles.bottomFilterIcon}
+              color={
+                selectedBottomFilter === "주변 맛집" ? "#FFFFFF" : "#9D9896"
+              }
+            />
+            <Text
+              style={[
+                styles.bottomFilterText,
+                selectedBottomFilter === "주변 맛집" &&
+                  styles.selectedFilterText,
+              ]}
+            >
+              주변 맛집
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.bottomFilterButton,
+              selectedBottomFilter === "가볼만한 관광지" &&
+                styles.selectedFilterButton,
+            ]}
+            onPress={() => setSelectedBottomFilter("가볼만한 관광지")}
+          >
+            <TouristSpotIcon
+              style={styles.bottomFilterIcon}
+              color={
+                selectedBottomFilter === "가볼만한 관광지"
+                  ? "#FFFFFF"
+                  : "#9D9896"
+              }
+            />
+            <Text
+              style={[
+                styles.bottomFilterText,
+                selectedBottomFilter === "가볼만한 관광지" &&
+                  styles.selectedFilterText,
+              ]}
+            >
               가볼만한 관광지
             </Text>
-          </View>
-          <View style={styles.bottomFilterButton}>
-            <Text style={styles.bottomFilterText}>뜨는 핫플</Text>
-          </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.bottomFilterButton,
+              selectedBottomFilter === "뜨는 핫플" &&
+                styles.selectedFilterButton,
+            ]}
+            onPress={() => setSelectedBottomFilter("뜨는 핫플")}
+          >
+            <HotPlaceIcon
+              style={styles.bottomFilterIcon}
+              color={
+                selectedBottomFilter === "뜨는 핫플" ? "#FFFFFF" : "#9D9896"
+              }
+            />
+            <Text
+              style={[
+                styles.bottomFilterText,
+                selectedBottomFilter === "뜨는 핫플" &&
+                  styles.selectedFilterText,
+              ]}
+            >
+              뜨는 핫플
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -349,6 +415,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 5,
     shadowColor: "#000",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -367,6 +436,10 @@ const styles = StyleSheet.create({
   },
   selectedFilterText: {
     color: "#FFFFFF",
+  },
+  bottomFilterIcon: {
+    width: 16,
+    height: 16,
   },
   mainActionButton: {
     backgroundColor: "rgba(38, 36, 35, 0.56)",

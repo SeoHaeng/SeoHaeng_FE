@@ -10,35 +10,10 @@ const SpaceBookmarkIcon: React.FC<SpaceBookmarkIconProps> = ({
   ...props
 }) => {
   return (
-    <Svg width="20" height="20" viewBox="0 0 20 20" fill="none" {...props}>
+    <Svg width="11" height="14" viewBox="0 0 11 14" fill="none">
       <Path
-        d="M4 2H16C17.1046 2 18 2.89543 18 4V16C18 17.1046 17.1046 18 16 18H4C2.89543 18 2 17.1046 2 16V4C2 2.89543 2.89543 2 4 2Z"
-        fill={color}
-      />
-      <Path
-        d="M6 6H14"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <Path
-        d="M6 9H14"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <Path
-        d="M6 12H12"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <Path
-        d="M8 15L10 13L12 15"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M0 1C0 0.447716 0.447715 0 1 0H10C10.5523 0 11 0.447715 11 1V12.36C11 13.1086 10.2076 13.5918 9.54204 13.2489L5.95796 11.4026C5.6706 11.2545 5.3294 11.2545 5.04204 11.4026L1.45796 13.2489C0.792421 13.5918 0 13.1086 0 12.36V1Z"
+        fill="#716C69"
       />
     </Svg>
   );

@@ -1,6 +1,6 @@
 import BackIcon from "@/components/icons/BackIcon";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     SafeAreaView,
     ScrollView,
@@ -13,10 +13,37 @@ import {
 export default function Plan() {
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
+
+  // Scroll to current month when component mounts
+  useEffect(() => {
+    // Calculate the position of current month (6 months before + current month)
+    const currentMonthIndex = 6; // Current month is at index 6 (after 6 previous months)
+    const monthHeight = 200; // Approximate height of each month section
+    const scrollPosition = currentMonthIndex * monthHeight;
+
+    setTimeout(() => {
+      scrollViewRef.current?.scrollTo({
+        y: scrollPosition,
+        animated: true,
+      });
+    }, 100);
+  }, []);
+
+  // Generate months dynamically (6 months before + current month + 6 months after)
+  const generateMonths = () => {
+    const months = [];
+    for (let i = -6; i <= 6; i++) {
+      const year = currentYear + Math.floor((currentMonth + i) / 12);
+      const month = (currentMonth + i + 12) % 12; // Add 12 to handle negative months
+      months.push({ year, month });
+    }
+    return months;
+  };
 
   const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -192,86 +219,20 @@ export default function Plan() {
       <View style={styles.calendarContainer}>
         {/* Scrollable Calendar Months */}
         <ScrollView
+          ref={scrollViewRef}
           style={styles.calendarScrollView}
           showsVerticalScrollIndicator={false}
         >
-          {/* June 2025 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2025.06</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2025, 5)}</View>
-          </View>
-
-          {/* July 2025 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2025.07</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2025, 6)}</View>
-          </View>
-
-          {/* August 2025 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2025.08</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2025, 7)}</View>
-          </View>
-
-          {/* September 2025 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2025.09</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2025, 8)}</View>
-          </View>
-
-          {/* October 2025 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2025.10</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2025, 9)}</View>
-          </View>
-
-          {/* November 2025 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2025.11</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2025, 10)}</View>
-          </View>
-
-          {/* December 2025 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2025.12</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2025, 11)}</View>
-          </View>
-
-          {/* January 2026 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2026.01</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2026, 0)}</View>
-          </View>
-
-          {/* February 2026 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2026.02</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2026, 1)}</View>
-          </View>
-
-          {/* March 2026 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2026.03</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2026, 2)}</View>
-          </View>
-
-          {/* April 2026 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2026.04</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2026, 3)}</View>
-          </View>
-
-          {/* May 2026 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2026.05</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2026, 4)}</View>
-          </View>
-
-          {/* June 2026 */}
-          <View style={styles.monthSection}>
-            <Text style={styles.monthTitle}>2026.06</Text>
-            <View style={styles.calendarGrid}>{renderCalendar(2026, 5)}</View>
-          </View>
+          {generateMonths().map(({ year, month }, index) => (
+            <View key={`${year}-${month}`} style={styles.monthSection}>
+              <Text style={styles.monthTitle}>
+                {year}.{String(month + 1).padStart(2, "0")}
+              </Text>
+              <View style={styles.calendarGrid}>
+                {renderCalendar(year, month)}
+              </View>
+            </View>
+          ))}
         </ScrollView>
       </View>
 
@@ -381,10 +342,14 @@ const styles = StyleSheet.create({
   startDate: {
     backgroundColor: "#302E2D",
     borderRadius: 20,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
   },
   endDate: {
     backgroundColor: "#302E2D",
     borderRadius: 20,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
   },
   selectedDayText: {
     color: "#FFFFFF",

@@ -1,5 +1,6 @@
 import BookstoreBadge from "@/components/BookstoreBadge";
 import DatePickerModal from "@/components/DatePickerModal";
+import BackIcon from "@/components/icons/BackIcon";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -94,7 +95,7 @@ export default function WriteReview() {
               onPress={() => router.back()}
               style={styles.backButton}
             >
-              <Image source={require("@/assets/images/Back.png")} />
+              <BackIcon />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>후기 작성</Text>
           </View>

@@ -36,6 +36,7 @@ export default function Milestone() {
     type: string;
     distance?: string;
   } | null>(null);
+  const [currentAddress, setCurrentAddress] = useState("옥천동");
   const webViewRef = useRef<KakaoMapRef>(null);
 
   // URL 파라미터에서 선택된 위치 정보 처리
@@ -49,6 +50,11 @@ export default function Milestone() {
       }
     }
   }, [params.selectedLocation]);
+
+  // 앱 시작 시 현재 위치 가져오기
+  useEffect(() => {
+    getCurrentLocation();
+  }, []);
 
   const getCurrentLocation = async () => {
     try {
@@ -65,6 +71,19 @@ export default function Milestone() {
       };
 
       setCurrentLocation(newLocation);
+
+      // 주소 정보 가져오기
+      const addressResponse = await Location.reverseGeocodeAsync({
+        latitude: newLocation.latitude,
+        longitude: newLocation.longitude,
+      });
+
+      if (addressResponse.length > 0) {
+        const address = addressResponse[0];
+        const district =
+          address.district || address.subregion || "알 수 없는 지역";
+        setCurrentAddress(district);
+      }
 
       if (webViewRef.current) {
         const message = JSON.stringify({
@@ -166,7 +185,7 @@ export default function Milestone() {
       {/* 하단 카드 */}
       <View style={styles.bottomCard}>
         <Text style={styles.locationName}>
-          {selectedLocation ? selectedLocation.name : "옥천동"}
+          {selectedLocation ? selectedLocation.name : currentAddress}
         </Text>
 
         {/* 하단 필터 버튼들 */}
@@ -448,6 +467,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     flexDirection: "row",
     alignItems: "center",
+    gap: 5,
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: {

@@ -1,4 +1,5 @@
 // app/popularity.tsx
+import BackIcon from "@/components/icons/BackIcon";
 import PopularChallengeTotal from "@/components/maruChallenge/popularChallengeTotal";
 import { useRouter } from "expo-router";
 import {
@@ -47,7 +48,7 @@ export default function Popularity() {
     <SafeAreaView style={styles.wrapper}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.push("/maru/challenge")}>
-          <Image source={require("@/assets/images/Back.png")} />
+          <BackIcon />
         </TouchableOpacity>
         <Text style={styles.title}>인기 챌린지 인증</Text>
         <TouchableOpacity>

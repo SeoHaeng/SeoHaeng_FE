@@ -1,6 +1,7 @@
 // app/bookstore/[id].tsx
 import StatusBadge from "@/components/bookStore/statusBadge";
 import BookstoreBadge from "@/components/BookstoreBadge";
+import BackIcon from "@/components/icons/BackIcon";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -49,7 +50,7 @@ export default function BookstoreDetail() {
             onPress={() => router.back()}
             style={styles.backButton}
           >
-            <Image source={require("@/assets/images/Back.png")} />
+            <BackIcon />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>북챌린지 서점</Text>
         </View>

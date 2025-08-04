@@ -2,6 +2,7 @@
 import StatusBadge from "@/components/bookStore/statusBadge";
 import BookstoreBadge from "@/components/BookstoreBadge";
 import BackIcon from "@/components/icons/BackIcon";
+import FilledHeartIcon from "@/components/icons/FilledHeartIcon";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -75,7 +76,7 @@ export default function BookstoreDetail() {
             </View>
             <View style={styles.actionButtons}>
               <TouchableOpacity style={styles.actionButton}>
-                <Image source={require("@/assets/images/FilledHeart.png")} />
+                <FilledHeartIcon />
               </TouchableOpacity>
               <TouchableOpacity style={styles.actionButton}>
                 <Image source={require("@/assets/images/Share.png")} />

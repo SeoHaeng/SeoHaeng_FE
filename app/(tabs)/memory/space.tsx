@@ -5,7 +5,7 @@ import MyBookmark from "./myBookmark";
 import SavedBookmark from "./savedBookmark";
 
 export default function SpaceView() {
-  const [activeSubTab, setActiveSubTab] = useState("찜한 장소");
+  const [activeSubTab, setActiveSubTab] = useState("내 책갈피");
 
   const renderSubTabContent = () => {
     switch (activeSubTab) {

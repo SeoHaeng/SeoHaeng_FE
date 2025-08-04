@@ -1,4 +1,6 @@
-import React from "react";
+import PlaceIcon from "@/components/icons/PlaceIcon";
+import ScrapIcon from "@/components/icons/ScrapIcon";
+import StarIcon from "@/components/icons/StarIcon";
 import {
   Image,
   ScrollView,
@@ -44,23 +46,17 @@ export default function LikedPlaces() {
           <Text style={styles.placeName}>{place.name}</Text>
           <Text style={styles.placeType}>{place.type}</Text>
         </View>
-        <Image
-          source={require("@/assets/images/scrap.png")}
-          style={styles.scrapIcon}
-        />
+        <ScrapIcon style={styles.scrapIcon} />
 
         <View style={styles.ratingContainer}>
-          <Image
-            source={require("@/assets/images/Star.png")}
-            style={styles.starIcon}
-          />
+          <StarIcon size={15} style={styles.starIcon} />
           <Text style={styles.ratingText}>{place.rating}</Text>
           <Text style={styles.reviewCountText}>({place.reviewCount})</Text>
           <Text style={styles.distanceText}>{place.distance}</Text>
         </View>
 
         <View style={styles.addressContainer}>
-          <Image source={require("@/assets/images/place.png")} />
+          <PlaceIcon />
           <Text style={styles.addressText}>{place.address}</Text>
         </View>
 

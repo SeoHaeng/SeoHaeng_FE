@@ -47,7 +47,10 @@ export default function Popularity() {
   return (
     <SafeAreaView style={styles.wrapper}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.push("/maru/challenge")}>
+        <TouchableOpacity
+          onPress={() => router.push("/maru/challenge")}
+          style={styles.backButton}
+        >
           <BackIcon />
         </TouchableOpacity>
         <Text style={styles.title}>인기 챌린지 인증</Text>
@@ -114,6 +117,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderBottomWidth: 0.5,
     borderColor: "#C5BFBB",
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
   },
   icon: {
     width: 24,

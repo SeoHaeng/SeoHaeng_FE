@@ -3,6 +3,9 @@ import StatusBadge from "@/components/bookStore/statusBadge";
 import BookstoreBadge from "@/components/BookstoreBadge";
 import BackIcon from "@/components/icons/BackIcon";
 import FilledHeartIcon from "@/components/icons/FilledHeartIcon";
+import PlaceIcon from "@/components/icons/PlaceIcon";
+import ReviewMoreArrowIcon from "@/components/icons/ReviewMoreArrowIcon";
+import StarIcon from "@/components/icons/StarIcon";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -88,21 +91,13 @@ export default function BookstoreDetail() {
               리뷰 <Text style={styles.reviewCount}>212</Text>
             </Text>
             <View style={styles.ratingContainer}>
-              <Image
-                source={require("@/assets/images/Star.png")}
-                style={[{ tintColor: "#FF9900", width: 14, height: 14 }]}
-              />
+              <StarIcon width={14} height={14} />
               <Text style={styles.ratingText}>4.2</Text>
-              <Image
-                source={require("@/assets/images/서점 리뷰 더보기 화살표.png")}
-              />
+              <ReviewMoreArrowIcon />
             </View>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
-            <Image
-              source={require("@/assets/images/place.png")}
-              style={{ width: 11, height: 15 }}
-            />
+            <PlaceIcon width={11} height={15} />
             <Text style={styles.storeLocation}>
               강원 강릉시 강동면 현화로 973 1층
             </Text>
@@ -159,11 +154,14 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   backButton: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     position: "absolute",
-    left: 20,
-    top: 20,
+    left: 10,
+    top: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
   },
   headerTitle: {
     fontSize: 16,

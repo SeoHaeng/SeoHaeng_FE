@@ -1,4 +1,5 @@
 import BackIcon from "@/components/icons/BackIcon";
+import PlaceIcon from "@/components/icons/PlaceIcon";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -118,14 +119,14 @@ export default function SearchScreen() {
                 onPress={() => handleSelectLocation(item)}
               >
                 <View style={styles.suggestionContent}>
-                  <Image
-                    source={
-                      item.type === "location"
-                        ? require("@/assets/images/place.png")
-                        : require("@/assets/images/Search.png")
-                    }
-                    style={styles.suggestionIcon}
-                  />
+                  {item.type === "location" ? (
+                    <PlaceIcon style={styles.suggestionIcon} />
+                  ) : (
+                    <Image
+                      source={require("@/assets/images/Search.png")}
+                      style={styles.suggestionIcon}
+                    />
+                  )}
                   <View style={styles.suggestionTextContainer}>
                     <Text style={styles.suggestionText}>{item.text}</Text>
                     {item.tag && (
@@ -162,6 +163,11 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginRight: 15,
+    padding: 10,
+    minWidth: 44,
+    minHeight: 44,
+    justifyContent: "center",
+    alignItems: "center",
   },
   backIcon: {
     width: 20,

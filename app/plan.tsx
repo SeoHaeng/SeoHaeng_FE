@@ -175,8 +175,8 @@ export default function Plan() {
 
   const handleComplete = () => {
     if (selectedStartDate && selectedEndDate) {
-      // Navigate back with selected dates
-      router.back();
+      // Navigate to destination selection screen
+      router.push("/destination");
     }
   };
 

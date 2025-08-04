@@ -2,6 +2,7 @@ import BackIcon from "@/components/icons/BackIcon";
 import PlanIcon from "@/components/icons/PlanIcon";
 import ThreeDotsIcon from "@/components/icons/ThreeDotsIcon";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import React from "react";
 import {
   Image,
@@ -151,7 +152,10 @@ export default function Preference() {
                 <Text style={styles.sectionTitle}>
                   이번엔{"\n"}어디로 갈까요?
                 </Text>
-                <TouchableOpacity style={styles.planButton}>
+                <TouchableOpacity
+                  style={styles.planButton}
+                  onPress={() => router.push("/plan")}
+                >
                   <PlanIcon />
                   <Text style={styles.planButtonText}>일정 짜기</Text>
                 </TouchableOpacity>

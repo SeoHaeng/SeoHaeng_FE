@@ -1,14 +1,14 @@
 import CommonButton from "@/components/CommonButton";
-import CommonHeader from "@/components/CommonHeader";
+import BackIcon from "@/components/icons/BackIcon";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-    FlatList,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 interface Destination {
@@ -78,10 +78,13 @@ export default function Destination() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <CommonHeader
-        title="어디로 여행을 떠날까요?"
-        subtitle="2025.06.13 - 06.16"
-      />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <BackIcon />
+        </TouchableOpacity>
+        <Text style={styles.headerSubtitle}>2025.06.13 - 06.16</Text>
+        <Text style={styles.headerTitle}>어디로{"\n"}여행을 떠날까요?</Text>
+      </View>
 
       <View style={styles.content}>
         <FlatList
@@ -126,31 +129,58 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
+  header: {
+    flexDirection: "column",
+    gap: 15,
+    paddingTop: 35,
+    paddingHorizontal: 20,
+    paddingVertical: 25,
+    backgroundColor: "#EEE9E6",
+    borderWidth: 1,
+    borderColor: "#C5BFBB",
+  },
+  headerContent: {
+    flex: 1,
+    marginLeft: 15,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontFamily: "SUIT-700",
+    color: "#262423",
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    fontFamily: "SUIT-600",
+    color: "#262423",
+    marginTop: 2,
+  },
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20,
   },
   row: {
     justifyContent: "space-between",
-    marginBottom: 15,
+    marginBottom: 5,
   },
   destinationItem: {
     width: "48%",
+    height: 84,
     backgroundColor: "#F8F8F8",
-    borderRadius: 12,
-    padding: 15,
+    borderRadius: 5,
+    paddingHorizontal: 17,
+    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
+    marginTop: 10,
   },
   selectedDestination: {
-    backgroundColor: "#E0E0E0",
+    backgroundColor: "#716C69",
   },
   destinationImage: {
-    width: 60,
-    height: 60,
+    width: 58,
+    height: 58,
     borderRadius: 30,
-    marginBottom: 10,
+    marginRight: 25,
+    borderWidth: 1,
   },
   destinationName: {
     fontSize: 16,
@@ -158,7 +188,7 @@ const styles = StyleSheet.create({
     color: "#262423",
   },
   selectedDestinationName: {
-    color: "#302E2D",
+    color: "#FFFFFF",
   },
   selectedContainer: {
     paddingHorizontal: 20,
@@ -174,10 +204,10 @@ const styles = StyleSheet.create({
   tag: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F0F0F0",
+    backgroundColor: "#C5BFBB",
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    paddingVertical: 9,
+    borderRadius: 5,
     gap: 8,
   },
   tagText: {

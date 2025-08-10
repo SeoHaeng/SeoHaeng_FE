@@ -22,8 +22,10 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
         </TouchableOpacity>
       )}
       <View style={styles.headerContent}>
-        <Text style={styles.headerTitle}>{title}</Text>
         {subtitle && <Text style={styles.headerSubtitle}>{subtitle}</Text>}
+        <Text style={styles.headerTitle} numberOfLines={0}>
+          {title}
+        </Text>
       </View>
     </View>
   );
@@ -44,7 +46,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontFamily: "SUIT-700",
     color: "#262423",
   },

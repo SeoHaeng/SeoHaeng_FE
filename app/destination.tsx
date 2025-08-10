@@ -48,8 +48,18 @@ export default function Destination() {
   };
 
   const handleComplete = () => {
-    // Navigate to next screen or complete the flow
-    router.back();
+    // Navigate to itinerary page with selected destinations
+    const selectedDestinationNames = selectedDestinations.map(
+      (id) => destinations.find((d) => d.id === id)?.name || "",
+    );
+
+    router.push({
+      pathname: "/itinerary",
+      params: {
+        regions: selectedDestinationNames.join(","),
+        dateRange: "2025.06.13 - 06.16", // 실제로는 선택된 날짜를 사용해야 함
+      },
+    });
   };
 
   const renderDestination = ({ item }: { item: Destination }) => {

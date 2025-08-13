@@ -22,10 +22,18 @@ export default function SearchScreen() {
     { text: "강릉시", type: "search" },
     { text: "강릉서점", type: "search" },
     { text: "강릉독립서점", type: "search" },
-    { text: "강릉씨네", type: "search", tag: "독립서점" },
     {
-      text: "강릉시 강동면 현화로 973 1층",
-      type: "location",
+      text: "이스트쓰네",
+      type: "search",
+      tag: "독립서점",
+      address: "강릉시 강동면 현화로 973 1층",
+      distance: "1.5km",
+    },
+    {
+      text: "이스트쓰네",
+      type: "search",
+      tag: "독립서점",
+      address: "강릉시 강동면 현화로 973 1층",
       distance: "1.5km",
     },
   ]);
@@ -128,10 +136,18 @@ export default function SearchScreen() {
                     />
                   )}
                   <View style={styles.suggestionTextContainer}>
-                    <Text style={styles.suggestionText}>{item.text}</Text>
-                    {item.tag && (
-                      <View style={styles.tagContainer}>
-                        <Text style={styles.tagText}>{item.tag}</Text>
+                    <View style={styles.nameAndTagContainer}>
+                      <Text style={styles.suggestionText}>{item.text}</Text>
+                      {item.tag && (
+                        <View style={styles.tagContainer}>
+                          <Text style={styles.tagText}>{item.tag}</Text>
+                        </View>
+                      )}
+                    </View>
+                    {item.address && (
+                      <View style={styles.addressContainer}>
+                        <PlaceIcon style={styles.addressIcon} />
+                        <Text style={styles.addressText}>{item.address}</Text>
                       </View>
                     )}
                   </View>
@@ -157,13 +173,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
+    paddingLeft: 5,
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#EEEEEE",
   },
   backButton: {
     marginRight: 15,
-    padding: 10,
     minWidth: 44,
     minHeight: 44,
     justifyContent: "center",
@@ -251,8 +267,7 @@ const styles = StyleSheet.create({
   },
   suggestionTextContainer: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
+    gap: 4,
   },
   suggestionText: {
     fontSize: 16,
@@ -274,6 +289,26 @@ const styles = StyleSheet.create({
   distanceText: {
     fontSize: 14,
     fontFamily: "SUIT-500",
+    color: "#999999",
+  },
+  nameAndTagContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  addressContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  addressIcon: {
+    width: 12,
+    height: 12,
+    marginRight: 4,
+    tintColor: "#999999",
+  },
+  addressText: {
+    fontSize: 12,
+    fontFamily: "SUIT-400",
     color: "#999999",
   },
 });

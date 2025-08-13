@@ -1,5 +1,6 @@
 // app/milestone.tsx
 import KakaoMap, { KakaoMapRef } from "@/components/KakaoMap";
+import BackIcon from "@/components/icons/BackIcon";
 import BookCafeIcon from "@/components/icons/BookCafeIcon";
 import BookStayIcon from "@/components/icons/BookStayIcon";
 import HotPlaceIcon from "@/components/icons/HotPlaceIcon";
@@ -33,10 +34,14 @@ export default function Milestone() {
     useState("가볼만한 관광지");
   const [selectedLocation, setSelectedLocation] = useState<{
     name: string;
+    text: string;
     type: string;
     distance?: string;
+    address?: string;
   } | null>(null);
   const [currentAddress, setCurrentAddress] = useState("옥천동");
+  const [isFilterActive, setIsFilterActive] = useState(false);
+  const [activeFilterText, setActiveFilterText] = useState("");
   const webViewRef = useRef<KakaoMapRef>(null);
 
   // URL 파라미터에서 선택된 위치 정보 처리
@@ -45,11 +50,45 @@ export default function Milestone() {
       try {
         const location = JSON.parse(params.selectedLocation as string);
         setSelectedLocation(location);
+
+        // 주소가 있는 경우 좌표로 변환하여 지도 이동
+        if (location.address) {
+          moveToAddress(location.address);
+        }
       } catch (error) {
         console.error("Error parsing selected location:", error);
       }
     }
   }, [params.selectedLocation]);
+
+  // 주소를 좌표로 변환하여 지도 이동
+  const moveToAddress = async (address: string) => {
+    try {
+      const geocodeResult = await Location.geocodeAsync(address);
+      if (geocodeResult.length > 0) {
+        const { latitude, longitude } = geocodeResult[0];
+        const newLocation = { latitude, longitude };
+
+        setCurrentLocation(newLocation);
+
+        // 카카오맵에 메시지 전송하여 마커 표시
+        if (webViewRef.current) {
+          const message = JSON.stringify({
+            type: "updateLocation",
+            latitude: newLocation.latitude,
+            longitude: newLocation.longitude,
+            showMarker: true,
+            markerTitle: selectedLocation?.text || "선택된 위치",
+          });
+          webViewRef.current.postMessage(message);
+        }
+
+        console.log("지도 이동:", newLocation);
+      }
+    } catch (error) {
+      console.error("주소 변환 실패:", error);
+    }
+  };
 
   // 앱 시작 시 현재 위치 가져오기
   useEffect(() => {
@@ -115,9 +154,30 @@ export default function Milestone() {
         style={styles.searchBar}
         onPress={() => router.push("/search")}
       >
+        {isFilterActive && (
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              setIsFilterActive(false);
+              setActiveFilterText("");
+            }}
+          >
+            <BackIcon style={styles.backIcon} width={14} height={14} />
+          </TouchableOpacity>
+        )}
         <TextInput
-          style={styles.searchInput}
-          value={selectedLocation ? selectedLocation.name : ""}
+          style={[
+            styles.searchInput,
+            isFilterActive && styles.filterActiveSearchInput,
+            selectedLocation && styles.selectedLocationSearchInput,
+          ]}
+          value={
+            isFilterActive
+              ? activeFilterText
+              : selectedLocation
+                ? selectedLocation.text || selectedLocation.name
+                : ""
+          }
           placeholder="서점, 책방, 공간 검색"
           placeholderTextColor="#999999"
           editable={false}
@@ -125,7 +185,11 @@ export default function Milestone() {
         {selectedLocation ? (
           <TouchableOpacity
             style={styles.clearButton}
-            onPress={() => setSelectedLocation(null)}
+            onPress={() => {
+              setSelectedLocation(null);
+              // 현재 위치로 지도 이동
+              getCurrentLocation();
+            }}
           >
             <Text style={styles.clearButtonText}>×</Text>
           </TouchableOpacity>
@@ -137,20 +201,49 @@ export default function Milestone() {
       </TouchableOpacity>
 
       {/* 필터 버튼들 */}
-      <View style={styles.filterContainer}>
-        <TouchableOpacity style={styles.filterButton}>
+      <View
+        style={[
+          styles.filterContainer,
+          (isFilterActive || selectedLocation) && styles.hiddenFilterContainer,
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={() => {
+            setIsFilterActive(true);
+            setActiveFilterText("북스테이");
+          }}
+        >
           <BookStayIcon style={styles.filterIcon} color="#716C69" />
           <Text style={styles.filterText}>북스테이</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={() => {
+            setIsFilterActive(true);
+            setActiveFilterText("독립서점");
+          }}
+        >
           <IndependentBookstoreIcon style={styles.filterIcon} color="#716C69" />
           <Text style={styles.filterText}>독립서점</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={() => {
+            setIsFilterActive(true);
+            setActiveFilterText("공간책갈피");
+          }}
+        >
           <SpaceBookmarkIcon style={styles.filterIcon} color="#716C69" />
           <Text style={styles.filterText}>공간책갈피</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={() => {
+            setIsFilterActive(true);
+            setActiveFilterText("북카페");
+          }}
+        >
           <BookCafeIcon style={styles.filterIcon} color="#716C69" />
           <Text style={styles.filterText}>북카페</Text>
         </TouchableOpacity>
@@ -158,14 +251,22 @@ export default function Milestone() {
 
       {/* 나의 위치 버튼 */}
       <TouchableOpacity
-        style={styles.myLocationButton}
+        style={[
+          styles.myLocationButton,
+          (isFilterActive || selectedLocation) && styles.hiddenElement,
+        ]}
         onPress={getCurrentLocation}
       >
         <MyLocationIcon style={styles.myLocationIcon} color="#716C69" />
       </TouchableOpacity>
 
       {/* 버튼 컨테이너 */}
-      <View style={styles.buttonContainer}>
+      <View
+        style={[
+          styles.buttonContainer,
+          (isFilterActive || selectedLocation) && styles.hiddenElement,
+        ]}
+      >
         {/* 메인 액션 버튼 */}
         <TouchableOpacity style={styles.mainActionButton}>
           <PreferenceBookstoreIcon
@@ -183,7 +284,12 @@ export default function Milestone() {
       </View>
 
       {/* 하단 카드 */}
-      <View style={styles.bottomCard}>
+      <View
+        style={[
+          styles.bottomCard,
+          (isFilterActive || selectedLocation) && styles.hiddenElement,
+        ]}
+      >
         <Text style={styles.locationName}>
           {selectedLocation ? selectedLocation.name : currentAddress}
         </Text>
@@ -301,6 +407,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "SUIT-600",
     color: "#C5BFBB",
+  },
+  filterActiveSearchInput: {
+    color: "#262423",
   },
   searchButton: {
     marginLeft: 10,
@@ -487,5 +596,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
+  },
+  backButton: {
+    marginRight: 10,
+    padding: 5,
+  },
+  backIcon: {
+    width: 16,
+    height: 16,
+  },
+  hiddenFilterContainer: {
+    display: "none",
+  },
+  hiddenElement: {
+    display: "none",
+  },
+  selectedLocationSearchInput: {
+    color: "#262423",
   },
 });

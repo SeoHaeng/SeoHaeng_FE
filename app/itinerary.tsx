@@ -111,6 +111,10 @@ export default function Itinerary() {
         <View style={styles.timeline}>
           {tripData.days.map((day, index) => (
             <View key={index} style={styles.timelineItem}>
+              <View style={styles.timelineTextContainer}>
+                <Text style={styles.timelineDate}>{day.dayNumber}</Text>
+                <Text style={styles.timelineDateSmall}>{day.date}</Text>
+              </View>
               <View
                 style={[
                   styles.timelineDot,
@@ -119,8 +123,15 @@ export default function Itinerary() {
                     : styles.inactiveTimelineDot,
                 ]}
               />
-              <Text style={styles.timelineDate}>{day.dayNumber}</Text>
-              <Text style={styles.timelineDateSmall}>{day.date}</Text>
+
+              {index < tripData.days.length - 1 && (
+                <View
+                  style={[
+                    styles.timelineConnector,
+                    { width: (tripData.days.length - index - 1) * 330 - 40 },
+                  ]}
+                />
+              )}
             </View>
           ))}
         </View>
@@ -132,29 +143,14 @@ export default function Itinerary() {
     const isSelected = dayIndex === selectedDay;
 
     return (
-      <View
-        key={dayIndex}
-        style={[styles.dayCard, isSelected && styles.selectedDayCard]}
-      >
-        <View style={styles.dayCardHeader}>
-          <Text style={styles.dayCardTitle}>
-            {day.dayNumber} {day.date}
-          </Text>
-        </View>
-
+      <View key={dayIndex} style={styles.dayCard}>
         {day.spots.length === 0 ? (
-          <View style={styles.emptyDayContent}>
-            <Text style={styles.emptyDayText}>아직 일정이 없어요</Text>
-            <Text style={styles.emptyDaySubtext}>
-              여행 스팟을 추가해 일정을 세워봐요
-            </Text>
-            <TouchableOpacity
-              style={styles.addSpotButton}
-              onPress={() => handleAddSpot(dayIndex)}
-            >
-              <Text style={styles.addSpotButtonText}>여행 스팟 추가</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.addSpotButton}
+            onPress={() => handleAddSpot(dayIndex)}
+          >
+            <Text style={styles.addSpotButtonText}>+ 일정 추가</Text>
+          </TouchableOpacity>
         ) : (
           <View style={styles.spotsContainer}>
             {day.spots.map((spot) => (
@@ -202,13 +198,6 @@ export default function Itinerary() {
             </View>
           ))}
         </View>
-
-        <View style={styles.profileSection}>
-          <View style={styles.profileImage} />
-          <TouchableOpacity style={styles.addProfileButton}>
-            <Text style={styles.addProfileText}>+</Text>
-          </TouchableOpacity>
-        </View>
       </View>
 
       {/* Map Section */}
@@ -229,17 +218,57 @@ export default function Itinerary() {
         </View>
       </View>
 
-      {/* Day Timeline */}
-      {renderDayTimeline()}
+      {/* Day Timeline and Cards Container */}
+      <View style={styles.timelineAndCardsContainer}>
+        {/* Day Timeline */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.timelineContainer}
+          scrollEnabled={false}
+          ref={(ref) => {
+            if (ref) {
+              // 타임라인 스크롤뷰 참조 저장
+              (global as any).timelineScrollRef = ref;
+            }
+          }}
+        >
+          {renderDayTimeline()}
+        </ScrollView>
 
-      {/* Day Cards */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.dayCardsContainer}
-      >
-        {tripData.days.map((day, index) => renderDayCard(day, index))}
-      </ScrollView>
+        {/* Day Cards */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.dayCardsContainer}
+          onScroll={(event) => {
+            const contentOffset = event.nativeEvent.contentOffset.x;
+            const cardWidth = 315; // 카드 너비 + 마진
+            const newSelectedDay = Math.round(contentOffset / cardWidth);
+            if (
+              newSelectedDay >= 0 &&
+              newSelectedDay < tripData.days.length &&
+              newSelectedDay !== selectedDay
+            ) {
+              setSelectedDay(newSelectedDay);
+            }
+
+            // 타임라인도 함께 스크롤
+            if ((global as any).timelineScrollRef) {
+              (global as any).timelineScrollRef.scrollTo({
+                x: contentOffset,
+                animated: false,
+              });
+            }
+          }}
+          scrollEventThrottle={16}
+          decelerationRate="fast"
+          snapToInterval={315}
+          snapToAlignment="start"
+        >
+          {tripData.days.map((day, index) => renderDayCard(day, index))}
+        </ScrollView>
+      </View>
 
       {/* Edit Trip Name Modal */}
       <EditTripNameModal
@@ -270,15 +299,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   saveButton: {
-    backgroundColor: "#C5BFBB",
-    paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16,
   },
   saveButtonText: {
     fontSize: 14,
     fontFamily: "SUIT-500",
-    color: "#262423",
+    color: "#716C69",
   },
   dateRange: {
     fontSize: 16,
@@ -385,29 +411,51 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#262423",
   },
+  timelineAndCardsContainer: {
+    flex: 1,
+  },
   timelineContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingHorizontal: 8,
+    flexDirection: "row",
   },
   timeline: {
     flexDirection: "row",
-    justifyContent: "space-around",
     alignItems: "center",
+    position: "relative",
   },
   timelineItem: {
+    position: "relative",
+    width: 245,
+    justifyContent: "flex-start",
+    flexDirection: "column",
+    gap: 6,
+  },
+  timelineTextContainer: {
+    flexDirection: "row",
+    gap: 8,
     alignItems: "center",
   },
   timelineDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginBottom: 8,
+    width: 16,
+    height: 16,
+    borderRadius: 10,
+    zIndex: 1,
   },
   activeTimelineDot: {
     backgroundColor: "#FF0000",
   },
   inactiveTimelineDot: {
     backgroundColor: "#000000",
+  },
+  timelineConnector: {
+    position: "absolute",
+    top: 30,
+    left: 10,
+    height: 1,
+    backgroundColor: "#C5BFBB",
+    borderStyle: "dashed",
+    borderWidth: 1,
+    borderColor: "#C5BFBB",
   },
   timelineDate: {
     fontSize: 14,
@@ -420,16 +468,16 @@ const styles = StyleSheet.create({
     color: "#9D9896",
   },
   dayCardsContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
     paddingBottom: 20,
+    paddingLeft: 10,
   },
   dayCard: {
-    width: 280,
+    width: 226,
     height: 200,
-    backgroundColor: "#F8F8F8",
     borderRadius: 8,
-    marginRight: 15,
-    padding: 20,
+    marginLeft: 10,
+    marginRight: 10,
   },
   selectedDayCard: {
     backgroundColor: "#F0F0F0",
@@ -461,17 +509,21 @@ const styles = StyleSheet.create({
     color: "#9D9896",
     textAlign: "center",
     marginBottom: 20,
+    lineHeight: 20,
   },
   addSpotButton: {
-    backgroundColor: "#716C69",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingHorizontal: 25,
+    paddingVertical: 15,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: "#9D9896",
   },
   addSpotButtonText: {
-    color: "#FFFFFF",
-    fontSize: 14,
+    color: "#4D4947",
+    fontSize: 16,
     fontFamily: "SUIT-600",
+    textAlign: "center",
   },
   spotsContainer: {
     flex: 1,

@@ -18,7 +18,7 @@ import NaverLoginIcon from "../../components/icons/NaverLoginIcon";
 const { width, height } = Dimensions.get("window");
 
 export default function SignInScreen() {
-  const [email, setEmail] = useState("rkddbwls07 / rkddbwls07@gmail.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [autoLogin, setAutoLogin] = useState(false);
 
@@ -64,6 +64,28 @@ export default function SignInScreen() {
     router.push("/auth/signup");
   };
 
+  // 비밀번호 유효성 검사
+  const validatePassword = (password: string) => {
+    const minLength = 8;
+    const maxLength = 12;
+    const hasEnglish = /[a-zA-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
+      password,
+    );
+
+    return (
+      password.length >= minLength &&
+      password.length <= maxLength &&
+      hasEnglish &&
+      hasNumber &&
+      hasSpecialChar
+    );
+  };
+
+  // 로그인 버튼 활성화 여부 확인
+  const isLoginButtonActive = email.trim() !== "" && validatePassword(password);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -101,36 +123,39 @@ export default function SignInScreen() {
             placeholderTextColor="#9E9E9E"
             secureTextEntry
           />
-        </View>
-
-        {/* 추가 옵션 */}
-        <View style={styles.optionsContainer}>
-          <TouchableOpacity
-            style={styles.checkboxContainer}
-            onPress={() => setAutoLogin(!autoLogin)}
-          >
-            <View
-              style={[styles.checkbox, autoLogin && styles.checkboxChecked]}
+          {password.length > 0 && (
+            <Text
+              style={[
+                styles.validationText,
+                validatePassword(password)
+                  ? styles.validationSuccess
+                  : styles.validationError,
+              ]}
             >
-              {autoLogin && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={styles.checkboxText}>자동 로그인</Text>
-          </TouchableOpacity>
-
-          <View style={styles.findLinks}>
-            <TouchableOpacity onPress={handleFindId}>
-              <Text style={styles.findLinkText}>아이디 찾기</Text>
-            </TouchableOpacity>
-            <Text style={styles.findLinkDivider}>•</Text>
-            <TouchableOpacity onPress={handleFindPassword}>
-              <Text style={styles.findLinkText}>비밀번호 찾기</Text>
-            </TouchableOpacity>
-          </View>
+              {validatePassword(password)
+                ? "✓ 비밀번호 조건을 만족합니다"
+                : "✗ 영문, 숫자, 특수문자 포함 8-12자 입력 필요"}
+            </Text>
+          )}
         </View>
 
         {/* 로그인 버튼 */}
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>로그인하기</Text>
+        <TouchableOpacity
+          style={[
+            styles.loginButton,
+            isLoginButtonActive && styles.loginButtonActive,
+          ]}
+          onPress={handleLogin}
+          disabled={!isLoginButtonActive}
+        >
+          <Text
+            style={[
+              styles.loginButtonText,
+              isLoginButtonActive && styles.loginButtonTextActive,
+            ]}
+          >
+            로그인하기
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -141,7 +166,6 @@ export default function SignInScreen() {
           onPress={handleKakaoLogin}
         >
           <KakaoLoginIcon />
-          <Text style={styles.socialButtonText}>카카오로 로그인</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -149,7 +173,6 @@ export default function SignInScreen() {
           onPress={handleNaverLogin}
         >
           <NaverLoginIcon />
-          <Text style={styles.socialButtonText}>네이버로 로그인</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -157,7 +180,6 @@ export default function SignInScreen() {
           onPress={handleGoogleLogin}
         >
           <GoogleLoginIcon />
-          <Text style={styles.socialButtonText}>구글로 로그인</Text>
         </TouchableOpacity>
       </View>
 
@@ -189,7 +211,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontFamily: "SUIT-700",
     color: "#212121",
   },
   formContainer: {
@@ -200,17 +222,30 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   inputLabel: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: "600",
     color: "#424242",
     marginBottom: 8,
   },
+  validationText: {
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 4,
+  },
+  validationSuccess: {
+    color: "#4CAF50",
+  },
+  validationError: {
+    color: "#F44336",
+  },
   textInput: {
     backgroundColor: "#F0F0F0",
-    borderRadius: 8,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
     paddingHorizontal: 16,
     paddingVertical: 14,
-    fontSize: 16,
+    fontSize: 14,
     color: "#424242",
   },
   optionsContainer: {
@@ -261,27 +296,32 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   loginButton: {
-    backgroundColor: "#FF6B35",
-    borderRadius: 8,
+    backgroundColor: "#DBD6D3",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#C5BFBB",
     paddingVertical: 16,
     alignItems: "center",
   },
+  loginButtonActive: {
+    backgroundColor: "#302E2D",
+    borderColor: "#302E2D",
+  },
   loginButtonText: {
-    color: "#FFFFFF",
+    color: "#716C69",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "SUIT-600",
+  },
+  loginButtonTextActive: {
+    color: "#FFFFFF",
   },
   socialContainer: {
     paddingHorizontal: 20,
-    marginBottom: 40,
+    marginBottom: 20,
   },
   socialButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F0F0F0",
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
     marginBottom: 12,
   },
   socialButtonText: {
@@ -293,16 +333,17 @@ const styles = StyleSheet.create({
   bottomContainer: {
     paddingHorizontal: 20,
     alignItems: "center",
-    marginTop: "auto",
+    marginTop: 20,
     marginBottom: 40,
   },
   bottomText: {
     fontSize: 14,
-    color: "#757575",
+    color: "#4D4947",
     textAlign: "center",
+    textDecorationLine: "underline",
   },
   signUpLink: {
-    color: "#FF6B35",
-    fontWeight: "600",
+    color: "#262423",
+    fontFamily: "SUIT-700",
   },
 });

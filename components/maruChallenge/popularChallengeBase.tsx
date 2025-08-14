@@ -1,6 +1,5 @@
 // components/challenge/PopularChallengeBase.tsx
 import ScrapIcon from "@/components/icons/ScrapIcon";
-import ThreeDotsIcon from "@/components/icons/ThreeDotsIcon";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export interface PopularChallengeProps {
@@ -84,7 +83,6 @@ export default function PopularChallengeBase({
               </View>
             </View>
           </View>
-          <ThreeDotsIcon style={styles.menuIcon} />
         </View>
       </View>
     </TouchableOpacity>

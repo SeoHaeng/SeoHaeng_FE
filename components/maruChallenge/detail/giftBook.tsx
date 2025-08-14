@@ -1,24 +1,28 @@
 // components/GiftBook.tsx
-import ThreeDotsIcon from "@/components/icons/ThreeDotsIcon";
-import { Image, StyleSheet, Text, View } from "react-native";
+import EmptyBookIcon from "@/components/icons/EmptyBookIcon";
+import { StyleSheet, Text, View } from "react-native";
 
 type BookStatus = "선물받은 책" | "선물할 책";
 
 interface GiftBookProps {
-  title: string;
-  author: string;
+  title?: string;
+  author?: string;
   status: BookStatus;
+  icon?: React.ReactNode;
 }
 
-export default function GiftBook({ title, author, status }: GiftBookProps) {
+export default function GiftBook({
+  title,
+  author,
+  status,
+  icon,
+}: GiftBookProps) {
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
-        <Image
-          source={require("@/assets/images/물고기는 존재하지 않는다.png")}
-          style={styles.bookImage}
-        />
-        <ThreeDotsIcon style={styles.menuIcon} />
+        <EmptyBookIcon width={63} height={90} style={styles.bookImage} />
+        {icon && <View style={styles.iconContainer}>{icon}</View>}
+
         <View style={styles.bookInfo}>
           <Text style={styles.bookTitle}>{title}</Text>
           <Text style={styles.bookAuthor}>{author}</Text>
@@ -33,8 +37,8 @@ export default function GiftBook({ title, author, status }: GiftBookProps) {
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginTop: 50,
-    marginBottom: 25,
+    marginTop: 20,
+    marginBottom: 5,
   },
   container: {
     width: 170,
@@ -56,6 +60,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -18,
   },
+  iconContainer: {
+    position: "absolute",
+    top: 15,
+    right: 15,
+  },
   menuIcon: {
     position: "absolute",
     top: 15,
@@ -67,11 +76,11 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   bookTitle: {
-    fontSize: 11,
+    fontSize: 13,
     fontFamily: "SUIT-700",
   },
   bookAuthor: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -84,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   badgeText: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: "SUIT-700",
   },
 });

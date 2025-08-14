@@ -1,5 +1,4 @@
 import ScrapIcon from "@/components/icons/ScrapIcon";
-import ThreeDotsIcon from "@/components/icons/ThreeDotsIcon";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface PopularChallengeItemProps {
@@ -71,7 +70,6 @@ export default function PopularChallengeTotal({
                 </View>
               </View>
             </View>
-            <ThreeDotsIcon style={styles.menuIcon} />
           </View>
         </View>
       </View>

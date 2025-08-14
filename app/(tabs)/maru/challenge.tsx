@@ -55,11 +55,14 @@ export default function Challenge() {
       contentContainerStyle={styles.mainContainer}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.emptyBookContainer}>
+      <TouchableOpacity
+        style={styles.emptyBookContainer}
+        onPress={() => router.push("/maru/challengeCertification")}
+      >
         <Text style={styles.emptyBookText}>아직 책이 오지 않았어요</Text>
         <Text style={styles.bookComingText}>어떤 책이 올까요?</Text>
         <EmptyBookIcon style={styles.emptyBookImage} />
-      </View>
+      </TouchableOpacity>
 
       <View style={styles.bookStoreSection}>
         <View style={styles.bookStoreHeader}>
@@ -184,10 +187,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEE9E6",
     borderRadius: 10,
     borderColor: "#DBD6D3",
-    width: 98,
+    width: 85,
     height: 31,
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 1,
   },
   applyButtonText: {
     fontSize: 12,

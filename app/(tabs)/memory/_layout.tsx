@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
-    paddingTop: 50,
+    paddingTop: 20,
     paddingHorizontal: 10,
   },
   tab: {

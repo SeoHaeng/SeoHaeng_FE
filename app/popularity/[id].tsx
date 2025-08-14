@@ -59,6 +59,7 @@ export default function ChallengeDetail() {
       style={{
         flex: 1,
         position: "relative",
+        backgroundColor: "#FFFFFF",
       }}
     >
       {/*  <KeyboardAvoidingView
@@ -157,7 +158,7 @@ export default function ChallengeDetail() {
           >
             <Text
               style={{
-                fontSize: 13,
+                fontSize: 14,
                 fontFamily: "SUIT-500",
                 color: "#716C69",
               }}
@@ -273,12 +274,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 10,
     backgroundColor: "#DBD6D3",
   },
   commentInput: {
     flex: 1,
-    height: 40,
+    height: 45,
     backgroundColor: "#F8F4F2",
     borderRadius: 10,
     paddingHorizontal: 15,
@@ -291,6 +292,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,
+    height: 45,
+    justifyContent: "center",
+    alignItems: "center",
   },
   sendButtonText: {
     color: "#302E2D",

@@ -1,6 +1,5 @@
 // components/PopularChallenge.tsx
 import ScrapIcon from "@/components/icons/ScrapIcon";
-import ThreeDotsIcon from "@/components/icons/ThreeDotsIcon";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface PopularChallengeItemProps {
@@ -65,7 +64,6 @@ export default function PopularChallenge({
                 </View>
               </View>
             </View>
-            <ThreeDotsIcon style={styles.menuIcon} />
           </View>
         </View>
       </View>
@@ -114,16 +112,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   username: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
   },
   timeStamp: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
   description: {
-    fontSize: 11,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
     width: 190,
@@ -153,11 +151,11 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   bookTitle: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
   },
   bookAuthor: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },

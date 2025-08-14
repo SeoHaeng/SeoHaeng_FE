@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React from "react";
 import {
   Dimensions,
@@ -8,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { router } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
@@ -49,7 +49,10 @@ export default function WelcomeScreen() {
         {/* 앱 소개 텍스트 */}
         <View style={styles.textContainer}>
           <Text style={styles.subtitle}>책 타고 떠나는 느린 여행</Text>
-          <Text style={styles.title}>서행</Text>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>서</Text>
+            <Text style={styles.title}>행</Text>
+          </View>
         </View>
 
         {/* 버튼 영역 */}
@@ -60,19 +63,6 @@ export default function WelcomeScreen() {
 
           <TouchableOpacity style={styles.loginButton} onPress={handleSignIn}>
             <Text style={styles.buttonText}>로그인하기</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* 하단 링크 영역 */}
-        <View style={styles.linkContainer}>
-          <TouchableOpacity onPress={handleContact}>
-            <Text style={styles.linkText}>문의하기</Text>
-          </TouchableOpacity>
-
-          <View style={styles.divider} />
-
-          <TouchableOpacity onPress={handleBrowse}>
-            <Text style={styles.linkText}>둘러보기</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -113,14 +103,20 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: "#424242",
-    marginBottom: 8,
+    fontFamily: "SUIT-500",
+    marginBottom: 12,
     textAlign: "center",
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
+    fontFamily: "Gangwon",
     color: "#212121",
     textAlign: "center",
+  },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 20,
   },
   buttonContainer: {
     width: "100%",
@@ -144,7 +140,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "SUIT-500",
   },
 
   linkContainer: {

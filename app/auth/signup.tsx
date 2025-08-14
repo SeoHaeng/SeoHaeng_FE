@@ -60,8 +60,8 @@ export default function SignUpScreen() {
     confirmPassword.trim() !== "";
 
   const handleBack = () => {
-    // WelcomeScreen으로 이동
-    console.log("WelcomeScreen으로 이동");
+    // 이전 화면으로 이동
+    console.log("이전 화면으로 이동");
     router.back();
   };
 

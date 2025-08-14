@@ -2,13 +2,13 @@ import BackIcon from "@/components/icons/BackIcon";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -190,7 +190,9 @@ export default function BookSearch() {
         <View style={styles.registerContainer}>
           <Text style={styles.registerText}>
             찾는 도서가 없으신가요?{" "}
-            <Text style={styles.registerLink}>직접 등록하기 &gt;</Text>
+            <TouchableOpacity onPress={() => router.push("/maru/bookRegister")}>
+              <Text style={styles.registerLink}>직접 등록하기 &gt;</Text>
+            </TouchableOpacity>
           </Text>
         </View>
       </ScrollView>
@@ -308,7 +310,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: 5,
   },
   bookCover: {

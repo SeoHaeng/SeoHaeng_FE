@@ -2,9 +2,10 @@ import BackIcon from "@/components/icons/BackIcon";
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import GiftBook from "@/components/maruChallenge/detail/giftBook";
+import { getGiftBookData, getReceivedBookData } from "@/types/globalState";
 import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -23,6 +24,67 @@ export default function ChallengeCertification() {
   const [giftMessage, setGiftMessage] = useState("");
   const [challengeReview, setChallengeReview] = useState("");
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [receivedBook, setReceivedBook] = useState<{
+    id: string;
+    title: string;
+    author: string;
+    cover: { uri: string };
+  } | null>({
+    id: "",
+    title: "",
+    author: "어떤 책을 받았나요?",
+    cover: { uri: "" },
+  });
+  const [giftBook, setGiftBook] = useState<{
+    id: string;
+    title: string;
+    author: string;
+    cover: { uri: string };
+  } | null>({
+    id: "",
+    title: "",
+    author: "어떤 책을 선물할까요?",
+    cover: { uri: "" },
+  });
+
+  // 등록하기 버튼 활성화 조건
+  const isFormValid =
+    receivedBook &&
+    receivedBook.title &&
+    giftBook &&
+    giftBook.title &&
+    giftMessage.trim() &&
+    challengeReview.trim();
+
+  // 도서 검색 화면에서 선택된 책 정보를 전역 변수에서 가져오는 로직
+  useFocusEffect(
+    useCallback(() => {
+      console.log("북챌린지 인증하기 화면 포커스됨 - 전역변수 확인 중...");
+
+      // 전역 변수에서 받을 책 정보 가져오기
+      const receivedData = getReceivedBookData();
+      console.log("전역변수에서 받을 책 정보:", receivedData);
+      if (receivedData) {
+        setReceivedBook(receivedData);
+        console.log("받을 책 상태 업데이트됨:", receivedData);
+      }
+
+      // 전역 변수에서 줄 책 정보 가져오기
+      const giftData = getGiftBookData();
+      console.log("전역변수에서 줄 책 정보:", giftData);
+      if (giftData) {
+        setGiftBook(giftData);
+        console.log("줄 책 상태 업데이트됨:", giftData);
+      }
+
+      console.log(
+        "현재 상태 - receivedBook:",
+        receivedBook,
+        "giftBook:",
+        giftBook,
+      );
+    }, []),
+  );
 
   const pickImage = async () => {
     if (selectedImages.length >= 10) {
@@ -70,7 +132,7 @@ export default function ChallengeCertification() {
           {/* 헤더 */}
           <View style={styles.header}>
             <TouchableOpacity
-              onPress={() => router.back()}
+              onPress={() => router.push("/(tabs)/maru/challenge")}
               style={styles.backButton}
             >
               <BackIcon />
@@ -93,16 +155,26 @@ export default function ChallengeCertification() {
 
             <View style={styles.bookCardsContainer}>
               <TouchableOpacity
-                onPress={() => router.push("/maru/bookSearch")}
+                onPress={() => router.push("/maru/bookSearch?type=received")}
                 style={styles.bookCardTouchable}
               >
-                <GiftBook author="어떤 책을 받았나요?" status="선물받은 책" />
+                <GiftBook
+                  title={receivedBook?.title || ""}
+                  author={receivedBook?.author || ""}
+                  status="선물받은 책"
+                  bookImage={receivedBook?.cover}
+                />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => router.push("/maru/bookSearch")}
+                onPress={() => router.push("/maru/bookSearch?type=gift")}
                 style={styles.bookCardTouchable}
               >
-                <GiftBook author="어떤 책을 선물할까요?" status="선물할 책" />
+                <GiftBook
+                  title={giftBook?.title || ""}
+                  author={giftBook?.author || ""}
+                  status="선물할 책"
+                  bookImage={giftBook?.cover}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -173,10 +245,21 @@ export default function ChallengeCertification() {
         {/* 고정된 하단 버튼 */}
         <View style={styles.fixedButtonContainer}>
           <TouchableOpacity
-            style={styles.completeButton}
+            style={[
+              styles.completeButton,
+              !isFormValid && styles.completeButtonDisabled,
+            ]}
             onPress={handleSubmit}
+            disabled={!isFormValid}
           >
-            <Text style={styles.completeButtonText}>인증 등록하기</Text>
+            <Text
+              style={[
+                styles.completeButtonText,
+                !isFormValid && styles.completeButtonTextDisabled,
+              ]}
+            >
+              인증 등록하기
+            </Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -362,12 +445,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     marginTop: 10,
-    backgroundColor: "#4D4947",
+    backgroundColor: "#302E2D",
+  },
+  completeButtonDisabled: {
+    backgroundColor: "#C5BFBB",
   },
   completeButtonText: {
     fontSize: 16,
     fontFamily: "SUIT-600",
-    color: "#ffffff",
+    color: "#FFFFFF",
+  },
+  completeButtonTextDisabled: {
+    color: "#FFFFFF",
   },
   fixedButtonContainer: {
     position: "absolute",

@@ -1,3 +1,5 @@
+import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
   Animated,
@@ -18,6 +20,7 @@ interface SideMenuProps {
 const { width } = Dimensions.get("window");
 
 export default function SideMenu({ visible, onClose }: SideMenuProps) {
+  const router = useRouter();
   const slideAnim = React.useRef(new Animated.Value(width)).current;
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
@@ -107,7 +110,7 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
             {/* 사용자 프로필 섹션 */}
             <View style={styles.profileSection}>
               <View style={styles.profileIcon}>
-                <Text style={styles.profileIconText}>👤</Text>
+                <DefaultProfileIcon width={40} height={43} color="#9D9896" />
               </View>
               <View style={styles.profileInfo}>
                 <Text style={styles.userName}>유딘딘</Text>
@@ -115,7 +118,10 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
               </View>
             </View>
 
-            <TouchableOpacity style={styles.editProfileButton}>
+            <TouchableOpacity
+              style={styles.editProfileButton}
+              onPress={() => router.push("/profile/edit")}
+            >
               <Text style={styles.editProfileText}>프로필 수정하기</Text>
             </TouchableOpacity>
 

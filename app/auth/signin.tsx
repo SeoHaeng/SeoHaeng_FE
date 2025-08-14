@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import BackIcon from "../../components/icons/BackIcon";
+import EyeIcon from "../../components/icons/EyeIcon";
 import GoogleLoginIcon from "../../components/icons/GoogleLoginIcon";
 import KakaoLoginIcon from "../../components/icons/KakaoLoginIcon";
 import NaverLoginIcon from "../../components/icons/NaverLoginIcon";
@@ -21,6 +22,7 @@ export default function SignInScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [autoLogin, setAutoLogin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleBack = () => {
     // WelcomeScreen으로 이동
@@ -115,14 +117,24 @@ export default function SignInScreen() {
         {/* 비밀번호 입력 */}
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>비밀번호</Text>
-          <TextInput
-            style={styles.textInput}
-            value={password}
-            onChangeText={setPassword}
-            placeholder="영문, 숫자, 특수문자 포함 8-12자"
-            placeholderTextColor="#9E9E9E"
-            secureTextEntry
-          />
+          <View style={styles.passwordInputContainer}>
+            <TextInput
+              style={styles.textInput}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="영문, 숫자, 특수문자 포함 8-12자"
+              placeholderTextColor="#9E9E9E"
+              secureTextEntry={!showPassword}
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
+            <TouchableOpacity
+              style={styles.eyeButton}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <EyeIcon width={20} height={14} color="#C5BFBB" />
+            </TouchableOpacity>
+          </View>
           {password.length > 0 && (
             <Text
               style={[
@@ -237,6 +249,15 @@ const styles = StyleSheet.create({
   },
   validationError: {
     color: "#F44336",
+  },
+  passwordInputContainer: {
+    position: "relative",
+  },
+  eyeButton: {
+    position: "absolute",
+    right: 16,
+    top: 14,
+    padding: 4,
   },
   textInput: {
     backgroundColor: "#F0F0F0",

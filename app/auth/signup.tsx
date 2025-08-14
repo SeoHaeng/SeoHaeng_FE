@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -9,11 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { router } from "expo-router";
 import BackIcon from "../../components/icons/BackIcon";
-import GoogleLoginIcon from "../../components/icons/GoogleLoginIcon";
-import KakaoLoginIcon from "../../components/icons/KakaoLoginIcon";
-import NaverLoginIcon from "../../components/icons/NaverLoginIcon";
+import EyeIcon from "../../components/icons/EyeIcon";
 
 const { width, height } = Dimensions.get("window");
 
@@ -26,6 +24,40 @@ export default function SignUpScreen() {
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
+  const [isEmailChecked, setIsEmailChecked] = useState(false);
+  const [nicknameError, setNicknameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  // 비밀번호 유효성 검사
+  const validatePassword = (password: string) => {
+    const minLength = 8;
+    const maxLength = 12;
+    const hasEnglish = /[a-zA-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
+      password,
+    );
+
+    return (
+      password.length >= minLength &&
+      password.length <= maxLength &&
+      hasEnglish &&
+      hasNumber &&
+      hasSpecialChar
+    );
+  };
+
+  // 회원가입 버튼 활성화 여부 확인
+  const isSignUpButtonActive =
+    nickname.trim() !== "" &&
+    isNicknameChecked &&
+    email.trim() !== "" &&
+    isEmailChecked &&
+    validatePassword(password) &&
+    password === confirmPassword &&
+    password.trim() !== "" &&
+    confirmPassword.trim() !== "";
 
   const handleBack = () => {
     // WelcomeScreen으로 이동
@@ -75,12 +107,9 @@ export default function SignUpScreen() {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <BackIcon />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Sign up</Text>
-      </View>
-
-      {/* 안내 문구 */}
-      <View style={styles.guideContainer}>
-        <Text style={styles.guideText}>회원가입을 위한 정보를 입력해주세요.</Text>
+        <Text style={styles.headerTitle}>
+          회원가입을 위한{"\n"}정보를 입력해주세요.
+        </Text>
       </View>
 
       {/* 회원가입 폼 */}
@@ -92,14 +121,53 @@ export default function SignUpScreen() {
             <TextInput
               style={styles.textInput}
               value={nickname}
-              onChangeText={setNickname}
+              onChangeText={(text) => {
+                setNickname(text);
+                setNicknameError("");
+                setIsNicknameChecked(false);
+              }}
               placeholder="닉네임을 입력해주세요 최소2자, 최대 6자"
               placeholderTextColor="#9E9E9E"
             />
-            <TouchableOpacity style={styles.duplicateButton}>
-              <Text style={styles.duplicateButtonText}>중복확인</Text>
+            <TouchableOpacity
+              style={[
+                styles.duplicateButton,
+                isNicknameChecked && styles.duplicateButtonChecked,
+              ]}
+              onPress={() => {
+                if (nickname.trim().length < 2 || nickname.trim().length > 6) {
+                  setNicknameError("닉네임은 2-6자 사이여야 합니다");
+                  setIsNicknameChecked(false);
+                } else {
+                  // API 연결 전 임시로 랜덤하게 중복/사용가능 처리
+                  const isDuplicate = Math.random() > 0.5;
+                  if (isDuplicate) {
+                    setNicknameError("이미 있는 닉네임입니다");
+                    setIsNicknameChecked(false);
+                  } else {
+                    setNicknameError("");
+                    setIsNicknameChecked(true);
+                  }
+                }
+              }}
+            >
+              <Text
+                style={[
+                  styles.duplicateButtonText,
+                  isNicknameChecked && styles.duplicateButtonTextChecked,
+                ]}
+              >
+                {isNicknameChecked ? "확인완료" : "중복확인"}
+              </Text>
             </TouchableOpacity>
           </View>
+          {nicknameError ? (
+            <Text style={styles.validationError}>{nicknameError}</Text>
+          ) : isNicknameChecked ? (
+            <Text style={styles.validationSuccess}>
+              ✓ 사용 가능한 닉네임입니다
+            </Text>
+          ) : null}
         </View>
 
         {/* 아이디 입력 */}
@@ -109,21 +177,60 @@ export default function SignUpScreen() {
             <TextInput
               style={styles.textInput}
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                setEmailError("");
+                setIsEmailChecked(false);
+              }}
               placeholder="아이디를 입력해주세요."
               placeholderTextColor="#9E9E9E"
               autoCapitalize="none"
             />
-            <TouchableOpacity style={styles.duplicateButton}>
-              <Text style={styles.duplicateButtonText}>중복확인</Text>
+            <TouchableOpacity
+              style={[
+                styles.duplicateButton,
+                isEmailChecked && styles.duplicateButtonChecked,
+              ]}
+              onPress={() => {
+                if (email.trim().length < 4) {
+                  setEmailError("아이디는 4자 이상이어야 합니다");
+                  setIsEmailChecked(false);
+                } else {
+                  // API 연결 전 임시로 랜덤하게 중복/사용가능 처리
+                  const isDuplicate = Math.random() > 0.5;
+                  if (isDuplicate) {
+                    setEmailError("이미 있는 아이디입니다");
+                    setIsEmailChecked(false);
+                  } else {
+                    setEmailError("");
+                    setIsEmailChecked(true);
+                  }
+                }
+              }}
+            >
+              <Text
+                style={[
+                  styles.duplicateButtonText,
+                  isEmailChecked && styles.duplicateButtonTextChecked,
+                ]}
+              >
+                {isEmailChecked ? "확인완료" : "중복확인"}
+              </Text>
             </TouchableOpacity>
           </View>
+          {emailError ? (
+            <Text style={styles.validationError}>{emailError}</Text>
+          ) : isEmailChecked ? (
+            <Text style={styles.validationSuccess}>
+              ✓ 사용 가능한 아이디입니다
+            </Text>
+          ) : null}
         </View>
 
         {/* 비밀번호 입력 */}
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>비밀번호</Text>
-          <View style={styles.inputRow}>
+          <View style={styles.passwordInputContainer}>
             <TextInput
               style={styles.textInput}
               value={password}
@@ -131,20 +238,36 @@ export default function SignUpScreen() {
               placeholder="영문, 숫자, 특수문자 포함 8-12자"
               placeholderTextColor="#9E9E9E"
               secureTextEntry={!showPassword}
+              autoCorrect={false}
+              autoCapitalize="none"
             />
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.eyeButton}
               onPress={() => setShowPassword(!showPassword)}
             >
-              <Text style={styles.eyeIcon}>👁</Text>
+              <EyeIcon width={20} height={14} color="#C5BFBB" />
             </TouchableOpacity>
           </View>
+          {password.length > 0 && (
+            <Text
+              style={[
+                styles.validationText,
+                validatePassword(password)
+                  ? styles.validationSuccess
+                  : styles.validationError,
+              ]}
+            >
+              {validatePassword(password)
+                ? "✓ 비밀번호 조건을 만족합니다"
+                : "✗ 영문, 숫자, 특수문자 포함 8-12자 입력 필요"}
+            </Text>
+          )}
         </View>
 
         {/* 비밀번호 확인 */}
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>비밀번호 확인</Text>
-          <View style={styles.inputRow}>
+          <View style={styles.passwordInputContainer}>
             <TextInput
               style={styles.textInput}
               value={confirmPassword}
@@ -152,80 +275,49 @@ export default function SignUpScreen() {
               placeholder="비밀번호 확인"
               placeholderTextColor="#9E9E9E"
               secureTextEntry={!showConfirmPassword}
+              autoCorrect={false}
+              autoCapitalize="none"
             />
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.eyeButton}
               onPress={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              <Text style={styles.eyeIcon}>👁</Text>
+              <EyeIcon width={20} height={14} color="#C5BFBB" />
             </TouchableOpacity>
           </View>
-        </View>
-
-        {/* 약관 동의 */}
-        <View style={styles.termsContainer}>
-          <TouchableOpacity
-            style={styles.checkboxContainer}
-            onPress={() => setAgreeTerms(!agreeTerms)}
-          >
-            <View
-              style={[styles.checkbox, agreeTerms && styles.checkboxChecked]}
+          {confirmPassword.length > 0 && (
+            <Text
+              style={[
+                styles.validationText,
+                password === confirmPassword && password.trim() !== ""
+                  ? styles.validationSuccess
+                  : styles.validationError,
+              ]}
             >
-              {agreeTerms && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <View style={styles.termsTextContainer}>
-              <Text style={styles.checkboxText}>✓ 이용약관에 동의합니다.</Text>
-              <TouchableOpacity>
-                <Text style={styles.termsLink}>이용약관 보기 ></Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.checkboxContainer}
-            onPress={() => setAgreePrivacy(!agreePrivacy)}
-          >
-            <View
-              style={[styles.checkbox, agreePrivacy && styles.checkboxChecked]}
-            >
-              {agreePrivacy && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={styles.checkboxText}>개인정보 처리 방침</Text>
-          </TouchableOpacity>
+              {password === confirmPassword && password.trim() !== ""
+                ? "✓ 비밀번호가 일치합니다"
+                : "✗ 비밀번호가 일치하지 않습니다"}
+            </Text>
+          )}
         </View>
 
         {/* 회원가입 버튼 */}
-        <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-          <Text style={styles.signUpButtonText}>회원가입</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* 소셜 회원가입 */}
-      <View style={styles.socialContainer}>
-        <Text style={styles.socialTitle}>소셜 계정으로 간편 가입</Text>
-
         <TouchableOpacity
-          style={styles.socialButton}
-          onPress={handleKakaoSignUp}
+          style={[
+            styles.signUpButton,
+            isSignUpButtonActive && styles.signUpButtonActive,
+          ]}
+          onPress={handleSignUp}
+          disabled={!isSignUpButtonActive}
         >
-          <KakaoLoginIcon />
-          <Text style={styles.socialButtonText}>카카오로 회원가입</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.socialButton}
-          onPress={handleNaverSignUp}
-        >
-          <NaverLoginIcon />
-          <Text style={styles.socialButtonText}>네이버로 회원가입</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.socialButton}
-          onPress={handleGoogleSignUp}
-        >
-          <GoogleLoginIcon />
-          <Text style={styles.socialButtonText}>구글로 회원가입</Text>
+          <Text
+            style={[
+              styles.signUpButtonText,
+              isSignUpButtonActive && styles.signUpButtonTextActive,
+            ]}
+          >
+            회원가입
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -257,7 +349,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontFamily: "SUIT-700",
     color: "#212121",
   },
   guideContainer: {
@@ -277,141 +369,102 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   inputLabel: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 13,
+    fontFamily: "SUIT-700",
     color: "#424242",
     marginBottom: 8,
   },
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 8,
+  },
+  passwordInputContainer: {
+    position: "relative",
   },
   textInput: {
     flex: 1,
     backgroundColor: "#F0F0F0",
-    borderRadius: 8,
-    paddingHorizontal: 16,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
+    paddingHorizontal: 10,
     paddingVertical: 14,
-    fontSize: 16,
+    fontSize: 14,
+    fontFamily: "SUIT-500",
     color: "#424242",
   },
   duplicateButton: {
-    backgroundColor: "#E0E0E0",
+    backgroundColor: "#302E2D",
     paddingHorizontal: 16,
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: 5,
     minWidth: 80,
     alignItems: "center",
   },
   duplicateButtonText: {
     fontSize: 14,
-    color: "#757575",
-    fontWeight: "500",
+    color: "#FFFFFF",
+  },
+  duplicateButtonChecked: {
+    backgroundColor: "#9D9896",
+  },
+  duplicateButtonTextChecked: {
+    color: "#262423",
   },
   eyeButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 14,
+    position: "absolute",
+    right: 16,
+    top: 14,
+    padding: 4,
   },
-  eyeIcon: {
-    fontSize: 18,
-  },
-  termsContainer: {
-    marginBottom: 32,
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 16,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: "#E0E0E0",
-    backgroundColor: "#FFFFFF",
-    marginRight: 8,
-    marginTop: 2,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  checkboxChecked: {
-    backgroundColor: "#FF6B35",
-    borderColor: "#FF6B35",
-  },
-  checkmark: {
-    color: "#FFFFFF",
+  validationText: {
     fontSize: 12,
-    fontWeight: "bold",
+    marginTop: 4,
+    marginLeft: 4,
   },
-  checkboxText: {
-    fontSize: 14,
-    color: "#424242",
-    flex: 1,
-    lineHeight: 20,
+  validationSuccess: {
+    color: "#4CAF50",
   },
-  termsTextContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  validationError: {
+    color: "#F44336",
   },
-  termsLink: {
-    fontSize: 14,
-    color: "#FF6B35",
-    fontWeight: "500",
-  },
+
   signUpButton: {
-    backgroundColor: "#E0E0E0",
-    borderRadius: 8,
+    backgroundColor: "#DBD6D3",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#C5BFBB",
     paddingVertical: 16,
     alignItems: "center",
   },
   signUpButtonText: {
-    color: "#424242",
+    color: "#716C69",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "SUIT-600",
   },
-  socialContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 40,
+  signUpButtonActive: {
+    backgroundColor: "#302E2D",
+    borderColor: "#302E2D",
   },
-  socialTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#424242",
-    textAlign: "center",
-    marginBottom: 20,
+  signUpButtonTextActive: {
+    color: "#FFFFFF",
   },
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F0F0F0",
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    marginBottom: 12,
-  },
-  socialButtonText: {
-    marginLeft: 12,
-    fontSize: 16,
-    color: "#424242",
-    fontWeight: "500",
-  },
+
   bottomContainer: {
     paddingHorizontal: 20,
     alignItems: "center",
-    marginTop: "auto",
+    marginTop: 20,
     marginBottom: 40,
   },
   bottomText: {
     fontSize: 14,
-    color: "#757575",
+    color: "#4D4947",
     textAlign: "center",
+    textDecorationLine: "underline",
   },
   signInLink: {
-    color: "#FF6B35",
-    fontWeight: "600",
+    color: "#262423",
+    fontFamily: "SUIT-700",
   },
 });

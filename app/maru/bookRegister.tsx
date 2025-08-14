@@ -1,22 +1,22 @@
 import BackIcon from "@/components/icons/BackIcon";
 import BookUploadIcon from "@/components/icons/BookUploadIcon";
 import {
-    getGiftBookData,
-    getReceivedBookData,
-    setGiftBookData,
-    setReceivedBookData,
+  getGiftBookData,
+  getReceivedBookData,
+  setGiftBookData,
+  setReceivedBookData,
 } from "@/types/globalState";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 

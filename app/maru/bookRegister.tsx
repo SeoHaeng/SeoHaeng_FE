@@ -1,7 +1,13 @@
 import BackIcon from "@/components/icons/BackIcon";
 import BookUploadIcon from "@/components/icons/BookUploadIcon";
+import {
+    getGiftBookData,
+    getReceivedBookData,
+    setGiftBookData,
+    setReceivedBookData,
+} from "@/types/globalState";
 import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
     Image,
@@ -16,6 +22,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookRegister() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const bookType = params.type as string; // "received" 또는 "gift"
   const [bookImage, setBookImage] = useState<string | null>(null);
   const [bookTitle, setBookTitle] = useState("");
 
@@ -34,8 +42,33 @@ export default function BookRegister() {
 
   const handleRegister = () => {
     if (bookImage && bookTitle.trim()) {
-      console.log("도서 등록:", { bookImage, bookTitle });
-      router.back();
+      // 사용자가 등록한 책 정보를 전역변수에 저장
+      const registeredBook = {
+        id: `custom_${Date.now()}`, // 고유 ID 생성
+        title: bookTitle.trim(),
+        author: "직접 등록", // 기본 저자명
+        cover: { uri: bookImage },
+      };
+
+      // bookType에 따라 적절한 전역변수에 저장
+      console.log("bookType 확인:", bookType);
+      if (bookType === "received") {
+        setReceivedBookData(registeredBook);
+        console.log(
+          "선물받은 책 등록 완료 - 전역변수에 저장됨:",
+          registeredBook,
+        );
+        console.log("전역변수 확인:", getReceivedBookData());
+      } else if (bookType === "gift") {
+        setGiftBookData(registeredBook);
+        console.log("선물할 책 등록 완료 - 전역변수에 저장됨:", registeredBook);
+        console.log("전역변수 확인:", getGiftBookData());
+      } else {
+        console.log("알 수 없는 bookType:", bookType);
+      }
+
+      // 북챌린지 인증하기 화면으로 이동
+      router.push("/maru/challengeCertification");
     }
   };
 

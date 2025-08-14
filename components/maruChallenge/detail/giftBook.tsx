@@ -1,6 +1,6 @@
 // components/GiftBook.tsx
 import EmptyBookIcon from "@/components/icons/EmptyBookIcon";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 type BookStatus = "선물받은 책" | "선물할 책";
 
@@ -9,6 +9,7 @@ interface GiftBookProps {
   author?: string;
   status: BookStatus;
   icon?: React.ReactNode;
+  bookImage?: { uri: string };
 }
 
 export default function GiftBook({
@@ -16,16 +17,28 @@ export default function GiftBook({
   author,
   status,
   icon,
+  bookImage,
 }: GiftBookProps) {
+  // 저자명의 ^를 ,로 변환하는 함수
+  const formatAuthor = (authorName: string) => {
+    return authorName.replace(/\^/g, ", ");
+  };
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
-        <EmptyBookIcon width={63} height={90} style={styles.bookImage} />
+        {bookImage && bookImage.uri ? (
+          <Image source={bookImage} style={styles.bookImage} />
+        ) : (
+          <EmptyBookIcon width={63} height={90} style={styles.bookImage} />
+        )}
         {icon && <View style={styles.iconContainer}>{icon}</View>}
 
         <View style={styles.bookInfo}>
-          <Text style={styles.bookTitle}>{title}</Text>
-          <Text style={styles.bookAuthor}>{author}</Text>
+          <Text style={styles.bookTitle} numberOfLines={1}>
+            {title && title.length > 11 ? `${title.slice(0, 11)}...` : title}
+          </Text>
+          <Text style={styles.bookAuthor}>{formatAuthor(author || "")}</Text>
         </View>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{status}</Text>
@@ -59,6 +72,7 @@ const styles = StyleSheet.create({
     height: 90,
     position: "absolute",
     top: -18,
+    borderRadius: 3,
   },
   iconContainer: {
     position: "absolute",

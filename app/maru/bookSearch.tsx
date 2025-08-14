@@ -1,19 +1,22 @@
 import BackIcon from "@/components/icons/BackIcon";
-import { useRouter } from "expo-router";
+import { setGiftBookData, setReceivedBookData } from "@/types/globalState";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookSearch() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const bookType = params.type as string; // "received" 또는 "gift"
   const [searchQuery, setSearchQuery] = useState("백엔드");
   const [selectedBook, setSelectedBook] = useState<string | null>(null);
 
@@ -106,13 +109,29 @@ export default function BookSearch() {
 
   const handleComplete = () => {
     if (selectedBook) {
-      console.log("선택된 도서:", selectedBook);
-      router.back();
+      const selectedBookData = searchResults.find(
+        (book) => book.id === selectedBook,
+      );
+      if (selectedBookData) {
+        // 선택된 책 정보를 전역 변수에 저장
+        if (bookType === "received") {
+          setReceivedBookData(selectedBookData);
+        } else if (bookType === "gift") {
+          setGiftBookData(selectedBookData);
+        }
+
+        // 북챌린지 인증하기 화면으로 돌아가기
+        router.back();
+      }
     }
   };
 
   const clearSearch = () => {
     setSearchQuery("");
+  };
+
+  const formatAuthor = (author: string) => {
+    return author.replace(/\^/g, ", ");
   };
 
   return (
@@ -180,7 +199,9 @@ export default function BookSearch() {
                 <Text style={styles.bookTitle} numberOfLines={2}>
                   {book.title}
                 </Text>
-                <Text style={styles.bookAuthor}>{book.author}</Text>
+                <Text style={styles.bookAuthor}>
+                  {formatAuthor(book.author)}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -188,12 +209,12 @@ export default function BookSearch() {
 
         {/* 직접 등록하기 링크 */}
         <View style={styles.registerContainer}>
-          <Text style={styles.registerText}>
-            찾는 도서가 없으신가요?{" "}
-            <TouchableOpacity onPress={() => router.push("/maru/bookRegister")}>
-              <Text style={styles.registerLink}>직접 등록하기 &gt;</Text>
-            </TouchableOpacity>
-          </Text>
+          <Text style={styles.registerText}>찾는 도서가 없으신가요? </Text>
+          <TouchableOpacity
+            onPress={() => router.push(`/maru/bookRegister?type=${bookType}`)}
+          >
+            <Text style={styles.registerLink}>직접 등록하기 &gt;</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
 
@@ -350,17 +371,21 @@ const styles = StyleSheet.create({
   },
   registerContainer: {
     padding: 20,
-    paddingTop: 10,
+    paddingTop: 30,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 1,
+    alignSelf: "center",
   },
   registerText: {
     fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#716C69",
-    textAlign: "center",
   },
   registerLink: {
-    textDecorationLine: "underline",
     color: "#262423",
+    fontFamily: "SUIT-600",
+    textDecorationLine: "underline",
   },
   fixedButtonContainer: {
     position: "absolute",

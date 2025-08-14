@@ -1,25 +1,28 @@
 import React from "react";
 import {
-    Dimensions,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { router } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
-export default function LoginScreen() {
+export default function WelcomeScreen() {
   const handleSignUp = () => {
-    // 회원가입 로직
-    console.log("회원가입 버튼 클릭");
+    // 회원가입 화면으로 이동
+    console.log("SignUpScreen으로 이동");
+    router.push("/auth/signup");
   };
 
-  const handleLogin = () => {
-    // 로그인 로직
-    console.log("로그인 버튼 클릭");
+  const handleSignIn = () => {
+    // 로그인 화면으로 이동
+    console.log("SignInScreen으로 이동");
+    router.push("/auth/signin");
   };
 
   const handleContact = () => {
@@ -55,7 +58,7 @@ export default function LoginScreen() {
             <Text style={styles.buttonText}>회원가입</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <TouchableOpacity style={styles.loginButton} onPress={handleSignIn}>
             <Text style={styles.buttonText}>로그인하기</Text>
           </TouchableOpacity>
         </View>
@@ -80,7 +83,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5", // 밝은 베이지/오프화이트 배경
+    backgroundColor: "#F5F5F5",
   },
   content: {
     flex: 1,
@@ -92,7 +95,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#E0E0E0", // 연한 회색 원형 배경
+    backgroundColor: "#E0E0E0",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 40,
@@ -105,7 +108,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: "center",
-    marginBottom: 80,
+    marginBottom: 60,
   },
   subtitle: {
     fontSize: 16,
@@ -124,7 +127,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   signUpButton: {
-    backgroundColor: "#424242", // 진한 회색
+    backgroundColor: "#424242",
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 8,
@@ -132,7 +135,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loginButton: {
-    backgroundColor: "#757575", // 중간 회색
+    backgroundColor: "#757575",
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 8,
@@ -143,6 +146,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+
   linkContainer: {
     flexDirection: "row",
     alignItems: "center",

@@ -106,6 +106,8 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   });
                   map.setBounds(bounds);
                 }
+                
+                console.log('Map initialized successfully');
               } else {
                 console.error('Kakao Maps is not available');
               }
@@ -115,13 +117,71 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
             window.addEventListener('message', function(event) {
               try {
                 const data = JSON.parse(event.data);
-                if (data.type === 'updateLocation' && map && markers.length > 0) {
+                console.log('Received message:', data);
+                
+                if (data.type === 'updateLocation') {
                   const newPosition = new kakao.maps.LatLng(data.latitude, data.longitude);
                   map.setCenter(newPosition);
-                  markers.forEach(marker => {
-                    marker.setPosition(newPosition);
-                  });
+                  map.setLevel(3); // 줌 레벨 조정
                   console.log('Location updated:', data.latitude, data.longitude);
+                }
+                
+                if (data.type === 'showDefaultMarker' || data.type === 'showMarker') {
+                  console.log('Processing marker:', data.type, data.markerType);
+                  
+                  // 기존 마커 제거 (CustomOverlay와 Marker 모두 처리)
+                  markers.forEach(marker => {
+                    if (marker.setMap) {
+                      marker.setMap(null);
+                    }
+                  });
+                  markers = [];
+                  
+                  // 새 마커 생성
+                  const markerPosition = new kakao.maps.LatLng(data.latitude, data.longitude);
+                  
+                  // 마커 타입에 따라 다른 스타일 적용
+                  let marker;
+                  if (data.markerType === 'bookstoreActive') {
+                    // 활성화된 서점 마커 - BookstoreActiveIcon 스타일
+                    const customMarker = new kakao.maps.CustomOverlay({
+                      position: markerPosition,
+                      content: '<div style="width: 48px; height: 53px; background: #08A758; border-radius: 25px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"><div style="width: 20px; height: 20px; background: white; border-radius: 3px;"></div></div>',
+                      xAnchor: 0.5,
+                      yAnchor: 1
+                    });
+                    customMarker.setMap(map);
+                    markers.push(customMarker);
+                  } else {
+                    // 비활성화된 서점 마커 - BookstoreInactiveIcon 스타일
+                    const customMarker = new kakao.maps.CustomOverlay({
+                      position: markerPosition,
+                      content: '<div style="width: 36px; height: 37px; background: #08A758; border: 2px solid #0D7E46; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>',
+                      xAnchor: 0.5,
+                      yAnchor: 1
+                    });
+                    customMarker.setMap(map);
+                    markers.push(customMarker);
+                  }
+                  
+                  // 마커 클릭 시 정보창 표시
+                  const infowindow = new kakao.maps.InfoWindow({
+                    content: '<div style="padding:5px;font-size:14px;font-weight:bold;">' + (data.markerTitle || '서점') + '</div>'
+                  });
+                  
+                  // 클릭 이벤트 추가 (기본 마커인 경우만)
+                  if (marker) {
+                    kakao.maps.event.addListener(marker, 'click', function() {
+                      infowindow.open(map, marker);
+                    });
+                  }
+                  
+                  // 마커가 보이도록 지도 범위 조정
+                  const bounds = new kakao.maps.LatLngBounds();
+                  bounds.extend(markerPosition);
+                  map.setBounds(bounds);
+                  
+                  console.log('Marker added successfully:', data.markerTitle, 'at', data.latitude, data.longitude, 'type:', data.markerType);
                 }
               } catch (error) {
                 console.error('Error parsing message:', error);

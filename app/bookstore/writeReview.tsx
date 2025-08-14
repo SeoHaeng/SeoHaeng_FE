@@ -179,7 +179,7 @@ export default function WriteReview() {
               >
                 {formatSelectedDate(selectedDate)}
               </Text>
-              <CalendarIcon width={16} height={16} />
+              <CalendarIcon width={20} height={20} />
             </TouchableOpacity>
           </View>
 

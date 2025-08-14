@@ -3,14 +3,24 @@ import Svg, { Path, Rect, SvgProps } from "react-native-svg";
 
 interface EmptyBookIconProps extends SvgProps {
   color?: string;
+  width?: number;
+  height?: number;
 }
 
 const EmptyBookIcon: React.FC<EmptyBookIconProps> = ({
   color = "#C5BFBB",
+  width = 79,
+  height = 107,
   ...props
 }) => {
   return (
-    <Svg width="79" height="107" viewBox="0 0 79 107" fill="none" {...props}>
+    <Svg
+      width={width}
+      height={height}
+      viewBox="0 0 79 107"
+      fill="none"
+      {...props}
+    >
       <Path
         d="M1 1H73C75.7614 1 78 3.23858 78 6V101C78 103.761 75.7614 106 73 106H1V1Z"
         fill="#EEE9E6"

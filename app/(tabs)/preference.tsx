@@ -1,6 +1,5 @@
 import BackIcon from "@/components/icons/BackIcon";
 import PlanIcon from "@/components/icons/PlanIcon";
-import ThreeDotsIcon from "@/components/icons/ThreeDotsIcon";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
@@ -42,7 +41,6 @@ const TravelCard: React.FC<TravelCardProps> = ({
     <View style={styles.travelCardContent}>
       <View>
         <Text style={styles.travelCardTitle}>{title}</Text>
-        <ThreeDotsIcon style={styles.travelCardMenuIcon} />
       </View>
       <View style={styles.travelCardDateContainer}>
         <Text style={styles.travelCardDates}>{dates}</Text>

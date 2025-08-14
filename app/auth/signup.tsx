@@ -75,6 +75,11 @@ export default function SignUpScreen() {
       agreeTerms,
       agreePrivacy,
     });
+
+    // 회원가입 성공 시 완료 화면으로 이동
+    if (isSignUpButtonActive) {
+      router.push("/auth/signupComplete");
+    }
   };
 
   const handleKakaoSignUp = () => {

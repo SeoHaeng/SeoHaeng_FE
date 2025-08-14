@@ -33,6 +33,11 @@ export default function SignInScreen() {
   const handleLogin = () => {
     // 로그인 로직
     console.log("로그인하기 클릭", { email, password, autoLogin });
+
+    // 로그인 성공 시 홈 화면으로 이동
+    if (isLoginButtonActive) {
+      router.push("/(tabs)");
+    }
   };
 
   const handleFindId = () => {

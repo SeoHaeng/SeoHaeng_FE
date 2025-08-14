@@ -48,16 +48,16 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   commentUsername: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-700",
   },
   commentDate: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
   description: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     lineHeight: 20,
   },

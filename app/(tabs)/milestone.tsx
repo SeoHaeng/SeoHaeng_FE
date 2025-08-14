@@ -42,6 +42,7 @@ export default function Milestone() {
   const [currentAddress, setCurrentAddress] = useState("옥천동");
   const [isFilterActive, setIsFilterActive] = useState(false);
   const [activeFilterText, setActiveFilterText] = useState("");
+  const [isLocationSelected, setIsLocationSelected] = useState(false);
   const webViewRef = useRef<KakaoMapRef>(null);
 
   // URL 파라미터에서 선택된 위치 정보 처리
@@ -53,7 +54,8 @@ export default function Milestone() {
 
         // 주소가 있는 경우 좌표로 변환하여 지도 이동
         if (location.address) {
-          moveToAddress(location.address);
+          console.log("선택된 위치 정보:", location);
+          moveToAddress(location.address, location);
         }
       } catch (error) {
         console.error("Error parsing selected location:", error);
@@ -62,41 +64,109 @@ export default function Milestone() {
   }, [params.selectedLocation]);
 
   // 주소를 좌표로 변환하여 지도 이동
-  const moveToAddress = async (address: string) => {
+  const moveToAddress = async (address: string, locationData: any) => {
     try {
-      const geocodeResult = await Location.geocodeAsync(address);
-      if (geocodeResult.length > 0) {
-        const { latitude, longitude } = geocodeResult[0];
-        const newLocation = { latitude, longitude };
+      console.log("주소 변환 시작:", address);
 
-        setCurrentLocation(newLocation);
+      // 이스트쓰네 선택 시 강릉으로 이동
+      let newLocation;
 
-        // 카카오맵에 메시지 전송하여 마커 표시
+      if (address.includes("강릉시")) {
+        // 이스트쓰네 좌표로 이동 (위도: 37.6853735495694, 경도: 129.039668458113)
+        newLocation = {
+          latitude: 37.6853735495694,
+          longitude: 129.039668458113,
+        };
+        console.log("이스트쓰네로 이동:", newLocation);
+      } else {
+        console.log("알 수 없는 주소:", address);
+        return;
+      }
+
+      console.log("최종 좌표:", newLocation);
+      setCurrentLocation(newLocation);
+      setIsLocationSelected(true); // 위치가 선택되었음을 표시
+
+      // 지도 이동을 위해 카카오맵 컴포넌트 props 업데이트
+      // webViewRef가 준비될 때까지 기다린 후 지도 이동
+      const tryMoveMap = () => {
         if (webViewRef.current) {
-          const message = JSON.stringify({
+          // 지도 이동 메시지 전송
+          const moveMessage = JSON.stringify({
             type: "updateLocation",
             latitude: newLocation.latitude,
             longitude: newLocation.longitude,
-            showMarker: true,
-            markerTitle: selectedLocation?.text || "선택된 위치",
           });
-          webViewRef.current.postMessage(message);
-        }
+          console.log("지도 이동 메시지:", moveMessage);
+          webViewRef.current.postMessage(moveMessage);
 
-        console.log("지도 이동:", newLocation);
-      }
+          // 마커 표시 메시지 전송
+          const markerMessage = JSON.stringify({
+            type: "showMarker",
+            latitude: newLocation.latitude,
+            longitude: newLocation.longitude,
+            markerType: "bookstoreActive", // 활성화된 서점 마커
+            markerTitle:
+              locationData.text || locationData.name || "선택된 위치",
+          });
+          console.log("마커 표시 메시지:", markerMessage);
+          webViewRef.current.postMessage(markerMessage);
+
+          console.log("지도 이동 완료:", newLocation);
+        } else {
+          console.log("webViewRef가 아직 준비되지 않음, 100ms 후 재시도");
+          setTimeout(tryMoveMap, 100);
+        }
+      };
+
+      // 즉시 시도
+      tryMoveMap();
     } catch (error) {
       console.error("주소 변환 실패:", error);
     }
   };
 
-  // 앱 시작 시 현재 위치 가져오기
+  // 앱 시작 시 기본 서점 마커만 표시
   useEffect(() => {
-    getCurrentLocation();
+    // 기본 서점 마커 표시 (이스트쓰네)
+    showDefaultBookstoreMarker();
   }, []);
+
+  // 기본 서점 마커 표시 (이스트쓰네)
+  const showDefaultBookstoreMarker = () => {
+    const eastSuneLocation = {
+      latitude: 37.6853735495694,
+      longitude: 129.039668458113,
+    };
+
+    // webViewRef가 준비될 때까지 기다린 후 마커 표시
+    const tryShowMarker = () => {
+      if (webViewRef.current) {
+        const message = JSON.stringify({
+          type: "showDefaultMarker",
+          latitude: eastSuneLocation.latitude,
+          longitude: eastSuneLocation.longitude,
+          markerType: "bookstoreInactive", // 비활성화된 서점 마커
+          markerTitle: "이스트쓰네",
+        });
+        console.log("기본 서점 마커 표시:", message);
+        webViewRef.current.postMessage(message);
+
+        // 지도를 이스트쓰네 위치로 이동
+        setCurrentLocation(eastSuneLocation);
+      } else {
+        console.log("webViewRef가 아직 준비되지 않음, 500ms 후 재시도");
+        setTimeout(tryShowMarker, 500);
+      }
+    };
+
+    // 1초 후 시도 (WebView가 완전히 로드될 때까지 기다림)
+    setTimeout(tryShowMarker, 1000);
+  };
 
   const getCurrentLocation = async () => {
     try {
+      console.log("내 위치 버튼 클릭 - 현재 위치 가져오기 시작");
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("권한 필요", "위치 정보에 접근하려면 권한이 필요합니다.");
@@ -109,7 +179,9 @@ export default function Milestone() {
         longitude: location.coords.longitude,
       };
 
+      console.log("내 위치로 이동:", newLocation);
       setCurrentLocation(newLocation);
+      setIsLocationSelected(false); // 내 위치로 이동했으므로 선택된 위치 플래그 해제
 
       // 주소 정보 가져오기
       const addressResponse = await Location.reverseGeocodeAsync({
@@ -133,7 +205,7 @@ export default function Milestone() {
         webViewRef.current.postMessage(message);
       }
 
-      console.log("현재 위치로 이동:", newLocation);
+      console.log("내 위치로 이동 완료:", newLocation);
     } catch (error) {
       console.error("위치 가져오기 실패:", error);
       Alert.alert("오류", "현재 위치를 가져올 수 없습니다.");
@@ -187,8 +259,8 @@ export default function Milestone() {
             style={styles.clearButton}
             onPress={() => {
               setSelectedLocation(null);
-              // 현재 위치로 지도 이동
-              getCurrentLocation();
+              setIsLocationSelected(false); // 위치 선택 플래그 리셋
+              // 지도는 현재 위치에 그대로 유지 (getCurrentLocation 호출하지 않음)
             }}
           >
             <Text style={styles.clearButtonText}>×</Text>

@@ -51,6 +51,28 @@ export default function Bookmark() {
           readingSpotId: 3,
           createdAt: "2025-08-05",
         },
+        {
+          title: "춘천 책방",
+          imageUrl:
+            "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
+          address: "강원 춘천시 중앙로 123",
+          latitude: 90,
+          longitude: 180,
+          templateId: 4,
+          readingSpotId: 3,
+          createdAt: "2025-08-05",
+        },
+        {
+          title: "춘천 책방",
+          imageUrl:
+            "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
+          address: "강원 춘천시 중앙로 123",
+          latitude: 90,
+          longitude: 180,
+          templateId: 4,
+          readingSpotId: 3,
+          createdAt: "2025-08-05",
+        },
       ],
     };
 
@@ -80,38 +102,47 @@ export default function Bookmark() {
         </Text>
       </View>
 
-      <View style={{ flexDirection: "row", gap: 5 }}>
-        <View style={{ flexDirection: "column", gap: 5 }}>
-          {scrapList.slice(0, 3).map((item, index) => (
-            <BookmarkCard
-              key={item.readingSpotId}
-              imageUrl={item.imageUrl}
-              title={item.title}
-              address={item.address}
-              templateId={item.templateId}
-              onPress={() =>
-                router.push(
-                  `/bookmark/${item.readingSpotId}?imageUrl=${item.imageUrl}&title=${item.title}&address=${item.address}&templateId=${item.templateId}` as any,
-                )
-              }
-            />
-          ))}
+      <View style={{ flexDirection: "row", paddingHorizontal: 15 }}>
+        {/* 왼쪽 열 */}
+        <View style={{ flex: 1, alignItems: "flex-start", gap: 6 }}>
+          {scrapList
+            .filter((_, index) => index % 2 === 0)
+            .map((item) => (
+              <BookmarkCard
+                key={item.readingSpotId}
+                imageUrl={item.imageUrl}
+                title={item.title}
+                address={item.address}
+                templateId={item.templateId}
+                onPress={() =>
+                  router.push(
+                    `/bookmark/${item.readingSpotId}?imageUrl=${item.imageUrl}&title=${item.title}&address=${item.address}&templateId=${item.templateId}` as any,
+                  )
+                }
+              />
+            ))}
         </View>
-        <View style={{ flexDirection: "column", gap: 5, paddingTop: 30 }}>
-          {scrapList.slice(3).map((item, index) => (
-            <BookmarkCard
-              key={item.readingSpotId}
-              imageUrl={item.imageUrl}
-              title={item.title}
-              address={item.address}
-              templateId={item.templateId}
-              onPress={() =>
-                router.push(
-                  `/bookmark/${item.readingSpotId}?imageUrl=${item.imageUrl}&title=${item.title}&address=${item.address}&templateId=${item.templateId}` as any,
-                )
-              }
-            />
-          ))}
+
+        {/* 오른쪽 열 */}
+        <View
+          style={{ flex: 1, alignItems: "flex-end", paddingTop: 30, gap: 6 }}
+        >
+          {scrapList
+            .filter((_, index) => index % 2 === 1)
+            .map((item) => (
+              <BookmarkCard
+                key={item.readingSpotId}
+                imageUrl={item.imageUrl}
+                title={item.title}
+                address={item.address}
+                templateId={item.templateId}
+                onPress={() =>
+                  router.push(
+                    `/bookmark/${item.readingSpotId}?imageUrl=${item.imageUrl}&title=${item.title}&address=${item.address}&templateId=${item.templateId}` as any,
+                  )
+                }
+              />
+            ))}
         </View>
       </View>
     </ScrollView>

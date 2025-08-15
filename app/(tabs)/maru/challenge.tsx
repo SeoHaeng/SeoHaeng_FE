@@ -67,7 +67,15 @@ export default function Challenge() {
       <View style={styles.bookStoreSection}>
         <View style={styles.bookStoreHeader}>
           <Text style={styles.sectionTitle}>북챌린지 서점</Text>
-          <TouchableOpacity style={styles.applyButton} onPress={() => {}}>
+          <TouchableOpacity
+            style={styles.applyButton}
+            onPress={() => {
+              // Google Forms 링크로 이동
+              router.push(
+                "https://docs.google.com/forms/d/e/1FAIpQLSdngVZHOaAmsXlCfjpvuGT7wWysFIGDeihrc7WEm7gKha1NuA/viewform",
+              );
+            }}
+          >
             <Text style={styles.applyButtonText}>우리 서점 신청</Text>
           </TouchableOpacity>
         </View>
@@ -92,9 +100,6 @@ export default function Challenge() {
               }
             />
           ))}
-          <View style={styles.moreButton}>
-            <Text style={styles.moreButtonText}>더보기 &gt;</Text>
-          </View>
         </ScrollView>
       </View>
 
@@ -205,19 +210,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  moreButton: {
-    width: 82,
-    height: 82,
-    borderRadius: 50,
-    backgroundColor: "#EEE9E6",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  moreButtonText: {
-    fontSize: 12,
-    color: "#4D4947",
-    fontFamily: "SUIT-700",
-  },
+
   popularSection: {
     height: 350,
     width: "100%",

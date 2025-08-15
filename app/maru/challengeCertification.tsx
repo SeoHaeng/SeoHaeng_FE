@@ -148,9 +148,6 @@ export default function ChallengeCertification() {
                 <PlaceIcon width={17} height={20} color="#716C69" />
                 <Text style={styles.locationText}>행복 서점</Text>
               </View>
-              <TouchableOpacity style={styles.changeAddressButton}>
-                <Text style={styles.changeAddressText}>주소 변경하기</Text>
-              </TouchableOpacity>
             </View>
 
             <View style={styles.bookCardsContainer}>

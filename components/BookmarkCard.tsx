@@ -9,7 +9,6 @@ interface BookmarkCardProps {
   templateId: number;
   width?: number;
   height?: number;
-  backgroundColor?: string;
   onPress?: () => void;
 }
 
@@ -20,36 +19,11 @@ export default function BookmarkCard({
   templateId,
   width = 177,
   height = 177,
-  backgroundColor,
   onPress,
 }: BookmarkCardProps) {
-  // templateId에 따른 배경색 설정
-  const getBackgroundColor = () => {
-    if (backgroundColor) return backgroundColor; // 사용자가 직접 지정한 색상 우선
-
-    switch (templateId) {
-      case 1:
-        return "#FF5E29"; // 오렌지색
-      case 2:
-        return "#B9FF66"; // 연한 초록색
-      case 3:
-        return "#75615B"; // 갈색
-      case 4:
-        return "#8A73FF"; // 보라색
-      default:
-        return "#FF6B35"; // 기본 색상
-    }
-  };
-
-  const finalBackgroundColor = getBackgroundColor();
-
   const content = (
     <View style={[styles.bookmarkCard, { width, height }]}>
-      <BookmarkTemplate
-        width={width}
-        height={height}
-        color={finalBackgroundColor}
-      />
+      <BookmarkTemplate width={width} height={height} templateId={templateId} />
 
       <View style={styles.imageContainer}>
         <Image

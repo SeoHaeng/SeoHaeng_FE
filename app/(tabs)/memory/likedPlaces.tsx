@@ -1,6 +1,7 @@
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import ScrapIcon from "@/components/icons/ScrapIcon";
 import StarIcon from "@/components/icons/StarIcon";
+import { useRouter } from "expo-router";
 import {
   Image,
   ScrollView,
@@ -11,6 +12,8 @@ import {
 } from "react-native";
 
 export default function LikedPlaces() {
+  const router = useRouter();
+
   // 예시 데이터
   const places = [
     {
@@ -36,7 +39,12 @@ export default function LikedPlaces() {
   ];
 
   const renderPlaceItem = (place: any) => (
-    <View key={place.id} style={styles.placeItem}>
+    <TouchableOpacity
+      key={place.id}
+      style={styles.placeItem}
+      onPress={() => router.push(`/bookstore/${place.id}`)}
+      activeOpacity={0.8}
+    >
       <View style={styles.placeImageContainer}>
         <Image source={place.image} style={styles.placeImage} />
       </View>
@@ -64,7 +72,7 @@ export default function LikedPlaces() {
           <Text style={styles.likedButtonText}>찜한 장소</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (

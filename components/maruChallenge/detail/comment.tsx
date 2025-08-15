@@ -5,12 +5,14 @@ interface PopularChallengeItemProps {
   date: string;
   text: string;
   imageSource?: any;
+  color?: string;
 }
 
 export default function ChallengeComment({
   userName,
   date,
   text,
+  color,
 }: PopularChallengeItemProps) {
   return (
     <View style={styles.commentContainer}>
@@ -20,11 +22,13 @@ export default function ChallengeComment({
           style={styles.commentAvatar}
         />
         <View style={styles.commentInfo}>
-          <Text style={styles.commentUsername}>{userName}</Text>
+          <Text style={[styles.commentUsername, color && { color }]}>
+            {userName}
+          </Text>
           <Text style={styles.commentDate}>{date}</Text>
         </View>
       </View>
-      <Text style={styles.description}>{text}</Text>
+      <Text style={[styles.description, color && { color }]}>{text}</Text>
     </View>
   );
 }

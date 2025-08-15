@@ -65,7 +65,7 @@ export default function PopularChallengeTotal({
                     <Text style={styles.tagText}>{year}</Text>
                   </View>
                   <View style={styles.scrapButton}>
-                    <ScrapIcon />
+                    <ScrapIcon size={9} />
                   </View>
                 </View>
               </View>

@@ -1,5 +1,6 @@
 import BackIcon from "@/components/icons/BackIcon";
-import PlanIcon from "@/components/icons/PlanIcon";
+import CalendarIcon from "@/components/icons/CalendarIcon";
+import TravelCard from "@/components/TravelCard";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
@@ -13,49 +14,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-interface TravelCardProps {
-  image: any;
-  title: string;
-  dates: string;
-  duration: string;
-  tags: string[];
-  icon?: string;
-}
-
 interface FestivalCardProps {
   image: any;
   title: string;
   dates: string;
 }
-
-const TravelCard: React.FC<TravelCardProps> = ({
-  image,
-  title,
-  dates,
-  duration,
-  tags,
-  icon,
-}) => (
-  <TouchableOpacity style={styles.travelCard}>
-    <Image source={image} style={styles.travelCardImage} />
-    <View style={styles.travelCardContent}>
-      <View>
-        <Text style={styles.travelCardTitle}>{title}</Text>
-      </View>
-      <View style={styles.travelCardDateContainer}>
-        <Text style={styles.travelCardDates}>{dates}</Text>
-        <Text style={styles.travelCardDuration}>{duration}</Text>
-      </View>
-      <View style={styles.travelCardTags}>
-        {tags.map((tag, index) => (
-          <View key={index} style={styles.travelCardTag}>
-            <Text style={styles.travelCardTagText}>{tag}</Text>
-          </View>
-        ))}
-      </View>
-    </View>
-  </TouchableOpacity>
-);
 
 const FestivalCard: React.FC<FestivalCardProps> = ({ image, title, dates }) => (
   <TouchableOpacity style={styles.festivalCard}>
@@ -154,7 +117,7 @@ export default function Preference() {
                   style={styles.planButton}
                   onPress={() => router.push("/plan")}
                 >
-                  <PlanIcon />
+                  <CalendarIcon />
                   <Text style={styles.planButtonText}>일정 짜기</Text>
                 </TouchableOpacity>
               </View>
@@ -178,7 +141,14 @@ export default function Preference() {
             contentContainerStyle={styles.cardsContainer}
           >
             {travelRecommendations.map((item) => (
-              <TravelCard key={item.id} {...item} />
+              <TravelCard
+                key={item.id}
+                image={item.image}
+                title={item.title}
+                dates={item.dates}
+                duration={item.duration}
+                tags={item.tags}
+              />
             ))}
           </ScrollView>
         </View>

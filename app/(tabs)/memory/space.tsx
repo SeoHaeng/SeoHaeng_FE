@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import LikedPlaces from "./likedPlaces";
 import MyBookmark from "./myBookmark";
 import SavedBookmark from "./savedBookmark";
@@ -72,12 +72,6 @@ export default function SpaceView() {
             찜한 장소
           </Text>
         </TouchableOpacity>
-
-        {/* 드롭다운 메뉴 */}
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.dropdownText}>목록 보기</Text>
-          <Image source={require("@/assets/images/downArrow.png")} />
-        </View>
       </View>
 
       {/* 메인 콘텐츠 */}

@@ -4,7 +4,6 @@ import BookstoreBadge from "@/components/BookstoreBadge";
 import BackIcon from "@/components/icons/BackIcon";
 import FilledHeartIcon from "@/components/icons/FilledHeartIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
-import ReviewMoreArrowIcon from "@/components/icons/ReviewMoreArrowIcon";
 import StarIcon from "@/components/icons/StarIcon";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -24,6 +23,7 @@ import ReviewTab from "./review";
 
 export default function BookstoreDetail() {
   const [activeTab, setActiveTab] = useState("상세 정보");
+  const [isLiked, setIsLiked] = useState(false);
   const router = useRouter();
 
   const renderTabContent = () => {
@@ -78,8 +78,11 @@ export default function BookstoreDetail() {
               <BookstoreBadge />
             </View>
             <View style={styles.actionButtons}>
-              <TouchableOpacity style={styles.actionButton}>
-                <FilledHeartIcon />
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => setIsLiked(!isLiked)}
+              >
+                <FilledHeartIcon isActive={isLiked} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.actionButton}>
                 <Image source={require("@/assets/images/Share.png")} />
@@ -93,7 +96,6 @@ export default function BookstoreDetail() {
             <View style={styles.ratingContainer}>
               <StarIcon width={14} height={14} />
               <Text style={styles.ratingText}>4.2</Text>
-              <ReviewMoreArrowIcon />
             </View>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>

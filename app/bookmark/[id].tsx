@@ -4,9 +4,12 @@ import FilledHeartIcon from "@/components/icons/FilledHeartIcon";
 import ScrapIcon from "@/components/icons/ScrapIcon";
 import ChallengeComment from "@/components/maruChallenge/detail/comment";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,6 +25,27 @@ export default function BookmarkDetail() {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [comment, setComment] = useState("");
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    const showListener = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+      },
+    );
+    const hideListener = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
+      () => {
+        setKeyboardHeight(0);
+      },
+    );
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, []);
 
   // API 데이터 형식에 맞춘 예시 데이터
   const bookmarkData = {
@@ -50,7 +74,7 @@ export default function BookmarkDetail() {
         commentId: 3,
         createdAt: "2025-08-05",
         userId: 1,
-        commentContent: "와대박",
+        commentContent: "와박",
       },
       {
         commentId: 2,
@@ -77,101 +101,161 @@ export default function BookmarkDetail() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 헤더 */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <BackIcon />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>
-          카드를 터치해 뒷면도 확인해보세요
-        </Text>
-        <View style={styles.headerSpacer} />
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        {/* 메인 카드 */}
-        <View style={styles.mainCardContainer}>
-          <BookmarkTemplate
-            width={360}
-            height={360}
-            templateId={bookmarkData.templateId}
-          />
-          <View style={styles.mainCard}>
-            <Image
-              source={{ uri: bookmarkData.readingSpotImages[0] }}
-              style={styles.cardImage}
-              resizeMode="cover"
-            />
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={{ paddingBottom: keyboardHeight + 80 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* 헤더 */}
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <BackIcon />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>
+              카드를 터치해 뒷면도 확인해보세요
+            </Text>
+            <View style={styles.headerSpacer} />
+          </View>
 
-            {/* 카드 내용 */}
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{bookmarkData.title}</Text>
-              <Text style={styles.cardAddress}>{bookmarkData.address}</Text>
+          {/* 메인 카드 */}
+          {/* 메인 카드와 소셜미디어 포스트를 가로 스크롤로 함께 넘기기 */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScrollContainer}
+          >
+            {/* 메인 카드 */}
+            <View style={styles.mainCardContainer}>
+              <BookmarkTemplate
+                width={360}
+                height={360}
+                templateId={bookmarkData.templateId}
+              />
+              <View style={styles.mainCard}>
+                <Image
+                  source={{ uri: bookmarkData.readingSpotImages[0] }}
+                  style={styles.cardImage}
+                  resizeMode="cover"
+                />
+
+                {/* 카드 내용 */}
+                <View style={styles.cardContent}>
+                  <Text style={styles.cardTitle}>{bookmarkData.title}</Text>
+                  <Text style={styles.cardAddress}>{bookmarkData.address}</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* 소셜미디어 포스트 */}
+            <View style={styles.socialPost}>
+              <View style={styles.postHeader}>
+                <View style={styles.userAvatar} />
+
+                <Text style={styles.username}>유딘딘</Text>
+                <Text style={styles.postDate}>2025.05.13 토</Text>
+              </View>
+
+              <Text style={styles.postContent}>
+                안목해변 가서 책 읽었다. 사람이 많기는 한데 독서 스팟을 잘
+                찾으면 책 읽기에 베리베리 굿굿이다ㅎㅎ 좌표 남길테니 다른 분들도
+                여기서 함 읽어보시길 은근 집중이 잘 돼서 한 100페이지 읽은 거
+                같다... + 바다 짠 냄새 나서 매운탕 땡긴다: 🌊 이따 집 가는 길에
+                매운탕 포장해서 가야겠삼 야호
+              </Text>
+
+              <View style={styles.bookRecommendation}>
+                <Image
+                  source={{
+                    uri: "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
+                  }}
+                  style={styles.bookCover}
+                />
+                <View style={styles.bookInfo}>
+                  <Text style={styles.bookTitle}>물고기는 존재하지 않는다</Text>
+                  <Text style={styles.bookAuthor}>룰루 밀러 / 정지인</Text>
+                  <View style={styles.bookYearContainer}>
+                    <Text style={styles.bookYear}>2022</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+
+          {/* 상호작용 및 메타데이터 */}
+          <View style={styles.interactionSection}>
+            <TouchableOpacity style={styles.bookmarkLocation}>
+              <Text style={styles.bookmarkLocationText}>
+                이 책갈피 위치 &gt;
+              </Text>
+            </TouchableOpacity>
+
+            <View style={styles.statsContainer}>
+              <TouchableOpacity
+                style={styles.statItem}
+                onPress={() => setIsBookmarked(!isBookmarked)}
+              >
+                <ScrapIcon isActive={isBookmarked} />
+                <Text style={styles.statNumber}>{bookmarkData.scraps}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.statItem}
+                onPress={() => setIsLiked(!isLiked)}
+              >
+                <FilledHeartIcon isActive={isLiked} />
+                <Text style={styles.statNumber}>{bookmarkData.likes}</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </View>
 
-        {/* 상호작용 및 메타데이터 */}
-        <View style={styles.interactionSection}>
-          <TouchableOpacity style={styles.bookmarkLocation}>
-            <Text style={styles.bookmarkLocationText}>이 책갈피 위치 &gt;</Text>
-          </TouchableOpacity>
-
-          <View style={styles.statsContainer}>
-            <TouchableOpacity
-              style={styles.statItem}
-              onPress={() => setIsBookmarked(!isBookmarked)}
-            >
-              <ScrapIcon isActive={isBookmarked} />
-              <Text style={styles.statNumber}>{bookmarkData.scraps}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.statItem}
-              onPress={() => setIsLiked(!isLiked)}
-            >
-              <FilledHeartIcon isActive={isLiked} />
-              <Text style={styles.statNumber}>{bookmarkData.likes}</Text>
-            </TouchableOpacity>
+          {/* 댓글 섹션 */}
+          <View style={styles.commentsSection}>
+            {bookmarkData.comments.map((comment) => (
+              <ChallengeComment
+                key={comment.commentId}
+                userName={`사용자 ${comment.userId}`}
+                date={comment.createdAt}
+                text={comment.commentContent}
+                color="#FFFFFF"
+              />
+            ))}
           </View>
-        </View>
+        </ScrollView>
 
-        {/* 댓글 섹션 */}
-        <View style={styles.commentsSection}>
-          {bookmarkData.comments.map((comment) => (
-            <ChallengeComment
-              key={comment.commentId}
-              userName={`사용자 ${comment.userId}`}
-              date={comment.createdAt}
-              text={comment.commentContent}
-              color="#FFFFFF"
-            />
-          ))}
-        </View>
-      </ScrollView>
-
-      {/* 댓글 입력 */}
-      <View style={styles.commentInputContainer}>
-        <TextInput
-          style={styles.commentInput}
-          placeholder="댓글을 남겨주세요"
-          placeholderTextColor="#9D9896"
-          value={comment}
-          onChangeText={setComment}
-        />
-        <TouchableOpacity
-          style={styles.sendButton}
-          onPress={handleSubmitComment}
+        {/* 댓글 입력 */}
+        <View
+          style={[
+            styles.commentInputContainer,
+            {
+              position: "absolute",
+              left: 0,
+              right: 0,
+              bottom: keyboardHeight,
+            },
+          ]}
         >
-          <Text style={styles.sendButtonText}>등록</Text>
-        </TouchableOpacity>
-      </View>
+          <TextInput
+            style={styles.commentInput}
+            placeholder="댓글을 남겨주세요"
+            placeholderTextColor="#9D9896"
+            value={comment}
+            onChangeText={setComment}
+          />
+          <TouchableOpacity
+            style={styles.sendButton}
+            onPress={handleSubmitComment}
+          >
+            <Text style={styles.sendButtonText}>등록</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -186,6 +270,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
   },
   backButton: {
     width: 44,
@@ -206,12 +292,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  mainCardContainer: {
-    position: "relative",
-    alignItems: "center",
-    margin: 20,
-    marginBottom: 10,
-  },
+
   mainCard: {
     position: "absolute",
     top: 0,
@@ -266,73 +347,14 @@ const styles = StyleSheet.create({
     textAlign: "left",
     alignSelf: "flex-start",
   },
-  bookInfo: {
-    flexDirection: "row",
-    marginBottom: 15,
-    alignItems: "center",
-  },
-  bookImage: {
-    width: 60,
-    height: 80,
-    borderRadius: 8,
-    marginRight: 15,
-  },
-  bookDetails: {
-    flex: 1,
-  },
-  bookTitle: {
-    fontSize: 25,
-    fontFamily: "SUIT-600",
-    color: "#262423",
-    marginBottom: 4,
-  },
-  bookAuthor: {
-    fontSize: 14,
-    fontFamily: "SUIT-500",
-    color: "#716C69",
-    marginBottom: 2,
-  },
-  bookPubDate: {
-    fontSize: 12,
-    fontFamily: "SUIT-400",
-    color: "#9D9896",
-  },
-  content: {
-    fontSize: 16,
-    fontFamily: "SUIT-400",
-    color: "#262423",
-    lineHeight: 24,
-    marginBottom: 20,
-  },
-  cardActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  tags: {
-    flexDirection: "row",
-    gap: 5,
-  },
-  tagArrow: {
-    fontSize: 16,
-    color: "#4CAF50",
-  },
-  locationButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  locationButtonText: {
-    fontSize: 14,
-    fontFamily: "SUIT-600",
-    color: "#EEE9E6",
-  },
+
   interactionSection: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
     marginBottom: 30,
+    marginTop: 10,
   },
   bookmarkLocation: {
     paddingVertical: 8,
@@ -369,8 +391,103 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: "##262423",
+    backgroundColor: "#262423",
   },
+  horizontalScrollContainer: {
+    paddingHorizontal: 20,
+    gap: 16,
+  },
+  mainCardContainer: {
+    position: "relative",
+    alignItems: "center",
+  },
+  socialPost: {
+    width: 320,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: "#E3F2FD",
+  },
+  postHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    gap: 8,
+  },
+  userAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#E0E0E0",
+  },
+
+  username: {
+    fontSize: 16,
+    fontFamily: "Gangwon",
+    color: "#716C69",
+  },
+  postDate: {
+    fontSize: 13,
+    fontFamily: "SUIT-600",
+    color: "#C5BFBB",
+  },
+  postContent: {
+    fontSize: 15,
+    fontFamily: "SUIT-500",
+    color: "#000000",
+    lineHeight: 23,
+    marginBottom: 16,
+  },
+  bookRecommendation: {
+    flexDirection: "row",
+    backgroundColor: "#EEE9E6",
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
+    position: "relative",
+  },
+  bookCover: {
+    width: 50,
+    height: 70,
+    borderRadius: 6,
+    marginRight: 12,
+  },
+  bookInfo: {
+    flexDirection: "column",
+    gap: 4,
+    paddingTop: 2,
+  },
+  bookTitle: {
+    fontSize: 14,
+    fontFamily: "SUIT-600",
+    color: "#262423",
+  },
+  bookAuthor: {
+    fontSize: 12,
+    fontFamily: "SUIT-400",
+    color: "#716C69",
+    marginBottom: 4,
+  },
+  bookMeta: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  bookYearContainer: {
+    backgroundColor: "#C5BFBB",
+    borderRadius: 5,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    alignSelf: "flex-start",
+  },
+  bookYear: {
+    fontSize: 12,
+    fontFamily: "SUIT-600",
+    color: "#EEE9E6",
+  },
+
   commentInput: {
     flex: 1,
     height: 45,

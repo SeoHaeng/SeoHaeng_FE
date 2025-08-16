@@ -27,14 +27,12 @@ export default function SearchScreen() {
       type: "search",
       tag: "독립서점",
       address: "강릉시 강동면 현화로 973 1층",
-      distance: "1.5km",
     },
     {
       text: "이스트쓰네",
       type: "search",
       tag: "독립서점",
       address: "강릉시 강동면 현화로 973 1층",
-      distance: "1.5km",
     },
   ]);
 
@@ -151,9 +149,6 @@ export default function SearchScreen() {
                       </View>
                     )}
                   </View>
-                  {item.distance && (
-                    <Text style={styles.distanceText}>{item.distance}</Text>
-                  )}
                 </View>
               </TouchableOpacity>
             ))}
@@ -286,11 +281,7 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#666666",
   },
-  distanceText: {
-    fontSize: 14,
-    fontFamily: "SUIT-500",
-    color: "#999999",
-  },
+
   nameAndTagContainer: {
     flexDirection: "row",
     alignItems: "center",

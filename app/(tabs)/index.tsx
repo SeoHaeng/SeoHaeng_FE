@@ -8,6 +8,7 @@ import React, { useRef, useState } from "react";
 import {
   Animated,
   Image,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -272,15 +273,16 @@ export default function Index() {
             </TouchableOpacity>
           </View>
 
-          {/* 스탬프 투어 배너 */}
-          <View style={styles.stampTourBanner}>
-            <View style={styles.bannerContent}>
-              <Text style={styles.bannerTitle}>2025 강원 스탬프 투어 개최</Text>
-              <View style={styles.bannerGraphic}>
-                <Text style={styles.bannerGraphicText}>미션! 스탬프투어</Text>
-              </View>
-            </View>
-          </View>
+          <TouchableOpacity
+            onPress={() => {
+              // 스탬프 투어 링크로 이동
+              Linking.openURL(
+                "https://playar.syrup.co.kr/stamp/main.html?eventId=S000047",
+              );
+            }}
+          >
+            <Image source={require("@/assets/images/stamp_tour.png")} />
+          </TouchableOpacity>
         </View>
 
         {/* 다른 유저의 서행 섹션 - 하얀 배경 */}

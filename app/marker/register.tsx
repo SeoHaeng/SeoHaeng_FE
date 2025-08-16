@@ -22,7 +22,7 @@ export default function MarkerRegister() {
   const [placeName, setPlaceName] = useState("");
   const [impressions, setImpressions] = useState("");
 
-  const templates = [1, 2, 3, 4, 5];
+  const templates = [1, 2, 3, 4];
 
   const handleBack = () => {
     router.back();
@@ -179,7 +179,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 20,
-    backgroundColor: "#EEE9E6",
   },
   addressInfo: {
     flexDirection: "row",
@@ -187,19 +186,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   addressText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
-    color: "#000000",
+    color: "#262423",
     marginLeft: 8,
   },
   changeAddressButton: {
-    backgroundColor: "#DBD6D3",
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    backgroundColor: "#EEE9E6",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
   },
   changeAddressText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -229,7 +230,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "SUIT-700",
     color: "#000000",
-    marginBottom: 15,
+    marginBottom: 10,
   },
   templateContainer: {
     gap: 12,
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DBD6D3",
     paddingHorizontal: 15,
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   searchInput: {
     flex: 1,
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DBD6D3",
     paddingHorizontal: 15,
-    paddingVertical: 12,
+    paddingVertical: 13,
     fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#000000",

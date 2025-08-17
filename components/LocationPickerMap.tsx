@@ -16,19 +16,11 @@ const koreaBounds = {
 type LocationPickerMapProps = {
   initialLatitude: number;
   initialLongitude: number;
-  onLocationSelected: (
-    latitude: number,
-    longitude: number,
-    address: string,
-  ) => void;
-  onCancel: () => void;
 };
 
 const LocationPickerMap = ({
   initialLatitude,
   initialLongitude,
-  onLocationSelected,
-  onCancel,
 }: LocationPickerMapProps) => {
   const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
   const [selectedLocation, setSelectedLocation] = useState<{
@@ -397,13 +389,17 @@ const LocationPickerMap = ({
             <Text style={styles.addressText}>{selectedLocation.address}</Text>
             <TouchableOpacity
               style={styles.confirmButton}
-              onPress={() =>
-                onLocationSelected(
-                  selectedLocation.lat,
-                  selectedLocation.lng,
-                  selectedLocation.address,
-                )
-              }
+              onPress={() => {
+                // 마커 등록 화면으로 이동하면서 위치 정보 전달
+                router.push({
+                  pathname: "/marker/register",
+                  params: {
+                    latitude: selectedLocation.lat.toString(),
+                    longitude: selectedLocation.lng.toString(),
+                    address: selectedLocation.address,
+                  },
+                });
+              }}
             >
               <Text style={styles.confirmButtonText}>여기로 하기 {">"}</Text>
             </TouchableOpacity>

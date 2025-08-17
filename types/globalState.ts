@@ -31,3 +31,16 @@ export const getReceivedBookData = (): BookData | null => {
 export const getGiftBookData = (): BookData | null => {
   return giftBookData;
 };
+
+// 마커 등록용 도서 정보
+export let markerBookData: BookData | null = null;
+
+// 마커 등록용 도서 정보 설정
+export const setMarkerBookData = (book: BookData | null) => {
+  markerBookData = book;
+};
+
+// 마커 등록용 도서 정보 가져오기
+export const getMarkerBookData = (): BookData | null => {
+  return markerBookData;
+};

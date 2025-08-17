@@ -371,6 +371,16 @@ function Milestone() {
           styles.zoomButton,
           (isFilterActive || selectedLocation) && styles.hiddenElement,
         ]}
+        onPress={() => {
+          // 현재 위치를 기반으로 위치 선택 화면으로 이동
+          router.push({
+            pathname: "/location-picker",
+            params: {
+              initialLatitude: currentLocation.latitude,
+              initialLongitude: currentLocation.longitude,
+            },
+          });
+        }}
       >
         <Text style={styles.zoomIcon}>+</Text>
       </TouchableOpacity>

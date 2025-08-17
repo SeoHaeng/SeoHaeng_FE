@@ -23,7 +23,7 @@ import {
   View,
 } from "react-native";
 
-export default function Milestone() {
+function Milestone() {
   const params = useLocalSearchParams();
   const [currentLocation, setCurrentLocation] = useState({
     latitude: 37.8228, // 강원도 춘천시
@@ -736,3 +736,4 @@ const styles = StyleSheet.create({
     color: "#262423",
   },
 });
+export default Milestone;

@@ -6,7 +6,6 @@ import BookStayIcon from "@/components/icons/BookStayIcon";
 import HotPlaceIcon from "@/components/icons/HotPlaceIcon";
 import IndependentBookstoreIcon from "@/components/icons/IndependentBookstoreIcon";
 import MyLocationIcon from "@/components/icons/MyLocationIcon";
-import PreferenceBookstoreIcon from "@/components/icons/PreferenceBookstoreIcon";
 import RestaurantIcon from "@/components/icons/RestaurantIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
 import SpaceBookmarkIcon from "@/components/icons/SpaceBookmarkIcon";
@@ -366,28 +365,15 @@ function Milestone() {
         <MyLocationIcon style={styles.myLocationIcon} color="#716C69" />
       </TouchableOpacity>
 
-      {/* 버튼 컨테이너 */}
-      <View
+      {/* 줌 버튼 - 오른쪽 끝에 별도 배치 */}
+      <TouchableOpacity
         style={[
-          styles.buttonContainer,
+          styles.zoomButton,
           (isFilterActive || selectedLocation) && styles.hiddenElement,
         ]}
       >
-        {/* 메인 액션 버튼 */}
-        <TouchableOpacity style={styles.mainActionButton}>
-          <PreferenceBookstoreIcon
-            style={styles.actionButtonIcon}
-            color="#262423"
-          />
-          <Text style={styles.actionButtonText}>
-            내 취향에 맞는 독립서점 찾기
-          </Text>
-        </TouchableOpacity>
-        {/* 줌 버튼 */}
-        <TouchableOpacity style={styles.zoomButton}>
-          <Text style={styles.zoomIcon}>+</Text>
-        </TouchableOpacity>
-      </View>
+        <Text style={styles.zoomIcon}>+</Text>
+      </TouchableOpacity>
 
       {/* 하단 카드 */}
       <View
@@ -627,6 +613,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   zoomButton: {
+    position: "absolute",
+    bottom: 125,
+    right: 20,
     width: 50,
     height: 50,
     backgroundColor: "#EEE9E6",

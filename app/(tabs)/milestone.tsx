@@ -32,6 +32,9 @@ function Milestone() {
   const [selectedFilter, setSelectedFilter] = useState("가볼만한 관광지");
   const [selectedBottomFilter, setSelectedBottomFilter] =
     useState("가볼만한 관광지");
+  const [selectedBottomFilters, setSelectedBottomFilters] = useState<string[]>(
+    [],
+  ); // 다중 선택을 위한 배열 상태 추가
   const [selectedLocation, setSelectedLocation] = useState<{
     name: string;
     text: string;
@@ -221,6 +224,19 @@ function Milestone() {
         longitude={currentLocation.longitude}
         ref={webViewRef}
         filterType={filterType} // 필터 타입 전달
+        bottomFilterTypes={selectedBottomFilters.map((filter) => {
+          // 필터 이름을 mockData의 type과 매칭
+          switch (filter) {
+            case "주변 맛집":
+              return "맛집";
+            case "가볼만한 관광지":
+              return "관광지";
+            case "뜨는 축제":
+              return "축제";
+            default:
+              return filter;
+          }
+        })} // 하단 필터 타입들 전달
       />
 
       {/* 상단 검색바 */}
@@ -427,21 +443,31 @@ function Milestone() {
           <TouchableOpacity
             style={[
               styles.bottomFilterButton,
-              selectedBottomFilter === "주변 맛집" &&
+              selectedBottomFilters.includes("주변 맛집") &&
                 styles.selectedFilterButton,
             ]}
-            onPress={() => setSelectedBottomFilter("주변 맛집")}
+            onPress={() => {
+              const filter = "주변 맛집";
+              setSelectedBottomFilters(
+                (prev) =>
+                  prev.includes(filter)
+                    ? prev.filter((f) => f !== filter) // 이미 선택된 경우 제거
+                    : [...prev, filter], // 선택되지 않은 경우 추가
+              );
+            }}
           >
             <RestaurantIcon
               style={styles.bottomFilterIcon}
               color={
-                selectedBottomFilter === "주변 맛집" ? "#FFFFFF" : "#9D9896"
+                selectedBottomFilters.includes("주변 맛집")
+                  ? "#FFFFFF"
+                  : "#9D9896"
               }
             />
             <Text
               style={[
                 styles.bottomFilterText,
-                selectedBottomFilter === "주변 맛집" &&
+                selectedBottomFilters.includes("주변 맛집") &&
                   styles.selectedFilterText,
               ]}
             >
@@ -451,15 +477,23 @@ function Milestone() {
           <TouchableOpacity
             style={[
               styles.bottomFilterButton,
-              selectedBottomFilter === "가볼만한 관광지" &&
+              selectedBottomFilters.includes("가볼만한 관광지") &&
                 styles.selectedFilterButton,
             ]}
-            onPress={() => setSelectedBottomFilter("가볼만한 관광지")}
+            onPress={() => {
+              const filter = "가볼만한 관광지";
+              setSelectedBottomFilters(
+                (prev) =>
+                  prev.includes(filter)
+                    ? prev.filter((f) => f !== filter) // 이미 선택된 경우 제거
+                    : [...prev, filter], // 선택되지 않은 경우 추가
+              );
+            }}
           >
             <TouristSpotIcon
               style={styles.bottomFilterIcon}
               color={
-                selectedBottomFilter === "가볼만한 관광지"
+                selectedBottomFilters.includes("가볼만한 관광지")
                   ? "#FFFFFF"
                   : "#9D9896"
               }
@@ -467,7 +501,7 @@ function Milestone() {
             <Text
               style={[
                 styles.bottomFilterText,
-                selectedBottomFilter === "가볼만한 관광지" &&
+                selectedBottomFilters.includes("가볼만한 관광지") &&
                   styles.selectedFilterText,
               ]}
             >
@@ -477,21 +511,31 @@ function Milestone() {
           <TouchableOpacity
             style={[
               styles.bottomFilterButton,
-              selectedBottomFilter === "뜨는 축제" &&
+              selectedBottomFilters.includes("뜨는 축제") &&
                 styles.selectedFilterButton,
             ]}
-            onPress={() => setSelectedBottomFilter("뜨는 축제")}
+            onPress={() => {
+              const filter = "뜨는 축제";
+              setSelectedBottomFilters(
+                (prev) =>
+                  prev.includes(filter)
+                    ? prev.filter((f) => f !== filter) // 이미 선택된 경우 제거
+                    : [...prev, filter], // 선택되지 않은 경우 추가
+              );
+            }}
           >
             <HotPlaceIcon
               style={styles.bottomFilterIcon}
               color={
-                selectedBottomFilter === "뜨는 축제" ? "#FFFFFF" : "#9D9896"
+                selectedBottomFilters.includes("뜨는 축제")
+                  ? "#FFFFFF"
+                  : "#9D9896"
               }
             />
             <Text
               style={[
                 styles.bottomFilterText,
-                selectedBottomFilter === "뜨는 축제" &&
+                selectedBottomFilters.includes("뜨는 축제") &&
                   styles.selectedFilterText,
               ]}
             >

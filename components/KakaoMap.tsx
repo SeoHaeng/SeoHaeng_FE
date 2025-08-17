@@ -1,4 +1,10 @@
-import mockData from "@/assets/mockdata";
+import { bookCafeData } from "@/assets/mockdata/bookCafeData";
+import { bookStayData } from "@/assets/mockdata/bookStayData";
+import { bookmarkData } from "@/assets/mockdata/bookmarkData";
+import { festivalData } from "@/assets/mockdata/festivalData";
+import { independentBookstoreData } from "@/assets/mockdata/independentBookstoreData";
+import { restaurantData } from "@/assets/mockdata/restaurantData";
+import { touristData } from "@/assets/mockdata/touristData";
 import Constants from "expo-constants";
 import React, {
   forwardRef,
@@ -9,7 +15,10 @@ import React, {
 } from "react";
 import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
-import { createCulturalMarkerImages } from "./bookstoreMarkers";
+import {
+  createCulturalMarkerImages,
+  createTouristMarkerImages,
+} from "./bookstoreMarkers";
 
 // 마커 스타일
 const markerStyles = {
@@ -22,6 +31,7 @@ type KakaoMapProps = {
   longitude: number;
   regions?: string[];
   filterType?: string; // 필터 타입 추가
+  bottomFilterTypes?: string[]; // 하단 필터 타입들 추가
 };
 
 interface Bookstore {
@@ -79,13 +89,16 @@ const regionCoordinates = {
 };
 
 const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
-  ({ latitude, longitude, regions = [], filterType }, ref) => {
+  (
+    { latitude, longitude, regions = [], filterType, bottomFilterTypes = [] },
+    ref,
+  ) => {
     const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
     // 활성화된 마커 ID 관리 (한 번에 하나만 활성화)
     const [activeMarkerId, setActiveMarkerId] = useState<string | null>(null); // number에서 string으로 변경
     const webViewRef = React.useRef<WebView>(null);
 
-    // 필터 타입이 변경될 때마다 마커 다시 그리기
+    // 필터 타입이나 하단 필터가 변경될 때마다 마커 다시 그리기
     useEffect(() => {
       if (webViewRef.current) {
         // 기존 마커 모두 제거
@@ -100,20 +113,55 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
           addAllCulturalMarkers();
         }, 100);
       }
-    }, [filterType]);
+    }, [filterType, bottomFilterTypes]); // bottomFilterTypes 의존성 추가
+
+    // activeMarkerId가 변경될 때마다 모든 마커를 다시 그리기
+    useEffect(() => {
+      if (webViewRef.current) {
+        // 마커 이미지만 업데이트하고 기존 마커는 제거하지 않음
+        setTimeout(() => {
+          independentBookstoreData.forEach((item) => {
+            const bookstore: Bookstore = {
+              id: item.id,
+              name: item.name,
+              lat: item.latitude,
+              lng: item.longitude,
+              type: item.type as "독립서점" | "북카페" | "북스테이" | "책갈피",
+            };
+            updateBookstoreMarkerImage(bookstore);
+          });
+        }, 100);
+      }
+    }, [activeMarkerId]);
 
     // 문화/서점 마커들
     const culturalMarkers = useMemo(() => {
       return createCulturalMarkerImages();
     }, []);
 
+    // 관광/음식 마커들
+    const touristMarkers = useMemo(() => {
+      return createTouristMarkerImages();
+    }, []);
+
     // 문화/서점 마커 추가
     const addCulturalMarker = (bookstore: Bookstore) => {
       const isActive = activeMarkerId === bookstore.id;
       const markerType = bookstore.type || "독립서점";
-      const imageData =
-        culturalMarkers[markerType as keyof typeof culturalMarkers] ||
-        culturalMarkers.독립서점;
+
+      // 문화/서점 마커인지 관광/음식 마커인지 판단
+      let imageData;
+      if (["독립서점", "북카페", "북스테이", "책갈피"].includes(markerType)) {
+        imageData =
+          culturalMarkers[markerType as keyof typeof culturalMarkers] ||
+          culturalMarkers.독립서점;
+      } else if (["맛집", "관광지", "축제"].includes(markerType)) {
+        imageData =
+          touristMarkers[markerType as keyof typeof touristMarkers] ||
+          touristMarkers.관광지;
+      } else {
+        imageData = culturalMarkers.독립서점; // 기본값
+      }
 
       const message = {
         type: "addBookstoreMarker",
@@ -132,18 +180,71 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
 
     // 모든 문화/서점 마커 추가
     const addAllCulturalMarkers = () => {
-      // 필터 타입이 있으면 해당 타입만, 없으면 모든 마커 추가
-      const filteredData = filterType
-        ? mockData.filter((item) => item.type === filterType)
-        : mockData;
+      let allData: any[] = [];
 
-      filteredData.forEach((item) => {
+      // 상단 필터 타입에 따라 데이터 선택
+      if (filterType) {
+        switch (filterType) {
+          case "독립서점":
+            allData = [...independentBookstoreData];
+            break;
+          case "북카페":
+            allData = [...bookCafeData];
+            break;
+          case "북스테이":
+            allData = [...bookStayData];
+            break;
+          case "책갈피":
+            allData = [...bookmarkData];
+            break;
+          default:
+            allData = [
+              ...independentBookstoreData,
+              ...bookCafeData,
+              ...bookStayData,
+              ...bookmarkData,
+            ];
+        }
+      } else {
+        // 상단 필터가 없으면 모든 서점 관련 데이터 추가
+        allData = [
+          ...independentBookstoreData,
+          ...bookCafeData,
+          ...bookStayData,
+          ...bookmarkData,
+        ];
+      }
+
+      // 하단 필터가 선택된 경우 해당 타입들 추가
+      if (bottomFilterTypes && bottomFilterTypes.length > 0) {
+        bottomFilterTypes.forEach((filterType) => {
+          switch (filterType) {
+            case "맛집":
+              allData = [...allData, ...restaurantData];
+              break;
+            case "관광지":
+              allData = [...allData, ...touristData];
+              break;
+            case "축제":
+              allData = [...allData, ...festivalData];
+              break;
+          }
+        });
+      }
+
+      // 중복 제거 (같은 id를 가진 항목이 있을 경우)
+      const uniqueData = allData.filter(
+        (item, index, self) =>
+          index === self.findIndex((t) => t.id === item.id),
+      );
+
+      uniqueData.forEach((item) => {
         const bookstore: Bookstore = {
           id: item.id,
           name: item.name,
           lat: item.latitude,
           lng: item.longitude,
-          type: item.type as "독립서점" | "북카페" | "북스테이" | "책갈피",
+          type: item.type,
         };
         addCulturalMarker(bookstore);
       });
@@ -622,7 +723,7 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
         </body>
       </html>
     `;
-    }, [apiKey, latitude, longitude, regions, filterType]); // filterType 의존성 추가
+    }, [apiKey, latitude, longitude, regions, filterType, bottomFilterTypes]); // bottomFilterTypes 의존성 추가
 
     useImperativeHandle(ref, () => ({
       postMessage: (message: string) => {

@@ -868,17 +868,28 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   }
                   
                   myLocationMarker.setPosition(newPos);
+                  // 위치 범위 원도 함께 이동
+                  if (myLocationRangeCircle) {
+                    myLocationRangeCircle.setPosition(newPos);
+                  }
                   return;
                 }
                 
                 const myLocationPosition = new kakao.maps.LatLng(restrictedLat, restrictedLng);
                 
-                // 내 위치 마커 생성 (카카오맵 기본 마커)
+                // 내 위치 마커 생성 (SVG로 범위 원과 마커 통합)
                 myLocationMarker = new kakao.maps.Marker({
                   position: myLocationPosition,
                   map: map,
                   zIndex: 1000 // 다른 마커들보다 위에 표시
                 });
+                
+                // SVG로 범위 원과 마커를 통합한 이미지 생성
+                const markerImage = new kakao.maps.MarkerImage(
+                  'data:image/svg+xml;charset=UTF-8,<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="32" fill="%230669FD" fill-opacity="0.2"/><circle cx="32" cy="32" r="12" fill="white"/><circle cx="32" cy="32" r="8" fill="%230669FD"/></svg>',
+                  new kakao.maps.Size(64, 64)
+                );
+                myLocationMarker.setImage(markerImage);
                 
                 // 내 위치 마커는 절대 제거되지 않도록 보호
                 myLocationMarker.setDraggable(false);

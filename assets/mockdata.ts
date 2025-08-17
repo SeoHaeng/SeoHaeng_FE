@@ -1,4 +1,4 @@
-[
+const mockData = [
   {
     id: "bk-ind-001",
     name: "바다책방 경포",
@@ -286,3 +286,5 @@
     longitude: 128.9215,
   },
 ];
+
+export default mockData;

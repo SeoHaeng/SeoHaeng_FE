@@ -327,7 +327,56 @@ export default function Milestone() {
           styles.myLocationButton,
           (isFilterActive || selectedLocation) && styles.hiddenElement,
         ]}
-        onPress={getCurrentLocation}
+        onPress={async () => {
+          try {
+            // 현재 위치 가져오기
+            const { status } =
+              await Location.requestForegroundPermissionsAsync();
+            if (status !== "granted") {
+              Alert.alert(
+                "권한 필요",
+                "위치 정보에 접근하려면 권한이 필요합니다.",
+              );
+              return;
+            }
+
+            const location = await Location.getCurrentPositionAsync({});
+            const newLocation = {
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            };
+
+            console.log("내 위치로 이동:", newLocation);
+            setCurrentLocation(newLocation);
+            setIsLocationSelected(false);
+
+            // 주소 정보 가져오기
+            const addressResponse = await Location.reverseGeocodeAsync({
+              latitude: newLocation.latitude,
+              longitude: newLocation.longitude,
+            });
+
+            if (addressResponse.length > 0) {
+              const address = addressResponse[0];
+              const district =
+                address.district || address.subregion || "알 수 없는 지역";
+              setCurrentAddress(district);
+            }
+
+            // 지도를 내 위치로 이동하고 마커 업데이트
+            if (webViewRef.current) {
+              webViewRef.current.moveToLocation(
+                newLocation.latitude,
+                newLocation.longitude,
+              );
+            }
+
+            console.log("내 위치로 이동 완료:", newLocation);
+          } catch (error) {
+            console.error("위치 가져오기 실패:", error);
+            Alert.alert("오류", "현재 위치를 가져올 수 없습니다.");
+          }
+        }}
       >
         <MyLocationIcon style={styles.myLocationIcon} color="#716C69" />
       </TouchableOpacity>
@@ -421,25 +470,25 @@ export default function Milestone() {
           <TouchableOpacity
             style={[
               styles.bottomFilterButton,
-              selectedBottomFilter === "뜨는 핫플" &&
+              selectedBottomFilter === "뜨는 축제" &&
                 styles.selectedFilterButton,
             ]}
-            onPress={() => setSelectedBottomFilter("뜨는 핫플")}
+            onPress={() => setSelectedBottomFilter("뜨는 축제")}
           >
             <HotPlaceIcon
               style={styles.bottomFilterIcon}
               color={
-                selectedBottomFilter === "뜨는 핫플" ? "#FFFFFF" : "#9D9896"
+                selectedBottomFilter === "뜨는 축제" ? "#FFFFFF" : "#9D9896"
               }
             />
             <Text
               style={[
                 styles.bottomFilterText,
-                selectedBottomFilter === "뜨는 핫플" &&
+                selectedBottomFilter === "뜨는 축제" &&
                   styles.selectedFilterText,
               ]}
             >
-              뜨는 핫플
+              뜨는 축제
             </Text>
           </TouchableOpacity>
         </View>

@@ -1,9 +1,10 @@
-import BookmarkFingerIcon from "@/components/icons/BookmarkFingerIcon";
-import FingerArrowIcon from "@/components/icons/FingerArrowIcon";
+import BookmarkTemplate from "@/components/icons/bookmarkTemplate/BookmarkTemplate";
 import HamburgerIcon from "@/components/icons/HamburgerIcon";
 import NotificationIcon from "@/components/icons/NotificationIcon";
+import ScrapIcon from "@/components/icons/ScrapIcon";
 import SideMenu from "@/components/SideMenu";
 import TravelCard from "@/components/TravelCard";
+import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
   Animated,
@@ -17,17 +18,98 @@ import {
 } from "react-native";
 import {
   GestureHandlerRootView,
-  PanGestureHandler,
   PanGestureHandlerGestureEvent,
   State,
 } from "react-native-gesture-handler";
 
 export default function Index() {
+  const router = useRouter();
   const [sideMenuVisible, setSideMenuVisible] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [scrapedItems, setScrapedItems] = useState<Set<number>>(new Set());
+
+  // 북마크 데이터 (API 형식)
+  const bookmarkData = {
+    listSize: 1,
+    totalPage: 1,
+    totalElements: 1,
+    isFirst: true,
+    isLast: true,
+    readingSpotList: [
+      {
+        userId: 1,
+        userNickname: "이소정",
+        userProfilImage: null,
+        readingSpotId: 12,
+        region: "강릉",
+        address: "강원 강릉시 경포로 365",
+        latitude: 37.8882,
+        longitude: 127.7297,
+        createdAt: "2025-08-16",
+        templateId: 4,
+        title: "경포호 근처 북카페",
+        content: "호수를 바라보며 여유롭게 책 읽기 좋은 카페입니다.",
+        readingSpotImages: [
+          "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
+        ],
+        bookTitle: "노르웨이의 숲",
+        bookAuthor: "무라카미 하루키",
+        bookImage:
+          "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
+        bookPubDate: "2025-08-16",
+        likes: 0,
+        scraps: 0,
+        opened: true,
+        scraped: false,
+        liked: false,
+      },
+      {
+        userId: 1,
+        userNickname: "이소정",
+        userProfilImage: null,
+        readingSpotId: 13,
+        region: "춘천",
+        address: "강원 춘천시 남산면 남이섬길 1",
+        latitude: 37.7904,
+        longitude: 127.5252,
+        createdAt: "2025-08-16",
+        templateId: 4,
+        title: "남이섬 근처 북카페",
+        content: "자연 속에서 책 읽기 좋은 카페입니다.",
+        readingSpotImages: [
+          "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
+        ],
+        bookTitle: "물고기는 존재하지 않는다",
+        bookAuthor: "김영하",
+        bookImage:
+          "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
+        bookPubDate: "2025-08-16",
+        likes: 0,
+        scraps: 0,
+        opened: true,
+        scraped: false,
+        liked: false,
+      },
+    ],
+  };
 
   const openSideMenu = () => setSideMenuVisible(true);
   const closeSideMenu = () => setSideMenuVisible(false);
+
+  // 스크랩 처리 함수
+  const handleScrapPress = (readingSpotId: number) => {
+    console.log("스크랩 버튼 클릭:", readingSpotId);
+    setScrapedItems((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(readingSpotId)) {
+        newSet.delete(readingSpotId);
+      } else {
+        newSet.add(readingSpotId);
+      }
+      return newSet;
+    });
+    // TODO: 스크랩 API 호출 로직 구현
+  };
 
   // 카드 애니메이션 값들
   const translateX = useRef(new Animated.Value(0)).current;
@@ -281,7 +363,14 @@ export default function Index() {
               );
             }}
           >
-            <Image source={require("@/assets/images/stamp_tour.png")} />
+            <Image
+              source={require("@/assets/images/stamp_tour.png")}
+              style={{
+                width: "100%",
+                resizeMode: "contain",
+                alignSelf: "center",
+              }}
+            />
           </TouchableOpacity>
         </View>
 
@@ -309,7 +398,9 @@ export default function Index() {
 
         {/* 오늘의 추천 섹션 - 하얀 배경 */}
         <View style={styles.recommendationSection}>
-          <Text style={styles.recommendationTitle}>오늘의 '추천, 강원도!'</Text>
+          <Text style={styles.recommendationTitle}>
+            오늘의 &apos;추천, 강원도!&apos;
+          </Text>
 
           {/* 추천 카드 */}
           <View style={styles.recommendationCard}>
@@ -355,9 +446,9 @@ export default function Index() {
           <View style={styles.spaceBookmarkHeader}>
             <View style={styles.spaceBookmarkTitleContainer}>
               <Text style={styles.spaceBookmarkTitle}>최신 공간 책갈피</Text>
-              <Text style={styles.spaceBookmarkSubtitle}>
+              {/* <Text style={styles.spaceBookmarkSubtitle}>
                 좌우로 넘겨 책갈피를 저장하세요
-              </Text>
+              </Text> */}
             </View>
             <TouchableOpacity>
               <Text style={styles.spaceBookmarkLink}>공간책갈피 &gt;</Text>
@@ -365,7 +456,7 @@ export default function Index() {
           </View>
 
           {/* 스와이프 액션 버튼과 아이콘 */}
-          <View style={styles.swipeActionContainer}>
+          {/*  <View style={styles.swipeActionContainer}>
             <TouchableOpacity style={styles.actionButton} onPress={handleSkip}>
               <Text style={styles.actionButtonText}>넘김</Text>
             </TouchableOpacity>
@@ -378,73 +469,62 @@ export default function Index() {
             <TouchableOpacity style={styles.actionButton} onPress={handleSave}>
               <Text style={styles.actionButtonText}>저장</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
 
           {/* 카드 스택 */}
           <View style={styles.cardStackContainer}>
-            {/* 뒤쪽 카드들 (3개) - 이미지와 동일한 스타일 */}
-            {[3, 2, 1].map((index) => (
-              <View
-                key={index}
-                style={[
-                  styles.backgroundCard,
-                  {
-                    zIndex: index,
-                    top: index * 6,
-                    right: index * 6,
-                    backgroundColor:
-                      index === 3
-                        ? "#4D4947"
-                        : index === 2
-                          ? "#716C69"
-                          : "#9D9896",
-                  },
-                ]}
-              />
-            ))}
-
-            {/* 메인 카드 - 애니메이션 적용 */}
-            <PanGestureHandler
-              onGestureEvent={onGestureEvent}
-              onHandlerStateChange={onHandlerStateChange}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalScrollContainer}
             >
-              <Animated.View
-                style={[
-                  styles.mainCard,
-                  {
-                    transform: [
-                      { translateX },
-                      { translateY },
-                      { scale },
-                      {
-                        rotate: rotate.interpolate({
-                          inputRange: [-15, 15],
-                          outputRange: ["-15deg", "15deg"],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              >
-                <View style={styles.cardContent}>
-                  <View style={styles.cardImageContainer}>
-                    <Image
-                      source={spaceCards[currentCardIndex]?.image}
-                      style={styles.cardImage}
-                      resizeMode="cover"
+              {bookmarkData.readingSpotList.map((spot, index) => {
+                console.log("템플릿 렌더링:", {
+                  templateId: spot.templateId,
+                  title: spot.title,
+                });
+                return (
+                  <TouchableOpacity
+                    key={spot.readingSpotId}
+                    style={styles.mainCardContainer}
+                    onPress={() => {
+                      // 북마크 상세 페이지로 이동
+                      router.push(`/bookmark/${spot.readingSpotId}`);
+                    }}
+                  >
+                    <BookmarkTemplate
+                      width={360}
+                      height={360}
+                      templateId={spot.templateId}
                     />
-                  </View>
-                  <View style={styles.cardTextContainer}>
-                    <Text style={styles.cardTitle}>
-                      {spaceCards[currentCardIndex]?.title}
-                    </Text>
-                    <Text style={styles.cardDescription}>
-                      {spaceCards[currentCardIndex]?.description}
-                    </Text>
-                  </View>
-                </View>
-              </Animated.View>
-            </PanGestureHandler>
+                    <View style={styles.mainCard}>
+                      <Image
+                        source={{ uri: spot.readingSpotImages[0] }}
+                        style={styles.cardImage}
+                        resizeMode="cover"
+                      />
+
+                      {/* 카드 내용 */}
+                      <View style={styles.cardContent}>
+                        <Text style={styles.cardTitle}>{spot.title}</Text>
+                        <View style={styles.cardBottomRow}>
+                          <Text style={styles.cardAddress}>{spot.address}</Text>
+                          <TouchableOpacity
+                            style={styles.scrapButton}
+                            onPress={() => handleScrapPress(spot.readingSpotId)}
+                          >
+                            <ScrapIcon
+                              width={25}
+                              isActive={scrapedItems.has(spot.readingSpotId)}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
           </View>
         </View>
       </ScrollView>
@@ -515,8 +595,8 @@ const styles = StyleSheet.create({
   },
   planButton: {
     backgroundColor: "#4D4947",
-    paddingHorizontal: 13,
-    paddingVertical: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#716C69",
@@ -749,7 +829,6 @@ const styles = StyleSheet.create({
   },
   spaceBookmarkSection: {
     backgroundColor: "#302E2D",
-    paddingHorizontal: 20,
     paddingVertical: 30,
     paddingBottom: 40,
   },
@@ -757,7 +836,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 25,
+    marginBottom: 0,
+    paddingHorizontal: 20,
   },
   spaceBookmarkTitleContainer: {
     flex: 1,
@@ -766,7 +846,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "SUIT-700",
     color: "#FFFFFF",
-    marginBottom: 8,
   },
   spaceBookmarkSubtitle: {
     fontSize: 14,
@@ -805,73 +884,65 @@ const styles = StyleSheet.create({
   },
   cardStackContainer: {
     position: "relative",
-    alignItems: "center",
     height: 400,
     marginTop: 20,
-    justifyContent: "center",
   },
-  backgroundCard: {
-    position: "absolute",
-    width: 361,
-    height: 361,
-    backgroundColor: "#4D4947",
-    borderRadius: 12,
+  horizontalScrollContainer: {
+    paddingHorizontal: 10,
+    gap: 10,
+  },
+  mainCardContainer: {
+    position: "relative",
+    alignItems: "center",
   },
   mainCard: {
-    width: 361,
-    height: 361,
-    backgroundColor: "#F8F4F2",
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  cardContent: {
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
-  },
-  cardPlaceholderText: {
-    fontSize: 16,
-    fontFamily: "SUIT-500",
-    color: "#716C69",
-    textAlign: "center",
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontFamily: "SUIT-700",
-    color: "#262423",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  cardDescription: {
-    fontSize: 16,
-    fontFamily: "SUIT-500",
-    color: "#716C69",
-    textAlign: "center",
-    lineHeight: 22,
-  },
-  cardImageContainer: {
-    width: "100%",
-    height: 280,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 15,
     overflow: "hidden",
-    marginBottom: 20,
+    backgroundColor: "transparent",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    paddingTop: 16,
   },
   cardImage: {
-    width: "100%",
-    height: "100%",
+    width: "90%",
+    height: 245,
+    borderRadius: 12,
+    alignSelf: "center",
   },
-  cardTextContainer: {
-    paddingHorizontal: 20,
+  cardContent: {
+    padding: 20,
+    alignItems: "flex-start",
+    width: "100%",
+  },
+  cardTitle: {
+    fontSize: 24,
+    fontFamily: "Gangwon",
+    color: "#262423",
+    marginBottom: 8,
+    textAlign: "left",
+    alignSelf: "flex-start",
+  },
+  cardAddress: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#000000",
+    textAlign: "left",
+    alignSelf: "flex-start",
+  },
+  cardBottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    width: "100%",
+  },
+  scrapButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: "transparent",
   },
 });

@@ -118,9 +118,7 @@ export default function BookmarkDetail() {
             >
               <BackIcon />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>
-              카드를 터치해 뒷면도 확인해보세요
-            </Text>
+            <Text style={styles.headerTitle}>옆으로 넘겨보세요</Text>
             <View style={styles.headerSpacer} />
           </View>
 

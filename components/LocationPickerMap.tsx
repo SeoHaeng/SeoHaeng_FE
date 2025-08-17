@@ -216,12 +216,19 @@ const LocationPickerMap = ({
                
                const myLocationPosition = new kakao.maps.LatLng(${currentLocation.latitude}, ${currentLocation.longitude});
                
-               // 내 위치 마커 생성 (파란색 원형 마커)
+               // 내 위치 마커 생성 (SVG로 범위 원과 마커 통합)
                const myLocationMarker = new kakao.maps.Marker({
                  position: myLocationPosition,
                  map: map,
                  zIndex: 1000 // 다른 마커들보다 위에 표시
                });
+               
+               // SVG로 범위 원과 마커를 통합한 이미지 생성
+               const markerImage = new kakao.maps.MarkerImage(
+                 'data:image/svg+xml;charset=UTF-8,<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="32" fill="%230669FD" fill-opacity="0.2"/><circle cx="32" cy="32" r="12" fill="white"/><circle cx="32" cy="32" r="8" fill="%230669FD"/></svg>',
+                 new kakao.maps.Size(64, 64)
+               );
+               myLocationMarker.setImage(markerImage);
                
                // 내 위치 마커는 절대 제거되지 않도록 보호
                myLocationMarker.setDraggable(false);
@@ -306,16 +313,45 @@ const LocationPickerMap = ({
 
           if (addressResponse.length > 0) {
             const address = addressResponse[0];
-            // 전체 주소 구성
-            const fullAddress = [
+            // 전체 주소 구성 (중복 제거)
+            const addressParts = [
               address.region,
               address.city,
               address.district,
               address.street,
               address.name,
-            ]
-              .filter(Boolean)
-              .join(" ");
+            ].filter(Boolean);
+
+            // 중복되는 부분 제거 (진짜 완벽한 방식)
+            const uniqueAddressParts: string[] = [];
+            for (let i = 0; i < addressParts.length; i++) {
+              const part = addressParts[i];
+              if (!part) continue; // null이나 undefined는 건너뛰기
+
+              let isDuplicate = false;
+
+              // 이미 추가된 부분들과 비교 (정확한 중복 체크)
+              for (let j = 0; j < uniqueAddressParts.length; j++) {
+                const existingPart = uniqueAddressParts[j];
+                // 정확히 같은 문자열만 중복으로 처리 (숫자 포함된 상세 주소는 보존)
+                if (existingPart === part) {
+                  isDuplicate = true;
+                  break;
+                }
+              }
+
+              if (!isDuplicate) {
+                uniqueAddressParts.push(part);
+              }
+            }
+
+            const fullAddress = uniqueAddressParts.join(" ");
+
+            console.log("주소 변환 결과:", {
+              원본: addressParts,
+              중복제거: uniqueAddressParts,
+              최종: fullAddress,
+            });
 
             setSelectedLocation({
               lat: data.latitude,

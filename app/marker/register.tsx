@@ -3,7 +3,7 @@ import BookmarkTemplateMini from "@/components/icons/bookmarkTemplate/BookmarkTe
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
-import { getMarkerBookData } from "@/types/globalState";
+import { getMarkerBookData, setMarkerBookData } from "@/types/globalState";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -34,14 +34,25 @@ export default function MarkerRegister() {
   const latitude = parseFloat(params.latitude as string) || 0;
   const longitude = parseFloat(params.longitude as string) || 0;
 
+  // 주소 정보 콘솔 출력
+  console.log("마커 등록 화면 - 주소 정보:", {
+    address,
+    latitude,
+    longitude,
+  });
+
   const templates = [1, 2, 3, 4];
 
-  // 전역변수에서 선택된 도서 정보 가져오기
+  // 마커 등록 화면 진입 시 초기화
   useEffect(() => {
+    // 전역변수에서 선택된 도서 정보 가져오기
     const selectedBook = getMarkerBookData();
     if (selectedBook) {
       setBookTitle(selectedBook.title);
     }
+
+    // 마커 등록 화면 진입 시 책 정보 초기화
+    setMarkerBookData(null);
   }, []);
 
   // 도서가 선택되었는지 확인

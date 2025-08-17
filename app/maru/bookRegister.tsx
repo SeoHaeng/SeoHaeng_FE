@@ -2,8 +2,10 @@ import BackIcon from "@/components/icons/BackIcon";
 import BookUploadIcon from "@/components/icons/BookUploadIcon";
 import {
   getGiftBookData,
+  getMarkerBookData,
   getReceivedBookData,
   setGiftBookData,
+  setMarkerBookData,
   setReceivedBookData,
 } from "@/types/globalState";
 import * as ImagePicker from "expo-image-picker";
@@ -59,16 +61,26 @@ export default function BookRegister() {
           registeredBook,
         );
         console.log("전역변수 확인:", getReceivedBookData());
+        // 북챌린지 인증하기 화면으로 이동
+        router.push("/maru/challengeCertification");
       } else if (bookType === "gift") {
         setGiftBookData(registeredBook);
         console.log("선물할 책 등록 완료 - 전역변수에 저장됨:", registeredBook);
         console.log("전역변수 확인:", getGiftBookData());
+        // 북챌린지 인증하기 화면으로 이동
+        router.push("/maru/challengeCertification");
+      } else if (bookType === "marker") {
+        setMarkerBookData(registeredBook);
+        console.log(
+          "마커 등록용 책 등록 완료 - 전역변수에 저장됨:",
+          registeredBook,
+        );
+        console.log("전역변수 확인:", getMarkerBookData());
+        // 마커 등록 화면으로 돌아가기
+        router.back();
       } else {
         console.log("알 수 없는 bookType:", bookType);
       }
-
-      // 북챌린지 인증하기 화면으로 이동
-      router.push("/maru/challengeCertification");
     }
   };
 

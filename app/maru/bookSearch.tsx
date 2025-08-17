@@ -1,15 +1,19 @@
 import BackIcon from "@/components/icons/BackIcon";
-import { setGiftBookData, setReceivedBookData } from "@/types/globalState";
+import {
+    setGiftBookData,
+    setMarkerBookData,
+    setReceivedBookData,
+} from "@/types/globalState";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -118,9 +122,11 @@ export default function BookSearch() {
           setReceivedBookData(selectedBookData);
         } else if (bookType === "gift") {
           setGiftBookData(selectedBookData);
+        } else if (bookType === "marker") {
+          setMarkerBookData(selectedBookData);
         }
 
-        // 북챌린지 인증하기 화면으로 돌아가기
+        // 이전 화면으로 돌아가기
         router.back();
       }
     }

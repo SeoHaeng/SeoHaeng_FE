@@ -130,44 +130,6 @@ function Milestone() {
     }
   };
 
-  // 앱 시작 시 기본 서점 마커만 표시
-  useEffect(() => {
-    // 기본 서점 마커 표시 (이스트쓰네)
-    showDefaultBookstoreMarker();
-  }, []);
-
-  // 기본 서점 마커 표시 (이스트쓰네)
-  const showDefaultBookstoreMarker = () => {
-    const eastSuneLocation = {
-      latitude: 37.6853735495694,
-      longitude: 129.039668458113,
-    };
-
-    // webViewRef가 준비될 때까지 기다린 후 마커 표시
-    const tryShowMarker = () => {
-      if (webViewRef.current) {
-        const message = JSON.stringify({
-          type: "showDefaultMarker",
-          latitude: eastSuneLocation.latitude,
-          longitude: eastSuneLocation.longitude,
-          markerType: "bookstoreInactive", // 비활성화된 서점 마커
-          markerTitle: "이스트쓰네",
-        });
-        console.log("기본 서점 마커 표시:", message);
-        webViewRef.current.postMessage(message);
-
-        // 지도를 이스트쓰네 위치로 이동
-        setCurrentLocation(eastSuneLocation);
-      } else {
-        console.log("webViewRef가 아직 준비되지 않음, 500ms 후 재시도");
-        setTimeout(tryShowMarker, 500);
-      }
-    };
-
-    // 1초 후 시도 (WebView가 완전히 로드될 때까지 기다림)
-    setTimeout(tryShowMarker, 1000);
-  };
-
   const getCurrentLocation = async () => {
     try {
       console.log("내 위치 버튼 클릭 - 현재 위치 가져오기 시작");

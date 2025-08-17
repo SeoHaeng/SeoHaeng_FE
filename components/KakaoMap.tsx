@@ -48,6 +48,13 @@ interface WebViewMessage {
   name?: string;
   lat?: number;
   lng?: number;
+  north?: number;
+  south?: number;
+  east?: number;
+  west?: number;
+  centerLat?: number;
+  centerLng?: number;
+  zoom?: number;
 }
 
 export interface KakaoMapRef {
@@ -96,6 +103,15 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
     const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
     // 활성화된 마커 ID 관리 (한 번에 하나만 활성화)
     const [activeMarkerId, setActiveMarkerId] = useState<string | null>(null); // number에서 string으로 변경
+    // 현재 뷰포트 정보 저장
+    const [currentViewport, setCurrentViewport] = useState<{
+      north: number;
+      south: number;
+      east: number;
+      west: number;
+      center: { lat: number; lng: number };
+      zoom: number;
+    } | null>(null);
     const webViewRef = React.useRef<WebView>(null);
 
     // 필터 타입이나 하단 필터가 변경될 때마다 마커 다시 그리기
@@ -303,31 +319,65 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
     const handleMessage = (event: any) => {
       try {
         const data: WebViewMessage = JSON.parse(event.nativeEvent.data);
-        console.log("WebView에서 받은 메시지:", data); // 전체 메시지 확인
 
         if (data.type === "bookstoreClick") {
           const markerId = data.id!;
-          console.log("bookstoreClick - 받은 데이터:", {
-            type: data.type,
-            id: data.id,
-            name: data.name,
-          });
 
           if (activeMarkerId !== markerId) {
             setActiveMarkerId(markerId);
-            console.log("bookstoreClick - 새로운 마커 활성화:", markerId);
+
+            // 마커 이미지 업데이트 메시지 전송
+            if (webViewRef.current) {
+              const updateMessage = JSON.stringify({
+                type: "updateBookstoreMarkerImage",
+                id: markerId,
+                isActive: true,
+              });
+            }
           } else {
-            console.log("bookstoreClick - 이미 활성화된 마커:", markerId);
+            console.log("📱 bookstoreClick - 이미 활성화된 마커:", markerId);
           }
         } else if (data.type === "mapClicked") {
+          console.log("📱 지도 클릭됨 - 모든 인포박스 닫기");
           setActiveMarkerId(null);
+
+          // WebView에 모든 인포박스를 닫으라는 메시지 전송
+          if (webViewRef.current) {
+            const closeMessage = JSON.stringify({
+              type: "closeAllInfoWindows",
+            });
+
+            webViewRef.current.postMessage(closeMessage);
+          }
         } else if (data.type === "mapReady") {
           showMyLocationMarker();
           handleMapReady();
+        } else if (data.type === "viewportChanged") {
+          // 뷰포트 정보 업데이트
+          const viewportInfo = {
+            north: data.north!,
+            south: data.south!,
+            east: data.east!,
+            west: data.west!,
+            center: { lat: data.centerLat!, lng: data.centerLng! },
+            zoom: data.zoom!,
+          };
+          setCurrentViewport(viewportInfo);
+
+          // 뷰포트 정보를 console에 출력
+          console.log("🔄 사용자 뷰포트 변경 감지:", {
+            "북쪽 경계": viewportInfo.north.toFixed(6),
+            "남쪽 경계": viewportInfo.south.toFixed(6),
+            "동쪽 경계": viewportInfo.east.toFixed(6),
+            "서쪽 경계": viewportInfo.west.toFixed(6),
+            "중심 좌표": `(${viewportInfo.center.lat.toFixed(6)}, ${viewportInfo.center.lng.toFixed(6)})`,
+            "줌 레벨": viewportInfo.zoom,
+            타임스탬프: new Date().toLocaleTimeString(),
+            "이벤트 소스": "드래그/이동/줌",
+          });
+        } else {
         }
-      } catch (error) {
-        console.log("메시지 파싱 오류:", error);
-      }
+      } catch (error) {}
     };
 
     // HTML 내용
@@ -361,16 +411,44 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                 
                 const mapOption = {
                   center: new kakao.maps.LatLng(initialLat, initialLng),
-                  level: 7
+                  level: 5
                 };
                 map = new kakao.maps.Map(mapContainer, mapOption);
                 
                 // 지도 클릭 이벤트
                 kakao.maps.event.addListener(map, 'click', function() {
+                 
+                  
                   if (window.ReactNativeWebView) {
+                    
+                    
+                    // 클릭 시에도 뷰포트 정보 전송 (테스트용)
+                    const bounds = map.getBounds();
+                    const center = map.getCenter();
+                    const sw = bounds.getSouthWest();
+                    const ne = bounds.getNorthEast();
+                    const zoom = map.getLevel();
+                    
+                    const viewportMessage = {
+                      type: 'viewportChanged',
+                      north: ne.getLat(),
+                      south: sw.getLat(),
+                      east: ne.getLng(),
+                      west: sw.getLng(),
+                      centerLat: center.getLat(),
+                      centerLng: center.getLng(),
+                      zoom: zoom
+                    };
+                    
+                   
+                    window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
+                    
+                    // 기존 mapClicked 메시지도 전송
                     window.ReactNativeWebView.postMessage(JSON.stringify({
                       type: 'mapClicked'
                     }));
+                  } else {
+                   
                   }
                 });
                 
@@ -386,7 +464,82 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                     window.ReactNativeWebView.postMessage(JSON.stringify({
                       type: 'mapReady'
                     }));
+                    
+                    // 초기 뷰포트 정보도 전송
+                    const bounds = map.getBounds();
+                    const center = map.getCenter();
+                    const sw = bounds.getSouthWest();
+                    const ne = bounds.getNorthEast();
+                    const zoom = map.getLevel();
+                    
+                    const initialViewportMessage = {
+                      type: 'viewportChanged',
+                      north: ne.getLat(),
+                      south: sw.getLat(),
+                      east: ne.getLng(),
+                      west: sw.getLng(),
+                      centerLat: center.getLat(),
+                      centerLng: center.getLng(),
+                      zoom: zoom
+                    };
+                    
+                   
+                    window.ReactNativeWebView.postMessage(JSON.stringify(initialViewportMessage));
                   }
+                  
+                  // 지도 드래그 이벤트 리스너 추가
+                  kakao.maps.event.addListener(map, 'drag', function() {
+                  
+                    
+                    if (window.ReactNativeWebView) {
+                      const bounds = map.getBounds();
+                      const center = map.getCenter();
+                      const sw = bounds.getSouthWest();
+                      const ne = bounds.getNorthEast();
+                      const zoom = map.getLevel();
+                      
+                      const viewportMessage = {
+                        type: 'viewportChanged',
+                        north: ne.getLat(),
+                        south: sw.getLat(),
+                        east: ne.getLng(),
+                        west: sw.getLng(),
+                        centerLat: center.getLat(),
+                        centerLng: center.getLng(),
+                        zoom: zoom
+                      };
+                      
+                     
+                      window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
+                    }
+                  });
+                  
+                  // 지도 줌 변경 이벤트 리스너 추가
+                  kakao.maps.event.addListener(map, 'zoom_changed', function() {
+               
+                    
+                    if (window.ReactNativeWebView) {
+                      const bounds = map.getBounds();
+                      const center = map.getCenter();
+                      const sw = bounds.getSouthWest();
+                      const ne = bounds.getNorthEast();
+                      const zoom = map.getLevel();
+                      
+                      const viewportMessage = {
+                        type: 'viewportChanged',
+                        north: ne.getLat(),
+                        south: sw.getLat(),
+                        east: ne.getLng(),
+                        west: sw.getLng(),
+                        centerLat: center.getLat(),
+                        centerLng: center.getLng(),
+                        zoom: zoom
+                      };
+                      
+                   
+                      window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
+                    }
+                  });
                 });
 
                 // 선택된 지역들의 마커 추가
@@ -427,8 +580,10 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   map.setBounds(bounds);
                 }
                 
-                // 지도 이동 시 범위 제한 확인
+                // 지도 이동 시 범위 제한 확인 및 뷰포트 정보 전송
                 kakao.maps.event.addListener(map, 'bounds_changed', function() {
+                
+                  
                   const center = map.getCenter();
                   const lat = center.getLat();
                   const lng = center.getLng();
@@ -440,6 +595,132 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                     
                     const newPosition = new kakao.maps.LatLng(restrictedLat, restrictedLng);
                     map.setCenter(newPosition);
+                  }
+                  
+                  // 뷰포트 정보를 React Native로 전송
+                  if (window.ReactNativeWebView) {
+                   
+                    
+                    const bounds = map.getBounds();
+                    const sw = bounds.getSouthWest();
+                    const ne = bounds.getNorthEast();
+                    const zoom = map.getLevel();
+                    
+                    const viewportMessage = {
+                      type: 'viewportChanged',
+                      north: ne.getLat(),
+                      south: sw.getLat(),
+                      east: ne.getLng(),
+                      west: sw.getLng(),
+                      centerLat: center.getLat(),
+                      centerLng: center.getLng(),
+                      zoom: zoom
+                    };
+                    
+                   
+                    window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
+                  } else {
+                  
+                  }
+                });
+
+                // 지도 드래그 중 뷰포트 정보 전송 (디바운싱 적용)
+                let dragTimeout;
+                kakao.maps.event.addListener(map, 'drag', function() {
+                 
+                  
+                  // 이전 타이머 클리어
+                  if (dragTimeout) {
+                    clearTimeout(dragTimeout);
+                  }
+                  
+                  // 100ms 후에 뷰포트 정보 전송 (드래그 중에는 너무 자주 전송하지 않음)
+                  dragTimeout = setTimeout(function() {
+                   
+                    
+                    if (window.ReactNativeWebView) {
+                     
+                      
+                      const bounds = map.getBounds();
+                      const center = map.getCenter();
+                      const sw = bounds.getSouthWest();
+                      const ne = bounds.getNorthEast();
+                      const zoom = map.getLevel();
+                      
+                      const viewportMessage = {
+                        type: 'viewportChanged',
+                        north: ne.getLat(),
+                        south: sw.getLat(),
+                        east: ne.getLng(),
+                        west: sw.getLng(),
+                        centerLat: center.getLat(),
+                        centerLng: center.getLng(),
+                        zoom: zoom
+                      };
+                      
+      
+                      window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
+                    } else {
+                     
+                    }
+                  }, 100);
+                });
+
+                // 지도 드래그 종료 시 뷰포트 정보 전송
+                kakao.maps.event.addListener(map, 'dragend', function() {
+               
+                  
+                  if (window.ReactNativeWebView) {
+                    const bounds = map.getBounds();
+                    const center = map.getCenter();
+                    const sw = bounds.getSouthWest();
+                    const ne = bounds.getNorthEast();
+                    const zoom = map.getLevel();
+                    
+                    const viewportMessage = {
+                      type: 'viewportChanged',
+                      north: ne.getLat(),
+                      south: sw.getLat(),
+                      east: ne.getLng(),
+                      west: sw.getLng(),
+                      centerLat: center.getLat(),
+                      centerLng: center.getLng(),
+                      zoom: zoom
+                    };
+                    
+                   
+                    window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
+                  }
+                });
+
+                // 지도 줌 변경 시 뷰포트 정보 전송
+                kakao.maps.event.addListener(map, 'zoom_changed', function() {
+                 
+                  
+                  if (window.ReactNativeWebView) {
+              
+                    
+                    const bounds = map.getBounds();
+                    const center = map.getCenter();
+                    const sw = bounds.getSouthWest();
+                    const ne = bounds.getNorthEast();
+                    const zoom = map.getLevel();
+                    
+                    const viewportMessage = {
+                      type: 'viewportChanged',
+                      north: ne.getLat(),
+                      south: sw.getLat(),
+                      east: ne.getLng(),
+                      west: sw.getLng(),
+                      centerLat: center.getLat(),
+                      centerLng: center.getLng(),
+                      zoom: zoom
+                    };
+                    
+                   
+                    window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
+                  } else {
+                  
                   }
                 });
               }
@@ -519,6 +800,17 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                     event.stopPropagation();
                   }
                   
+                 
+                  
+                  // 즉시 인포박스 열기
+                  Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
+                    if (bookstoreMarker.infowindow) {
+                      bookstoreMarker.infowindow.close();
+                    }
+                  });
+                  infowindow.open(map, marker);
+                 
+                  
                   if (window.ReactNativeWebView) {
                     window.ReactNativeWebView.postMessage(JSON.stringify({
                       type: 'bookstoreClick',
@@ -540,13 +832,14 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   originalImageData: imageData
                 };
                 
-                if (Object.keys(bookstoreMarkers).length > 0) {
-                  const bounds = new kakao.maps.LatLngBounds();
-                  Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
-                    bounds.extend(bookstoreMarker.marker.getPosition());
-                  });
-                  map.setBounds(bounds, 50);
-                }
+                // 마커 추가 시 자동으로 지도 범위를 조정하지 않음 (사용자가 설정한 위치 유지)
+                // if (Object.keys(bookstoreMarkers).length > 0) {
+                //   const bounds = new kakao.maps.LatLngBounds();
+                //   Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
+                //     bounds.extend(bookstoreMarker.marker.getPosition());
+                //   });
+                //   map.setBounds(bounds, 50);
+                // }
               }
             }
 
@@ -579,13 +872,19 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                 }
                 
                 const myLocationPosition = new kakao.maps.LatLng(restrictedLat, restrictedLng);
+                
+                // 내 위치 마커 생성 (카카오맵 기본 마커)
                 myLocationMarker = new kakao.maps.Marker({
                   position: myLocationPosition,
-                  map: map
+                  map: map,
+                  zIndex: 1000 // 다른 마커들보다 위에 표시
                 });
                 
+                // 내 위치 마커는 절대 제거되지 않도록 보호
+                myLocationMarker.setDraggable(false);
+                
               } catch (error) {
-                console.error('내 위치 마커 생성 실패:', error);
+              
               }
             }
 
@@ -607,79 +906,56 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                 const newPosition = new kakao.maps.LatLng(restrictedLat, restrictedLng);
                 map.setCenter(newPosition);
                 
+                // 내 위치 마커가 항상 표시되도록 보장
                 if (myLocationMarker) {
                   myLocationMarker.setPosition(newPosition);
                 } else {
                   showMyLocationMarker(restrictedLat, restrictedLng);
                 }
+                
+                // 내 위치 마커가 지도에 표시되어 있는지 확인하고 없으면 다시 생성
+                if (!myLocationMarker || !myLocationMarker.getMap()) {
+                  showMyLocationMarker(restrictedLat, restrictedLng);
+                }
               } catch (error) {
-                console.error('지도 이동 실패:', error);
+              
               }
             }
 
-            // 기존 마커의 이미지와 인포박스 상태 업데이트
+            // 기존 마커의 인포박스 상태 업데이트 (이미지는 변경하지 않음)
             function updateBookstoreMarkerImage(id, isActive) {
+            
+              
               if (bookstoreMarkers[id]) {
                 const marker = bookstoreMarkers[id].marker;
                 const infowindow = bookstoreMarkers[id].infowindow;
-                const originalImageData = bookstoreMarkers[id].originalImageData;
                 
-                let imageData = originalImageData;
-                const width = ${markerStyles.width};
-                const height = ${markerStyles.height};
+           
                 
-                try {
-                  if (imageData && imageData.length > 0) {
-                    const imageSize = new kakao.maps.Size(width, height);
-                    const imageOption = {
-                      offset: new kakao.maps.Point(width / 2, height)
-                    };
-                    
-                    if (imageData.includes('<svg')) {
-                      const svgBlob = new Blob([imageData], { type: 'image/svg+xml' });
-                      const url = URL.createObjectURL(svgBlob);
-                      
-                      const img = new Image();
-                      img.onload = function() {
-                        const markerImage = new kakao.maps.MarkerImage(url, imageSize, imageOption);
-                        marker.setImage(markerImage);
-                        updateInfoWindow();
-                      };
-                      
-                      img.onerror = function() {
-                        updateInfoWindow();
-                      };
-                      
-                      img.src = url;
-                    } else {
-                      const markerImage = new kakao.maps.MarkerImage(imageData, imageSize, imageOption);
-                      marker.setImage(markerImage);
-                      updateInfoWindow();
-                    }
-                  } else {
-                    updateInfoWindow();
-                  }
+                // 인포박스 상태만 업데이트 (이미지는 변경하지 않음)
+                if (isActive) {
+                 
                   
-                } catch (error) {
-                  updateInfoWindow();
-                }
+                  // 다른 모든 인포박스 닫기
+                  Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
+                    if (bookstoreMarker.infowindow) {
+                      bookstoreMarker.infowindow.close();
+                    }
+                  });
+                  
+                  // 현재 마커의 인포박스 열기
+                  infowindow.open(map, marker);
                 
-                function updateInfoWindow() {
-                  if (isActive) {
-                    Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
-                      if (bookstoreMarker.infowindow) {
-                        bookstoreMarker.infowindow.close();
-                      }
-                    });
-                    infowindow.open(map, marker);
-                  } else {
-                    infowindow.close();
-                  }
+                } else {
+                
+                  infowindow.close();
                 }
+              } else {
+           
               }
             }
 
-            // 모든 독립서점 마커 제거
+            // 모든 독립서점 마커 제거 (내 위치 마커는 제거하지 않음)
             function clearAllBookstoreMarkers() {
               Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
                 bookstoreMarker.marker.setMap(null);
@@ -688,6 +964,19 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                 }
               });
               bookstoreMarkers = {};
+              // 내 위치 마커는 절대 제거하지 않음
+              // myLocationMarker는 그대로 유지
+            }
+
+            // 모든 인포박스 닫기
+            function closeAllInfoWindows() {
+            
+              Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
+                if (bookstoreMarker.infowindow) {
+                  bookstoreMarker.infowindow.close();
+                
+                }
+              });
             }
 
             // React Native에서 메시지 받기
@@ -710,13 +999,15 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   showMyLocationMarker(data.latitude, data.longitude);
                 } else if (data.type === 'updateBookstoreMarkerImage') {
                   updateBookstoreMarkerImage(data.id, data.isActive);
+                } else if (data.type === 'closeAllInfoWindows') {
+                  closeAllInfoWindows();
                 } else if (data.type === 'moveToLocation') {
                   moveMapToLocation(data.latitude, data.longitude);
                 } else if (data.type === 'clearAllMarkers') {
                   clearAllBookstoreMarkers();
                 }
               } catch (error) {
-                console.error('Error parsing message from React Native:', error);
+               
               }
             });
           </script>

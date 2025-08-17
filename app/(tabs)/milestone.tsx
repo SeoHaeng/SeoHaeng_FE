@@ -43,6 +43,7 @@ function Milestone() {
   const [isFilterActive, setIsFilterActive] = useState(false);
   const [activeFilterText, setActiveFilterText] = useState("");
   const [isLocationSelected, setIsLocationSelected] = useState(false);
+  const [filterType, setFilterType] = useState<string | undefined>(undefined); // 필터 타입 상태 추가
   const webViewRef = useRef<KakaoMapRef>(null);
 
   // URL 파라미터에서 선택된 위치 정보 처리
@@ -219,6 +220,7 @@ function Milestone() {
         latitude={currentLocation.latitude}
         longitude={currentLocation.longitude}
         ref={webViewRef}
+        filterType={filterType} // 필터 타입 전달
       />
 
       {/* 상단 검색바 */}
@@ -232,6 +234,7 @@ function Milestone() {
             onPress={() => {
               setIsFilterActive(false);
               setActiveFilterText("");
+              setFilterType(undefined); // 필터 타입 초기화 (모든 마커 표시)
             }}
           >
             <BackIcon style={styles.backIcon} width={14} height={14} />
@@ -284,6 +287,7 @@ function Milestone() {
           onPress={() => {
             setIsFilterActive(true);
             setActiveFilterText("북스테이");
+            setFilterType("북스테이"); // 필터 타입 설정
           }}
         >
           <BookStayIcon style={styles.filterIcon} color="#716C69" />
@@ -294,6 +298,7 @@ function Milestone() {
           onPress={() => {
             setIsFilterActive(true);
             setActiveFilterText("독립서점");
+            setFilterType("독립서점"); // 필터 타입 설정
           }}
         >
           <IndependentBookstoreIcon style={styles.filterIcon} color="#716C69" />
@@ -304,6 +309,7 @@ function Milestone() {
           onPress={() => {
             setIsFilterActive(true);
             setActiveFilterText("공간책갈피");
+            setFilterType("책갈피"); // 필터 타입 설정 (mockData의 type과 일치)
           }}
         >
           <SpaceBookmarkIcon style={styles.filterIcon} color="#716C69" />
@@ -314,6 +320,7 @@ function Milestone() {
           onPress={() => {
             setIsFilterActive(true);
             setActiveFilterText("북카페");
+            setFilterType("북카페"); // 필터 타입 설정
           }}
         >
           <BookCafeIcon style={styles.filterIcon} color="#716C69" />

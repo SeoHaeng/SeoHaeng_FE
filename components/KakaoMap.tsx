@@ -21,6 +21,7 @@ type KakaoMapProps = {
   latitude: number;
   longitude: number;
   regions?: string[];
+  filterType?: string; // 필터 타입 추가
 };
 
 interface Bookstore {
@@ -78,29 +79,28 @@ const regionCoordinates = {
 };
 
 const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
-  ({ latitude, longitude, regions = [] }, ref) => {
+  ({ latitude, longitude, regions = [], filterType }, ref) => {
     const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
     // 활성화된 마커 ID 관리 (한 번에 하나만 활성화)
     const [activeMarkerId, setActiveMarkerId] = useState<string | null>(null); // number에서 string으로 변경
     const webViewRef = React.useRef<WebView>(null);
 
-    // activeMarkerId가 변경될 때마다 모든 마커를 다시 그리기
+    // 필터 타입이 변경될 때마다 마커 다시 그리기
     useEffect(() => {
       if (webViewRef.current) {
+        // 기존 마커 모두 제거
+        webViewRef.current.postMessage(
+          JSON.stringify({
+            type: "clearAllMarkers",
+          }),
+        );
+
+        // 새로운 필터로 마커 추가
         setTimeout(() => {
-          mockData.forEach((item) => {
-            const bookstore: Bookstore = {
-              id: item.id, // parseInt 제거, 문자열 ID 그대로 사용
-              name: item.name,
-              lat: item.latitude,
-              lng: item.longitude,
-              type: item.type as "독립서점" | "북카페" | "북스테이" | "책갈피",
-            };
-            updateBookstoreMarkerImage(bookstore);
-          });
+          addAllCulturalMarkers();
         }, 100);
       }
-    }, [activeMarkerId]);
+    }, [filterType]);
 
     // 문화/서점 마커들
     const culturalMarkers = useMemo(() => {
@@ -132,9 +132,14 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
 
     // 모든 문화/서점 마커 추가
     const addAllCulturalMarkers = () => {
-      mockData.forEach((item) => {
+      // 필터 타입이 있으면 해당 타입만, 없으면 모든 마커 추가
+      const filteredData = filterType
+        ? mockData.filter((item) => item.type === filterType)
+        : mockData;
+
+      filteredData.forEach((item) => {
         const bookstore: Bookstore = {
-          id: item.id, // parseInt 제거, 문자열 ID 그대로 사용
+          id: item.id,
           name: item.name,
           lat: item.latitude,
           lng: item.longitude,
@@ -617,7 +622,7 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
         </body>
       </html>
     `;
-    }, [apiKey, latitude, longitude, regions]);
+    }, [apiKey, latitude, longitude, regions, filterType]); // filterType 의존성 추가
 
     useImperativeHandle(ref, () => ({
       postMessage: (message: string) => {

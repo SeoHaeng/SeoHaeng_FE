@@ -31,18 +31,18 @@ export default function BookmarkTemplate({
   const backgroundColor = getBackgroundColor();
 
   return (
-    <Svg width={width} height={height} viewBox="0 0 178 178" fill="none">
-      <Rect
-        width="177.363"
-        height="177.363"
-        rx="7.36967"
-        fill={backgroundColor}
-      />
+    <Svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      fill="none"
+    >
+      <Rect width={width} height={height} rx="7.36967" fill={backgroundColor} />
       <Rect
         x="0.245656"
         y="0.245656"
-        width="176.872"
-        height="176.872"
+        width={width - 0.491312}
+        height={height - 0.491312}
         rx="7.12401"
         stroke="url(#paint0_linear_272_10378)"
         strokeOpacity="0.33"
@@ -51,6 +51,7 @@ export default function BookmarkTemplate({
       <Path
         d="M138.495 157.828L129.773 171.959L130.956 157.381L114.102 164.373L126.077 153.217L107.597 153.96L122.233 148.457L107.597 137.301L123.711 139.978V123.319L129.773 139.978L138.495 125.253L135.391 141.615L148.105 128.822L138.495 144.441L153.427 138.491L138.495 150.242H156.236L138.495 157.828Z"
         fill="rgba(0,0,0,0.2)"
+        transform={`scale(${width / 178})`}
       />
       <Defs>
         <LinearGradient

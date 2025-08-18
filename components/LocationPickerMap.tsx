@@ -313,7 +313,7 @@ const LocationPickerMap = ({
 
           if (addressResponse.length > 0) {
             const address = addressResponse[0];
-            // 전체 주소 구성 (중복 제거)
+            // 전체 주소 구성 (단순하게)
             const addressParts = [
               address.region,
               address.city,
@@ -322,36 +322,7 @@ const LocationPickerMap = ({
               address.name,
             ].filter(Boolean);
 
-            // 중복되는 부분 제거 (진짜 완벽한 방식)
-            const uniqueAddressParts: string[] = [];
-            for (let i = 0; i < addressParts.length; i++) {
-              const part = addressParts[i];
-              if (!part) continue; // null이나 undefined는 건너뛰기
-
-              let isDuplicate = false;
-
-              // 이미 추가된 부분들과 비교 (정확한 중복 체크)
-              for (let j = 0; j < uniqueAddressParts.length; j++) {
-                const existingPart = uniqueAddressParts[j];
-                // 정확히 같은 문자열만 중복으로 처리 (숫자 포함된 상세 주소는 보존)
-                if (existingPart === part) {
-                  isDuplicate = true;
-                  break;
-                }
-              }
-
-              if (!isDuplicate) {
-                uniqueAddressParts.push(part);
-              }
-            }
-
-            const fullAddress = uniqueAddressParts.join(" ");
-
-            console.log("주소 변환 결과:", {
-              원본: addressParts,
-              중복제거: uniqueAddressParts,
-              최종: fullAddress,
-            });
+            const fullAddress = addressParts.join(" ");
 
             setSelectedLocation({
               lat: data.latitude,

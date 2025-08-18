@@ -1,19 +1,19 @@
 import BackIcon from "@/components/icons/BackIcon";
 import {
-    setGiftBookData,
-    setMarkerBookData,
-    setReceivedBookData,
+  setGiftBookData,
+  setMarkerBookData,
+  setReceivedBookData,
 } from "@/types/globalState";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 

@@ -32,6 +32,10 @@ type KakaoMapProps = {
   regions?: string[];
   filterType?: string; // 필터 타입 추가
   bottomFilterTypes?: string[]; // 하단 필터 타입들 추가
+  onMessage?: (event: any) => void; // 메시지 핸들러 추가
+  activeMarkerId: string | null; // 활성화된 마커 ID
+  onActiveMarkerChange: (id: string | null) => void; // 마커 ID 변경 콜백
+  onLoad?: () => void; // WebView 로드 완료 핸들러
 };
 
 interface Bookstore {
@@ -97,12 +101,20 @@ const regionCoordinates = {
 
 const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
   (
-    { latitude, longitude, regions = [], filterType, bottomFilterTypes = [] },
+    {
+      latitude,
+      longitude,
+      regions = [],
+      filterType,
+      bottomFilterTypes = [],
+      onMessage,
+      activeMarkerId,
+      onActiveMarkerChange,
+      onLoad,
+    },
     ref,
   ) => {
     const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
-    // 활성화된 마커 ID 관리 (한 번에 하나만 활성화)
-    const [activeMarkerId, setActiveMarkerId] = useState<string | null>(null); // number에서 string으로 변경
     // 현재 뷰포트 정보 저장
     const [currentViewport, setCurrentViewport] = useState<{
       north: number;
@@ -296,9 +308,10 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
       webViewRef.current?.postMessage(JSON.stringify(message));
     };
 
-    // 모든 마커 제거
+    // 모든 마커 제거 (내 위치 마커는 제거하지 않음)
     const clearAllMarkers = () => {
-      setActiveMarkerId(null);
+      onActiveMarkerChange(null);
+      // 내 위치 마커는 제거하지 않음
     };
 
     // WebView 로드 완료 후 마커 추가
@@ -320,11 +333,16 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
       try {
         const data: WebViewMessage = JSON.parse(event.nativeEvent.data);
 
+        // onMessage prop이 있으면 전달
+        if (onMessage) {
+          onMessage(event);
+        }
+
         if (data.type === "bookstoreClick") {
           const markerId = data.id!;
 
           if (activeMarkerId !== markerId) {
-            setActiveMarkerId(markerId);
+            onActiveMarkerChange(markerId);
 
             // 마커 이미지 업데이트 메시지 전송
             if (webViewRef.current) {
@@ -339,7 +357,7 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
           }
         } else if (data.type === "mapClicked") {
           console.log("📱 지도 클릭됨 - 모든 인포박스 닫기");
-          setActiveMarkerId(null);
+          onActiveMarkerChange(null);
 
           // WebView에 모든 인포박스를 닫으라는 메시지 전송
           if (webViewRef.current) {
@@ -403,7 +421,9 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
             let myLocationMarker = null;
             
             window.onload = function() {
+              console.log("🌐 WebView 로드 시작");
               if (typeof kakao !== 'undefined' && kakao.maps) {
+                console.log("🗺️ 카카오맵 SDK 로드됨");
                 const mapContainer = document.getElementById('map');
                 
                 const initialLat = Math.max(${koreaBounds.south}, Math.min(${koreaBounds.north}, ${latitude}));
@@ -414,6 +434,7 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   level: 5
                 };
                 map = new kakao.maps.Map(mapContainer, mapOption);
+                console.log("🗺️ 지도 초기화 완료");
                 
                 // 지도 클릭 이벤트
                 kakao.maps.event.addListener(map, 'click', function() {
@@ -795,25 +816,34 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   content: '<div style="padding:10px;font-size:14px;text-align:center;min-width:120px;"><strong>' + name + '</strong></div>'
                 });
 
-                kakao.maps.event.addListener(marker, 'click', function(event) {
+                                kakao.maps.event.addListener(marker, 'click', function(event) {
                   if (event && event.stopPropagation) {
                     event.stopPropagation();
                   }
                   
-                 
-                  
-                  // 즉시 인포박스 열기
-                  Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
-                    if (bookstoreMarker.infowindow) {
-                      bookstoreMarker.infowindow.close();
-                    }
-                  });
-                  infowindow.open(map, marker);
+                  // 즉시 인포박스 열기 제거 - activeMarkerId 변경 후에 열도록 수정
+                  // Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
+                  //   if (bookstoreMarker.infowindow) {
+                  //     bookstoreMarker.infowindow.close();
+                  //   }
+                  // });
+                  // infowindow.open(map, marker);
                  
                   
                   if (window.ReactNativeWebView) {
                     window.ReactNativeWebView.postMessage(JSON.stringify({
                       type: 'bookstoreClick',
+                      id: id,
+                      name: name,
+                      lat: lat,
+                      lng: lng
+                    }));
+                  }
+                  
+                  // 선택된 마커 정보를 React Native로 전송
+                  if (window.ReactNativeWebView) {
+                    window.ReactNativeWebView.postMessage(JSON.stringify({
+                      type: 'markerSelected',
                       id: id,
                       name: name,
                       lat: lat,
@@ -862,16 +892,18 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   const currentPos = myLocationMarker.getPosition();
                   const newPos = new kakao.maps.LatLng(restrictedLat, restrictedLng);
                   
-                  if (Math.abs(currentPos.getLat() - restrictedLat) < 0.0001 && 
-                      Math.abs(currentPos.getLng() - restrictedLng) < 0.0001) {
-                    return;
+                  // 마커가 지도에 표시되어 있는지 확인하고 없으면 다시 추가
+                  if (myLocationMarker.getMap() === null) {
+                    myLocationMarker.setMap(map);
                   }
                   
                   myLocationMarker.setPosition(newPos);
-                  // 위치 범위 원도 함께 이동
-                  if (myLocationRangeCircle) {
-                    myLocationRangeCircle.setPosition(newPos);
+                  
+                  // 마커가 항상 보이도록 보장
+                  if (myLocationMarker.getMap() === null) {
+                    myLocationMarker.setMap(map);
                   }
+                  
                   return;
                 }
                 
@@ -928,24 +960,33 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                 if (!myLocationMarker || !myLocationMarker.getMap()) {
                   showMyLocationMarker(restrictedLat, restrictedLng);
                 }
+                
+                // 내 위치 마커가 항상 표시되도록 보장
+                if (myLocationMarker && myLocationMarker.getMap() === null) {
+                  myLocationMarker.setMap(map);
+                }
               } catch (error) {
               
               }
             }
 
-            // 기존 마커의 인포박스 상태 업데이트 (이미지는 변경하지 않음)
+                        // 기존 마커의 인포박스 상태 업데이트 (이미지는 변경하지 않음)
             function updateBookstoreMarkerImage(id, isActive) {
-            
+              console.log("🔧 updateBookstoreMarkerImage 함수 시작");
+              console.log("🔧 받은 ID:", id);
+              console.log("🔧 받은 isActive:", isActive);
+              console.log("🔧 bookstoreMarkers[id] 존재 여부:", !!bookstoreMarkers[id]);
               
               if (bookstoreMarkers[id]) {
                 const marker = bookstoreMarkers[id].marker;
                 const infowindow = bookstoreMarkers[id].infowindow;
                 
-           
+                console.log("📍 마커 객체:", marker);
+                console.log("📍 인포박스 객체:", infowindow);
                 
                 // 인포박스 상태만 업데이트 (이미지는 변경하지 않음)
                 if (isActive) {
-                 
+                  console.log("✅ 인포박스 열기 시도");
                   
                   // 다른 모든 인포박스 닫기
                   Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
@@ -956,13 +997,13 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   
                   // 현재 마커의 인포박스 열기
                   infowindow.open(map, marker);
-                
+                  console.log("🎯 인포박스 열기 완료");
                 } else {
-                
+                  console.log("❌ 인포박스 닫기");
                   infowindow.close();
                 }
               } else {
-           
+                console.log("⚠️ 마커를 찾을 수 없음:", id);
               }
             }
 
@@ -993,9 +1034,15 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
             // React Native에서 메시지 받기
             window.addEventListener('message', function(event) {
               try {
+                console.log("📨 WebView 메시지 수신 시작");
+                console.log("📨 원본 데이터:", event.data);
+                console.log("📨 데이터 타입:", typeof event.data);
+                
                 const data = JSON.parse(event.data);
+                console.log("📋 파싱된 데이터:", data);
                 
                 if (data.type === 'addBookstoreMarker') {
+                  console.log("➕ addBookstoreMarker 처리");
                   addBookstoreMarkerToMap(
                     data.id, 
                     data.name, 
@@ -1007,18 +1054,30 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                     data.isActive
                   );
                 } else if (data.type === 'showMyLocationMarker') {
+                  console.log("📍 showMyLocationMarker 처리");
                   showMyLocationMarker(data.latitude, data.longitude);
                 } else if (data.type === 'updateBookstoreMarkerImage') {
+                  console.log("🔄 updateBookstoreMarkerImage 처리 시작");
+                  console.log("🔄 받은 데이터:", data);
+                  console.log("🔄 ID:", data.id);
+                  console.log("🔄 isActive:", data.isActive);
+                  console.log("🔍 bookstoreMarkers 상태:", Object.keys(bookstoreMarkers));
+                  console.log("🔍 bookstoreMarkers 전체:", bookstoreMarkers);
                   updateBookstoreMarkerImage(data.id, data.isActive);
                 } else if (data.type === 'closeAllInfoWindows') {
+                  console.log("❌ closeAllInfoWindows 처리");
                   closeAllInfoWindows();
                 } else if (data.type === 'moveToLocation') {
+                  console.log("🚀 moveToLocation 처리");
                   moveMapToLocation(data.latitude, data.longitude);
                 } else if (data.type === 'clearAllMarkers') {
+                  console.log("🗑️ clearAllMarkers 처리");
                   clearAllBookstoreMarkers();
+                } else {
+                  console.log("⚠️ 알 수 없는 메시지 타입:", data.type);
                 }
               } catch (error) {
-               
+                console.error("❌ 메시지 처리 오류:", error);
               }
             });
           </script>
@@ -1047,7 +1106,7 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
           style={styles.webview}
           javaScriptEnabled={true}
           domStorageEnabled={true}
-          onLoad={handleWebViewLoad}
+          onLoad={onLoad || handleWebViewLoad}
           onError={(e) => console.error("WebView error: ", e.nativeEvent)}
           onMessage={handleMessage}
           androidLayerType="hardware"

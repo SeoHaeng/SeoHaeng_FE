@@ -22,7 +22,17 @@ export default function WelcomeScreen() {
   const handleSignIn = () => {
     // 로그인 화면으로 이동
     console.log("SignInScreen으로 이동");
-    router.push("/auth/signin");
+    try {
+      router.push("/auth/signin");
+    } catch (error) {
+      console.error("로그인 화면 이동 실패:", error);
+      // 에러 발생 시 navigate로 시도
+      try {
+        router.navigate("/auth/signin");
+      } catch (navigateError) {
+        console.error("navigate도 실패:", navigateError);
+      }
+    }
   };
 
   const handleContact = () => {
@@ -106,12 +116,14 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     marginBottom: 12,
     textAlign: "center",
+    fontWeight: "500", // 폰트 로딩 실패 시 대체
   },
   title: {
     fontSize: 32,
     fontFamily: "Gangwon",
     color: "#212121",
     textAlign: "center",
+    fontWeight: "600", // 폰트 로딩 실패 시 대체
   },
   titleContainer: {
     flexDirection: "row",
@@ -141,6 +153,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontFamily: "SUIT-500",
+    fontWeight: "500", // 폰트 로딩 실패 시 대체
   },
 
   linkContainer: {

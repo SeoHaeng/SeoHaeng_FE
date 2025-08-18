@@ -1,6 +1,6 @@
 import EditTripNameModal from "@/components/EditTripNameModal";
 import BackIcon from "@/components/icons/BackIcon";
-import KakaoMap, { KakaoMapRef } from "@/components/KakaoMap";
+import ItineraryMap, { ItineraryMapRef } from "@/components/ItineraryMap";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -29,6 +29,7 @@ export default function Itinerary() {
   const params = useLocalSearchParams();
   const [selectedDay, setSelectedDay] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isPublic, setIsPublic] = useState(false); // 공개/비공개 상태
 
   // 현재 위치를 메모이제이션하여 불필요한 재렌더링 방지
   const currentLocation = useMemo(
@@ -39,10 +40,10 @@ export default function Itinerary() {
     [],
   );
 
-  const webViewRef = useRef<KakaoMapRef>(null);
+  const webViewRef = useRef<ItineraryMapRef>(null);
 
   const [tripData, setTripData] = useState({
-    title: "강원도 여름 여행",
+    title: "강원도 여행",
     dateRange: "2025.06.13 - 06.16",
     regions: ["강릉", "동해"],
     days: [
@@ -85,8 +86,11 @@ export default function Itinerary() {
   const selectedRegions = useMemo(() => tripData.regions, [tripData.regions]);
 
   const handleAddSpot = (dayIndex: number) => {
-    // 여행 스팟 추가 로직
-    console.log(`Add spot to day ${dayIndex}`);
+    // 장소 검색 화면으로 이동 (일정짜기에서 온 것을 표시)
+    router.push({
+      pathname: "/search",
+      params: { from: "itinerary", dayIndex: dayIndex.toString() },
+    });
   };
 
   const handleEditTripName = () => {
@@ -171,15 +175,50 @@ export default function Itinerary() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => router.push("/destination")}>
             <BackIcon />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.saveButton}>
-            <Text style={styles.saveButtonText}>임시저장</Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.dateRange}>{tripData.dateRange}</Text>
+        <View style={styles.headerContent}>
+          <Text style={styles.dateRange}>{tripData.dateRange}</Text>
+          {/* 공개/비공개 토글 */}
+
+          <View style={styles.toggleContainer}>
+            <TouchableOpacity
+              style={[
+                styles.toggleButton,
+                !isPublic && styles.toggleButtonActive,
+              ]}
+              onPress={() => setIsPublic(false)}
+            >
+              <Text
+                style={[
+                  styles.toggleButtonText,
+                  !isPublic && styles.toggleButtonTextActive,
+                ]}
+              >
+                비공개
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.toggleButton,
+                isPublic && styles.toggleButtonActive,
+              ]}
+              onPress={() => setIsPublic(true)}
+            >
+              <Text
+                style={[
+                  styles.toggleButtonText,
+                  isPublic && styles.toggleButtonTextActive,
+                ]}
+              >
+                공개
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <View style={styles.titleSection}>
           <Text style={styles.tripTitle}>{tripData.title}</Text>
@@ -209,13 +248,23 @@ export default function Itinerary() {
           </Text>
         </View>
         <View style={styles.map}>
-          <KakaoMap
+          <ItineraryMap
             latitude={currentLocation.latitude}
             longitude={currentLocation.longitude}
             regions={selectedRegions}
             ref={webViewRef}
-            activeMarkerId={null}
-            onActiveMarkerChange={() => {}}
+            onMessage={(event) => {
+              try {
+                const data = JSON.parse(event.nativeEvent.data);
+                console.log("📱 ItineraryMap 메시지 수신:", data);
+
+                if (data.type === "mapReady") {
+                  console.log("🗺️ ItineraryMap 준비 완료:", data.message);
+                }
+              } catch (error) {
+                console.log("ItineraryMap 메시지 파싱 오류:", error);
+              }
+            }}
           />
         </View>
       </View>
@@ -245,7 +294,7 @@ export default function Itinerary() {
           contentContainerStyle={styles.dayCardsContainer}
           onScroll={(event) => {
             const contentOffset = event.nativeEvent.contentOffset.x;
-            const cardWidth = 315; // 카드 너비 + 마진
+            const cardWidth = 246; // 카드 너비 + 마진
             const newSelectedDay = Math.round(contentOffset / cardWidth);
             if (
               newSelectedDay >= 0 &&
@@ -265,7 +314,7 @@ export default function Itinerary() {
           }}
           scrollEventThrottle={16}
           decelerationRate="fast"
-          snapToInterval={315}
+          snapToInterval={246}
           snapToAlignment="start"
         >
           {tripData.days.map((day, index) => renderDayCard(day, index))}
@@ -300,6 +349,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 15,
   },
+  headerContent: {
+    marginBottom: 15,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   saveButton: {
     paddingVertical: 6,
   },
@@ -312,7 +367,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "SUIT-600",
     color: "#262423",
-    marginBottom: 10,
   },
   titleSection: {
     flexDirection: "row",
@@ -322,7 +376,7 @@ const styles = StyleSheet.create({
   },
   tripTitle: {
     fontSize: 24,
-    fontFamily: "SUIT-700",
+    fontFamily: "Gangwon",
     color: "#262423",
   },
   editButton: {
@@ -340,10 +394,44 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
   },
+  privacyToggleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 15,
+  },
+  privacyToggleLabel: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#262423",
+  },
+  toggleContainer: {
+    flexDirection: "row",
+    backgroundColor: "#F5F5F5",
+    borderRadius: 20,
+    padding: 2,
+  },
+  toggleButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 18,
+    backgroundColor: "transparent",
+  },
+  toggleButtonActive: {
+    backgroundColor: "#262423",
+  },
+  toggleButtonText: {
+    fontSize: 12,
+    fontFamily: "SUIT-500",
+    color: "#9D9896",
+  },
+  toggleButtonTextActive: {
+    color: "#FFFFFF",
+  },
   regionTag: {
     backgroundColor: "#C5BFBB",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 5,
   },
   regionText: {
@@ -398,9 +486,8 @@ const styles = StyleSheet.create({
     height: 200,
     backgroundColor: "#F8F8F8",
     borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
     position: "relative",
+    overflow: "hidden",
   },
   mapPlaceholder: {
     fontSize: 16,
@@ -419,6 +506,7 @@ const styles = StyleSheet.create({
   timelineContainer: {
     paddingHorizontal: 8,
     flexDirection: "row",
+    paddingRight: 100,
   },
   timeline: {
     flexDirection: "row",
@@ -427,7 +515,7 @@ const styles = StyleSheet.create({
   },
   timelineItem: {
     position: "relative",
-    width: 245,
+    width: 248,
     justifyContent: "flex-start",
     flexDirection: "column",
     gap: 6,
@@ -473,6 +561,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     paddingBottom: 20,
     paddingLeft: 10,
+    paddingRight: 100, // 마지막 카드까지 스크롤할 수 있도록 여유 공간 추가
   },
   dayCard: {
     width: 226,

@@ -300,6 +300,7 @@ function Milestone() {
                   id: data.id,
                   title: data.name,
                   address: `위도 ${data.lat.toFixed(4)}, 경도 ${data.lng.toFixed(4)}`,
+                  from: "milestone",
                 },
               });
             } else if (data.type === "mapReady") {
@@ -329,7 +330,10 @@ function Milestone() {
         style={styles.searchBar}
         onPress={() => {
           if (!selectedMarker) {
-            router.push("/search");
+            router.push({
+              pathname: "/search",
+              params: { from: "milestone" },
+            });
           }
         }}
       >

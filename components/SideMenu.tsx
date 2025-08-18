@@ -1,4 +1,6 @@
 import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
+import { removeToken } from "@/types/auth";
+import { getUserInfo } from "@/types/globalState";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
@@ -23,6 +25,19 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
   const router = useRouter();
   const slideAnim = React.useRef(new Animated.Value(width)).current;
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  const [userInfo, setUserInfo] = React.useState(getUserInfo());
+
+  // 사용자 정보 업데이트를 위한 주기적 체크
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      const currentUserInfo = getUserInfo();
+      if (currentUserInfo !== userInfo) {
+        setUserInfo(currentUserInfo);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [userInfo]);
 
   React.useEffect(() => {
     if (visible) {
@@ -74,6 +89,17 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
     });
   };
 
+  const handleLogout = async () => {
+    try {
+      await removeToken();
+      onClose();
+      // 로그인 화면으로 이동
+      router.replace("/auth");
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+    }
+  };
+
   if (!visible) return null;
 
   return (
@@ -113,8 +139,14 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                 <DefaultProfileIcon width={40} height={43} color="#9D9896" />
               </View>
               <View style={styles.profileInfo}>
-                <Text style={styles.userName}>유딘딘</Text>
-                <Text style={styles.userEmail}>rkddbwls07@gmail.com</Text>
+                <Text style={styles.userName}>
+                  {userInfo?.nickName || "사용자"}
+                </Text>
+                <Text style={styles.userEmail}>
+                  {userInfo?.loginType === "LOCAL"
+                    ? "로컬 계정"
+                    : userInfo?.loginType || "계정 정보 없음"}
+                </Text>
               </View>
             </View>
 
@@ -160,7 +192,7 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
 
             {/* 계정 관련 메뉴 */}
             <View style={styles.accountMenuItems}>
-              <TouchableOpacity style={styles.menuItem}>
+              <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
                 <View style={styles.menuItemIcon}>
                   <Text style={styles.menuItemIconText}>🚪</Text>
                 </View>

@@ -6,6 +6,14 @@ export interface BookData {
   cover: { uri: string };
 }
 
+// 사용자 정보 타입
+export interface UserInfo {
+  userId: number;
+  nickName: string;
+  profileImageUrl: string | null;
+  loginType: string;
+}
+
 // 받을 책 정보
 export let receivedBookData: BookData | null = null;
 
@@ -43,4 +51,73 @@ export const setMarkerBookData = (book: BookData | null) => {
 // 마커 등록용 도서 정보 가져오기
 export const getMarkerBookData = (): BookData | null => {
   return markerBookData;
+};
+
+// 로그인 API 관련 타입
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    accessToken: string;
+    userId: number;
+  };
+}
+
+// 사용자 정보 조회 API 응답 타입
+export interface UserInfoResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: UserInfo;
+}
+
+// 사용자 인증 상태 관리
+export interface AuthState {
+  isAuthenticated: boolean;
+  accessToken: string | null;
+  userId: number | null;
+  userInfo: UserInfo | null;
+}
+
+export let authState: AuthState = {
+  isAuthenticated: false,
+  accessToken: null,
+  userId: null,
+  userInfo: null,
+};
+
+// 인증 상태 설정 (메모리 상태만 업데이트)
+export const setAuthState = (state: Partial<AuthState>) => {
+  authState = { ...authState, ...state };
+};
+
+// 인증 상태 가져오기
+export const getAuthState = (): AuthState => {
+  return authState;
+};
+
+// 사용자 정보 설정
+export const setUserInfo = (userInfo: UserInfo | null) => {
+  authState.userInfo = userInfo;
+};
+
+// 사용자 정보 가져오기
+export const getUserInfo = (): UserInfo | null => {
+  return authState.userInfo;
+};
+
+// 로그아웃
+export const logout = () => {
+  authState = {
+    isAuthenticated: false,
+    accessToken: null,
+    userId: null,
+    userInfo: null,
+  };
 };

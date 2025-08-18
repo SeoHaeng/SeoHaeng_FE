@@ -2,6 +2,7 @@ import BackIcon from "@/components/icons/BackIcon";
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
 import EyeIcon from "@/components/icons/EyeIcon";
+import UserInfoDisplay from "@/components/UserInfoDisplay";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -148,6 +149,9 @@ export default function ProfileEdit() {
             </View>
           </TouchableOpacity>
         </View>
+
+        {/* 사용자 정보 표시 섹션 */}
+        <UserInfoDisplay />
 
         {/* 닉네임 입력 섹션 */}
         <View style={styles.inputSection}>

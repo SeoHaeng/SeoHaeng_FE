@@ -5,8 +5,8 @@ import BackIcon from "@/components/icons/BackIcon";
 import FilledHeartIcon from "@/components/icons/FilledHeartIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import StarIcon from "@/components/icons/StarIcon";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -22,9 +22,19 @@ import PhotoTab from "./photo";
 import ReviewTab from "./review";
 
 export default function BookstoreDetail() {
+  const params = useLocalSearchParams();
   const [activeTab, setActiveTab] = useState("상세 정보");
   const [isLiked, setIsLiked] = useState(false);
+  const [fromScreen, setFromScreen] = useState<string>("");
   const router = useRouter();
+
+  // 파라미터에서 출발 화면 정보 가져오기
+  useEffect(() => {
+    if (params.from) {
+      setFromScreen(params.from as string);
+      console.log("🏪 서점 상세 화면 진입 - 출발 화면:", params.from);
+    }
+  }, [params.from]);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -51,7 +61,21 @@ export default function BookstoreDetail() {
         {/* 헤더 */}
         <View style={styles.header}>
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => {
+              if (fromScreen === "milestone") {
+                // 이정표에서 온 경우
+                router.push("/(tabs)/milestone");
+              } else if (fromScreen === "challenge") {
+                // 챌린지에서 온 경우
+                router.push("/(tabs)/maru/challenge");
+              } else if (fromScreen === "likedPlaces") {
+                // 좋아요한 장소에서 온 경우
+                router.push("/(tabs)/memory/likedPlaces");
+              } else {
+                // 기본 뒤로가기
+                router.back();
+              }
+            }}
             style={styles.backButton}
           >
             <BackIcon />

@@ -184,7 +184,7 @@ export default function Plan() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.push("/(tabs)/milestone")}>
           <BackIcon />
         </TouchableOpacity>
         <View style={styles.headerContent}>

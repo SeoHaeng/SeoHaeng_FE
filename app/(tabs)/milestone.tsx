@@ -1,5 +1,13 @@
 // app/milestone.tsx
+import { bookCafeData } from "@/assets/mockdata/bookCafeData";
+import { bookStayData } from "@/assets/mockdata/bookStayData";
+import { bookmarkData } from "@/assets/mockdata/bookmarkData";
+import { festivalData } from "@/assets/mockdata/festivalData";
+import { independentBookstoreData } from "@/assets/mockdata/independentBookstoreData";
+import { restaurantData } from "@/assets/mockdata/restaurantData";
+import { touristData } from "@/assets/mockdata/touristData";
 import KakaoMap, { KakaoMapRef } from "@/components/KakaoMap";
+import SelectedMarkerModal from "@/components/SelectedMarkerModal";
 import BackIcon from "@/components/icons/BackIcon";
 import BookCafeIcon from "@/components/icons/BookCafeIcon";
 import BookStayIcon from "@/components/icons/BookStayIcon";
@@ -12,7 +20,7 @@ import SpaceBookmarkIcon from "@/components/icons/SpaceBookmarkIcon";
 import TouristSpotIcon from "@/components/icons/TouristSpotIcon";
 import * as Location from "expo-location";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   StyleSheet,
@@ -46,7 +54,18 @@ function Milestone() {
   const [activeFilterText, setActiveFilterText] = useState("");
   const [isLocationSelected, setIsLocationSelected] = useState(false);
   const [filterType, setFilterType] = useState<string | undefined>(undefined); // 필터 타입 상태 추가
+  const [activeMarkerId, setActiveMarkerId] = useState<string | null>(null); // 활성화된 마커 ID
+  const [isWebViewReady, setIsWebViewReady] = useState(false); // WebView 준비 상태
   const webViewRef = useRef<KakaoMapRef>(null);
+
+  // WebView 로드 완료 후 준비 상태 설정
+  const handleWebViewLoad = () => {
+    console.log("🌐 WebView 로드 완료");
+    setTimeout(() => {
+      console.log("✅ WebView 준비 상태를 true로 설정");
+      setIsWebViewReady(true);
+    }, 2000); // 2초 후 준비 상태 설정
+  };
 
   // URL 파라미터에서 선택된 위치 정보 처리
   useEffect(() => {
@@ -129,6 +148,71 @@ function Milestone() {
     }
   };
 
+  // 마커 선택 시 처리
+  const handleMarkerSelected = (markerData: any) => {
+    console.log("🎯 마커 선택됨:", markerData.id, markerData.name);
+    setActiveMarkerId(markerData.id);
+    setIsFilterActive(false); // 필터 비활성화
+  };
+
+  // 선택된 마커 정보를 activeMarkerId로부터 계산
+  const selectedMarker = useMemo(() => {
+    if (!activeMarkerId) return null;
+
+    // 모든 마커 데이터에서 해당 ID 찾기
+    const allData = [
+      ...independentBookstoreData,
+      ...bookCafeData,
+      ...bookStayData,
+      ...bookmarkData,
+      ...restaurantData,
+      ...touristData,
+      ...festivalData,
+    ];
+
+    const markerData = allData.find((item) => item.id === activeMarkerId);
+    if (!markerData) return null;
+
+    return {
+      id: markerData.id,
+      name: markerData.name,
+      lat: markerData.latitude,
+      lng: markerData.longitude,
+    };
+  }, [activeMarkerId]);
+
+  // activeMarkerId 변경 시 로그 출력 및 인포박스 업데이트
+  useEffect(() => {
+    console.log("🔄 activeMarkerId 변경됨:", activeMarkerId);
+    if (activeMarkerId) {
+      console.log("📍 활성화된 마커 ID:", activeMarkerId);
+
+      // WebView에 인포박스 상태 업데이트 요청
+      if (webViewRef.current) {
+        setTimeout(() => {
+          const message = JSON.stringify({
+            type: "updateBookstoreMarkerImage",
+            id: activeMarkerId,
+            isActive: true,
+          });
+          console.log("📤 WebView에 메시지 전송:", message);
+          webViewRef.current?.postMessage(message);
+        }, 100); // 100ms 지연
+      }
+    } else {
+      console.log("❌ 마커 선택 해제됨");
+
+      // WebView에 모든 인포박스 닫기 요청
+      if (webViewRef.current) {
+        webViewRef.current.postMessage(
+          JSON.stringify({
+            type: "closeAllInfoWindows",
+          }),
+        );
+      }
+    }
+  }, [activeMarkerId, webViewRef]);
+
   const getCurrentLocation = async () => {
     try {
       console.log("내 위치 버튼 클릭 - 현재 위치 가져오기 시작");
@@ -198,20 +282,46 @@ function Milestone() {
               return filter;
           }
         })} // 하단 필터 타입들 전달
+        activeMarkerId={activeMarkerId} // 활성화된 마커 ID 전달
+        onActiveMarkerChange={setActiveMarkerId} // 마커 ID 변경 콜백 전달
+        onLoad={handleWebViewLoad} // WebView 로드 완료 핸들러
+        onMessage={(event) => {
+          try {
+            const data = JSON.parse(event.nativeEvent.data);
+            console.log("📱 React Native 메시지 수신:", data);
+
+            if (data.type === "markerSelected") {
+              handleMarkerSelected(data);
+            } else if (data.type === "mapReady") {
+              console.log("🗺️ 지도 준비됨 - WebView 준비 상태 설정");
+              setIsWebViewReady(true);
+            }
+          } catch (error) {
+            console.log("메시지 파싱 오류:", error);
+          }
+        }}
       />
 
       {/* 상단 검색바 */}
       <TouchableOpacity
         style={styles.searchBar}
-        onPress={() => router.push("/search")}
+        onPress={() => {
+          if (!selectedMarker) {
+            router.push("/search");
+          }
+        }}
       >
-        {isFilterActive && (
+        {(isFilterActive || selectedMarker) && (
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => {
-              setIsFilterActive(false);
-              setActiveFilterText("");
-              setFilterType(undefined); // 필터 타입 초기화 (모든 마커 표시)
+              if (isFilterActive) {
+                setIsFilterActive(false);
+                setActiveFilterText("");
+                setFilterType(undefined); // 필터 타입 초기화 (모든 마커 표시)
+              } else if (activeMarkerId) {
+                setActiveMarkerId(null); // 선택된 마커 해제
+              }
             }}
           >
             <BackIcon style={styles.backIcon} width={14} height={14} />
@@ -222,13 +332,16 @@ function Milestone() {
             styles.searchInput,
             isFilterActive && styles.filterActiveSearchInput,
             selectedLocation && styles.selectedLocationSearchInput,
+            selectedMarker && styles.selectedMarkerSearchInput,
           ]}
           value={
             isFilterActive
               ? activeFilterText
-              : selectedLocation
-                ? selectedLocation.text || selectedLocation.name
-                : ""
+              : selectedMarker
+                ? selectedMarker.name
+                : selectedLocation
+                  ? selectedLocation.text || selectedLocation.name
+                  : ""
           }
           placeholder="서점, 책방, 공간 검색"
           placeholderTextColor="#999999"
@@ -256,7 +369,8 @@ function Milestone() {
       <View
         style={[
           styles.filterContainer,
-          (isFilterActive || selectedLocation) && styles.hiddenFilterContainer,
+          (isFilterActive || selectedLocation || selectedMarker) &&
+            styles.hiddenFilterContainer,
         ]}
       >
         <TouchableOpacity
@@ -369,7 +483,8 @@ function Milestone() {
       <TouchableOpacity
         style={[
           styles.zoomButton,
-          (isFilterActive || selectedLocation) && styles.hiddenElement,
+          (isFilterActive || selectedLocation || selectedMarker) &&
+            styles.hiddenElement,
         ]}
         onPress={() => {
           // 현재 위치를 기반으로 위치 선택 화면으로 이동
@@ -389,7 +504,8 @@ function Milestone() {
       <View
         style={[
           styles.bottomCard,
-          (isFilterActive || selectedLocation) && styles.hiddenElement,
+          (isFilterActive || selectedLocation || selectedMarker) &&
+            styles.hiddenElement,
         ]}
       >
         <Text style={styles.locationName}>
@@ -502,6 +618,12 @@ function Milestone() {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* 선택된 마커 모달 */}
+      <SelectedMarkerModal
+        marker={selectedMarker}
+        onClose={() => setActiveMarkerId(null)}
+      />
     </View>
   );
 }
@@ -746,6 +868,11 @@ const styles = StyleSheet.create({
   },
   selectedLocationSearchInput: {
     color: "#262423",
+  },
+  selectedMarkerSearchInput: {
+    color: "#000000",
+    fontFamily: "SUIT-700",
+    fontWeight: "bold",
   },
 });
 export default Milestone;

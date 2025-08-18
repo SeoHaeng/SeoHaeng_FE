@@ -129,7 +129,7 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
     // 필터 타입이나 하단 필터가 변경될 때마다 마커 다시 그리기
     useEffect(() => {
       if (webViewRef.current) {
-        // 기존 마커 모두 제거
+        // 기존 마커 모두 제거 (내 위치 마커는 제거하지 않음)
         webViewRef.current.postMessage(
           JSON.stringify({
             type: "clearAllMarkers",
@@ -143,9 +143,10 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
       }
     }, [filterType, bottomFilterTypes]); // bottomFilterTypes 의존성 추가
 
-    // activeMarkerId가 변경될 때마다 모든 마커를 다시 그리기
+    // activeMarkerId가 변경될 때마다 마커 이미지만 업데이트 (마커 재생성하지 않음)
     useEffect(() => {
-      if (webViewRef.current) {
+      if (webViewRef.current && activeMarkerId !== null) {
+        console.log("🔄 activeMarkerId 변경됨, 마커 이미지만 업데이트");
         // 마커 이미지만 업데이트하고 기존 마커는 제거하지 않음
         setTimeout(() => {
           independentBookstoreData.forEach((item) => {
@@ -201,6 +202,7 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
         width: markerStyles.width,
         height: markerStyles.height,
         isActive: isActive,
+        markerType: bookstore.type, // 마커 타입 정보 추가
       };
 
       webViewRef.current?.postMessage(JSON.stringify(message));
@@ -280,6 +282,12 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
 
     // 기존 마커의 이미지만 업데이트
     const updateBookstoreMarkerImage = (bookstore: Bookstore) => {
+      console.log(
+        "🔄 마커 이미지 업데이트:",
+        bookstore.id,
+        "활성화:",
+        activeMarkerId === bookstore.id,
+      );
       const message = {
         type: "updateBookstoreMarkerImage",
         id: bookstore.id,
@@ -288,14 +296,23 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
       webViewRef.current?.postMessage(JSON.stringify(message));
     };
 
-    // 내 위치 마커 표시
+    // 내 위치 마커 표시 (안정화된 버전)
     const showMyLocationMarker = () => {
+      console.log("📍 showMyLocationMarker 호출됨:", latitude, longitude);
+
+      // WebView가 준비되지 않았으면 대기
+      if (!webViewRef.current) {
+        console.log("⚠️ WebView가 준비되지 않음, 100ms 후 재시도");
+        setTimeout(() => showMyLocationMarker(), 100);
+        return;
+      }
+
       const message = {
         type: "showMyLocationMarker",
         latitude: latitude,
         longitude: longitude,
       };
-      webViewRef.current?.postMessage(JSON.stringify(message));
+      webViewRef.current.postMessage(JSON.stringify(message));
     };
 
     // 지도를 특정 위치로 이동
@@ -308,10 +325,18 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
       webViewRef.current?.postMessage(JSON.stringify(message));
     };
 
-    // 모든 마커 제거 (내 위치 마커는 제거하지 않음)
+    // 모든 마커 제거 (내 위치 마커는 절대 제거하지 않음)
     const clearAllMarkers = () => {
+      console.log("🗑️ clearAllMarkers 호출됨 - 내 위치 마커 보호");
       onActiveMarkerChange(null);
-      // 내 위치 마커는 제거하지 않음
+
+      // 내 위치 마커 보호를 위해 WebView에 메시지 전송
+      if (webViewRef.current) {
+        const protectMessage = JSON.stringify({
+          type: "protectMyLocationMarker",
+        });
+        webViewRef.current.postMessage(protectMessage);
+      }
     };
 
     // WebView 로드 완료 후 마커 추가
@@ -504,63 +529,58 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                       zoom: zoom
                     };
                     
-                   
                     window.ReactNativeWebView.postMessage(JSON.stringify(initialViewportMessage));
                   }
-                  
-                  // 지도 드래그 이벤트 리스너 추가
-                  kakao.maps.event.addListener(map, 'drag', function() {
-                  
+                });
+
+                // 지도 드래그 이벤트 리스너 (LocationPickerMap과 동일하게)
+                kakao.maps.event.addListener(map, 'drag', function() {
+                  if (window.ReactNativeWebView) {
+                    const bounds = map.getBounds();
+                    const center = map.getCenter();
+                    const sw = bounds.getSouthWest();
+                    const ne = bounds.getNorthEast();
+                    const zoom = map.getLevel();
                     
-                    if (window.ReactNativeWebView) {
-                      const bounds = map.getBounds();
-                      const center = map.getCenter();
-                      const sw = bounds.getSouthWest();
-                      const ne = bounds.getNorthEast();
-                      const zoom = map.getLevel();
-                      
-                      const viewportMessage = {
-                        type: 'viewportChanged',
-                        north: ne.getLat(),
-                        south: sw.getLat(),
-                        east: ne.getLng(),
-                        west: sw.getLng(),
-                        centerLat: center.getLat(),
-                        centerLng: center.getLng(),
-                        zoom: zoom
-                      };
-                      
-                     
-                      window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
-                    }
-                  });
-                  
-                  // 지도 줌 변경 이벤트 리스너 추가
-                  kakao.maps.event.addListener(map, 'zoom_changed', function() {
-               
+                    const viewportMessage = {
+                      type: 'viewportChanged',
+                      north: ne.getLat(),
+                      south: sw.getLat(),
+                      east: ne.getLng(),
+                      west: sw.getLng(),
+                      centerLat: center.getLat(),
+                      centerLng: center.getLng(),
+                      zoom: zoom
+                    };
                     
-                    if (window.ReactNativeWebView) {
-                      const bounds = map.getBounds();
-                      const center = map.getCenter();
-                      const sw = bounds.getSouthWest();
-                      const ne = bounds.getNorthEast();
-                      const zoom = map.getLevel();
-                      
-                      const viewportMessage = {
-                        type: 'viewportChanged',
-                        north: ne.getLat(),
-                        south: sw.getLat(),
-                        east: ne.getLng(),
-                        west: sw.getLng(),
-                        centerLat: center.getLat(),
-                        centerLng: center.getLng(),
-                        zoom: zoom
-                      };
-                      
-                   
-                      window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
-                    }
-                  });
+                    console.log("🔄 드래그 중 뷰포트:", viewportMessage);
+                    window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
+                  }
+                });
+                
+                // 지도 줌 변경 이벤트 리스너 (LocationPickerMap과 동일하게)
+                kakao.maps.event.addListener(map, 'zoom_changed', function() {
+                  if (window.ReactNativeWebView) {
+                    const bounds = map.getBounds();
+                    const center = map.getCenter();
+                    const sw = bounds.getSouthWest();
+                    const ne = bounds.getNorthEast();
+                    const zoom = map.getLevel();
+                    
+                    const viewportMessage = {
+                      type: 'viewportChanged',
+                      north: ne.getLat(),
+                      south: sw.getLat(),
+                      east: ne.getLng(),
+                      west: sw.getLng(),
+                      centerLat: center.getLat(),
+                      centerLng: center.getLng(),
+                      zoom: zoom
+                    };
+                    
+                    console.log("🔄 줌 변경 뷰포트:", viewportMessage);
+                    window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
+                  }
                 });
 
                 // 선택된 지역들의 마커 추가
@@ -603,8 +623,6 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                 
                 // 지도 이동 시 범위 제한 확인 및 뷰포트 정보 전송
                 kakao.maps.event.addListener(map, 'bounds_changed', function() {
-                
-                  
                   const center = map.getCenter();
                   const lat = center.getLat();
                   const lng = center.getLng();
@@ -620,8 +638,6 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   
                   // 뷰포트 정보를 React Native로 전송
                   if (window.ReactNativeWebView) {
-                   
-                    
                     const bounds = map.getBounds();
                     const sw = bounds.getSouthWest();
                     const ne = bounds.getNorthEast();
@@ -638,59 +654,12 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                       zoom: zoom
                     };
                     
-                   
                     window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
-                  } else {
-                  
                   }
                 });
 
-                // 지도 드래그 중 뷰포트 정보 전송 (디바운싱 적용)
-                let dragTimeout;
+                // 드래그 중에도 뷰포트 정보 전송 (LocationPickerMap과 동일하게)
                 kakao.maps.event.addListener(map, 'drag', function() {
-                 
-                  
-                  // 이전 타이머 클리어
-                  if (dragTimeout) {
-                    clearTimeout(dragTimeout);
-                  }
-                  
-                  // 100ms 후에 뷰포트 정보 전송 (드래그 중에는 너무 자주 전송하지 않음)
-                  dragTimeout = setTimeout(function() {
-                   
-                    
-                    if (window.ReactNativeWebView) {
-                     
-                      
-                      const bounds = map.getBounds();
-                      const center = map.getCenter();
-                      const sw = bounds.getSouthWest();
-                      const ne = bounds.getNorthEast();
-                      const zoom = map.getLevel();
-                      
-                      const viewportMessage = {
-                        type: 'viewportChanged',
-                        north: ne.getLat(),
-                        south: sw.getLat(),
-                        east: ne.getLng(),
-                        west: sw.getLng(),
-                        centerLat: center.getLat(),
-                        centerLng: center.getLng(),
-                        zoom: zoom
-                      };
-                      
-      
-                      window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
-                    } else {
-                     
-                    }
-                  }, 100);
-                });
-
-                // 지도 드래그 종료 시 뷰포트 정보 전송
-                kakao.maps.event.addListener(map, 'dragend', function() {
-               
-                  
                   if (window.ReactNativeWebView) {
                     const bounds = map.getBounds();
                     const center = map.getCenter();
@@ -709,18 +678,16 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                       zoom: zoom
                     };
                     
-                   
+                    console.log("🔄 드래그 중 뷰포트:", viewportMessage);
                     window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
                   }
                 });
 
-                // 지도 줌 변경 시 뷰포트 정보 전송
-                kakao.maps.event.addListener(map, 'zoom_changed', function() {
-                 
+                                // bounds_changed 이벤트로 드래그/줌 감지 (LocationPickerMap과 동일)
+                kakao.maps.event.addListener(map, 'bounds_changed', function() {
+                  console.log("🔄 지도 bounds_changed 이벤트 발생");
                   
                   if (window.ReactNativeWebView) {
-              
-                    
                     const bounds = map.getBounds();
                     const center = map.getCenter();
                     const sw = bounds.getSouthWest();
@@ -738,19 +705,19 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                       zoom: zoom
                     };
                     
-                   
+                    console.log("📤 bounds_changed 뷰포트 메시지:", viewportMessage);
                     window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
                   } else {
-                  
+                    console.log("⚠️ ReactNativeWebView가 준비되지 않음");
                   }
                 });
               }
             };
 
             // 독립서점 마커 추가 함수
-            function addBookstoreMarkerToMap(id, name, lat, lng, imageData, width, height, isActive) {
+            function addBookstoreMarkerToMap(id, name, lat, lng, imageData, width, height, isActive, markerType) {
               if (!map) {
-                setTimeout(() => addBookstoreMarkerToMap(id, name, lat, lng, imageData, width, height, isActive), 100);
+                setTimeout(() => addBookstoreMarkerToMap(id, name, lat, lng, imageData, width, height, isActive, markerType), 100);
                 return;
               }
               
@@ -785,12 +752,12 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                     });
                     
                     marker.setMap(map);
-                    setupMarker(marker, id, name, lat, lng, isActive);
+                    setupMarker(marker, id, name, lat, lng, isActive, imageData, markerType);
                   };
                   
                   img.onerror = function() {
                     createDefaultMarker();
-                  };
+                  }
                   
                   img.src = url;
                   
@@ -808,47 +775,50 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                 });
                 
                 marker.setMap(map);
-                setupMarker(marker, id, name, lat, lng, isActive);
+                setupMarker(marker, id, name, lat, lng, isActive, imageData, markerType);
               }
               
-              function setupMarker(marker, id, name, lat, lng, isActive) {
+              function setupMarker(marker, id, name, lat, lng, isActive, imageData, markerType) {
                 const infowindow = new kakao.maps.InfoWindow({
                   content: '<div style="padding:10px;font-size:14px;text-align:center;min-width:120px;"><strong>' + name + '</strong></div>'
                 });
 
-                                kakao.maps.event.addListener(marker, 'click', function(event) {
+                kakao.maps.event.addListener(marker, 'click', function(event) {
                   if (event && event.stopPropagation) {
                     event.stopPropagation();
                   }
                   
-                  // 즉시 인포박스 열기 제거 - activeMarkerId 변경 후에 열도록 수정
-                  // Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
-                  //   if (bookstoreMarker.infowindow) {
-                  //     bookstoreMarker.infowindow.close();
-                  //   }
-                  // });
-                  // infowindow.open(map, marker);
-                 
-                  
                   if (window.ReactNativeWebView) {
-                    window.ReactNativeWebView.postMessage(JSON.stringify({
-                      type: 'bookstoreClick',
-                      id: id,
-                      name: name,
-                      lat: lat,
-                      lng: lng
-                    }));
-                  }
-                  
-                  // 선택된 마커 정보를 React Native로 전송
-                  if (window.ReactNativeWebView) {
-                    window.ReactNativeWebView.postMessage(JSON.stringify({
-                      type: 'markerSelected',
-                      id: id,
-                      name: name,
-                      lat: lat,
-                      lng: lng
-                    }));
+                    console.log("🎯 마커 클릭됨:", id, name, "타입:", markerType);
+                    
+                    if (markerType === "책갈피") {
+                      // 책갈피 마커 클릭 시 bookmark 상세 페이지로 이동
+                      window.ReactNativeWebView.postMessage(JSON.stringify({
+                        type: 'bookmarkClick',
+                        id: id,
+                        name: name,
+                        lat: lat,
+                        lng: lng
+                      }));
+                    } else {
+                      // 일반 서점 마커 클릭 시 기존 로직
+                      window.ReactNativeWebView.postMessage(JSON.stringify({
+                        type: 'bookstoreClick',
+                        id: id,
+                        name: name,
+                        lat: lat,
+                        lng: lng
+                      }));
+                      
+                      // 선택된 마커 정보를 React Native로 전송
+                      window.ReactNativeWebView.postMessage(JSON.stringify({
+                        type: 'markerSelected',
+                        id: id,
+                        name: name,
+                        lat: lat,
+                        lng: lng
+                      }));
+                    }
                   }
                 });
 
@@ -861,112 +831,105 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   isActive: isActive,
                   originalImageData: imageData
                 };
-                
-                // 마커 추가 시 자동으로 지도 범위를 조정하지 않음 (사용자가 설정한 위치 유지)
-                // if (Object.keys(bookstoreMarkers).length > 0) {
-                //   const bounds = new kakao.maps.LatLngBounds();
-                //   Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
-                //     bounds.extend(bookstoreMarker.marker.getPosition());
-                //   });
-                //   map.setBounds(bounds, 50);
-                // }
               }
             }
 
-            // 내 위치 마커 표시
+            // 내 위치 마커 표시 (완전히 안정화된 버전)
             function showMyLocationMarker(lat, lng) {
               try {
+                console.log("📍 showMyLocationMarker 호출됨:", lat, lng);
+                
                 if (!map) {
+                  console.log("⚠️ map이 없음, 100ms 후 재시도");
                   setTimeout(() => showMyLocationMarker(lat, lng), 100);
                   return;
                 }
                 
                 if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) {
+                  console.log("⚠️ 유효하지 않은 좌표:", lat, lng);
                   return;
                 }
                 
                 const restrictedLat = Math.max(${koreaBounds.south}, Math.min(${koreaBounds.north}, lat));
                 const restrictedLng = Math.max(${koreaBounds.west}, Math.min(${koreaBounds.east}, lng));
                 
+                console.log("📍 제한된 좌표:", restrictedLat, restrictedLng);
+                
+                // 기존 마커가 있으면 위치만 업데이트
                 if (myLocationMarker) {
-                  const currentPos = myLocationMarker.getPosition();
+                  console.log("✅ 기존 내 위치 마커 존재, 위치만 업데이트");
+                  
+                  // 위치 업데이트
                   const newPos = new kakao.maps.LatLng(restrictedLat, restrictedLng);
+                  myLocationMarker.setPosition(newPos);
                   
                   // 마커가 지도에 표시되어 있는지 확인하고 없으면 다시 추가
                   if (myLocationMarker.getMap() === null) {
+                    console.log("🔄 내 위치 마커를 지도에 다시 추가");
                     myLocationMarker.setMap(map);
                   }
                   
-                  myLocationMarker.setPosition(newPos);
-                  
-                  // 마커가 항상 보이도록 보장
-                  if (myLocationMarker.getMap() === null) {
-                    myLocationMarker.setMap(map);
-                  }
-                  
+                  console.log("✅ 내 위치 마커 위치 업데이트 완료");
                   return;
                 }
                 
+                // 새 마커 생성
+                console.log("🆕 새로운 내 위치 마커 생성");
                 const myLocationPosition = new kakao.maps.LatLng(restrictedLat, restrictedLng);
                 
-                // 내 위치 마커 생성 (SVG로 범위 원과 마커 통합)
                 myLocationMarker = new kakao.maps.Marker({
                   position: myLocationPosition,
                   map: map,
-                  zIndex: 1000 // 다른 마커들보다 위에 표시
+                  zIndex: 1000
                 });
                 
-                // SVG로 범위 원과 마커를 통합한 이미지 생성
+                // SVG 이미지 설정
                 const markerImage = new kakao.maps.MarkerImage(
                   'data:image/svg+xml;charset=UTF-8,<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="32" fill="%230669FD" fill-opacity="0.2"/><circle cx="32" cy="32" r="12" fill="white"/><circle cx="32" cy="32" r="8" fill="%230669FD"/></svg>',
                   new kakao.maps.Size(64, 64)
                 );
                 myLocationMarker.setImage(markerImage);
-                
-                // 내 위치 마커는 절대 제거되지 않도록 보호
                 myLocationMarker.setDraggable(false);
                 
+                console.log("✅ 새로운 내 위치 마커 생성 완료");
+                
               } catch (error) {
-              
+                console.error("❌ showMyLocationMarker 오류:", error);
               }
             }
 
-            // 지도를 특정 위치로 이동
+            // 지도를 특정 위치로 이동 (단순화된 버전)
             function moveMapToLocation(lat, lng) {
               try {
+                console.log("🚀 moveMapToLocation 호출됨:", lat, lng);
+                
                 if (!map) {
+                  console.log("⚠️ map이 없음, 100ms 후 재시도");
                   setTimeout(() => moveMapToLocation(lat, lng), 100);
                   return;
                 }
                 
                 if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) {
+                  console.log("⚠️ 유효하지 않은 좌표:", lat, lng);
                   return;
                 }
                 
                 const restrictedLat = Math.max(${koreaBounds.south}, Math.min(${koreaBounds.north}, lat));
                 const restrictedLng = Math.max(${koreaBounds.west}, Math.min(${koreaBounds.east}, lng));
                 
+                console.log("📍 제한된 좌표:", restrictedLat, restrictedLng);
+                
+                // 지도 중심 이동
                 const newPosition = new kakao.maps.LatLng(restrictedLat, restrictedLng);
                 map.setCenter(newPosition);
+                console.log("✅ 지도 중심 이동 완료");
                 
-                // 내 위치 마커가 항상 표시되도록 보장
-                if (myLocationMarker) {
-                  myLocationMarker.setPosition(newPosition);
-                } else {
-                  showMyLocationMarker(restrictedLat, restrictedLng);
-                }
+                // 내 위치 마커 처리
+                showMyLocationMarker(restrictedLat, restrictedLng);
                 
-                // 내 위치 마커가 지도에 표시되어 있는지 확인하고 없으면 다시 생성
-                if (!myLocationMarker || !myLocationMarker.getMap()) {
-                  showMyLocationMarker(restrictedLat, restrictedLng);
-                }
-                
-                // 내 위치 마커가 항상 표시되도록 보장
-                if (myLocationMarker && myLocationMarker.getMap() === null) {
-                  myLocationMarker.setMap(map);
-                }
+                console.log("✅ moveMapToLocation 완료");
               } catch (error) {
-              
+                console.error("❌ moveMapToLocation 오류:", error);
               }
             }
 
@@ -976,6 +939,7 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
               console.log("🔧 받은 ID:", id);
               console.log("🔧 받은 isActive:", isActive);
               console.log("🔧 bookstoreMarkers[id] 존재 여부:", !!bookstoreMarkers[id]);
+              console.log("📍 내 위치 마커 상태:", myLocationMarker ? "존재" : "없음");
               
               if (bookstoreMarkers[id]) {
                 const marker = bookstoreMarkers[id].marker;
@@ -1005,10 +969,33 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
               } else {
                 console.log("⚠️ 마커를 찾을 수 없음:", id);
               }
+              
+              // 내 위치 마커 보호 및 복구 (더 강력하게)
+              if (myLocationMarker) {
+                console.log("🔄 내 위치 마커 보호 체크");
+                
+                // 마커가 지도에 표시되어 있는지 확인
+                if (myLocationMarker.getMap() === null) {
+                  console.log("🔄 내 위치 마커를 지도에 다시 추가");
+                  myLocationMarker.setMap(map);
+                  
+                  // 추가 후에도 확인
+                  setTimeout(() => {
+                    if (myLocationMarker && myLocationMarker.getMap() === null) {
+                      console.log("🔄 내 위치 마커 재시도");
+                      myLocationMarker.setMap(map);
+                    }
+                  }, 50);
+                }
+              }
             }
 
-            // 모든 독립서점 마커 제거 (내 위치 마커는 제거하지 않음)
+            // 모든 독립서점 마커 제거 (내 위치 마커는 절대 제거하지 않음)
             function clearAllBookstoreMarkers() {
+              console.log("🗑️ 모든 서점 마커 제거 시작");
+              console.log("📍 내 위치 마커 상태:", myLocationMarker ? "존재" : "없음");
+              
+              // 서점 마커들만 제거
               Object.values(bookstoreMarkers).forEach(function(bookstoreMarker) {
                 bookstoreMarker.marker.setMap(null);
                 if (bookstoreMarker.infowindow) {
@@ -1016,8 +1003,57 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                 }
               });
               bookstoreMarkers = {};
-              // 내 위치 마커는 절대 제거하지 않음
-              // myLocationMarker는 그대로 유지
+              
+              // 내 위치 마커 보호 및 복구
+              if (myLocationMarker) {
+                console.log("✅ 내 위치 마커 보존됨");
+                
+                // 마커가 지도에 표시되어 있는지 확인
+                if (myLocationMarker.getMap() === null) {
+                  console.log("🔄 내 위치 마커를 지도에 다시 추가");
+                  myLocationMarker.setMap(map);
+                }
+                
+                // 마커가 지도에 표시되어 있는지 한 번 더 확인
+                if (myLocationMarker.getMap() === null) {
+                  console.log("⚠️ 내 위치 마커 추가 실패, 재시도");
+                  setTimeout(() => {
+                    if (myLocationMarker && myLocationMarker.getMap() === null) {
+                      myLocationMarker.setMap(map);
+                      console.log("🔄 내 위치 마커 재시도 성공");
+                    }
+                  }, 100);
+                }
+              } else {
+                console.log("⚠️ 내 위치 마커가 없음");
+              }
+            }
+
+            // 내 위치 마커 보호 함수
+            function protectMyLocationMarker() {
+              console.log("🛡️ 내 위치 마커 보호 함수 실행");
+              
+              if (myLocationMarker) {
+                console.log("📍 내 위치 마커 존재 확인");
+                
+                // 마커가 지도에 표시되어 있는지 확인
+                if (myLocationMarker.getMap() === null) {
+                  console.log("🔄 내 위치 마커를 지도에 다시 추가 (보호)");
+                  myLocationMarker.setMap(map);
+                  
+                  // 추가 후에도 확인
+                  setTimeout(() => {
+                    if (myLocationMarker && myLocationMarker.getMap() === null) {
+                      console.log("🔄 내 위치 마커 보호 재시도");
+                      myLocationMarker.setMap(map);
+                    }
+                  }, 50);
+                } else {
+                  console.log("✅ 내 위치 마커가 지도에 안전하게 표시됨");
+                }
+              } else {
+                console.log("⚠️ 보호할 내 위치 마커가 없음");
+              }
             }
 
             // 모든 인포박스 닫기
@@ -1051,10 +1087,12 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                     data.imageData, 
                     data.width, 
                     data.height,
-                    data.isActive
+                    data.isActive,
+                    data.markerType
                   );
                 } else if (data.type === 'showMyLocationMarker') {
-                  console.log("📍 showMyLocationMarker 처리");
+                  console.log("📍 showMyLocationMarker 처리 시작");
+                  console.log("📍 받은 좌표:", data.latitude, data.longitude);
                   showMyLocationMarker(data.latitude, data.longitude);
                 } else if (data.type === 'updateBookstoreMarkerImage') {
                   console.log("🔄 updateBookstoreMarkerImage 처리 시작");
@@ -1073,6 +1111,9 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                 } else if (data.type === 'clearAllMarkers') {
                   console.log("🗑️ clearAllMarkers 처리");
                   clearAllBookstoreMarkers();
+                } else if (data.type === 'protectMyLocationMarker') {
+                  console.log("🛡️ 내 위치 마커 보호 메시지 처리");
+                  protectMyLocationMarker();
                 } else {
                   console.log("⚠️ 알 수 없는 메시지 타입:", data.type);
                 }

@@ -288,13 +288,35 @@ function Milestone() {
         onMessage={(event) => {
           try {
             const data = JSON.parse(event.nativeEvent.data);
-            console.log("📱 React Native 메시지 수신:", data);
 
             if (data.type === "markerSelected") {
               handleMarkerSelected(data);
+            } else if (data.type === "bookmarkClick") {
+              // 책갈피 마커 클릭 시 bookmark 상세 페이지로 이동
+              console.log("📚 책갈피 마커 클릭됨:", data.id, data.name);
+              router.push({
+                pathname: "/bookmark/[id]",
+                params: {
+                  id: data.id,
+                  title: data.name,
+                  address: `위도 ${data.lat.toFixed(4)}, 경도 ${data.lng.toFixed(4)}`,
+                },
+              });
             } else if (data.type === "mapReady") {
               console.log("🗺️ 지도 준비됨 - WebView 준비 상태 설정");
               setIsWebViewReady(true);
+            } else if (data.type === "viewportChanged") {
+              // 뷰포트 변경 시 콘솔에 출력 (LocationPickerMap과 동일하게)
+              console.log("🔄 사용자 뷰포트 변경 감지:", {
+                "북쪽 경계": data.north.toFixed(6),
+                "남쪽 경계": data.south.toFixed(6),
+                "동쪽 경계": data.east.toFixed(6),
+                "서쪽 경계": data.west.toFixed(6),
+                "중심 좌표": `(${data.centerLat.toFixed(6)}, ${data.centerLng.toFixed(6)})`,
+                "줌 레벨": data.zoom,
+                타임스탬프: new Date().toLocaleTimeString(),
+                "이벤트 소스": "드래그/이동/줌",
+              });
             }
           } catch (error) {
             console.log("메시지 파싱 오류:", error);
@@ -467,6 +489,8 @@ function Milestone() {
                 newLocation.latitude,
                 newLocation.longitude,
               );
+              // 내 위치 마커 표시
+              webViewRef.current.showMyLocationMarker();
             }
 
             console.log("내 위치로 이동 완료:", newLocation);

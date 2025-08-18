@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   rewardContentContainer: {
-    paddingHorizontal: 20,
     gap: 10,
   },
   rewardItem: {

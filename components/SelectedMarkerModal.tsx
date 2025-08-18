@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import {
     Animated,
@@ -62,57 +63,72 @@ const SelectedMarkerModal = ({ marker, onClose }: SelectedMarkerModalProps) => {
   if (!marker) return null;
 
   return (
-    <Animated.View
-      style={[
-        styles.selectedMarkerModal,
-        {
-          transform: [{ translateY: slideAnim }],
-        },
-      ]}
+    <TouchableOpacity
+      onPress={() => {
+        if (marker) {
+          router.push({
+            pathname: "/bookstore/[id]",
+            params: { id: marker.id },
+          });
+        }
+      }}
+      activeOpacity={0.9}
     >
-      <View style={styles.modalHeader} />
-      <View style={styles.modalContent}>
-        <View style={styles.modalImagePlaceholder}>
-          <Text style={styles.modalImageText}>📚</Text>
-        </View>
+      <Animated.View
+        style={[
+          styles.selectedMarkerModal,
+          {
+            transform: [{ translateY: slideAnim }],
+          },
+        ]}
+      >
+        <View style={styles.modalHeader} />
+        <View style={styles.modalContent}>
+          <View style={styles.modalImagePlaceholder}>
+            <Text style={styles.modalImageText}>📚</Text>
+          </View>
 
-        <View style={styles.modalInfo}>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
-            <View style={styles.nameTypeContainer}>
-              <Text style={styles.modalName}>
-                {marker.name.length > 9
-                  ? marker.name.substring(0, 9) + "..."
-                  : marker.name}
+          <View style={styles.modalInfo}>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <View style={styles.nameTypeContainer}>
+                <Text style={styles.modalName}>
+                  {marker.name.length > 10
+                    ? marker.name.substring(0, 10) + "..."
+                    : marker.name}
+                </Text>
+                <Text style={styles.modalType}>독립서점</Text>
+              </View>
+              <TouchableOpacity style={styles.modalBookmarkButton}>
+                <ScrapIcon />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.modalRating}>
+              <StarIcon />
+              <Text style={styles.modalRatingText}>
+                <Text style={styles.ratingScore}>4.2</Text>
+                <Text style={styles.reviewCount}> (103)</Text>
               </Text>
-              <Text style={styles.modalType}>독립서점</Text>
+              <Text style={styles.modalDistance}>1.2 km</Text>
             </View>
-            <TouchableOpacity style={styles.modalBookmarkButton}>
-              <ScrapIcon />
-            </TouchableOpacity>
-          </View>
+            <View style={styles.addressStatusContainer}>
+              <View style={styles.modalAddress}>
+                <PlaceIcon />
+                <Text style={styles.modalAddressText}>
+                  양양시 금하로 760, 지상 1층
+                </Text>
+              </View>
 
-          <View style={styles.modalRating}>
-            <StarIcon />
-            <Text style={styles.modalRatingText}>4.2 (103)</Text>
-            <Text style={styles.modalDistance}>1.2 km</Text>
-          </View>
-          <View style={styles.addressStatusContainer}>
-            <View style={styles.modalAddress}>
-              <PlaceIcon />
-              <Text style={styles.modalAddressText}>
-                양양시 금하로 760, 지상 1층
-              </Text>
-            </View>
-
-            <View style={styles.modalStatus}>
-              <Text style={styles.modalStatusText}>영업종료</Text>
+              <View style={styles.modalStatus}>
+                <Text style={styles.modalStatusText}>영업종료</Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    </Animated.View>
+      </Animated.View>
+    </TouchableOpacity>
   );
 };
 
@@ -142,7 +158,7 @@ const styles = StyleSheet.create({
   modalContent: {
     flexDirection: "row",
     alignItems: "flex-start",
-    marginTop: 30,
+    marginTop: 20,
   },
   modalImagePlaceholder: {
     width: 100,
@@ -188,10 +204,16 @@ const styles = StyleSheet.create({
   },
   modalRatingText: {
     fontSize: 14,
-    fontFamily: "SUIT-600",
-    color: "#000000",
     marginRight: 15,
     marginLeft: 5,
+  },
+  ratingScore: {
+    fontFamily: "SUIT-800",
+    color: "#000000",
+  },
+  reviewCount: {
+    fontFamily: "SUIT-500",
+    color: "#7E7E7E",
   },
   modalDistance: {
     fontSize: 14,

@@ -20,7 +20,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookmarkDetail() {
-  const { id, imageUrl, title, address, templateId } = useLocalSearchParams();
+  const { id, title, address } = useLocalSearchParams();
   const router = useRouter();
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -47,14 +47,14 @@ export default function BookmarkDetail() {
     };
   }, []);
 
-  // API 데이터 형식에 맞춘 예시 데이터
+  // API 데이터 형식에 맞춘 예시 데이터 (전달받은 파라미터 사용)
   const bookmarkData = {
-    readingSpotId: 1,
-    address: "서울특별시 중구 세종대로 110",
+    readingSpotId: Number(id) || 1,
+    address: address || "서울특별시 중구 세종대로 110",
     latitude: 37.5665,
     longitude: 126.978,
     templateId: 1,
-    title: "개발자의 독서 공간",
+    title: title || "개발자의 독서 공간",
     content:
       "이 책은 개발자 삶에 대한 통찰을 담고 있습니다. 광화문 근처 카페에서 읽으면 좋아요.",
     readingSpotImages: [

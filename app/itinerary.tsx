@@ -214,6 +214,8 @@ export default function Itinerary() {
             longitude={currentLocation.longitude}
             regions={selectedRegions}
             ref={webViewRef}
+            activeMarkerId={null}
+            onActiveMarkerChange={() => {}}
           />
         </View>
       </View>

@@ -89,7 +89,7 @@ export default function Destination() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.push("/plan")}>
           <BackIcon />
         </TouchableOpacity>
         <Text style={styles.headerSubtitle}>2025.06.13 - 06.16</Text>

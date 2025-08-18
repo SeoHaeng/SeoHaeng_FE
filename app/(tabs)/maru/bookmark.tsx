@@ -115,9 +115,17 @@ export default function Bookmark() {
                 address={item.address}
                 templateId={item.templateId}
                 onPress={() =>
-                  router.push(
-                    `/bookmark/${item.readingSpotId}?imageUrl=${item.imageUrl}&title=${item.title}&address=${item.address}&templateId=${item.templateId}` as any,
-                  )
+                  router.push({
+                    pathname: `/bookmark/[id]`,
+                    params: {
+                      id: item.readingSpotId.toString(),
+                      imageUrl: item.imageUrl,
+                      title: item.title,
+                      address: item.address,
+                      templateId: item.templateId,
+                      from: "maruBookmark",
+                    },
+                  })
                 }
               />
             ))}

@@ -44,7 +44,7 @@ const NaverLoginIcon = () => {
         />
       </Mask>
       <G mask="url(#mask0_540_11299)">
-        <rect
+        <Rect
           x="19.21"
           y="20.6265"
           width="71.7261"

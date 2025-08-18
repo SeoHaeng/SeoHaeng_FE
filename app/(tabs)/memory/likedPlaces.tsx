@@ -42,7 +42,15 @@ export default function LikedPlaces() {
     <TouchableOpacity
       key={place.id}
       style={styles.placeItem}
-      onPress={() => router.push(`/bookstore/${place.id}`)}
+      onPress={() =>
+        router.push({
+          pathname: `/bookstore/[id]`,
+          params: {
+            id: place.id.toString(),
+            from: "likedPlaces",
+          },
+        })
+      }
       activeOpacity={0.8}
     >
       <View style={styles.placeImageContainer}>

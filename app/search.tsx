@@ -1,7 +1,7 @@
 import BackIcon from "@/components/icons/BackIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   Image,
   SafeAreaView,
@@ -14,8 +14,23 @@ import {
 } from "react-native";
 
 export default function SearchScreen() {
+  const params = useLocalSearchParams();
   const [searchText, setSearchText] = useState("");
   const [recentSearches] = useState(["행복 서점", "강릉 책방", "강릉 책방"]);
+  const [fromScreen, setFromScreen] = useState<string>("");
+  const [dayIndex, setDayIndex] = useState<string>("");
+
+  // 파라미터에서 화면 정보 가져오기
+  useEffect(() => {
+    if (params.from) {
+      setFromScreen(params.from as string);
+      console.log("🔍 검색 화면 진입 - 출발 화면:", params.from);
+    }
+    if (params.dayIndex) {
+      setDayIndex(params.dayIndex as string);
+      console.log("📅 선택된 날짜 인덱스:", params.dayIndex);
+    }
+  }, [params.from, params.dayIndex]);
 
   const [searchSuggestions] = useState([
     { text: "강릉", type: "search" },
@@ -37,7 +52,16 @@ export default function SearchScreen() {
   ]);
 
   const handleBack = () => {
-    router.back();
+    if (fromScreen === "itinerary") {
+      // 일정짜기에서 온 경우 - itinerary 화면으로 이동
+      router.push("/itinerary");
+    } else if (fromScreen === "milestone") {
+      // 이정표에서 온 경우 - milestone 화면으로 이동
+      router.push("/(tabs)/milestone");
+    } else {
+      // 기본 뒤로가기
+      router.back();
+    }
   };
 
   const handleClearSearch = () => {
@@ -49,12 +73,21 @@ export default function SearchScreen() {
   };
 
   const handleSelectLocation = (location: any) => {
-    // 검색 결과를 이정표 화면으로 전달하고 이동
-    router.push({
-      pathname: "/(tabs)/milestone",
-      params: { selectedLocation: JSON.stringify(location) },
-    });
     console.log("Selected location:", location);
+
+    if (fromScreen === "itinerary") {
+      // 일정짜기에서 온 경우 - 일정에 추가
+      console.log("📅 일정짜기에서 장소 선택됨 - 날짜:", dayIndex);
+      // TODO: 선택된 장소를 일정에 추가하는 로직
+      router.back(); // 일정짜기 화면으로 돌아가기
+    } else {
+      // 이정표에서 온 경우 - 기존 로직
+      console.log("🗺️ 이정표에서 장소 선택됨");
+      router.push({
+        pathname: "/(tabs)/milestone",
+        params: { selectedLocation: JSON.stringify(location) },
+      });
+    }
   };
 
   const handleRemoveRecent = (index: number) => {
@@ -69,6 +102,7 @@ export default function SearchScreen() {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <BackIcon style={styles.backIcon} />
         </TouchableOpacity>
+
         <TextInput
           style={styles.searchInput}
           placeholder="공간을 검색해보세요"
@@ -301,5 +335,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "SUIT-400",
     color: "#999999",
+  },
+  fromScreenIndicator: {
+    backgroundColor: "#F0F0F0",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginLeft: 10,
+  },
+  fromScreenText: {
+    fontSize: 12,
+    fontFamily: "SUIT-500",
+    color: "#666666",
   },
 });

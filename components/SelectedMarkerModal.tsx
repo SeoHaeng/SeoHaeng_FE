@@ -1,11 +1,11 @@
 import { router } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import {
-    Animated,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import PlaceIcon from "./icons/PlaceIcon";
 import ScrapIcon from "./icons/ScrapIcon";
@@ -68,7 +68,10 @@ const SelectedMarkerModal = ({ marker, onClose }: SelectedMarkerModalProps) => {
         if (marker) {
           router.push({
             pathname: "/bookstore/[id]",
-            params: { id: marker.id },
+            params: {
+              id: marker.id,
+              from: "milestone",
+            },
           });
         }
       }}

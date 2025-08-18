@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   Dimensions,
   SafeAreaView,
   StatusBar,
@@ -28,11 +29,13 @@ export default function SignUpScreen() {
   const [isEmailChecked, setIsEmailChecked] = useState(false);
   const [nicknameError, setNicknameError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [signupError, setSignupError] = useState("");
 
-  // 비밀번호 유효성 검사
+  // 비밀번호 유효성 검사 (API 요구사항: 8~20자, 영문, 숫자, 특수문자 포함)
   const validatePassword = (password: string) => {
     const minLength = 8;
-    const maxLength = 12;
+    const maxLength = 20;
     const hasEnglish = /[a-zA-Z]/.test(password);
     const hasNumber = /\d/.test(password);
     const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
@@ -48,12 +51,18 @@ export default function SignUpScreen() {
     );
   };
 
+  // 아이디 유효성 검사 (4~12자)
+  const validateUsername = (username: string) => {
+    return username.length >= 4 && username.length <= 12;
+  };
+
   // 회원가입 버튼 활성화 여부 확인
   const isSignUpButtonActive =
     nickname.trim() !== "" &&
     isNicknameChecked &&
     email.trim() !== "" &&
     isEmailChecked &&
+    validateUsername(email) &&
     validatePassword(password) &&
     password === confirmPassword &&
     password.trim() !== "" &&
@@ -65,7 +74,42 @@ export default function SignUpScreen() {
     router.back();
   };
 
-  const handleSignUp = () => {
+  // API 연동을 위한 회원가입 함수
+  const signUpAPI = async (userData: {
+    username: string;
+    nickname: string;
+    password1: string;
+    password2: string;
+  }) => {
+    try {
+      const response = await fetch(
+        "http://15.164.250.185:8081/api/v1/users/auth/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            accept: "*/*",
+          },
+          body: JSON.stringify(userData),
+        },
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("회원가입 성공:", result);
+        return { success: true, data: result };
+      } else {
+        const errorData = await response.json();
+        console.error("회원가입 실패:", errorData);
+        return { success: false, error: errorData };
+      }
+    } catch (error) {
+      console.error("API 호출 오류:", error);
+      return { success: false, error: "네트워크 오류가 발생했습니다." };
+    }
+  };
+
+  const handleSignUp = async () => {
     // 회원가입 로직
     console.log("회원가입하기 클릭", {
       email,
@@ -76,25 +120,50 @@ export default function SignUpScreen() {
       agreePrivacy,
     });
 
-    // 회원가입 성공 시 완료 화면으로 이동
-    if (isSignUpButtonActive) {
-      router.push("/auth/signupComplete");
+    if (!isSignUpButtonActive) {
+      return;
     }
-  };
 
-  const handleKakaoSignUp = () => {
-    // 카카오 회원가입 로직
-    console.log("카카오 회원가입 클릭");
-  };
+    // 약관 동의 확인
+    if (!agreeTerms || !agreePrivacy) {
+      Alert.alert("알림", "모든 약관에 동의해주세요.");
+      return;
+    }
 
-  const handleNaverSignUp = () => {
-    // 네이버 회원가입 로직
-    console.log("네이버 회원가입 클릭");
-  };
+    setIsLoading(true);
+    setSignupError("");
 
-  const handleGoogleSignUp = () => {
-    // 구글 회원가입 로직
-    console.log("구글 회원가입 클릭");
+    try {
+      const userData = {
+        username: email, // email이 username(아이디)로 사용됨
+        nickname: nickname,
+        password1: password,
+        password2: confirmPassword,
+      };
+
+      const result = await signUpAPI(userData);
+
+      if (result.success) {
+        // 회원가입 성공 시 완료 화면으로 이동
+        router.push("/auth/signupComplete");
+      } else {
+        // 회원가입 실패 시 에러 메시지 표시
+        setSignupError(
+          result.error?.message ||
+            "회원가입에 실패했습니다. 다시 시도해주세요.",
+        );
+        Alert.alert(
+          "회원가입 실패",
+          result.error?.message || "회원가입에 실패했습니다.",
+        );
+      }
+    } catch (error) {
+      console.error("회원가입 처리 오류:", error);
+      setSignupError("회원가입 처리 중 오류가 발생했습니다.");
+      Alert.alert("오류", "회원가입 처리 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSignIn = () => {
@@ -197,8 +266,8 @@ export default function SignUpScreen() {
                 isEmailChecked && styles.duplicateButtonChecked,
               ]}
               onPress={() => {
-                if (email.trim().length < 4) {
-                  setEmailError("아이디는 4자 이상이어야 합니다");
+                if (email.trim().length < 4 || email.trim().length > 12) {
+                  setEmailError("아이디는 4~12자 사이여야 합니다");
                   setIsEmailChecked(false);
                 } else {
                   // API 연결 전 임시로 랜덤하게 중복/사용가능 처리
@@ -240,7 +309,7 @@ export default function SignUpScreen() {
               style={styles.textInput}
               value={password}
               onChangeText={setPassword}
-              placeholder="영문, 숫자, 특수문자 포함 8-12자"
+              placeholder="영문, 숫자, 특수문자 포함 8-20자"
               placeholderTextColor="#9E9E9E"
               secureTextEntry={!showPassword}
               autoCorrect={false}
@@ -264,7 +333,7 @@ export default function SignUpScreen() {
             >
               {validatePassword(password)
                 ? "✓ 비밀번호 조건을 만족합니다"
-                : "✗ 영문, 숫자, 특수문자 포함 8-12자 입력 필요"}
+                : "✗ 영문, 숫자, 특수문자 포함 8-20자 입력 필요"}
             </Text>
           )}
         </View>
@@ -313,7 +382,7 @@ export default function SignUpScreen() {
             isSignUpButtonActive && styles.signUpButtonActive,
           ]}
           onPress={handleSignUp}
-          disabled={!isSignUpButtonActive}
+          disabled={!isSignUpButtonActive || isLoading}
         >
           <Text
             style={[
@@ -321,9 +390,14 @@ export default function SignUpScreen() {
               isSignUpButtonActive && styles.signUpButtonTextActive,
             ]}
           >
-            회원가입
+            {isLoading ? "처리 중..." : "회원가입"}
           </Text>
         </TouchableOpacity>
+
+        {/* 에러 메시지 */}
+        {signupError ? (
+          <Text style={styles.validationError}>{signupError}</Text>
+        ) : null}
       </View>
 
       {/* 하단 링크 */}

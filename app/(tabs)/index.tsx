@@ -489,7 +489,13 @@ export default function Index() {
                     style={styles.mainCardContainer}
                     onPress={() => {
                       // 북마크 상세 페이지로 이동
-                      router.push(`/bookmark/${spot.readingSpotId}`);
+                      router.push({
+                        pathname: `/bookmark/[id]`,
+                        params: {
+                          id: spot.readingSpotId.toString(),
+                          from: "index",
+                        },
+                      });
                     }}
                   >
                     <BookmarkTemplate

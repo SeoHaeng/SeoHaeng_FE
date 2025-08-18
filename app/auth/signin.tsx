@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   SafeAreaView,
   StatusBar,
@@ -10,11 +11,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useAuth } from "../../components/AuthProvider";
 import BackIcon from "../../components/icons/BackIcon";
 import EyeIcon from "../../components/icons/EyeIcon";
 import GoogleLoginIcon from "../../components/icons/GoogleLoginIcon";
 import KakaoLoginIcon from "../../components/icons/KakaoLoginIcon";
 import NaverLoginIcon from "../../components/icons/NaverLoginIcon";
+import { loginAPI } from "../../types/api";
+import { saveToken } from "../../types/auth";
 
 const { width, height } = Dimensions.get("window");
 
@@ -23,6 +27,9 @@ export default function SignInScreen() {
   const [password, setPassword] = useState("");
   const [autoLogin, setAutoLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const { refreshAuthState } = useAuth();
 
   const handleBack = () => {
     // WelcomeScreen으로 이동
@@ -30,13 +37,49 @@ export default function SignInScreen() {
     router.back();
   };
 
-  const handleLogin = () => {
-    // 로그인 로직
-    console.log("로그인하기 클릭", { email, password, autoLogin });
-
+  const handleLogin = async () => {
     // 로그인 성공 시 홈 화면으로 이동
     if (isLoginButtonActive) {
-      router.push("/(tabs)");
+      try {
+        setIsLoading(true);
+
+        const response = await loginAPI({
+          username: email,
+          password: password,
+        });
+
+        if (response.isSuccess) {
+          try {
+            // 토큰과 사용자 정보 저장
+            await saveToken(
+              response.result.accessToken,
+              response.result.userId,
+            );
+
+            console.log("로그인 성공:", response.result);
+
+            // 에러 메시지 초기화
+            setErrorMessage("");
+
+            // 인증 상태 새로고침
+            await refreshAuthState();
+            console.log("로그인 후 인증 상태 새로고침 완료");
+
+            // 홈 화면으로 이동
+            router.push("/(tabs)");
+          } catch (error) {
+            console.error("토큰 저장 실패:", error);
+            setErrorMessage("토큰 저장에 실패했습니다. 다시 시도해주세요.");
+          }
+        } else {
+          setErrorMessage(response.message || "로그인에 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("로그인 에러:", error);
+        setErrorMessage("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -71,10 +114,18 @@ export default function SignInScreen() {
     router.push("/auth/signup");
   };
 
+  // 아이디 유효성 검사
+  const validateEmail = (email: string) => {
+    const minLength = 4;
+    const maxLength = 12;
+
+    return email.length >= minLength && email.length <= maxLength;
+  };
+
   // 비밀번호 유효성 검사
   const validatePassword = (password: string) => {
     const minLength = 8;
-    const maxLength = 12;
+    const maxLength = 20;
     const hasEnglish = /[a-zA-Z]/.test(password);
     const hasNumber = /\d/.test(password);
     const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
@@ -91,7 +142,8 @@ export default function SignInScreen() {
   };
 
   // 로그인 버튼 활성화 여부 확인
-  const isLoginButtonActive = email.trim() !== "" && validatePassword(password);
+  const isLoginButtonActive =
+    validateEmail(email) && validatePassword(password);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -113,10 +165,27 @@ export default function SignInScreen() {
           <TextInput
             style={styles.textInput}
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(text) => {
+              setEmail(text);
+              if (errorMessage) setErrorMessage("");
+            }}
             placeholder="아이디 또는 이메일 주소를 입력하세요"
             placeholderTextColor="#9E9E9E"
           />
+          {email.length > 0 && (
+            <Text
+              style={[
+                styles.validationText,
+                validateEmail(email)
+                  ? styles.validationSuccess
+                  : styles.validationError,
+              ]}
+            >
+              {validateEmail(email)
+                ? "✓ 아이디 조건을 만족합니다"
+                : "✗ 아이디는 4-12자로 입력해주세요"}
+            </Text>
+          )}
         </View>
 
         {/* 비밀번호 입력 */}
@@ -126,8 +195,11 @@ export default function SignInScreen() {
             <TextInput
               style={styles.textInput}
               value={password}
-              onChangeText={setPassword}
-              placeholder="영문, 숫자, 특수문자 포함 8-12자"
+              onChangeText={(text) => {
+                setPassword(text);
+                if (errorMessage) setErrorMessage("");
+              }}
+              placeholder="영문, 숫자, 특수문자 포함 8-20자"
               placeholderTextColor="#9E9E9E"
               secureTextEntry={!showPassword}
               autoCorrect={false}
@@ -151,28 +223,40 @@ export default function SignInScreen() {
             >
               {validatePassword(password)
                 ? "✓ 비밀번호 조건을 만족합니다"
-                : "✗ 영문, 숫자, 특수문자 포함 8-12자 입력 필요"}
+                : "✗ 영문, 숫자, 특수문자 포함 8-20자 입력 필요"}
             </Text>
           )}
         </View>
+
+        {/* 에러 메시지 */}
+        {errorMessage ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          </View>
+        ) : null}
 
         {/* 로그인 버튼 */}
         <TouchableOpacity
           style={[
             styles.loginButton,
             isLoginButtonActive && styles.loginButtonActive,
+            isLoading && styles.loginButtonLoading,
           ]}
           onPress={handleLogin}
-          disabled={!isLoginButtonActive}
+          disabled={!isLoginButtonActive || isLoading}
         >
-          <Text
-            style={[
-              styles.loginButtonText,
-              isLoginButtonActive && styles.loginButtonTextActive,
-            ]}
-          >
-            로그인하기
-          </Text>
+          {isLoading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text
+              style={[
+                styles.loginButtonText,
+                isLoginButtonActive && styles.loginButtonTextActive,
+              ]}
+            >
+              로그인하기
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -230,6 +314,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: "SUIT-700",
     color: "#212121",
+    fontWeight: "700", // 폰트 로딩 실패 시 대체
   },
   formContainer: {
     paddingHorizontal: 20,
@@ -333,10 +418,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#302E2D",
     borderColor: "#302E2D",
   },
+  loginButtonLoading: {
+    backgroundColor: "#9E9E9E",
+    borderColor: "#9E9E9E",
+  },
   loginButtonText: {
     color: "#716C69",
     fontSize: 16,
     fontFamily: "SUIT-600",
+    fontWeight: "600", // 폰트 로딩 실패 시 대체
   },
   loginButtonTextActive: {
     color: "#FFFFFF",
@@ -371,5 +461,15 @@ const styles = StyleSheet.create({
   signUpLink: {
     color: "#262423",
     fontFamily: "SUIT-700",
+    fontWeight: "700", // 폰트 로딩 실패 시 대체
+  },
+  errorContainer: {
+    marginBottom: 16,
+    paddingHorizontal: 4,
+  },
+  errorText: {
+    fontSize: 14,
+    color: "#F44336",
+    textAlign: "center",
   },
 });

@@ -20,8 +20,17 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookmarkDetail() {
-  const { id, title, address } = useLocalSearchParams();
+  const { id, title, address, from } = useLocalSearchParams();
   const router = useRouter();
+  const [fromScreen, setFromScreen] = useState<string>("");
+
+  // 파라미터에서 출발 화면 정보 가져오기
+  useEffect(() => {
+    if (from) {
+      setFromScreen(from as string);
+      console.log("🔖 북마크 상세 화면 진입 - 출발 화면:", from);
+    }
+  }, [from]);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [comment, setComment] = useState("");
@@ -114,7 +123,21 @@ export default function BookmarkDetail() {
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.backButton}
-              onPress={() => router.back()}
+              onPress={() => {
+                if (fromScreen === "milestone") {
+                  // 이정표에서 온 경우
+                  router.push("/(tabs)/milestone");
+                } else if (fromScreen === "itinerary") {
+                  // 일정짜기에서 온 경우
+                  router.push("/itinerary");
+                } else if (fromScreen === "maruBookmark") {
+                  // maru/bookmark에서 온 경우
+                  router.push("/(tabs)/maru/bookmark");
+                } else {
+                  // 기본 뒤로가기
+                  router.back();
+                }
+              }}
             >
               <BackIcon />
             </TouchableOpacity>

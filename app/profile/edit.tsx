@@ -2,11 +2,13 @@ import BackIcon from "@/components/icons/BackIcon";
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
 import EyeIcon from "@/components/icons/EyeIcon";
-import UserInfoDisplay from "@/components/UserInfoDisplay";
+import { updateProfileAPI } from "@/types/api";
+import { getUserInfo, setUserInfo } from "@/types/globalState";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -19,15 +21,43 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileEdit() {
   const router = useRouter();
-  const [nickname, setNickname] = useState("유딘딘");
-  const [id, setId] = useState("rkddbwls07");
-  const [password, setPassword] = useState("********");
-  const [confirmPassword, setConfirmPassword] = useState("********");
+  const [userInfo, setLocalUserInfo] = useState(getUserInfo());
+  const [nickname, setNickname] = useState(userInfo?.nickName || "");
+  const [id, setId] = useState(""); // 아이디는 API에서 제공되지 않으므로 빈 문자열로 유지
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(
+    userInfo?.profileImageUrl || null,
+  );
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
   const [isIdChecked, setIsIdChecked] = useState(false);
+
+  // 사용자 정보 업데이트를 위한 주기적 체크
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentUserInfo = getUserInfo();
+      if (currentUserInfo !== userInfo) {
+        setLocalUserInfo(currentUserInfo);
+        // 사용자 정보가 업데이트되면 관련 상태도 업데이트
+        if (
+          currentUserInfo?.nickName &&
+          currentUserInfo.nickName !== nickname
+        ) {
+          setNickname(currentUserInfo.nickName);
+        }
+        if (
+          currentUserInfo?.profileImageUrl &&
+          currentUserInfo.profileImageUrl !== profileImage
+        ) {
+          setProfileImage(currentUserInfo.profileImageUrl);
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [userInfo, nickname, profileImage]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -86,28 +116,127 @@ export default function ProfileEdit() {
     }
   };
 
-  const handleSave = () => {
-    // 프로필 수정 로직
-    console.log("프로필 수정 완료:", {
-      nickname,
-      id,
-      password,
-      confirmPassword,
-      profileImage,
-    });
-    router.back();
+  const handleSave = async () => {
+    if (!isFormValid) {
+      Alert.alert("입력 오류", "모든 필수 항목을 올바르게 입력해주세요.");
+      return;
+    }
+
+    try {
+      // 현재 토큰 상태 확인
+      const currentUserInfo = getUserInfo();
+      console.log("현재 사용자 정보:", currentUserInfo);
+
+      // API 요청 데이터 준비
+      const requestData = {
+        username: id,
+        nickname: nickname,
+        password1: password || "", // 비밀번호가 비어있으면 빈 문자열
+        password2: confirmPassword || "", // 비밀번호 확인이 비어있으면 빈 문자열
+      };
+
+      console.log("프로필 수정 요청 데이터:", requestData);
+      console.log("프로필 이미지:", profileImage);
+
+      // 프로필 수정 API 호출
+      const response = await updateProfileAPI(requestData, profileImage);
+
+      if (response.isSuccess) {
+        // 성공 시 사용자 정보 업데이트
+        if (userInfo) {
+          const updatedUserInfo = {
+            ...userInfo,
+            nickName: nickname,
+            profileImageUrl: profileImage,
+          };
+          setUserInfo(updatedUserInfo);
+        }
+
+        Alert.alert("수정 완료", "프로필이 성공적으로 수정되었습니다.", [
+          {
+            text: "확인",
+            onPress: () => router.back(),
+          },
+        ]);
+      } else {
+        Alert.alert(
+          "수정 실패",
+          response.message || "프로필 수정에 실패했습니다.",
+        );
+      }
+    } catch (error) {
+      console.error("프로필 수정 에러:", error);
+
+      // 403 에러인 경우 특별한 메시지 표시
+      if (error instanceof Error && error.message.includes("403")) {
+        Alert.alert(
+          "권한 오류",
+          "로그인이 만료되었거나 권한이 없습니다. 다시 로그인해주세요.",
+          [
+            {
+              text: "로그인 화면으로",
+              onPress: () => router.push("/auth"),
+            },
+            {
+              text: "취소",
+              style: "cancel",
+            },
+          ],
+        );
+      } else {
+        Alert.alert(
+          "수정 실패",
+          "네트워크 오류가 발생했습니다. 다시 시도해주세요.",
+        );
+      }
+    }
   };
 
+  // 아이디 유효성 검사
+  const validateId = (id: string) => {
+    const minLength = 4;
+    const maxLength = 12;
+
+    return id.length >= minLength && id.length <= maxLength;
+  };
+
+  // 비밀번호 유효성 검사
+  const validatePassword = (password: string) => {
+    const minLength = 8;
+    const maxLength = 20;
+    const hasEnglish = /[a-zA-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
+      password,
+    );
+
+    return (
+      password.length >= minLength &&
+      password.length <= maxLength &&
+      hasEnglish &&
+      hasNumber &&
+      hasSpecialChar
+    );
+  };
+
+  // 비밀번호 확인 일치 검사
+  const validatePasswordConfirm = (
+    password: string,
+    confirmPassword: string,
+  ) => {
+    return password === confirmPassword && password.length > 0;
+  };
+
+  // 폼 유효성 검사
   const isFormValid =
     nickname.trim() &&
     id.trim() &&
-    password.trim() &&
-    confirmPassword.trim() &&
+    validateId(id) &&
     isNicknameChecked &&
     isIdChecked &&
-    password === confirmPassword &&
-    password.length >= 8 &&
-    password.length <= 12;
+    (password.length === 0 || validatePassword(password)) &&
+    (password.length === 0 ||
+      validatePasswordConfirm(password, confirmPassword));
 
   return (
     <SafeAreaView style={styles.container}>
@@ -149,9 +278,6 @@ export default function ProfileEdit() {
             </View>
           </TouchableOpacity>
         </View>
-
-        {/* 사용자 정보 표시 섹션 */}
-        <UserInfoDisplay />
 
         {/* 닉네임 입력 섹션 */}
         <View style={styles.inputSection}>
@@ -225,7 +351,12 @@ export default function ProfileEdit() {
               </Text>
             </TouchableOpacity>
           </View>
-          {id.length > 0 && !isIdChecked && (
+          {id.length > 0 && !validateId(id) && (
+            <Text style={styles.validationText}>
+              아이디는 4-12자로 입력해주세요
+            </Text>
+          )}
+          {id.length > 0 && validateId(id) && !isIdChecked && (
             <Text style={styles.validationText}>
               아이디 중복확인이 필요합니다
             </Text>
@@ -245,7 +376,7 @@ export default function ProfileEdit() {
               style={styles.textInput}
               value={password}
               onChangeText={setPassword}
-              placeholder="비밀번호를 입력해주세요"
+              placeholder="영문, 숫자, 특수문자 포함 8-20자"
               placeholderTextColor="#9D9896"
               secureTextEntry={!showPassword}
             />
@@ -259,8 +390,17 @@ export default function ProfileEdit() {
             </View>
           </View>
           {password.length > 0 && (
-            <Text style={styles.validationText}>
-              영문, 숫자, 특수문자 포함 8-12자로 입력해주세요
+            <Text
+              style={[
+                styles.validationText,
+                validatePassword(password)
+                  ? styles.validationTextSuccess
+                  : styles.validationTextError,
+              ]}
+            >
+              {validatePassword(password)
+                ? "✓ 비밀번호 조건을 만족합니다"
+                : "✗ 영문, 숫자, 특수문자 포함 8-20자 입력 필요"}
             </Text>
           )}
         </View>
@@ -293,7 +433,7 @@ export default function ProfileEdit() {
           )}
           {confirmPassword.length > 0 &&
             password === confirmPassword &&
-            password.length >= 8 && (
+            password.length > 0 && (
               <Text style={styles.validationTextSuccess}>
                 비밀번호가 일치합니다
               </Text>
@@ -327,7 +467,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 120,
+    paddingBottom: 300,
   },
   header: {
     flexDirection: "row",

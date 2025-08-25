@@ -1,12 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserInfoAPI } from "./api";
-import {
-  AuthState,
-  getAuthState,
-  setAuthState,
-  setUserInfo,
-  UserInfo,
-} from "./globalState";
+import { AuthState, UserInfo } from "./globalState";
 
 // AsyncStorage 키 상수
 const STORAGE_KEYS = {
@@ -28,26 +22,11 @@ export const saveToken = async (accessToken: string, userId: number) => {
     await AsyncStorage.setItem(STORAGE_KEYS.USER_ID, userId.toString());
     await AsyncStorage.setItem(STORAGE_KEYS.IS_AUTHENTICATED, "true");
 
-    // 메모리 상태도 업데이트
-    setAuthState({
-      isAuthenticated: true,
-      accessToken,
-      userId,
-      userInfo: null, // 초기에는 null로 설정
-    });
-
     console.log("토큰 저장됨 (AsyncStorage):", {
       accessToken: accessToken.substring(0, 20) + "...",
       userId,
       tokenLength: accessToken.length,
     });
-
-    // 토큰 저장 후 사용자 정보 가져오기
-    try {
-      await fetchAndStoreUserInfo();
-    } catch (error) {
-      console.log("사용자 정보 조회 실패 (토큰 저장 후):", error);
-    }
   } catch (error) {
     console.error("토큰 저장 실패:", error);
     throw error;
@@ -97,13 +76,6 @@ export const removeToken = async () => {
       STORAGE_KEYS.IS_AUTHENTICATED,
     ]);
 
-    // 메모리 상태도 업데이트
-    setAuthState({
-      isAuthenticated: false,
-      accessToken: null,
-      userId: null,
-    });
-
     console.log("토큰 삭제됨 (AsyncStorage)");
   } catch (error) {
     console.error("토큰 삭제 실패:", error);
@@ -129,10 +101,7 @@ export const fetchAndStoreUserInfo = async (): Promise<UserInfo | null> => {
     if (response.isSuccess && response.result) {
       const userInfo: UserInfo = response.result;
 
-      // 전역 상태에 사용자 정보 저장
-      setUserInfo(userInfo);
-
-      console.log("사용자 정보 저장됨:", userInfo);
+      console.log("사용자 정보 조회 성공:", userInfo);
       return userInfo;
     } else {
       console.error("사용자 정보 조회 실패:", response.message);
@@ -140,6 +109,13 @@ export const fetchAndStoreUserInfo = async (): Promise<UserInfo | null> => {
     }
   } catch (error) {
     console.error("사용자 정보 조회 중 오류 발생:", error);
+
+    // 403 에러인 경우 토큰 삭제
+    if (error instanceof Error && error.message.includes("403")) {
+      console.log("사용자 정보 조회 403 에러: 토큰 삭제");
+      await removeToken();
+    }
+
     return null;
   }
 };
@@ -162,15 +138,32 @@ export const restoreAuthState = async (): Promise<AuthState> => {
       userInfo: null, // 초기에는 null로 설정
     };
 
-    // 메모리 상태 업데이트
-    setAuthState(authState);
-
     // 토큰이 유효하면 사용자 정보도 가져오기
     if (hasValidToken) {
       try {
-        await fetchAndStoreUserInfo();
+        const userInfo = await fetchAndStoreUserInfo();
+        if (userInfo) {
+          authState.userInfo = userInfo;
+        }
       } catch (error) {
         console.log("사용자 정보 조회 실패 (토큰 복원 후):", error);
+
+        // 403 에러인 경우 토큰을 삭제하고 인증 상태를 false로 설정
+        if (error instanceof Error && error.message.includes("403")) {
+          console.log(
+            "사용자 정보 조회 403 에러: 토큰 삭제 및 인증 상태 초기화",
+          );
+          await removeToken();
+
+          const errorState: AuthState = {
+            isAuthenticated: false,
+            accessToken: null,
+            userId: null,
+            userInfo: null,
+          };
+
+          return errorState;
+        }
       }
     }
 
@@ -178,31 +171,15 @@ export const restoreAuthState = async (): Promise<AuthState> => {
     return authState;
   } catch (error) {
     console.error("인증 상태 복원 실패:", error);
-    const defaultState = {
+    const defaultState: AuthState = {
       isAuthenticated: false,
       accessToken: null,
       userId: null,
       userInfo: null,
     };
 
-    // 메모리 상태도 업데이트
-    setAuthState(defaultState);
     return defaultState;
   }
-};
-
-// API 요청에 토큰을 포함하는 헤더 생성 (동기 버전)
-export const getAuthHeaders = (): Record<string, string> => {
-  const authState = getAuthState();
-  if (authState.accessToken) {
-    return {
-      Authorization: `Bearer ${authState.accessToken}`,
-      "Content-Type": "application/json",
-    };
-  }
-  return {
-    "Content-Type": "application/json",
-  };
 };
 
 // API 요청에 토큰을 포함하는 헤더 생성 (비동기 버전)

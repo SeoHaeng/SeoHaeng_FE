@@ -4,8 +4,9 @@ import NotificationIcon from "@/components/icons/NotificationIcon";
 import ScrapIcon from "@/components/icons/ScrapIcon";
 import SideMenu from "@/components/SideMenu";
 import TravelCard from "@/components/TravelCard";
+import { getUserInfo } from "@/types/globalState";
 import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Image,
@@ -27,6 +28,19 @@ export default function Index() {
   const [sideMenuVisible, setSideMenuVisible] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [scrapedItems, setScrapedItems] = useState<Set<number>>(new Set());
+  const [userInfo, setLocalUserInfo] = useState(getUserInfo());
+
+  // 사용자 정보 업데이트를 위한 주기적 체크
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentUserInfo = getUserInfo();
+      if (currentUserInfo !== userInfo) {
+        setLocalUserInfo(currentUserInfo);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [userInfo]);
 
   // 북마크 데이터 (API 형식)
   const bookmarkData = {
@@ -304,7 +318,9 @@ export default function Index() {
         <View style={styles.topSection}>
           <View style={styles.greetingContainer}>
             <Text style={styles.greetingText}>
-              <Text style={styles.userNameText}>유딘딘님의</Text>
+              <Text style={styles.userNameText}>
+                {userInfo?.nickName || "사용자"}님의
+              </Text>
               {"\n"}다음 강원 북트립은?
             </Text>
             <TouchableOpacity style={styles.planButton}>

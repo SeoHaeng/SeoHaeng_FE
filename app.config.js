@@ -4,23 +4,24 @@ export default {
     slug: "SeoHaeng_FE",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/icon.png",
+    /* icon: "./assets/images/icon.png", */
     scheme: "myapp",
     userInterfaceStyle: "automatic",
-    splash: {
+    /*  splash: {
       image: "./assets/images/splash.png",
       resizeMode: "contain",
       backgroundColor: "#ffffff",
-    },
+    }, */
     assetBundlePatterns: ["**/*"],
     ios: {
       supportsTablet: true,
     },
     android: {
-      adaptiveIcon: {
+      package: "com.gyurijake.seohaengfe",
+      /*   adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
-      },
+      }, */
     },
     web: {
       bundler: "metro",
@@ -33,6 +34,9 @@ export default {
     },
     extra: {
       KAKAO_MAP_JS_KEY: process.env.KAKAO_MAP_JS_KEY,
+      eas: {
+        projectId: "723ac499-62aa-4ede-8dd0-da0dcbf3b826",
+      },
     },
   },
 };

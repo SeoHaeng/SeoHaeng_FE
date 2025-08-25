@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   applyButtonText: {
-    fontSize: 12,
+    fontSize: 10,
     color: "#716C69",
     fontFamily: "SUIT-500",
   },

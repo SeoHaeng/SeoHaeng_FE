@@ -69,12 +69,40 @@ export interface LoginResponse {
   };
 }
 
+// 카카오 소셜 로그인 API 응답 타입
+export interface KakaoLoginResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    accessToken: string;
+    refreshToken: string;
+    userId: number;
+  };
+}
+
 // 사용자 정보 조회 API 응답 타입
 export interface UserInfoResponse {
   isSuccess: boolean;
   code: string;
   message: string;
   result: UserInfo;
+}
+
+// 프로필 수정 API 요청 타입
+export interface ProfileUpdateRequest {
+  username: string;
+  nickname: string;
+  password1: string;
+  password2: string;
+}
+
+// 프로필 수정 API 응답 타입
+export interface ProfileUpdateResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result?: any;
 }
 
 // 사용자 인증 상태 관리

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { AuthState, restoreAuthState } from "../types/auth";
+import { restoreAuthState } from "../types/auth";
+import { AuthState } from "../types/globalState";
 
 interface AuthContextType {
   authState: AuthState;
@@ -26,6 +27,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated: false,
     accessToken: null,
     userId: null,
+    userInfo: null,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,11 +41,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("인증 상태 새로고침 완료:", restoredState);
     } catch (error) {
       console.error("인증 상태 복원 실패:", error);
-      setAuthState({
+      const defaultState = {
         isAuthenticated: false,
         accessToken: null,
         userId: null,
-      });
+        userInfo: null,
+      };
+      setAuthState(defaultState);
     }
   };
 
@@ -60,16 +64,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           isAuthenticated: false,
           accessToken: null,
           userId: null,
+          userInfo: null,
         });
       } finally {
         setIsLoading(false);
         console.log("AuthProvider 로딩 완료, isLoading:", false);
-        console.log("최종 인증 상태:", authState);
       }
     };
 
     initializeAuth();
-  }, []);
+  }, []); // authState 의존성 제거
 
   const value: AuthContextType = {
     authState,

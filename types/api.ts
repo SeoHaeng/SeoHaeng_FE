@@ -131,6 +131,36 @@ const decodeJWT = (token: string) => {
   }
 };
 
+// 북챌린지 챌린지 인증 조회 API
+export const getBookChallengeListAPI = async (
+  page: number = 1,
+  size: number = 5,
+  sort: string = "popular",
+): Promise<BookChallengeListResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `http://15.164.250.185:8081/api/v1/book-challenges?page=${page}&size=${size}&sort=${sort}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("북챌린지 챌린지 인증 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
 // 북챌린지 서점 조회 API
 export const getBookChallengesAPI = async (
   page: number = 1,
@@ -523,6 +553,42 @@ export interface BookChallengesResponse {
     isLast: boolean;
     placeList: BookChallengePlace[];
   };
+}
+
+// 북챌린지 챌린지 인증 조회 API 응답 타입
+export interface BookChallengeListResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    listSize: number;
+    totalPage: number;
+    totalElements: number;
+    isFirst: boolean;
+    isLast: boolean;
+    getBookChallengeList: BookChallenge[];
+  };
+}
+
+// 북챌린지 챌린지 타입
+export interface BookChallenge {
+  createdAt: string;
+  creatorId: number;
+  bookStoreName: string;
+  bookChallengeProofId: number;
+  presentMessage: string;
+  proofContent: string;
+  likes: number;
+  likedByMe: boolean;
+  receivedBookTitle: string;
+  receivedBookAuthor: string;
+  receivedBookImage: string;
+  receivedBookPubDate: string;
+  givenBookTitle: string;
+  givenBookAuthor: string;
+  givenBookImage: string;
+  givenBookPubDate: string;
+  proofImageUrls: string[];
 }
 
 // 북챌린지 장소 타입

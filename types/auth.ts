@@ -102,6 +102,11 @@ export const fetchAndStoreUserInfo = async (): Promise<UserInfo | null> => {
       const userInfo: UserInfo = response.result;
 
       console.log("사용자 정보 조회 성공:", userInfo);
+
+      // 전역 상태에 사용자 정보 저장
+      const { setUserInfo } = await import("./globalState");
+      setUserInfo(userInfo);
+
       return userInfo;
     } else {
       console.error("사용자 정보 조회 실패:", response.message);
@@ -144,6 +149,9 @@ export const restoreAuthState = async (): Promise<AuthState> => {
         const userInfo = await fetchAndStoreUserInfo();
         if (userInfo) {
           authState.userInfo = userInfo;
+          // 전역 상태도 업데이트
+          const { setUserInfo } = await import("./globalState");
+          setUserInfo(userInfo);
         }
       } catch (error) {
         console.log("사용자 정보 조회 실패 (토큰 복원 후):", error);

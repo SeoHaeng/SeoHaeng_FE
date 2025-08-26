@@ -1,7 +1,7 @@
 import { fetchAndStoreUserInfo } from "@/types/auth";
 import { getUserInfo, setUserInfo } from "@/types/globalState";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function UserInfoDisplay() {
   const [userInfo, setLocalUserInfo] = React.useState(getUserInfo());
@@ -42,13 +42,28 @@ export default function UserInfoDisplay() {
 
       {userInfo ? (
         <View style={styles.userInfoContainer}>
+          {/* 프로필 이미지 표시 */}
+          <View style={styles.profileImageContainer}>
+            {userInfo.profileImageUrl ? (
+              <Image
+                source={{ uri: userInfo.profileImageUrl }}
+                style={styles.profileImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={styles.profileImagePlaceholder}>
+                <Text style={styles.profileImagePlaceholderText}>프로필</Text>
+              </View>
+            )}
+          </View>
+
           <Text style={styles.label}>사용자 ID:</Text>
           <Text style={styles.value}>{userInfo.userId}</Text>
 
           <Text style={styles.label}>닉네임:</Text>
           <Text style={styles.value}>{userInfo.nickName}</Text>
 
-          <Text style={styles.label}>프로필 이미지:</Text>
+          <Text style={styles.label}>프로필 이미지 URL:</Text>
           <Text style={styles.value}>{userInfo.profileImageUrl || "없음"}</Text>
 
           <Text style={styles.label}>로그인 타입:</Text>
@@ -104,6 +119,32 @@ const styles = StyleSheet.create({
   },
   userInfoContainer: {
     marginBottom: 20,
+  },
+  profileImageContainer: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: "#007AFF",
+  },
+  profileImagePlaceholder: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#f0f0f0",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#ddd",
+  },
+  profileImagePlaceholderText: {
+    fontSize: 14,
+    color: "#999",
+    fontFamily: "SUIT-500",
   },
   label: {
     fontSize: 16,

@@ -1,11 +1,11 @@
 import { getAuthHeadersAsync } from "./auth";
 import {
-    KakaoLoginResponse,
-    LoginRequest,
-    LoginResponse,
-    ProfileUpdateRequest,
-    ProfileUpdateResponse,
-    UserInfoResponse,
+  KakaoLoginResponse,
+  LoginRequest,
+  LoginResponse,
+  ProfileUpdateRequest,
+  ProfileUpdateResponse,
+  UserInfoResponse,
 } from "./globalState";
 
 const API_BASE_URL = "http://15.164.250.185:8081/api/v1";
@@ -131,6 +131,36 @@ const decodeJWT = (token: string) => {
   }
 };
 
+// 책 검색 API
+export const searchBooksAPI = async (
+  query: string,
+  sort: string = "sim",
+  page: number = 1,
+): Promise<BookSearchResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `http://15.164.250.185:8081/api/v1/common/books?query=${encodeURIComponent(query)}&sort=${sort}&page=${page}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("책 검색 API 호출 실패:", error);
+    throw error;
+  }
+};
+
 // 프로필 수정 API
 export const updateProfileAPI = async (
   requestData: ProfileUpdateRequest,
@@ -224,3 +254,103 @@ export const kakaoLoginAPI = async (
     throw error;
   }
 };
+
+// 아이디 중복 확인 API
+export const checkUsernameAPI = async (
+  username: string,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: string;
+}> => {
+  console.log("checkUsernameAPI 시작:", username);
+
+  try {
+    const response = await fetch(
+      `http://15.164.250.185:8081/api/v1/users/auth/check-username?username=${encodeURIComponent(
+        username,
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          accept: "*/*",
+        },
+      },
+    );
+
+    console.log("checkUsernameAPI 응답 상태:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log("checkUsernameAPI 에러 응답:", errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("checkUsernameAPI 성공:", data);
+    return data;
+  } catch (error) {
+    console.log("checkUsernameAPI 실패:", error);
+    throw error;
+  }
+};
+
+// 닉네임 중복 확인 API
+export const checkNicknameAPI = async (
+  nickname: string,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: string;
+}> => {
+  console.log("checkNicknameAPI 시작:", nickname);
+
+  try {
+    const response = await fetch(
+      `http://15.164.250.185:8081/api/v1/users/auth/check-nickname?nickname=${encodeURIComponent(
+        nickname,
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          accept: "*/*",
+        },
+      },
+    );
+
+    console.log("checkNicknameAPI 응답 상태:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log("checkNicknameAPI 에러 응답:", errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("checkNicknameAPI 성공:", data);
+    return data;
+  } catch (error) {
+    console.log("checkNicknameAPI 실패:", error);
+    throw error;
+  }
+};
+
+// 책 검색 API 응답 타입
+export interface BookSearchResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    bookSearchResults: BookSearchResult[];
+  };
+}
+
+// 책 검색 결과 타입
+export interface BookSearchResult {
+  title: string;
+  author: string;
+  bookImage: string;
+  pubDate: string;
+}

@@ -1,12 +1,14 @@
 import BackIcon from "@/components/icons/BackIcon";
+import { BookSearchResult, searchBooksAPI } from "@/types/api";
 import {
   setGiftBookData,
   setMarkerBookData,
   setReceivedBookData,
 } from "@/types/globalState";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -21,109 +23,87 @@ export default function BookSearch() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const bookType = params.type as string; // "received" 또는 "gift"
-  const [searchQuery, setSearchQuery] = useState("백엔드");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedBook, setSelectedBook] = useState<string | null>(null);
 
-  const searchResults = [
-    {
-      id: "1",
-      title: "주니어 백엔드 개발자가 반드시 알아야 할 실무 지식",
-      author: "최범균",
-      cover: {
-        uri: "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-      },
-    },
-    {
-      id: "2",
-      title: "백엔드 30일 완성",
-      author: "Pedro Marquez-Soto",
-      cover: {
-        uri: "https://shopping-phinf.pstatic.net/main_4274357/42743575619.20230928091944.jpg",
-      },
-    },
-    {
-      id: "3",
-      title: "아는 만큼 보이는 백엔드 개발",
-      author: "정우현^이인^김보인",
-      cover: {
-        uri: "https://shopping-phinf.pstatic.net/main_4519670/45196700648.20240114070834.jpg",
-      },
-    },
-    {
-      id: "4",
-      title: "LUVIT 실전 백엔드 러스트 Axum 프로그래밍",
-      author: "윤인도",
-      cover: {
-        uri: "https://shopping-phinf.pstatic.net/main_5502358/55023589122.20250603080640.jpg",
-      },
-    },
-    {
-      id: "5",
-      title: "깔끔한 파이썬 탄탄한 백엔드",
-      author: "송은우",
-      cover: {
-        uri: "https://shopping-phinf.pstatic.net/main_3248337/32483376086.20250627083930.jpg",
-      },
-    },
-    {
-      id: "6",
-      title: "Do it! Node.js 프로그래밍 입문",
-      author: "고경희",
-      cover: {
-        uri: "https://shopping-phinf.pstatic.net/main_4390021/43900216622.20231119070940.jpg",
-      },
-    },
-    {
-      id: "7",
-      title: "가장 빠른 풀스택을 위한 Flask & FastAPI",
-      author: "Dave Lee",
-      cover: {
-        uri: "https://shopping-phinf.pstatic.net/main_4774721/47747212621.20240516071127.jpg",
-      },
-    },
-    {
-      id: "8",
-      title: "백엔드 개발을 위한 핸즈온 장고",
-      author: "김성렬",
-      cover: {
-        uri: "https://shopping-phinf.pstatic.net/main_4022957/40229572618.20230606104020.jpg",
-      },
-    },
-    {
-      id: "9",
-      title: "백엔드를 위한 Go 프로그래밍",
-      author: "탠메이 박시^바히어 카말",
-      cover: {
-        uri: "https://shopping-phinf.pstatic.net/main_3402722/34027227623.20230523090237.jpg",
-      },
-    },
-    {
-      id: "10",
-      title: "Node.js 백엔드 개발자 되기",
-      author: "박승규",
-      cover: {
-        uri: "https://shopping-phinf.pstatic.net/main_3929136/39291367622.20230502164420.jpg",
-      },
-    },
-  ];
+  // API 연동을 위한 상태
+  const [books, setBooks] = useState<BookSearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
-  const handleBookSelect = (bookId: string) => {
-    setSelectedBook(selectedBook === bookId ? null : bookId);
+  // 책 검색 API 호출 함수
+  const searchBooks = useCallback(
+    async (query: string, page: number = 1, append: boolean = false) => {
+      if (!query.trim()) return;
+
+      try {
+        setIsLoading(true);
+        const response = await searchBooksAPI(query, "sim", page);
+
+        if (response.isSuccess && response.result?.bookSearchResults) {
+          const newBooks = response.result.bookSearchResults;
+
+          if (append) {
+            setBooks((prev) => [...prev, ...newBooks]);
+          } else {
+            setBooks(newBooks);
+          }
+
+          // 더 불러올 데이터가 있는지 확인 (API 응답에 따라 조정 필요)
+          setHasMore(newBooks.length > 0);
+          setCurrentPage(page);
+        }
+      } catch (error) {
+        console.error("책 검색 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
+
+  // 무한 스크롤을 위한 추가 데이터 로드
+  const loadMoreBooks = useCallback(() => {
+    if (!isLoading && hasMore && searchQuery.trim()) {
+      searchBooks(searchQuery, currentPage + 1, true);
+    }
+  }, [isLoading, hasMore, currentPage, searchQuery, searchBooks]);
+
+  // 검색어 변경 시 검색 실행
+  useEffect(() => {
+    if (searchPerformed && searchQuery.trim()) {
+      searchBooks(searchQuery, 1, false);
+    }
+  }, [searchQuery, searchPerformed, searchBooks]);
+
+  const handleBookSelect = (bookIndex: number) => {
+    setSelectedBook(
+      selectedBook === bookIndex.toString() ? null : bookIndex.toString(),
+    );
   };
 
   const handleComplete = () => {
     if (selectedBook) {
-      const selectedBookData = searchResults.find(
-        (book) => book.id === selectedBook,
-      );
+      const selectedBookIndex = parseInt(selectedBook);
+      const selectedBookData = books[selectedBookIndex];
       if (selectedBookData) {
+        // API 응답 구조를 전역 상태 구조에 맞게 변환
+        const bookData = {
+          id: selectedBookIndex.toString(),
+          title: selectedBookData.title,
+          author: selectedBookData.author,
+          cover: { uri: selectedBookData.bookImage },
+        };
+
         // 선택된 책 정보를 전역 변수에 저장
         if (bookType === "received") {
-          setReceivedBookData(selectedBookData);
+          setReceivedBookData(bookData);
         } else if (bookType === "gift") {
-          setGiftBookData(selectedBookData);
+          setGiftBookData(bookData);
         } else if (bookType === "marker") {
-          setMarkerBookData(selectedBookData);
+          setMarkerBookData(bookData);
         }
 
         // 이전 화면으로 돌아가기
@@ -168,6 +148,10 @@ export default function BookSearch() {
               onChangeText={setSearchQuery}
               placeholder="도서명, 저자명으로 검색해보세요"
               placeholderTextColor="#9D9896"
+              onSubmitEditing={() => {
+                setSearchPerformed(true);
+                searchBooks(searchQuery, 1, false);
+              }}
             />
             {searchQuery.length > 0 && (
               <TouchableOpacity
@@ -178,22 +162,36 @@ export default function BookSearch() {
               </TouchableOpacity>
             )}
           </View>
+          <TouchableOpacity
+            style={styles.searchButton}
+            onPress={() => {
+              setSearchPerformed(true);
+              searchBooks(searchQuery, 1, false);
+            }}
+          >
+            <Text style={styles.searchButtonText}>검색</Text>
+          </TouchableOpacity>
         </View>
 
         {/* 검색 결과 */}
         <View style={styles.resultsContainer}>
-          <Text style={styles.resultsCount}>총 {searchResults.length}개</Text>
+          {searchPerformed && (
+            <Text style={styles.resultsCount}>총 {books.length}개</Text>
+          )}
 
           <View style={styles.booksGrid}>
-            {searchResults.map((book) => (
+            {books.map((book, index) => (
               <TouchableOpacity
-                key={book.id}
+                key={index}
                 style={styles.bookItem}
-                onPress={() => handleBookSelect(book.id)}
+                onPress={() => handleBookSelect(index)}
               >
                 <View style={styles.bookCoverContainer}>
-                  <Image source={book.cover} style={styles.bookCover} />
-                  {selectedBook === book.id && (
+                  <Image
+                    source={{ uri: book.bookImage }}
+                    style={styles.bookCover}
+                  />
+                  {selectedBook === index.toString() && (
                     <>
                       <View style={styles.overlay} />
                       <View style={styles.checkmarkContainer}>
@@ -211,6 +209,24 @@ export default function BookSearch() {
               </TouchableOpacity>
             ))}
           </View>
+
+          {/* 무한 스크롤 로딩 인디케이터 */}
+          {isLoading && books.length > 0 && (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color="#302E2D" />
+              <Text style={styles.loadingText}>책을 불러오는 중...</Text>
+            </View>
+          )}
+
+          {/* 더 불러올 데이터가 있는 경우 로드 더 버튼 */}
+          {!isLoading && hasMore && books.length > 0 && (
+            <TouchableOpacity
+              style={styles.loadMoreButton}
+              onPress={loadMoreBooks}
+            >
+              <Text style={styles.loadMoreButtonText}>더 보기</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* 직접 등록하기 링크 */}
@@ -273,19 +289,35 @@ const styles = StyleSheet.create({
   searchContainer: {
     padding: 20,
     paddingBottom: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
   searchInputContainer: {
+    flex: 1,
     position: "relative",
     borderWidth: 1,
     borderColor: "#DBD6D3",
     borderRadius: 5,
+  },
+  searchButton: {
+    backgroundColor: "#302E2D",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  searchButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontFamily: "SUIT-600",
   },
   searchInput: {
     backgroundColor: "#EEE9E6",
     borderRadius: 5,
     paddingHorizontal: 15,
     paddingVertical: 12,
-    fontSize: 16,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#000000",
   },
@@ -418,5 +450,29 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontFamily: "SUIT-600",
+  },
+  loadingContainer: {
+    alignItems: "center",
+    paddingVertical: 20,
+    gap: 10,
+  },
+  loadingText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#716C69",
+  },
+  loadMoreButton: {
+    backgroundColor: "#F0F0F0",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 20,
+    alignSelf: "center",
+  },
+  loadMoreButtonText: {
+    fontSize: 14,
+    fontFamily: "SUIT-600",
+    color: "#302E2D",
   },
 });

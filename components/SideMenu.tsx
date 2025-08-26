@@ -6,6 +6,7 @@ import React from "react";
 import {
   Animated,
   Dimensions,
+  Image,
   Modal,
   StyleSheet,
   Text,
@@ -136,7 +137,15 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
             {/* 사용자 프로필 섹션 */}
             <View style={styles.profileSection}>
               <View style={styles.profileIcon}>
-                <DefaultProfileIcon width={40} height={43} color="#9D9896" />
+                {userInfo?.profileImageUrl ? (
+                  <Image
+                    source={{ uri: userInfo.profileImageUrl }}
+                    style={styles.profileImage}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <DefaultProfileIcon width={40} height={43} color="#9D9896" />
+                )}
               </View>
               <View style={styles.profileInfo}>
                 <Text style={styles.userName}>
@@ -235,6 +244,7 @@ const styles = StyleSheet.create({
   menuContent: {
     flex: 1,
     padding: 20,
+    paddingTop: 40,
   },
   profileSection: {
     flexDirection: "row",
@@ -249,6 +259,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 15,
+    overflow: "hidden",
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
   profileIconText: {
     fontSize: 24,

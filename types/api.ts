@@ -131,6 +131,29 @@ const decodeJWT = (token: string) => {
   }
 };
 
+// 내가 모은 스탬프 조회 API
+export const getStampsAPI = async (): Promise<StampsResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch("http://15.164.250.185:8081/api/v1/stamps", {
+      method: "GET",
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("스탬프 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
 // 북챌린지 챌린지 인증 조회 API
 export const getBookChallengeListAPI = async (
   page: number = 1,
@@ -160,7 +183,6 @@ export const getBookChallengeListAPI = async (
     throw error;
   }
 };
-
 // 북챌린지 서점 조회 API
 export const getBookChallengesAPI = async (
   page: number = 1,
@@ -567,6 +589,57 @@ export interface BookChallengeListResponse {
     isFirst: boolean;
     isLast: boolean;
     getBookChallengeList: BookChallenge[];
+  };
+}
+
+// 내가 모은 스탬프 조회 API 응답 타입
+export interface StampsResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    userId: number;
+    totalStampCount: number;
+    stampList: {
+      chuncheon: string | null;
+      wonju: string | null;
+      gangneung: string | null;
+      donghae: string | null;
+      taebaek: string | null;
+      sokcho: string | null;
+      samcheok: string | null;
+      hongcheon: string | null;
+      hoengseong: string | null;
+      yeongwol: string | null;
+      pyeongchang: string | null;
+      jeongseon: string | null;
+      cheorwon: string | null;
+      hwacheon: string | null;
+      yanggu: string | null;
+      inje: string | null;
+      goseong: string | null;
+      yangyang: string | null;
+    };
+    regionImageList: {
+      chuncheon: string | null;
+      wonju: string | null;
+      gangneung: string | null;
+      donghae: string | null;
+      taebaek: string | null;
+      sokcho: string | null;
+      samcheok: string | null;
+      hongcheon: string | null;
+      hoengseong: string | null;
+      yeongwol: string | null;
+      pyeongchang: string | null;
+      jeongseon: string | null;
+      cheorwon: string | null;
+      hwacheon: string | null;
+      yanggu: string | null;
+      inje: string | null;
+      goseong: string | null;
+      yangyang: string | null;
+    };
   };
 }
 

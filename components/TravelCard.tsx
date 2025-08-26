@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   travelCardTitle: {
-    fontSize: 20,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#262423",
     flex: 1,
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
     alignItems: "center",
-    marginBottom: 13,
+    marginBottom: 16,
   },
   travelCardTags: {
     flexDirection: "row",

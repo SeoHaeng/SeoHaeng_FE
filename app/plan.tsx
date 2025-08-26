@@ -1,5 +1,5 @@
 import BackIcon from "@/components/icons/BackIcon";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   SafeAreaView,
@@ -11,6 +11,9 @@ import {
 } from "react-native";
 
 export default function Plan() {
+  const params = useLocalSearchParams();
+  const fromHome = params.from === "home";
+
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -184,7 +187,15 @@ export default function Plan() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.push("/(tabs)/milestone")}>
+        <TouchableOpacity
+          onPress={() => {
+            if (fromHome) {
+              router.push("/(tabs)");
+            } else {
+              router.push("/(tabs)/milestone");
+            }
+          }}
+        >
           <BackIcon />
         </TouchableOpacity>
         <View style={styles.headerContent}>
@@ -192,6 +203,9 @@ export default function Plan() {
             <Text style={styles.headerTitle}>
               여행 일자를{"\n"}선택해주세요.
             </Text>
+            {fromHome && (
+              <Text style={styles.fromHomeText}>홈화면에서 이동</Text>
+            )}
             {selectedStartDate && selectedEndDate && (
               <Text style={styles.dateRange}>{formatDateRange()}</Text>
             )}
@@ -280,6 +294,12 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-700",
     color: "#262423",
     lineHeight: 32,
+  },
+  fromHomeText: {
+    fontSize: 12,
+    fontFamily: "SUIT-500",
+    color: "#716C69",
+    marginTop: 8,
   },
   dateRange: {
     fontSize: 18,

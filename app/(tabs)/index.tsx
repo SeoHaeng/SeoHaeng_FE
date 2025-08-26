@@ -7,7 +7,9 @@ import TravelCard from "@/components/TravelCard";
 import {
   getLastVisitAPI,
   getMyTravelCoursesAPI,
+  getReadingSpotsAPI,
   getTodayRecommendationsAPI,
+  ReadingSpot,
   TodayRecommendation,
   TravelCourse,
 } from "@/types/api";
@@ -125,70 +127,42 @@ export default function Index() {
     fetchLastVisit();
   }, []);
 
-  // 북마크 데이터 (API 형식)
-  const bookmarkData = {
-    listSize: 1,
-    totalPage: 1,
-    totalElements: 1,
+  // 최신 공간 책갈피 조회 (5개)
+  useEffect(() => {
+    const fetchBookmarks = async () => {
+      try {
+        setIsLoadingBookmarks(true);
+        const response = await getReadingSpotsAPI(1, 5);
+        if (response.isSuccess) {
+          setBookmarkData(response.result);
+        }
+      } catch (error) {
+        console.error("책갈피 조회 실패:", error);
+      } finally {
+        setIsLoadingBookmarks(false);
+      }
+    };
+
+    fetchBookmarks();
+  }, []);
+
+  // 책갈피 데이터 상태
+  const [bookmarkData, setBookmarkData] = useState<{
+    listSize: number;
+    totalPage: number;
+    totalElements: number;
+    isFirst: boolean;
+    isLast: boolean;
+    readingSpotList: ReadingSpot[];
+  }>({
+    listSize: 0,
+    totalPage: 0,
+    totalElements: 0,
     isFirst: true,
     isLast: true,
-    readingSpotList: [
-      {
-        userId: 1,
-        userNickname: "이소정",
-        userProfilImage: null,
-        readingSpotId: 12,
-        region: "강릉",
-        address: "강원 강릉시 경포로 365",
-        latitude: 37.8882,
-        longitude: 127.7297,
-        createdAt: "2025-08-16",
-        templateId: 4,
-        title: "경포호 근처 북카페",
-        content: "호수를 바라보며 여유롭게 책 읽기 좋은 카페입니다.",
-        readingSpotImages: [
-          "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-        ],
-        bookTitle: "노르웨이의 숲",
-        bookAuthor: "무라카미 하루키",
-        bookImage:
-          "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-        bookPubDate: "2025-08-16",
-        likes: 0,
-        scraps: 0,
-        opened: true,
-        scraped: false,
-        liked: false,
-      },
-      {
-        userId: 1,
-        userNickname: "이소정",
-        userProfilImage: null,
-        readingSpotId: 13,
-        region: "춘천",
-        address: "강원 춘천시 남산면 남이섬길 1",
-        latitude: 37.7904,
-        longitude: 127.5252,
-        createdAt: "2025-08-16",
-        templateId: 4,
-        title: "남이섬 근처 북카페",
-        content: "자연 속에서 책 읽기 좋은 카페입니다.",
-        readingSpotImages: [
-          "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-        ],
-        bookTitle: "물고기는 존재하지 않는다",
-        bookAuthor: "김영하",
-        bookImage:
-          "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-        bookPubDate: "2025-08-16",
-        likes: 0,
-        scraps: 0,
-        opened: true,
-        scraped: false,
-        liked: false,
-      },
-    ],
-  };
+    readingSpotList: [],
+  });
+  const [isLoadingBookmarks, setIsLoadingBookmarks] = useState(false);
 
   const openSideMenu = () => setSideMenuVisible(true);
   const closeSideMenu = () => setSideMenuVisible(false);

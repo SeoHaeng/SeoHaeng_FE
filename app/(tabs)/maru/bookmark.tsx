@@ -1,83 +1,33 @@
 import BookmarkCard from "@/components/BookmarkCard";
+import { getReadingSpotsAPI, ReadingSpot } from "@/types/api";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
-interface ScrapItem {
-  title: string;
-  imageUrl: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  templateId: number;
-  readingSpotId: number;
-  createdAt: string;
-}
-
 export default function Bookmark() {
   const router = useRouter();
-  const [scrapList, setScrapList] = useState<ScrapItem[]>([]);
+  const [scrapList, setScrapList] = useState<ReadingSpot[]>([]);
   const [totalElements, setTotalElements] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // API 데이터 예시 (실제로는 API 호출로 대체)
+  // 책갈피 조회 API 호출
   useEffect(() => {
-    // 임시 데이터 - 실제로는 API 호출
-    const mockData = {
-      listSize: 2,
-      totalPage: 1,
-      totalElements: 2,
-      isFirst: true,
-      isLast: true,
-      scrapList: [
-        {
-          title: "강릉 앞바다",
-          imageUrl:
-            "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-          address: "강원 강릉시 창해로 14번길 20-1",
-          latitude: 90,
-          longitude: 180,
-          templateId: 1,
-          readingSpotId: 4,
-          createdAt: "2025-08-05",
-        },
-        {
-          title: "춘천 책방",
-          imageUrl:
-            "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-          address: "강원 춘천시 중앙로 123",
-          latitude: 90,
-          longitude: 180,
-          templateId: 4,
-          readingSpotId: 3,
-          createdAt: "2025-08-05",
-        },
-        {
-          title: "춘천 책방",
-          imageUrl:
-            "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-          address: "강원 춘천시 중앙로 123",
-          latitude: 90,
-          longitude: 180,
-          templateId: 4,
-          readingSpotId: 3,
-          createdAt: "2025-08-05",
-        },
-        {
-          title: "춘천 책방",
-          imageUrl:
-            "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-          address: "강원 춘천시 중앙로 123",
-          latitude: 90,
-          longitude: 180,
-          templateId: 4,
-          readingSpotId: 3,
-          createdAt: "2025-08-05",
-        },
-      ],
+    const fetchBookmarks = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getReadingSpotsAPI(1, 10); // 10개씩 로드
+        if (response.isSuccess) {
+          setScrapList(response.result.readingSpotList);
+          setTotalElements(response.result.totalElements);
+        }
+      } catch (error) {
+        console.error("책갈피 조회 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    setScrapList(mockData.scrapList);
-    setTotalElements(mockData.totalElements);
+    fetchBookmarks();
   }, []);
 
   return (
@@ -110,7 +60,7 @@ export default function Bookmark() {
             .map((item) => (
               <BookmarkCard
                 key={item.readingSpotId}
-                imageUrl={item.imageUrl}
+                imageUrl={item.readingSpotImages[0] || ""}
                 title={item.title}
                 address={item.address}
                 templateId={item.templateId}
@@ -119,7 +69,7 @@ export default function Bookmark() {
                     pathname: `/bookmark/[id]`,
                     params: {
                       id: item.readingSpotId.toString(),
-                      imageUrl: item.imageUrl,
+                      imageUrl: item.readingSpotImages[0] || "",
                       title: item.title,
                       address: item.address,
                       templateId: item.templateId,
@@ -140,13 +90,13 @@ export default function Bookmark() {
             .map((item) => (
               <BookmarkCard
                 key={item.readingSpotId}
-                imageUrl={item.imageUrl}
+                imageUrl={item.readingSpotImages[0] || ""}
                 title={item.title}
                 address={item.address}
                 templateId={item.templateId}
                 onPress={() =>
                   router.push(
-                    `/bookmark/${item.readingSpotId}?imageUrl=${item.imageUrl}&title=${item.title}&address=${item.address}&templateId=${item.templateId}` as any,
+                    `/bookmark/${item.readingSpotId}?imageUrl=${item.readingSpotImages[0] || ""}&title=${item.title}&address=${item.address}&templateId=${item.templateId}` as any,
                   )
                 }
               />

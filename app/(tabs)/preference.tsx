@@ -1,9 +1,15 @@
 import BackIcon from "@/components/icons/BackIcon";
 import CalendarIcon from "@/components/icons/CalendarIcon";
 import TravelCard from "@/components/TravelCard";
+import {
+  Festival,
+  getFestivalsAPI,
+  getMyTravelCoursesAPI,
+  TravelCourse,
+} from "@/types/api";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -51,47 +57,50 @@ const FestivalCard: React.FC<FestivalCardProps> = ({ image, title, dates }) => (
 );
 
 export default function Preference() {
-  const travelRecommendations = [
-    {
-      id: 1,
-      image: require("@/assets/images/마루 목업.png"),
-      title: "독파민을 쫓아서",
-      dates: "2025.06.16 - 06.20",
-      duration: "4박 5일",
-      tags: ["강릉", "양양", "속초"],
-      icon: "Ho",
-    },
-    {
-      id: 2,
-      image: require("@/assets/images/서점.png"),
-      title: "야 책펴",
-      dates: "2025.04.2",
-      duration: "2박 3일",
-      tags: ["영월"],
-      icon: "Ho",
-    },
-  ];
+  const [festivals, setFestivals] = useState<Festival[]>([]);
+  const [isLoadingFestivals, setIsLoadingFestivals] = useState(false);
+  const [travelRecommendations, setTravelRecommendations] = useState<
+    TravelCourse[]
+  >([]);
+  const [isLoadingTravelCourses, setIsLoadingTravelCourses] = useState(false);
 
-  const festivals = [
-    {
-      id: 1,
-      image: require("@/assets/images/인기챌린지 사진.png"),
-      title: "벚꽃축제",
-      dates: "03.23-04.02",
-    },
-    {
-      id: 2,
-      image: require("@/assets/images/인기챌린지 책.png"),
-      title: "과일주스축제",
-      dates: "03.23-04.02",
-    },
-    {
-      id: 3,
-      image: require("@/assets/images/북챌린지 사진.png"),
-      title: "한우축제",
-      dates: "03.23-04.02",
-    },
-  ];
+  // 강원도 축제 조회
+  useEffect(() => {
+    const fetchFestivals = async () => {
+      try {
+        setIsLoadingFestivals(true);
+        const response = await getFestivalsAPI();
+        if (response.isSuccess) {
+          setFestivals(response.result);
+        }
+      } catch (error) {
+        console.error("강원도 축제 조회 실패:", error);
+      } finally {
+        setIsLoadingFestivals(false);
+      }
+    };
+
+    fetchFestivals();
+  }, []);
+
+  // 나의 여행 일정 조회
+  useEffect(() => {
+    const fetchTravelCourses = async () => {
+      try {
+        setIsLoadingTravelCourses(true);
+        const response = await getMyTravelCoursesAPI();
+        if (response.isSuccess) {
+          setTravelRecommendations(response.result);
+        }
+      } catch (error) {
+        console.error("나의 여행 일정 조회 실패:", error);
+      } finally {
+        setIsLoadingTravelCourses(false);
+      }
+    };
+
+    fetchTravelCourses();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
@@ -140,16 +149,35 @@ export default function Preference() {
             style={styles.cardsScrollView}
             contentContainerStyle={styles.cardsContainer}
           >
-            {travelRecommendations.map((item) => (
-              <TravelCard
-                key={item.id}
-                image={item.image}
-                title={item.title}
-                dates={item.dates}
-                duration={item.duration}
-                tags={item.tags}
-              />
-            ))}
+            {travelRecommendations.map((item) => {
+              const startDate = new Date(item.startDate);
+              const endDate = new Date(item.endDate);
+              const formattedStartDate = startDate.toLocaleDateString("ko-KR", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              });
+              const formattedEndDate = endDate.toLocaleDateString("ko-KR", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              });
+
+              return (
+                <TravelCard
+                  key={item.id}
+                  image={
+                    item.imageUrl
+                      ? { uri: item.imageUrl }
+                      : require("@/assets/images/마루 목업.png")
+                  }
+                  title={item.title}
+                  dates={`${formattedStartDate} - ${formattedEndDate}`}
+                  duration={`${item.duration}박 ${item.duration + 1}일`}
+                  tags={item.regions}
+                />
+              );
+            })}
           </ScrollView>
         </View>
 
@@ -169,7 +197,12 @@ export default function Preference() {
             contentContainerStyle={styles.cardsContainer}
           >
             {festivals.map((item) => (
-              <FestivalCard key={item.id} {...item} />
+              <FestivalCard
+                key={item.placeId}
+                image={{ uri: item.imageUrl }}
+                title={item.festivalName}
+                dates={`${item.startDate.slice(5, 7)}.${item.startDate.slice(8, 10)}-${item.endDate.slice(5, 7)}.${item.endDate.slice(8, 10)}`}
+              />
             ))}
           </ScrollView>
         </View>

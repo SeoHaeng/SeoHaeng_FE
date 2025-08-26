@@ -131,6 +131,61 @@ const decodeJWT = (token: string) => {
   }
 };
 
+// 강원도 축제 API
+export const getFestivalsAPI = async (): Promise<FestivalResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      "http://15.164.250.185:8081/api/v1/places/festival",
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("강원도 축제 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 책갈피 조회 API
+export const getReadingSpotsAPI = async (
+  page: number = 1,
+  size: number = 5,
+): Promise<ReadingSpotResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `http://15.164.250.185:8081/api/v1/reading-spot?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("책갈피 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
 // 내가 모은 스탬프 조회 API
 export const getStampsAPI = async (): Promise<StampsResponse> => {
   try {
@@ -641,6 +696,65 @@ export interface StampsResponse {
       yangyang: string | null;
     };
   };
+}
+
+// 책갈피 조회 API 응답 타입
+export interface ReadingSpotResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    listSize: number;
+    totalPage: number;
+    totalElements: number;
+    isFirst: boolean;
+    isLast: boolean;
+    readingSpotList: ReadingSpot[];
+  };
+}
+
+// 강원도 축제 API 응답 타입
+export interface FestivalResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: Festival[];
+}
+
+// 축제 타입
+export interface Festival {
+  placeId: number;
+  placeType: "FESTIVAL";
+  festivalName: string;
+  startDate: string;
+  endDate: string;
+  imageUrl: string;
+}
+
+// 책갈피 타입
+export interface ReadingSpot {
+  userId: number;
+  userNickname: string;
+  userProfilImage: string | null;
+  readingSpotId: number;
+  region: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  createdAt: string;
+  templateId: number;
+  title: string;
+  content: string;
+  readingSpotImages: string[];
+  bookTitle: string;
+  bookAuthor: string;
+  bookImage: string;
+  bookPubDate: string;
+  likes: number;
+  scraps: number;
+  opened: boolean;
+  liked: boolean;
+  scraped: boolean;
 }
 
 // 북챌린지 챌린지 타입

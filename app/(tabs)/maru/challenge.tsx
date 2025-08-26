@@ -1,7 +1,12 @@
 import EmptyBookIcon from "@/components/icons/EmptyBookIcon";
 import BookStoreItem from "@/components/maruChallenge/bookStore";
 import PopularChallenge from "@/components/maruChallenge/popularChallenge";
-import { BookChallengePlace, getBookChallengesAPI } from "@/types/api";
+import {
+  BookChallenge,
+  BookChallengePlace,
+  getBookChallengeListAPI,
+  getBookChallengesAPI,
+} from "@/types/api";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -35,35 +40,27 @@ export default function Challenge() {
 
     fetchBookstores();
   }, []);
-  const challenges = [
-    {
-      id: 1,
-      userName: "유딘딘",
-      date: "1",
-      text: "대박 이 책을 받을 줄은 몰았어요!ㅎ ㅎㅎ 잘 읽겠습니다!! 강릉 여행와서..",
-      bookName: "물고기는 존재하지 않는다",
-      bookAuthor: "룰루 밀러 / 정지인",
-      year: "2022",
-    },
-    {
-      id: 2,
-      userName: "채영",
-      date: "2",
-      text: "오늘도 새로운 책과 함께하는 독서 시간! 이번에는 특별한 책을..",
-      bookName: "물고기는 존재하지 않는다",
-      bookAuthor: "룰루 밀러 / 정지인",
-      year: "2022",
-    },
-    {
-      id: 3,
-      userName: "수빈",
-      date: "3",
-      text: "주말 아침 카페에서 독서하기! 오늘의 책은..",
-      bookName: "물고기는 존재하지 않는다",
-      bookAuthor: "룰루 밀러 / 정지인",
-      year: "2022",
-    },
-  ];
+  const [challenges, setChallenges] = useState<BookChallenge[]>([]);
+  const [isLoadingChallenges, setIsLoadingChallenges] = useState(false);
+
+  // 북챌린지 챌린지 인증 조회 (인기순 5개)
+  useEffect(() => {
+    const fetchChallenges = async () => {
+      try {
+        setIsLoadingChallenges(true);
+        const response = await getBookChallengeListAPI(1, 5, "popular");
+        if (response.isSuccess) {
+          setChallenges(response.result.getBookChallengeList);
+        }
+      } catch (error) {
+        console.error("북챌린지 챌린지 인증 조회 실패:", error);
+      } finally {
+        setIsLoadingChallenges(false);
+      }
+    };
+
+    fetchChallenges();
+  }, []);
 
   return (
     <ScrollView
@@ -138,12 +135,18 @@ export default function Challenge() {
         >
           {challenges.map((challenge) => (
             <PopularChallenge
-              key={challenge.id}
-              {...challenge}
+              key={challenge.bookChallengeProofId}
+              id={challenge.bookChallengeProofId}
+              userName="사용자" // API에 userName이 없으므로 기본값 사용
+              date={challenge.createdAt}
+              text={challenge.proofContent}
+              bookName={challenge.receivedBookTitle}
+              bookAuthor={challenge.receivedBookAuthor}
+              year={challenge.receivedBookPubDate}
               onPress={() =>
                 router.push({
                   pathname: "/popularity/[id]",
-                  params: { id: challenge.id },
+                  params: { id: challenge.bookChallengeProofId },
                 })
               }
             />

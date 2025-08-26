@@ -3,6 +3,7 @@ import ScrapIcon from "@/components/icons/ScrapIcon";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface PopularChallengeItemProps {
+  id: number;
   userName: string;
   date: string;
   text: string;
@@ -15,6 +16,7 @@ interface PopularChallengeItemProps {
 }
 
 export default function PopularChallenge({
+  id,
   userName,
   date,
   text,

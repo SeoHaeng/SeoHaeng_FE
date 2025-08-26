@@ -1,9 +1,11 @@
 // app/popularity.tsx
 import BackIcon from "@/components/icons/BackIcon";
 import PopularChallengeTotal from "@/components/maruChallenge/popularChallengeTotal";
+import { BookChallenge, getBookChallengeListAPI } from "@/types/api";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Modal,
   ScrollView,
@@ -19,35 +21,68 @@ export default function Popularity() {
   const [sortType, setSortType] = useState("최신순");
   const [showSortModal, setShowSortModal] = useState(false);
 
-  const challenges = [
-    {
-      id: 1,
-      userName: "유딘딘",
-      date: "1",
-      text: "대박 이 책을 받을 줄은 몰았어요!ㅎ ㅎㅎ 잘 읽겠습니다!! 강릉 여행와서..",
-      bookName: "물고기는 존재하지 않는다",
-      bookAuthor: "룰루 밀러 / 정지인",
-      year: "2022",
+  // API 데이터 상태
+  const [challenges, setChallenges] = useState<BookChallenge[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
+
+  // 정렬 타입을 API 파라미터로 변환
+  const getSortParam = (sortType: string) => {
+    switch (sortType) {
+      case "최신순":
+        return "latest";
+      case "인기순":
+        return "popular";
+      default:
+        return "latest";
+    }
+  };
+
+  // 챌린지 데이터 가져오기
+  const fetchChallenges = useCallback(
+    async (page: number = 1, append: boolean = false) => {
+      try {
+        setIsLoading(true);
+        const sortParam = getSortParam(sortType);
+        const response = await getBookChallengeListAPI(page, 10, sortParam);
+
+        if (response.isSuccess) {
+          const newChallenges = response.result.getBookChallengeList;
+          setTotalElements(response.result.totalElements);
+
+          if (append) {
+            setChallenges((prev) => [...prev, ...newChallenges]);
+          } else {
+            setChallenges(newChallenges);
+          }
+
+          setHasMore(response.result.totalPage > page);
+          setCurrentPage(page);
+        }
+      } catch (error) {
+        console.error("챌린지 인증 조회 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
     },
-    {
-      id: 2,
-      userName: "채영",
-      date: "2",
-      text: "오늘도 새로운 책과 함께하는 독서 시간! 이번에는 특별한 책을..",
-      bookName: "물고기는 존재하지 않는다",
-      bookAuthor: "룰루 밀러 / 정지인",
-      year: "2022",
-    },
-    {
-      id: 3,
-      userName: "수빈",
-      date: "3",
-      text: "주말 아침 카페에서 독서하기! 오늘의 책은..",
-      bookName: "물고기는 존재하지 않는다",
-      bookAuthor: "룰루 밀러 / 정지인",
-      year: "2022",
-    },
-  ];
+    [sortType],
+  );
+
+  // 초기 데이터 로드
+  useEffect(() => {
+    setCurrentPage(1);
+    setHasMore(true);
+    fetchChallenges(1, false);
+  }, [sortType, fetchChallenges]);
+
+  // 더 많은 데이터 로드
+  const loadMoreChallenges = useCallback(() => {
+    if (!isLoading && hasMore) {
+      fetchChallenges(currentPage + 1, true);
+    }
+  }, [isLoading, hasMore, currentPage, fetchChallenges]);
 
   return (
     <SafeAreaView style={styles.wrapper}>
@@ -58,11 +93,22 @@ export default function Popularity() {
         >
           <BackIcon />
         </TouchableOpacity>
-        <Text style={styles.title}>인기 챌린지 인증</Text>
+        <Text style={styles.title}>챌린지 인증</Text>
       </View>
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.content}
+        onScroll={({ nativeEvent }) => {
+          const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+          const paddingToBottom = 20;
+          if (
+            layoutMeasurement.height + contentOffset.y >=
+            contentSize.height - paddingToBottom
+          ) {
+            loadMoreChallenges();
+          }
+        }}
+        scrollEventThrottle={400}
       >
         <View
           style={{
@@ -76,7 +122,7 @@ export default function Popularity() {
           <Text
             style={{ fontSize: 13, color: "#716C69", fontFamily: "SUIT-500" }}
           >
-            총 1583개
+            총 {totalElements}개
           </Text>
           <TouchableOpacity
             style={{ flexDirection: "row", alignItems: "center", gap: 7 }}
@@ -92,16 +138,38 @@ export default function Popularity() {
         </View>
         {challenges.map((challenge) => (
           <PopularChallengeTotal
-            key={challenge.id}
-            {...challenge}
+            key={challenge.bookChallengeProofId}
+            userName="사용자" // API에 userName이 없으므로 기본값 사용
+            date={challenge.createdAt}
+            text={challenge.proofContent}
+            bookName={challenge.receivedBookTitle}
+            bookAuthor={challenge.receivedBookAuthor}
+            year={challenge.receivedBookPubDate}
             onPress={() =>
               router.push({
                 pathname: "/popularity/[id]",
-                params: { id: challenge.id },
+                params: { id: challenge.bookChallengeProofId },
               })
             }
           />
         ))}
+
+        {/* 로딩 인디케이터 */}
+        {isLoading && challenges.length > 0 && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color="#302E2D" />
+            <Text style={styles.loadingText}>
+              더 많은 챌린지를 불러오는 중...
+            </Text>
+          </View>
+        )}
+
+        {/* 더 이상 데이터가 없는 경우 */}
+        {!hasMore && challenges.length > 0 && (
+          <View style={styles.noMoreContainer}>
+            <Text style={styles.noMoreText}>모든 챌린지를 불러왔습니다</Text>
+          </View>
+        )}
       </ScrollView>
 
       {/* 정렬 옵션 모달 */}
@@ -246,5 +314,25 @@ const styles = StyleSheet.create({
   selectedSortOptionText: {
     color: "#FF6B35",
     fontFamily: "SUIT-600",
+  },
+  loadingContainer: {
+    alignItems: "center",
+    paddingVertical: 20,
+    gap: 10,
+  },
+  loadingText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#716C69",
+  },
+  noMoreContainer: {
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  noMoreText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#9D9896",
+    fontStyle: "italic",
   },
 });

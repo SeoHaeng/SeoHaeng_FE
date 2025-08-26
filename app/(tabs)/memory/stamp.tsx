@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { getStampsAPI } from "@/types/api";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -11,28 +12,78 @@ import StampBoard from "./stampBoard";
 
 export default function StampView() {
   const [activeView, setActiveView] = useState("도장판");
+  const [stamps, setStamps] = useState<
+    {
+      id: number;
+      city: string;
+      date: string;
+      collected: boolean;
+      image: string | null;
+    }[]
+  >([]);
+  const [totalStampCount, setTotalStampCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // 스탬프 데이터 (예시)
-  const stamps = [
-    { id: 1, city: "춘천시", date: "25.06.12", collected: true, image: null },
-    { id: 2, city: "동해시", date: "25.06.12", collected: true, image: null },
-    { id: 3, city: "강릉시", date: "", collected: false, image: null },
-    { id: 4, city: "속초시", date: "", collected: false, image: null },
-    { id: 5, city: "삼척시", date: "", collected: false, image: null },
-    { id: 6, city: "원주시", date: "", collected: false, image: null },
-    { id: 7, city: "태백시", date: "", collected: false, image: null },
-    { id: 8, city: "정선군", date: "", collected: false, image: null },
-    { id: 9, city: "철원군", date: "", collected: false, image: null },
-    { id: 10, city: "화천군", date: "", collected: false, image: null },
-    { id: 11, city: "양구군", date: "", collected: false, image: null },
-    { id: 12, city: "인제군", date: "", collected: false, image: null },
-    { id: 13, city: "고성군", date: "", collected: false, image: null },
-    { id: 14, city: "양양군", date: "", collected: false, image: null },
-    { id: 15, city: "횡성군", date: "", collected: false, image: null },
-    { id: 16, city: "영월군", date: "", collected: false, image: null },
-    { id: 17, city: "평창군", date: "", collected: false, image: null },
-    { id: 18, city: "홍천군", date: "", collected: false, image: null },
-  ];
+  // 스탬프 데이터 변환 함수
+  const transformStampData = (stampList: any, regionImageList: any) => {
+    const cityMap = {
+      chuncheon: "춘천시",
+      wonju: "원주시",
+      gangneung: "강릉시",
+      donghae: "동해시",
+      taebaek: "태백시",
+      sokcho: "속초시",
+      samcheok: "삼척시",
+      hongcheon: "홍천군",
+      hoengseong: "횡성군",
+      yeongwol: "영월군",
+      pyeongchang: "평창군",
+      jeongseon: "정선군",
+      cheorwon: "철원군",
+      hwacheon: "화천군",
+      yanggu: "양구군",
+      inje: "인제군",
+      goseong: "고성군",
+      yangyang: "양양군",
+    };
+
+    return Object.entries(cityMap).map(([key, cityName], index) => {
+      const visitDate = stampList[key];
+      const regionImage = regionImageList[key];
+
+      return {
+        id: index + 1,
+        city: cityName,
+        date: visitDate ? visitDate.replace(/-/g, ".").slice(2) : "", // "2025-08-25" -> "25.08.25"
+        collected: !!visitDate,
+        image: regionImage,
+      };
+    });
+  };
+
+  // 스탬프 데이터 조회
+  useEffect(() => {
+    const fetchStamps = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getStampsAPI();
+        if (response.isSuccess) {
+          const transformedStamps = transformStampData(
+            response.result.stampList,
+            response.result.regionImageList,
+          );
+          setStamps(transformedStamps);
+          setTotalStampCount(response.result.totalStampCount);
+        }
+      } catch (error) {
+        console.error("스탬프 조회 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStamps();
+  }, []);
 
   const collectedCount = stamps.filter((stamp) => stamp.collected).length;
   const totalCount = stamps.length;

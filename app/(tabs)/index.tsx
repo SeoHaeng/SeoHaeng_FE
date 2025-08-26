@@ -32,9 +32,13 @@ export default function Index() {
 
   // 사용자 정보 업데이트를 위한 주기적 체크
   useEffect(() => {
+    console.log("홈화면 진입 시 userInfo:", userInfo);
+
     const interval = setInterval(() => {
       const currentUserInfo = getUserInfo();
+      console.log("주기적 체크 - currentUserInfo:", currentUserInfo);
       if (currentUserInfo !== userInfo) {
+        console.log("사용자 정보 변경 감지:", currentUserInfo);
         setLocalUserInfo(currentUserInfo);
       }
     }, 1000);
@@ -318,14 +322,12 @@ export default function Index() {
         <View style={styles.topSection}>
           <View style={styles.greetingContainer}>
             <Text style={styles.greetingText}>
-              <Text style={styles.userNameText}>
-                {userInfo?.nickName || "사용자"}님의
-              </Text>
+              <Text style={styles.userNameText}>{userInfo?.nickName}님의</Text>
               {"\n"}다음 강원 북트립은?
             </Text>
-            <TouchableOpacity style={styles.planButton}>
-              <Text style={styles.planButtonText}>여행 일정 짜기 &gt;</Text>
-            </TouchableOpacity>
+            <View style={styles.planButton}>
+              <Text style={styles.planButtonText}>D-23</Text>
+            </View>
           </View>
         </View>
 
@@ -606,7 +608,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   greetingText: {
-    fontSize: 24,
+    fontSize: 22,
     fontFamily: "SUIT-700",
     color: "#F8F4F2",
     lineHeight: 35,
@@ -614,6 +616,7 @@ const styles = StyleSheet.create({
   },
   userNameText: {
     fontFamily: "SUIT-400",
+    fontSize: 22,
   },
   planButton: {
     backgroundColor: "#4D4947",
@@ -624,7 +627,7 @@ const styles = StyleSheet.create({
     borderColor: "#716C69",
   },
   planButtonText: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-600",
     color: "#EEE9E6",
   },

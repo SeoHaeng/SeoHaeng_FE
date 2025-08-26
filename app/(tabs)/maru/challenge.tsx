@@ -1,7 +1,9 @@
 import EmptyBookIcon from "@/components/icons/EmptyBookIcon";
 import BookStoreItem from "@/components/maruChallenge/bookStore";
 import PopularChallenge from "@/components/maruChallenge/popularChallenge";
+import { BookChallengePlace, getBookChallengesAPI } from "@/types/api";
 import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -12,13 +14,27 @@ import {
 
 export default function Challenge() {
   const router = useRouter();
-  const bookstores = [
-    { id: 1, name: "아름 서점", location: "강릉" },
-    { id: 2, name: "책과 삶", location: "부산" },
-    { id: 3, name: "달팽이", location: "서울" },
-    { id: 4, name: "햇살 서점", location: "대구" },
-    { id: 5, name: "숲 서점", location: "제주" },
-  ];
+  const [bookstores, setBookstores] = useState<BookChallengePlace[]>([]);
+  const [isLoadingBookstores, setIsLoadingBookstores] = useState(false);
+
+  // 북챌린지 서점 조회
+  useEffect(() => {
+    const fetchBookstores = async () => {
+      try {
+        setIsLoadingBookstores(true);
+        const response = await getBookChallengesAPI();
+        if (response.isSuccess) {
+          setBookstores(response.result.placeList);
+        }
+      } catch (error) {
+        console.error("북챌린지 서점 조회 실패:", error);
+      } finally {
+        setIsLoadingBookstores(false);
+      }
+    };
+
+    fetchBookstores();
+  }, []);
   const challenges = [
     {
       id: 1,
@@ -91,7 +107,7 @@ export default function Challenge() {
             <BookStoreItem
               key={store.id}
               name={store.name}
-              location={store.location}
+              location={store.address}
               onPress={() =>
                 router.push({
                   pathname: "/bookstore/[id]",

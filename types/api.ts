@@ -131,6 +131,35 @@ const decodeJWT = (token: string) => {
   }
 };
 
+// 북챌린지 서점 조회 API
+export const getBookChallengesAPI = async (
+  page: number = 1,
+  size: number = 10,
+): Promise<BookChallengesResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `http://15.164.250.185:8081/api/v1/places/book-challenges?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("북챌린지 서점 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
 // 마지막 강원도 여행 날짜 API
 export const getLastVisitAPI = async (): Promise<LastVisitResponse> => {
   try {
@@ -479,6 +508,33 @@ export interface TravelCourse {
   duration: number;
   regions: string[];
   imageUrl?: string;
+}
+
+// 북챌린지 서점 조회 API 응답 타입
+export interface BookChallengesResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    listSize: number;
+    totalPage: number;
+    totalElements: number;
+    isFirst: boolean;
+    isLast: boolean;
+    placeList: BookChallengePlace[];
+  };
+}
+
+// 북챌린지 장소 타입
+export interface BookChallengePlace {
+  id: number;
+  name: string;
+  placeType: "BOOK_CAFE" | "SPACE_BOOKMARK" | "BOOK_STAY";
+  address: string;
+  introduction: string;
+  websiteUrl: string;
+  latitude: number;
+  longitude: number;
 }
 
 // 마지막 강원도 여행 날짜 API 응답 타입

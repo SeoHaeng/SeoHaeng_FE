@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getUserInfoAPI } from "./api";
+import { getUserInfoAPI, reissueTokenAPI } from "./api";
 import { AuthState, UserInfo } from "./globalState";
 
 // AsyncStorage 키 상수
@@ -66,6 +66,27 @@ export const isAuthenticated = async (): Promise<boolean> => {
   }
 };
 
+// 토큰 재발급
+export const reissueToken = async (): Promise<boolean> => {
+  try {
+    console.log("토큰 재발급 시도");
+    const response = await reissueTokenAPI();
+
+    if (response.isSuccess && response.result) {
+      // 새로운 토큰 저장
+      await saveToken(response.result.accessToken, response.result.userId);
+      console.log("토큰 재발급 성공");
+      return true;
+    } else {
+      console.error("토큰 재발급 실패:", response.message);
+      return false;
+    }
+  } catch (error) {
+    console.error("토큰 재발급 중 오류:", error);
+    return false;
+  }
+};
+
 // 토큰 삭제 (로그아웃)
 export const removeToken = async () => {
   try {
@@ -115,6 +136,33 @@ export const fetchAndStoreUserInfo = async (): Promise<UserInfo | null> => {
   } catch (error) {
     console.error("사용자 정보 조회 중 오류 발생:", error);
 
+    // 401 에러인 경우 토큰 재발급 시도
+    if (error instanceof Error && error.message.includes("401")) {
+      console.log("사용자 정보 조회 401 에러: 토큰 재발급 시도");
+      const reissueSuccess = await reissueToken();
+      if (reissueSuccess) {
+        // 토큰 재발급 성공 시 다시 사용자 정보 조회 시도
+        try {
+          const retryResponse = await getUserInfoAPI();
+          if (retryResponse.isSuccess && retryResponse.result) {
+            const userInfo: UserInfo = retryResponse.result;
+            console.log("토큰 재발급 후 사용자 정보 조회 성공:", userInfo);
+
+            // 전역 상태에 사용자 정보 저장
+            const { setUserInfo } = await import("./globalState");
+            setUserInfo(userInfo);
+
+            return userInfo;
+          }
+        } catch (retryError) {
+          console.error(
+            "토큰 재발급 후 사용자 정보 조회 재시도 실패:",
+            retryError,
+          );
+        }
+      }
+    }
+
     // 403 에러인 경우 토큰 삭제
     if (error instanceof Error && error.message.includes("403")) {
       console.log("사용자 정보 조회 403 에러: 토큰 삭제");
@@ -122,6 +170,33 @@ export const fetchAndStoreUserInfo = async (): Promise<UserInfo | null> => {
     }
 
     return null;
+  }
+};
+
+// JWT 토큰 만료 검증 함수
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join(""),
+    );
+    const payload = JSON.parse(jsonPayload);
+
+    // exp (만료 시간) 확인
+    if (payload.exp) {
+      const currentTime = Math.floor(Date.now() / 1000);
+      return currentTime >= payload.exp;
+    }
+    return false;
+  } catch (error) {
+    console.error("토큰 만료 검증 실패:", error);
+    return true; // 파싱 실패 시 만료된 것으로 간주
   }
 };
 
@@ -135,7 +210,8 @@ export const restoreAuthState = async (): Promise<AuthState> => {
     ]);
 
     // 토큰이 실제로 존재하고 유효한지 더 엄격하게 검증
-    const hasValidToken = !!accessToken && accessToken.length > 10; // 최소 길이 검증
+    const hasValidToken =
+      !!accessToken && accessToken.length > 10 && !isTokenExpired(accessToken);
     const authState: AuthState = {
       isAuthenticated: isAuth === "true" && hasValidToken,
       accessToken: hasValidToken ? accessToken : null,
@@ -145,16 +221,43 @@ export const restoreAuthState = async (): Promise<AuthState> => {
 
     // 토큰이 유효하면 사용자 정보도 가져오기
     if (hasValidToken) {
+      console.log("토큰이 유효함, 사용자 정보 조회 시작");
       try {
         const userInfo = await fetchAndStoreUserInfo();
+        console.log("fetchAndStoreUserInfo 결과:", userInfo);
         if (userInfo) {
           authState.userInfo = userInfo;
           // 전역 상태도 업데이트
           const { setUserInfo } = await import("./globalState");
           setUserInfo(userInfo);
+          console.log("전역 상태에 사용자 정보 저장 완료");
+        } else {
+          console.log("사용자 정보가 null로 반환됨");
         }
       } catch (error) {
         console.log("사용자 정보 조회 실패 (토큰 복원 후):", error);
+
+        // 401 에러인 경우 토큰 재발급 시도
+        if (error instanceof Error && error.message.includes("401")) {
+          console.log("사용자 정보 조회 401 에러: 토큰 재발급 시도");
+          const reissueSuccess = await reissueToken();
+          if (reissueSuccess) {
+            // 토큰 재발급 성공 시 다시 사용자 정보 조회 시도
+            try {
+              const retryUserInfo = await fetchAndStoreUserInfo();
+              if (retryUserInfo) {
+                authState.userInfo = retryUserInfo;
+                console.log("토큰 재발급 후 사용자 정보 조회 성공");
+                return authState;
+              }
+            } catch (retryError) {
+              console.error(
+                "토큰 재발급 후 사용자 정보 조회 재시도 실패:",
+                retryError,
+              );
+            }
+          }
+        }
 
         // 403 에러인 경우 토큰을 삭제하고 인증 상태를 false로 설정
         if (error instanceof Error && error.message.includes("403")) {

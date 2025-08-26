@@ -4,10 +4,18 @@ import NotificationIcon from "@/components/icons/NotificationIcon";
 import ScrapIcon from "@/components/icons/ScrapIcon";
 import SideMenu from "@/components/SideMenu";
 import TravelCard from "@/components/TravelCard";
+import {
+  getLastVisitAPI,
+  getMyTravelCoursesAPI,
+  getTodayRecommendationsAPI,
+  TodayRecommendation,
+  TravelCourse,
+} from "@/types/api";
 import { getUserInfo } from "@/types/globalState";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
   Image,
   Linking,
@@ -29,10 +37,20 @@ export default function Index() {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [scrapedItems, setScrapedItems] = useState<Set<number>>(new Set());
   const [userInfo, setLocalUserInfo] = useState(getUserInfo());
+  const [myTravelCourses, setMyTravelCourses] = useState<TravelCourse[]>([]);
+  const [isLoadingTravelCourses, setIsLoadingTravelCourses] = useState(false);
+  const [todayRecommendations, setTodayRecommendations] = useState<
+    TodayRecommendation[]
+  >([]);
+  const [isLoadingRecommendations, setIsLoadingRecommendations] =
+    useState(false);
+  const [lastVisitDays, setLastVisitDays] = useState<number | null>(null);
+  const [isLoadingLastVisit, setIsLoadingLastVisit] = useState(false);
 
   // 사용자 정보 업데이트를 위한 주기적 체크
   useEffect(() => {
     console.log("홈화면 진입 시 userInfo:", userInfo);
+    console.log("getUserInfo() 직접 호출 결과:", getUserInfo());
 
     const interval = setInterval(() => {
       const currentUserInfo = getUserInfo();
@@ -43,8 +61,69 @@ export default function Index() {
       }
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [userInfo]);
+
+  // 나의 여행 일정 조회
+  useEffect(() => {
+    const fetchMyTravelCourses = async () => {
+      try {
+        setIsLoadingTravelCourses(true);
+        const response = await getMyTravelCoursesAPI();
+        if (response.isSuccess) {
+          setMyTravelCourses(response.result);
+        }
+      } catch (error) {
+        console.error("나의 여행 일정 조회 실패:", error);
+      } finally {
+        setIsLoadingTravelCourses(false);
+      }
+    };
+
+    fetchMyTravelCourses();
+  }, []);
+
+  // 오늘의 추천 강원도 조회
+  useEffect(() => {
+    const fetchTodayRecommendations = async () => {
+      try {
+        setIsLoadingRecommendations(true);
+        const response = await getTodayRecommendationsAPI();
+        if (response.isSuccess) {
+          setTodayRecommendations(response.result);
+        }
+      } catch (error) {
+        console.error("오늘의 추천 강원도 조회 실패:", error);
+      } finally {
+        setIsLoadingRecommendations(false);
+      }
+    };
+
+    fetchTodayRecommendations();
+  }, []);
+
+  // 마지막 강원도 방문 날짜 조회
+  useEffect(() => {
+    const fetchLastVisit = async () => {
+      try {
+        setIsLoadingLastVisit(true);
+        const response = await getLastVisitAPI();
+        if (response.isSuccess) {
+          setLastVisitDays(response.result.daysAgo);
+        }
+      } catch (error) {
+        console.error("마지막 방문 날짜 조회 실패:", error);
+      } finally {
+        setIsLoadingLastVisit(false);
+      }
+    };
+
+    fetchLastVisit();
+  }, []);
 
   // 북마크 데이터 (API 형식)
   const bookmarkData = {
@@ -271,32 +350,32 @@ export default function Index() {
     ]).start();
   };
 
-  const userTravels = [
-    {
-      id: 1,
-      image: require("@/assets/images/마루 목업.png"),
-      title: "독파민을 쫓아서",
-      dates: "2025.06.16 - 06.20",
-      duration: "4박 5일",
-      tags: ["강릉", "양양", "속초"],
-    },
-    {
-      id: 2,
-      image: require("@/assets/images/서점.png"),
-      title: "야 책펴",
-      dates: "2025.04.2",
-      duration: "2박 3일",
-      tags: ["영월"],
-    },
-    {
-      id: 3,
-      image: require("@/assets/images/독립서점.png"),
-      title: "독파민",
-      dates: "2025.05.10 - 05.12",
-      duration: "2박 3일",
-      tags: ["강릉"],
-    },
-  ];
+  // 여행 일정 데이터를 API 응답에 맞게 변환하는 함수
+  const formatTravelData = (course: TravelCourse) => {
+    const startDate = new Date(course.startDate);
+    const endDate = new Date(course.endDate);
+    const formattedStartDate = startDate.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    const formattedEndDate = endDate.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+
+    return {
+      id: course.id,
+      image: course.imageUrl
+        ? { uri: course.imageUrl }
+        : require("@/assets/images/마루 목업.png"),
+      title: course.title,
+      dates: `${formattedStartDate} - ${formattedEndDate}`,
+      duration: `${course.duration}박 ${course.duration + 1}일`,
+      tags: course.regions,
+    };
+  };
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -325,9 +404,11 @@ export default function Index() {
               <Text style={styles.userNameText}>{userInfo?.nickName}님의</Text>
               {"\n"}다음 강원 북트립은?
             </Text>
-            <View style={styles.planButton}>
-              <Text style={styles.planButtonText}>D-23</Text>
-            </View>
+            {lastVisitDays !== null && (
+              <View style={styles.planButton}>
+                <Text style={styles.planButtonText}>D-{lastVisitDays}</Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -392,26 +473,49 @@ export default function Index() {
           </TouchableOpacity>
         </View>
 
-        {/* 다른 유저의 서행 섹션 - 하얀 배경 */}
         <View style={styles.bottomSection}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>다른 유저의 서행</Text>
+            <Text style={styles.sectionTitle}>나의 서행</Text>
             <TouchableOpacity>
               <Text style={styles.moreButton}>더보기 &gt;</Text>
             </TouchableOpacity>
           </View>
 
-          {/* 여행 카드 스크롤 */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.cardsScrollView}
-            contentContainerStyle={styles.cardsContainer}
-          >
-            {userTravels.map((item) => (
-              <TravelCard key={item.id} {...item} />
-            ))}
-          </ScrollView>
+          {/* 여행 일정이 있는 경우 */}
+          {myTravelCourses.length > 0 ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.cardsScrollView}
+              contentContainerStyle={styles.cardsContainer}
+            >
+              {myTravelCourses.map((course) => (
+                <TravelCard key={course.id} {...formatTravelData(course)} />
+              ))}
+            </ScrollView>
+          ) : (
+            /* 여행 일정이 없는 경우 빈 상태 화면 */
+            <View style={styles.emptyStateContainer}>
+              <Text style={styles.emptyStateTitle}>
+                아직 생성된 일정이 없어요.
+              </Text>
+              <Text style={styles.emptyStateSubtitle}>
+                나의 독서 여행 일정을 생성해보세요.
+              </Text>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/plan",
+                    params: { from: "home" },
+                  })
+                }
+              >
+                <Text style={styles.createScheduleButtonText}>
+                  여행 일정 생성하기 &gt;
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         {/* 오늘의 추천 섹션 - 하얀 배경 */}
@@ -422,32 +526,50 @@ export default function Index() {
 
           {/* 추천 카드 */}
           <View style={styles.recommendationCard}>
-            {/* 춘천시 추천 */}
-            <View style={styles.featuredRecommendation}>
-              <View style={styles.featuredImageContainer}>
-                <View style={styles.featuredImagePlaceholder} />
+            {/* 첫 번째 추천 장소 (큰 카드) */}
+            {todayRecommendations.length > 0 && (
+              <View style={styles.featuredRecommendation}>
+                <View style={styles.featuredImageContainer}>
+                  <Image
+                    source={{ uri: todayRecommendations[0].imageUrl }}
+                    style={styles.featuredImage}
+                    resizeMode="cover"
+                  />
+                </View>
+                <View style={styles.featuredContent}>
+                  <Text style={styles.featuredTitle}>
+                    {todayRecommendations[0].name}
+                  </Text>
+                  <Text style={styles.featuredDescription} numberOfLines={3}>
+                    {todayRecommendations[0].overview}
+                  </Text>
+                </View>
               </View>
-              <View style={styles.featuredContent}>
-                <Text style={styles.featuredTitle}>춘천시</Text>
-                <Text style={styles.featuredDescription}>
-                  춘천시는 강원도 어쩌구 닭갈비가 맛있고...
-                </Text>
-              </View>
-            </View>
+            )}
 
-            {/* 강릉 서점 추천 리스트 */}
+            {/* 나머지 추천 장소 리스트 */}
             <View style={styles.recommendationList}>
-              {[1, 2, 3].map((item, index) => (
-                <TouchableOpacity key={index} style={styles.recommendationItem}>
+              {todayRecommendations.slice(1).map((item, index) => (
+                <TouchableOpacity
+                  key={item.placeId}
+                  style={styles.recommendationItem}
+                >
                   <View style={styles.recommendationImageContainer}>
-                    <View style={styles.recommendationImagePlaceholder} />
+                    <Image
+                      source={{ uri: item.imageUrl }}
+                      style={styles.recommendationImage}
+                      resizeMode="cover"
+                    />
                   </View>
                   <View style={styles.recommendationItemContent}>
                     <Text style={styles.recommendationItemTitle}>
-                      강릉 서점
+                      {item.name}
                     </Text>
-                    <Text style={styles.recommendationItemDescription}>
-                      책 읽기 좋은 공간과 맛있는 커피
+                    <Text
+                      style={styles.recommendationItemDescription}
+                      numberOfLines={2}
+                    >
+                      {item.overview}
                     </Text>
                   </View>
                   <View style={styles.arrowContainer}>
@@ -456,6 +578,24 @@ export default function Index() {
                 </TouchableOpacity>
               ))}
             </View>
+
+            {/* 로딩 중이거나 데이터가 없는 경우 */}
+            {isLoadingRecommendations && (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color="#302E2D" />
+                <Text style={styles.loadingText}>
+                  추천 장소를 불러오는 중...
+                </Text>
+              </View>
+            )}
+
+            {!isLoadingRecommendations && todayRecommendations.length === 0 && (
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>
+                  오늘의 추천 장소가 없습니다.
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -792,12 +932,6 @@ const styles = StyleSheet.create({
   featuredImageContainer: {
     marginRight: 10,
   },
-  featuredImagePlaceholder: {
-    width: 64,
-    height: 64,
-    borderRadius: 40,
-    backgroundColor: "#C5BFBB",
-  },
   featuredContent: {
     flex: 1,
   },
@@ -823,11 +957,15 @@ const styles = StyleSheet.create({
   recommendationImageContainer: {
     marginRight: 15,
   },
-  recommendationImagePlaceholder: {
+  recommendationImage: {
     width: 77,
     height: 77,
     borderRadius: 5,
-    backgroundColor: "#C5BFBB",
+  },
+  featuredImage: {
+    width: 64,
+    height: 64,
+    borderRadius: 40,
   },
   recommendationItemContent: {
     flex: 1,
@@ -969,5 +1107,50 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     backgroundColor: "transparent",
+  },
+  emptyStateContainer: {
+    alignItems: "center",
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  emptyStateTitle: {
+    fontSize: 16,
+    fontFamily: "SUIT-600",
+    color: "#716C69",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  emptyStateSubtitle: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#9D9896",
+    marginBottom: 24,
+    textAlign: "center",
+  },
+  createScheduleButtonText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#262423",
+    textDecorationLine: "underline",
+  },
+  loadingContainer: {
+    alignItems: "center",
+    paddingVertical: 20,
+    gap: 10,
+  },
+  loadingText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#716C69",
+  },
+  emptyContainer: {
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  emptyText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#9D9896",
+    fontStyle: "italic",
   },
 });

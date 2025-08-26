@@ -131,6 +131,113 @@ const decodeJWT = (token: string) => {
   }
 };
 
+// 마지막 강원도 여행 날짜 API
+export const getLastVisitAPI = async (): Promise<LastVisitResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      "http://15.164.250.185:8081/api/v1/travel-courses/last-visit",
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("마지막 방문 날짜 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 오늘의 추천 강원도 API
+export const getTodayRecommendationsAPI =
+  async (): Promise<TodayRecommendationResponse> => {
+    try {
+      const headers = await getAuthHeadersAsync();
+
+      const response = await fetch(
+        "http://15.164.250.185:8081/api/v1/places/today",
+        {
+          method: "GET",
+          headers,
+        },
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("오늘의 추천 강원도 API 성공:", data);
+      return data;
+    } catch (error) {
+      console.error("오늘의 추천 강원도 API 호출 실패:", error);
+      throw error;
+    }
+  };
+
+// 토큰 재발급 API
+export const reissueTokenAPI = async (): Promise<TokenReissueResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      "http://15.164.250.185:8081/api/v1/users/reissue",
+      {
+        method: "POST",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("토큰 재발급 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 나의 여행 일정 조회 API
+export const getMyTravelCoursesAPI =
+  async (): Promise<MyTravelCoursesResponse> => {
+    try {
+      const headers = await getAuthHeadersAsync();
+
+      const response = await fetch(
+        "http://15.164.250.185:8081/api/v1/travel-courses/mine",
+        {
+          method: "GET",
+          headers,
+        },
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("나의 여행 일정 조회 API 호출 실패:", error);
+      throw error;
+    }
+  };
+
 // 책 검색 API
 export const searchBooksAPI = async (
   query: string,
@@ -353,4 +460,64 @@ export interface BookSearchResult {
   author: string;
   bookImage: string;
   pubDate: string;
+}
+
+// 나의 여행 일정 조회 API 응답 타입
+export interface MyTravelCoursesResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: TravelCourse[];
+}
+
+// 여행 일정 타입
+export interface TravelCourse {
+  id: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  duration: number;
+  regions: string[];
+  imageUrl?: string;
+}
+
+// 마지막 강원도 여행 날짜 API 응답 타입
+export interface LastVisitResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    userId: number;
+    lastVisitDate: string | null;
+    daysAgo: number | null;
+  };
+}
+
+// 오늘의 추천 강원도 API 응답 타입
+export interface TodayRecommendationResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: TodayRecommendation[];
+}
+
+// 오늘의 추천 장소 타입
+export interface TodayRecommendation {
+  placeId: number;
+  name: string;
+  placeType: "TOURIST_SPOT" | "FESTIVAL" | "RESTAURANT" | "BOOKSTORE";
+  overview: string;
+  imageUrl: string;
+}
+
+// 토큰 재발급 API 응답 타입
+export interface TokenReissueResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    accessToken: string;
+    refreshToken: string;
+    userId: number;
+  };
 }

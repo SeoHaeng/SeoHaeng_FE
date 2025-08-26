@@ -28,6 +28,8 @@ export default function BookRegister() {
   const bookType = params.type as string; // "received" 또는 "gift"
   const [bookImage, setBookImage] = useState<string | null>(null);
   const [bookTitle, setBookTitle] = useState("");
+  const [bookAuthor, setBookAuthor] = useState("");
+  const [bookPubDate, setBookPubDate] = useState("");
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -48,7 +50,7 @@ export default function BookRegister() {
       const registeredBook = {
         id: `custom_${Date.now()}`, // 고유 ID 생성
         title: bookTitle.trim(),
-        author: "직접 등록", // 기본 저자명
+        author: bookAuthor.trim(),
         cover: { uri: bookImage },
       };
 
@@ -84,7 +86,8 @@ export default function BookRegister() {
     }
   };
 
-  const isFormValid = bookImage && bookTitle.trim();
+  const isFormValid =
+    bookImage && bookTitle.trim() && bookAuthor.trim() && bookPubDate.trim();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -126,10 +129,36 @@ export default function BookRegister() {
             style={styles.titleInput}
             value={bookTitle}
             onChangeText={setBookTitle}
-            placeholder="나만의 장소 이름을 적어주세요. ex) 해변 앞 구불구불길"
+            placeholder="도서 제목을 적어주세요."
             placeholderTextColor="#9D9896"
             multiline
             textAlignVertical="top"
+          />
+        </View>
+
+        {/* 저자 입력 섹션 */}
+        <View style={styles.authorSection}>
+          <Text style={styles.sectionTitle}>저자</Text>
+          <TextInput
+            style={styles.authorInput}
+            value={bookAuthor}
+            onChangeText={setBookAuthor}
+            placeholder="저자 이름을 적어주세요."
+            placeholderTextColor="#9D9896"
+          />
+        </View>
+
+        {/* 출판년도 입력 섹션 */}
+        <View style={styles.pubDateSection}>
+          <Text style={styles.sectionTitle}>출판년도</Text>
+          <TextInput
+            style={styles.pubDateInput}
+            value={bookPubDate}
+            onChangeText={setBookPubDate}
+            placeholder="출판년도를 적어주세요."
+            placeholderTextColor="#9D9896"
+            keyboardType="numeric"
+            maxLength={4}
           />
         </View>
       </ScrollView>
@@ -166,7 +195,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
+    padding: 20,
   },
   backButton: {
     padding: 5,
@@ -180,7 +209,7 @@ const styles = StyleSheet.create({
     width: 30,
   },
   imageSection: {
-    marginTop: 50,
+    marginTop: 0,
     padding: 20,
     alignItems: "center",
     gap: 5,
@@ -217,8 +246,16 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 0,
   },
+  authorSection: {
+    padding: 20,
+    paddingTop: 0,
+  },
+  pubDateSection: {
+    padding: 20,
+    paddingTop: 0,
+  },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "SUIT-700",
     color: "#000000",
     marginBottom: 15,
@@ -230,10 +267,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DBD6D3",
     borderRadius: 5,
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#000000",
     textAlignVertical: "top",
+  },
+  authorInput: {
+    height: 52,
+    padding: 15,
+    backgroundColor: "#EEE9E6",
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
+    borderRadius: 5,
+    fontSize: 12,
+    fontFamily: "SUIT-500",
+    color: "#000000",
+  },
+  pubDateInput: {
+    height: 52,
+    padding: 15,
+    backgroundColor: "#EEE9E6",
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
+    borderRadius: 5,
+    fontSize: 12,
+    fontFamily: "SUIT-500",
+    color: "#000000",
   },
   fixedButtonContainer: {
     position: "absolute",

@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../config/api";
-import { getAuthHeadersAsync } from "./auth";
+import { getAuthHeadersAsync, handleTokenError } from "./auth";
 import {
   BookChallengeCommentListResponse,
   BookChallengeDetailResponse,
@@ -68,6 +68,30 @@ export const getUserInfoAPI = async (): Promise<UserInfoResponse> => {
     if (!response.ok) {
       const errorText = await response.text();
       console.log("getUserInfoAPI 에러 응답:", errorText);
+
+      // 403 에러 시 토큰 재발급 시도
+      if (response.status === 403) {
+        console.log("getUserInfoAPI 403 에러: 토큰 재발급 시도");
+        const tokenRefreshed = await handleTokenError(
+          new Error(`HTTP ${response.status}: ${errorText}`),
+        );
+        if (tokenRefreshed) {
+          console.log("토큰 재발급 성공, getUserInfoAPI 재시도");
+          // 새 토큰으로 재시도
+          const newHeaders = await getAuthHeadersAsync();
+          const retryResponse = await fetch(`${API_BASE_URL}/users`, {
+            method: "GET",
+            headers: newHeaders,
+          });
+
+          if (retryResponse.ok) {
+            const retryData = await retryResponse.json();
+            console.log("getUserInfoAPI 재시도 성공:", retryData);
+            return retryData;
+          }
+        }
+      }
+
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
@@ -82,6 +106,87 @@ export const getUserInfoAPI = async (): Promise<UserInfoResponse> => {
       error instanceof Error ? error.message : String(error),
     );
     throw error;
+  }
+};
+
+// 북챌린지 인증 게시글 생성 API
+export const createBookChallengeProofAPI = async (
+  bookChallengeId: number,
+  presentMessage: string,
+  proofContent: string,
+  images: string[],
+): Promise<{ isSuccess: boolean; message: string }> => {
+  try {
+    console.log("북챌린지 인증 생성 API 시작:", {
+      bookChallengeId,
+      presentMessage,
+      proofContent,
+      imageCount: images.length,
+    });
+
+    const headers = await getAuthHeadersAsync();
+
+    // FormData 생성
+    const formData = new FormData();
+
+    // request JSON 데이터
+    const requestData = {
+      presentMessage,
+      proofContent,
+      mainImageIndex: 0,
+    };
+
+    formData.append("request", JSON.stringify(requestData));
+
+    // 이미지들 추가
+    images.forEach((imageUri, index) => {
+      const imageFile = {
+        uri: imageUri,
+        type: "image/jpeg",
+        name: `image_${index}.jpg`,
+      } as any;
+
+      formData.append("images", imageFile);
+    });
+
+    console.log("FormData 생성 완료:", formData);
+
+    const response = await fetch(
+      `${API_BASE_URL}/book-challenges?bookChallengeId=${bookChallengeId}`,
+      {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Content-Type": "multipart/form-data",
+        },
+        body: formData,
+      },
+    );
+
+    console.log("북챌린지 인증 생성 API 응답 상태:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("북챌린지 인증 생성 API 에러 응답:", errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("북챌린지 인증 생성 API 성공:", data);
+
+    return {
+      isSuccess: true,
+      message: "북챌린지 인증이 성공적으로 생성되었습니다.",
+    };
+  } catch (error) {
+    console.error("북챌린지 인증 생성 API 실패:", error);
+    return {
+      isSuccess: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "알 수 없는 오류가 발생했습니다.",
+    };
   }
 };
 
@@ -699,6 +804,33 @@ export const getLastVisitAPI = async (): Promise<LastVisitResponse> => {
 
     if (!response.ok) {
       const errorText = await response.text();
+
+      // 403 에러 시 토큰 재발급 시도
+      if (response.status === 403) {
+        console.log("getLastVisitAPI 403 에러: 토큰 재발급 시도");
+        const tokenRefreshed = await handleTokenError(
+          new Error(`HTTP ${response.status}: ${errorText}`),
+        );
+        if (tokenRefreshed) {
+          console.log("토큰 재발급 성공, getLastVisitAPI 재시도");
+          // 새 토큰으로 재시도
+          const newHeaders = await getAuthHeadersAsync();
+          const retryResponse = await fetch(
+            "http://15.164.250.185:8081/api/v1/travel-courses/last-visit",
+            {
+              method: "GET",
+              headers: newHeaders,
+            },
+          );
+
+          if (retryResponse.ok) {
+            const retryData = await retryResponse.json();
+            console.log("getLastVisitAPI 재시도 성공:", retryData);
+            return retryData;
+          }
+        }
+      }
+
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 

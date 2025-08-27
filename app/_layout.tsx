@@ -68,7 +68,9 @@ function RootLayoutNav() {
     } else {
       // 토큰이 없거나 유효하지 않으면 WelcomeScreen으로 이동
       if (inTabsGroup) {
-        console.log("❌ 토큰 없음 또는 유효하지 않음: 홈 화면에서 WelcomeScreen으로 이동");
+        console.log(
+          "❌ 토큰 없음 또는 유효하지 않음: 홈 화면에서 WelcomeScreen으로 이동",
+        );
         router.replace("/auth/WelcomeScreen");
       }
     }

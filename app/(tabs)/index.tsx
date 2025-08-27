@@ -394,54 +394,13 @@ export default function Index() {
             </Text>
             {lastVisitDays !== null && (
               <View style={styles.planButton}>
-                <Text style={styles.planButtonText}>D-{lastVisitDays}</Text>
+                <Text style={styles.planButtonText}>D+{lastVisitDays}</Text>
               </View>
             )}
           </View>
         </View>
 
-        {/* 서행 200% 즐기기 섹션 - 하얀 배경, 상단 둥근 모서리 */}
         <View style={styles.middleSection}>
-          <Text style={styles.sectionTitle}>서행 200% 즐기기</Text>
-
-          {/* 기능 카테고리 */}
-          <View style={styles.categoriesContainer}>
-            <TouchableOpacity style={styles.categoryItem}>
-              <View style={styles.categoryIcon}>
-                <Text style={styles.categoryIconText}>📚</Text>
-              </View>
-              <Text style={styles.categoryText}>북챌린지</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.categoryItem}>
-              <View style={styles.categoryIcon}>
-                <Text style={styles.categoryIconText}>☕</Text>
-              </View>
-              <Text style={styles.categoryText}>책팟</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.categoryItem}>
-              <View style={styles.categoryIcon}>
-                <Text style={styles.categoryIconText}>🎯</Text>
-              </View>
-              <Text style={styles.categoryText}>독파민 클럽</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.categoryItem}>
-              <View style={styles.categoryIcon}>
-                <Text style={styles.categoryIconText}>⭐</Text>
-              </View>
-              <Text style={styles.categoryText}>오늘 추천책</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.categoryItem}>
-              <View style={styles.categoryIcon}>
-                <Text style={styles.categoryIconText}>🔥</Text>
-              </View>
-              <Text style={styles.categoryText}>핫북플</Text>
-            </TouchableOpacity>
-          </View>
-
           <TouchableOpacity
             onPress={() => {
               // 스탬프 투어 링크로 이동

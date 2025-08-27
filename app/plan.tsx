@@ -13,6 +13,7 @@ import {
 export default function Plan() {
   const params = useLocalSearchParams();
   const fromHome = params.from === "home";
+  const fromPreference = params.from === "preference";
 
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
@@ -24,8 +25,8 @@ export default function Plan() {
 
   // Scroll to current month when component mounts
   useEffect(() => {
-    // Calculate the position of current month (6 months before + current month)
-    const currentMonthIndex = 6; // Current month is at index 6 (after 6 previous months)
+    // Calculate the position of current month (3 months before + current month)
+    const currentMonthIndex = 3; // Current month is at index 3 (after 3 previous months)
     const monthHeight = 200; // Approximate height of each month section
     const scrollPosition = currentMonthIndex * monthHeight;
 
@@ -37,10 +38,10 @@ export default function Plan() {
     }, 100);
   }, []);
 
-  // Generate months dynamically (6 months before + current month + 6 months after)
+  // Generate months dynamically (3 months before + current month + 12 months after)
   const generateMonths = () => {
     const months = [];
-    for (let i = -6; i <= 6; i++) {
+    for (let i = -3; i <= 12; i++) {
       const year = currentYear + Math.floor((currentMonth + i) / 12);
       const month = (currentMonth + i + 12) % 12; // Add 12 to handle negative months
       months.push({ year, month });
@@ -191,6 +192,8 @@ export default function Plan() {
           onPress={() => {
             if (fromHome) {
               router.push("/(tabs)");
+            } else if (fromPreference) {
+              router.push("/(tabs)/preference");
             } else {
               router.push("/(tabs)/milestone");
             }

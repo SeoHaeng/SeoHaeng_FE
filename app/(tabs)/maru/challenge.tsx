@@ -12,6 +12,7 @@ import {
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -59,6 +60,17 @@ export default function Challenge() {
   const [hasInProgressChallenge, setHasInProgressChallenge] = useState<
     boolean | null
   >(null);
+  const [inProgressChallengeInfo, setInProgressChallengeInfo] = useState<{
+    bookChallengeId: number;
+    userNickName: string;
+    bookStoreName: string;
+    receivedBookTitle: string;
+    receivedBookAuthor: string;
+    receivedBookImage: string;
+    givenBookTitle: string;
+    givenBookAuthor: string;
+    givenBookImage: string;
+  } | null>(null);
   const [isLoadingChallengeStatus, setIsLoadingChallengeStatus] =
     useState(false);
 
@@ -70,9 +82,21 @@ export default function Challenge() {
         const response = await getBookChallengeInProgressInfoAPI();
         if (response.isSuccess) {
           setHasInProgressChallenge(true);
+          setInProgressChallengeInfo({
+            bookChallengeId: response.result.bookChallengeId,
+            userNickName: response.result.userNickName,
+            bookStoreName: response.result.bookStoreName,
+            receivedBookTitle: response.result.receivedBookTitle,
+            receivedBookAuthor: response.result.receivedBookAuthor,
+            receivedBookImage: response.result.receivedBookImage,
+            givenBookTitle: response.result.givenBookTitle,
+            givenBookAuthor: response.result.givenBookAuthor,
+            givenBookImage: response.result.givenBookImage,
+          });
           console.log("진행 중인 북챌린지가 있습니다:", response.result);
         } else {
           setHasInProgressChallenge(false);
+          setInProgressChallengeInfo(null);
           console.log("진행 중인 북챌린지가 없습니다:", response.message);
         }
       } catch (error) {
@@ -181,23 +205,50 @@ export default function Challenge() {
         </View>
       ) : hasInProgressChallenge ? (
         <TouchableOpacity
-          style={styles.inProgressContainer}
-          onPress={() => router.push("/maru/challengeCertification")}
+          style={styles.emptyBookContainer}
+          onPress={() =>
+            router.push({
+              pathname: "/maru/challengeCertification",
+              params: {
+                bookChallengeId:
+                  inProgressChallengeInfo?.bookChallengeId?.toString() || "",
+                userNickName: inProgressChallengeInfo?.userNickName || "",
+                bookStoreName: inProgressChallengeInfo?.bookStoreName || "",
+                receivedBookTitle:
+                  inProgressChallengeInfo?.receivedBookTitle || "",
+                receivedBookAuthor:
+                  inProgressChallengeInfo?.receivedBookAuthor || "",
+                receivedBookImage:
+                  inProgressChallengeInfo?.receivedBookImage || "",
+                givenBookTitle: inProgressChallengeInfo?.givenBookTitle || "",
+                givenBookAuthor: inProgressChallengeInfo?.givenBookAuthor || "",
+                givenBookImage: inProgressChallengeInfo?.givenBookImage || "",
+              },
+            })
+          }
         >
-          <Text style={styles.inProgressText}>
-            진행 중인 북챌린지가 있어요!
+          {inProgressChallengeInfo && (
+            <Text style={styles.emptyBookText}>
+              {inProgressChallengeInfo.receivedBookTitle} -{" "}
+              {inProgressChallengeInfo.receivedBookAuthor}
+            </Text>
+          )}
+          <Text style={styles.bookComingText}>
+            인증하고 나도 책 선물하기 &gt;
           </Text>
-          <Text style={styles.inProgressSubText}>인증하러 가기</Text>
+          {inProgressChallengeInfo?.receivedBookImage && (
+            <Image
+              source={{ uri: inProgressChallengeInfo.receivedBookImage }}
+              style={styles.emptyBookImage}
+            />
+          )}
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity
-          style={styles.emptyBookContainer}
-          onPress={() => router.push("/maru/challengeCertification")}
-        >
+        <View style={styles.emptyBookContainer}>
           <Text style={styles.emptyBookText}>아직 책이 오지 않았어요</Text>
           <Text style={styles.bookComingText}>어떤 책이 올까요?</Text>
           <EmptyBookIcon style={styles.emptyBookImage} />
-        </TouchableOpacity>
+        </View>
       )}
 
       <View style={styles.bookStoreSection}>
@@ -325,6 +376,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -2,
     right: 30,
+    zIndex: 100,
+    width: 76,
+    height: 105,
+    borderRadius: 5,
   },
   inProgressContainer: {
     width: 360,
@@ -348,6 +403,13 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontFamily: "SUIT-500",
     opacity: 0.8,
+  },
+  bookInfoText: {
+    fontSize: 14,
+    color: "#FFFFFF",
+    fontFamily: "SUIT-600",
+    opacity: 0.9,
+    marginTop: 2,
   },
   bookStoreSection: {
     height: 210,

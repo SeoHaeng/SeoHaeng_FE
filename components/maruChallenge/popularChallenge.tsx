@@ -35,14 +35,7 @@ export default function PopularChallenge({
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
       <View style={styles.container}>
-        <Image
-          source={
-            profileImageUrl
-              ? { uri: profileImageUrl }
-              : require("@/assets/images/인기챌린지 사진.png")
-          }
-          style={styles.profileImage}
-        />
+        <Image source={{ uri: profileImageUrl }} style={styles.profileImage} />
 
         <View style={styles.contentContainer}>
           <View style={styles.userInfoContainer}>
@@ -111,6 +104,7 @@ const styles = StyleSheet.create({
     left: 15,
     width: 55,
     height: 55,
+    borderRadius: 50,
   },
   contentContainer: {
     flexDirection: "column",

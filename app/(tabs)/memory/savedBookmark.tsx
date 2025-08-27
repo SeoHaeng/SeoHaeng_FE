@@ -4,10 +4,11 @@ import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  FlatList,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -121,36 +122,9 @@ export default function SavedBookmark() {
       </View>
 
       {/* 책갈피 목록 */}
-      <FlatList
-        data={scrapList}
-        renderItem={({ item, index }) => (
-          <View
-            style={[
-              styles.cardContainer,
-              index % 2 === 1 && styles.rightColumn,
-            ]}
-          >
-            <BookmarkCard
-              imageUrl={item.readingSpotImages[0] || ""}
-              title={item.title}
-              address={item.address}
-              templateId={item.templateId}
-              onPress={() =>
-                router.push({
-                  pathname: `/bookmark/[id]`,
-                  params: {
-                    id: item.readingSpotId.toString(),
-                    from: "savedBookmark",
-                  },
-                })
-              }
-            />
-          </View>
-        )}
-        keyExtractor={(item) => item.readingSpotId.toString()}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.listContainer}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ alignItems: "center" }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -160,10 +134,74 @@ export default function SavedBookmark() {
             tintColor="#302E2D"
           />
         }
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.1}
-        ListFooterComponent={renderFooter}
-      />
+      >
+        <View style={{ flexDirection: "row", paddingHorizontal: 15 }}>
+          {/* 왼쪽 열 */}
+          <View style={{ flex: 1, alignItems: "flex-start", gap: 6 }}>
+            {scrapList
+              .filter((_, index) => index % 2 === 0)
+              .map((item) => (
+                <BookmarkCard
+                  key={item.readingSpotId}
+                  imageUrl={item.readingSpotImages[0] || ""}
+                  title={item.title}
+                  address={item.address}
+                  templateId={item.templateId}
+                  onPress={() =>
+                    router.push({
+                      pathname: `/bookmark/[id]`,
+                      params: {
+                        id: item.readingSpotId.toString(),
+                        from: "savedBookmark",
+                      },
+                    })
+                  }
+                />
+              ))}
+          </View>
+
+          {/* 오른쪽 열 */}
+          <View
+            style={{ flex: 1, alignItems: "flex-end", paddingTop: 30, gap: 6 }}
+          >
+            {scrapList
+              .filter((_, index) => index % 2 === 1)
+              .map((item) => (
+                <BookmarkCard
+                  key={item.readingSpotId}
+                  imageUrl={item.readingSpotImages[0] || ""}
+                  title={item.title}
+                  address={item.address}
+                  templateId={item.templateId}
+                  onPress={() =>
+                    router.push({
+                      pathname: `/bookmark/[id]`,
+                      params: {
+                        id: item.readingSpotId.toString(),
+                        from: "savedBookmark",
+                      },
+                    })
+                  }
+                />
+              ))}
+          </View>
+        </View>
+
+        {/* 더 많은 데이터 로드 */}
+        {hasMore && (
+          <TouchableOpacity
+            style={styles.loadMoreButton}
+            onPress={loadMore}
+            disabled={isLoadingMore}
+          >
+            {isLoadingMore ? (
+              <ActivityIndicator size="small" color="#302E2D" />
+            ) : (
+              <Text style={styles.loadMoreText}>더 보기</Text>
+            )}
+          </TouchableOpacity>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -239,5 +277,21 @@ const styles = StyleSheet.create({
   },
   rightColumn: {
     paddingTop: 30,
+  },
+  loadMoreButton: {
+    backgroundColor: "#EEE9E6",
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    marginTop: 20,
+    marginBottom: 20,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
+  },
+  loadMoreText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#716C69",
   },
 });

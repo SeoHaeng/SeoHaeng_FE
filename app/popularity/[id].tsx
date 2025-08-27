@@ -271,26 +271,28 @@ export default function ChallengeDetail() {
             borderBottomWidth: 7,
           }}
         >
-          <View style={styles.userInfo}>
-            <Image
-              source={
-                userInfo?.profileImageUrl
-                  ? { uri: userInfo.profileImageUrl }
-                  : require("@/assets/images/인기챌린지 사진.png")
-              }
-              style={styles.profileImage}
-            />
-            <View style={styles.userHeader}>
-              <Text style={styles.username}>
-                {userInfo?.nickName || "사용자"}
-              </Text>
-              <Text style={styles.timeStamp}>
-                {challengeDetail?.createdAt
-                  ? formatDateToDaysAgo(challengeDetail.createdAt)
-                  : ""}
-              </Text>
+          {userInfo && (
+            <View style={styles.userInfo}>
+              <Image
+                source={{
+                  uri:
+                    userInfo.profileImageUrl ||
+                    "https://via.placeholder.com/40x40",
+                }}
+                style={styles.profileImage}
+              />
+              <View style={styles.userHeader}>
+                <Text style={styles.username}>
+                  {userInfo.nickName || "사용자"}
+                </Text>
+                <Text style={styles.timeStamp}>
+                  {challengeDetail?.createdAt
+                    ? formatDateToDaysAgo(challengeDetail.createdAt)
+                    : ""}
+                </Text>
+              </View>
             </View>
-          </View>
+          )}
           {/* 서점 정보 */}
           <View style={styles.bookstoreInfo}>
             <PlaceIcon />
@@ -305,8 +307,8 @@ export default function ChallengeDetail() {
           <View
             style={{
               flexDirection: "row",
-              justifyContent: "space-between",
               marginBottom: 20,
+              gap: 10,
             }}
           >
             <GiftBook

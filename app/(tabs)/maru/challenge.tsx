@@ -6,6 +6,7 @@ import {
   BookChallengePlace,
   getBookChallengeListAPI,
   getBookChallengesAPI,
+  getUserByIdAPI,
 } from "@/types/api";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -54,6 +55,9 @@ export default function Challenge() {
   }, []);
   const [challenges, setChallenges] = useState<BookChallenge[]>([]);
   const [isLoadingChallenges, setIsLoadingChallenges] = useState(false);
+  const [userInfoMap, setUserInfoMap] = useState<
+    Record<number, { nickName: string; profileImageUrl: string }>
+  >({});
 
   // 북챌린지 챌린지 인증 조회 (인기순 5개)
   useEffect(() => {
@@ -63,6 +67,45 @@ export default function Challenge() {
         const response = await getBookChallengeListAPI(1, 5, "popular");
         if (response.isSuccess) {
           setChallenges(response.result.getBookChallengeList);
+
+          // 각 챌린지의 creatorId로 사용자 정보 가져오기
+          const userInfoPromises = response.result.getBookChallengeList.map(
+            async (challenge) => {
+              try {
+                const userResponse = await getUserByIdAPI(challenge.creatorId);
+                if (userResponse.isSuccess) {
+                  return {
+                    creatorId: challenge.creatorId,
+                    nickName: userResponse.result.nickName,
+                    profileImageUrl: userResponse.result.profileImageUrl,
+                  };
+                }
+              } catch (error) {
+                console.error(
+                  `사용자 ${challenge.creatorId} 정보 조회 실패:`,
+                  error,
+                );
+              }
+              return null;
+            },
+          );
+
+          const userInfoResults = await Promise.all(userInfoPromises);
+          const newUserInfoMap: Record<
+            number,
+            { nickName: string; profileImageUrl: string }
+          > = {};
+
+          userInfoResults.forEach((userInfo) => {
+            if (userInfo) {
+              newUserInfoMap[userInfo.creatorId] = {
+                nickName: userInfo.nickName,
+                profileImageUrl: userInfo.profileImageUrl,
+              };
+            }
+          });
+
+          setUserInfoMap(newUserInfoMap);
         }
       } catch (error) {
         console.error("북챌린지 챌린지 인증 조회 실패:", error);
@@ -149,16 +192,21 @@ export default function Challenge() {
             <PopularChallenge
               key={challenge.bookChallengeProofId}
               id={challenge.bookChallengeProofId}
-              userName="사용자" // API에 userName이 없으므로 기본값 사용
+              userName={userInfoMap[challenge.creatorId]?.nickName || "사용자"}
+              profileImageUrl={
+                userInfoMap[challenge.creatorId]?.profileImageUrl
+              }
               date={formatDateToDaysAgo(challenge.createdAt)}
               text={challenge.proofContent}
-              bookImageSource={challenge.receivedBookImage}
+              bookImageSource={challenge.proofImageUrls[0]}
+              receivedBookImage={challenge.receivedBookImage}
               bookName={challenge.receivedBookTitle}
               bookAuthor={challenge.receivedBookAuthor}
               year={
                 challenge.receivedBookPubDate?.split("-")[0] ||
                 challenge.receivedBookPubDate
               }
+              likedByMe={challenge.likedByMe}
               onPress={() =>
                 router.push({
                   pathname: "/popularity/[id]",

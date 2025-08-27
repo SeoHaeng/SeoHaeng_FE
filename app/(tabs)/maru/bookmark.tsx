@@ -2,20 +2,21 @@ import BookmarkCard from "@/components/BookmarkCard";
 import { getReadingSpotsAPI, ReadingSpot } from "@/types/api";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function Bookmark() {
   const router = useRouter();
   const [scrapList, setScrapList] = useState<ReadingSpot[]>([]);
   const [totalElements, setTotalElements] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [sortType, setSortType] = useState<"latest" | "popular">("popular");
 
-  // 책갈피 조회 API 호출 (인기순)
+  // 책갈피 조회 API 호출
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
         setIsLoading(true);
-        const response = await getReadingSpotsAPI(1, 10, "popular"); // 10개씩 로드, 인기순
+        const response = await getReadingSpotsAPI(1, 10, sortType);
         if (response.isSuccess) {
           setScrapList(response.result.readingSpotList);
           setTotalElements(response.result.totalElements);
@@ -28,7 +29,7 @@ export default function Bookmark() {
     };
 
     fetchBookmarks();
-  }, []);
+  }, [sortType]);
 
   return (
     <ScrollView
@@ -50,6 +51,57 @@ export default function Bookmark() {
         >
           총 {totalElements}개
         </Text>
+
+        {/* 정렬 필터 메뉴 */}
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: sortType === "latest" ? "#302E2D" : "#EEE9E6",
+              borderRadius: 10,
+              borderColor: sortType === "latest" ? "#302E2D" : "#DBD6D3",
+              width: 60,
+              height: 31,
+              justifyContent: "center",
+              alignItems: "center",
+              borderWidth: 1,
+            }}
+            onPress={() => setSortType("latest")}
+          >
+            <Text
+              style={{
+                fontSize: 10,
+                color: sortType === "latest" ? "#FFFFFF" : "#716C69",
+                fontFamily: "SUIT-500",
+              }}
+            >
+              최신순
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: sortType === "popular" ? "#302E2D" : "#EEE9E6",
+              borderRadius: 10,
+              borderColor: sortType === "popular" ? "#302E2D" : "#DBD6D3",
+              width: 60,
+              height: 31,
+              justifyContent: "center",
+              alignItems: "center",
+              borderWidth: 1,
+            }}
+            onPress={() => setSortType("popular")}
+          >
+            <Text
+              style={{
+                fontSize: 10,
+                color: sortType === "popular" ? "#FFFFFF" : "#716C69",
+                fontFamily: "SUIT-500",
+              }}
+            >
+              인기순
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={{ flexDirection: "row", paddingHorizontal: 15 }}>

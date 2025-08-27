@@ -1,7 +1,11 @@
 // app/popularity.tsx
 import BackIcon from "@/components/icons/BackIcon";
 import PopularChallengeTotal from "@/components/maruChallenge/popularChallengeTotal";
-import { BookChallenge, getBookChallengeListAPI } from "@/types/api";
+import {
+  BookChallenge,
+  getBookChallengeListAPI,
+  getUserByIdAPI,
+} from "@/types/api";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -16,6 +20,18 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// 날짜를 "X일 전" 형식으로 변환하는 함수
+const formatDateToDaysAgo = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return "오늘";
+  if (diffDays === 1) return "어제";
+  return `${diffDays}일 전`;
+};
+
 export default function Popularity() {
   const router = useRouter();
   const [sortType, setSortType] = useState("최신순");
@@ -27,6 +43,9 @@ export default function Popularity() {
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
+  const [userInfoMap, setUserInfoMap] = useState<
+    Record<number, { nickName: string; profileImageUrl: string }>
+  >({});
 
   // 정렬 타입을 API 파라미터로 변환
   const getSortParam = (sortType: string) => {
@@ -60,6 +79,47 @@ export default function Popularity() {
 
           setHasMore(response.result.totalPage > page);
           setCurrentPage(page);
+
+          // 각 챌린지의 creatorId로 사용자 정보 가져오기
+          const userInfoPromises = newChallenges.map(async (challenge) => {
+            try {
+              const userResponse = await getUserByIdAPI(challenge.creatorId);
+              if (userResponse.isSuccess) {
+                return {
+                  creatorId: challenge.creatorId,
+                  nickName: userResponse.result.nickName,
+                  profileImageUrl: userResponse.result.profileImageUrl,
+                };
+              }
+            } catch (error) {
+              console.error(
+                `사용자 ${challenge.creatorId} 정보 조회 실패:`,
+                error,
+              );
+            }
+            return null;
+          });
+
+          const userInfoResults = await Promise.all(userInfoPromises);
+          const newUserInfoMap: Record<
+            number,
+            { nickName: string; profileImageUrl: string }
+          > = {};
+
+          userInfoResults.forEach((userInfo) => {
+            if (userInfo) {
+              newUserInfoMap[userInfo.creatorId] = {
+                nickName: userInfo.nickName,
+                profileImageUrl: userInfo.profileImageUrl,
+              };
+            }
+          });
+
+          if (append) {
+            setUserInfoMap((prev) => ({ ...prev, ...newUserInfoMap }));
+          } else {
+            setUserInfoMap(newUserInfoMap);
+          }
         }
       } catch (error) {
         console.error("챌린지 인증 조회 실패:", error);
@@ -139,12 +199,19 @@ export default function Popularity() {
         {challenges.map((challenge) => (
           <PopularChallengeTotal
             key={challenge.bookChallengeProofId}
-            userName="사용자" // API에 userName이 없으므로 기본값 사용
-            date={challenge.createdAt}
+            userName={userInfoMap[challenge.creatorId]?.nickName || "사용자"}
+            profileImageUrl={userInfoMap[challenge.creatorId]?.profileImageUrl}
+            date={formatDateToDaysAgo(challenge.createdAt)}
             text={challenge.proofContent}
+            bookImageSource={challenge.proofImageUrls[0]}
+            receivedBookImage={challenge.receivedBookImage}
             bookName={challenge.receivedBookTitle}
             bookAuthor={challenge.receivedBookAuthor}
-            year={challenge.receivedBookPubDate}
+            year={
+              challenge.receivedBookPubDate?.split("-")[0] ||
+              challenge.receivedBookPubDate
+            }
+            likedByMe={challenge.likedByMe}
             onPress={() =>
               router.push({
                 pathname: "/popularity/[id]",

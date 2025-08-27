@@ -2,28 +2,51 @@
 import BackIcon from "@/components/icons/BackIcon";
 import ChallengeComment from "@/components/maruChallenge/detail/comment";
 import GiftBook from "@/components/maruChallenge/detail/giftBook";
-import { useFocusEffect, useRouter } from "expo-router";
+import {
+    getBookChallengeCommentListAPI,
+    getBookChallengeDetailAPI,
+    getUserByIdAPI,
+} from "@/types/api";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
-  Image,
-  Keyboard,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Image,
+    Keyboard,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import {
-  SafeAreaView,
-  useSafeAreaInsets,
+    SafeAreaView,
+    useSafeAreaInsets,
 } from "react-native-safe-area-context";
+
+// 날짜를 "X일 전" 형식으로 변환하는 함수
+const formatDateToDaysAgo = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return "오늘";
+  if (diffDays === 1) return "어제";
+  return `${diffDays}일 전`;
+};
 
 export default function ChallengeDetail() {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [challengeDetail, setChallengeDetail] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<any>(null);
+  const [commentList, setCommentList] = useState<any[]>([]);
+  const [totalComments, setTotalComments] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { id } = useLocalSearchParams();
 
   // 네비게이션 스택 안정화를 위한 focus effect
   useFocusEffect(
@@ -34,6 +57,44 @@ export default function ChallengeDetail() {
       };
     }, []),
   );
+
+  // 북챌린지 상세 정보 조회
+  useEffect(() => {
+    const fetchChallengeDetail = async () => {
+      if (!id) return;
+
+      try {
+        setIsLoading(true);
+        const response = await getBookChallengeDetailAPI(Number(id));
+        if (response.isSuccess) {
+          setChallengeDetail(response.result);
+
+          // 작성자 정보 조회
+          const userResponse = await getUserByIdAPI(response.result.creatorId);
+          if (userResponse.isSuccess) {
+            setUserInfo(userResponse.result);
+          }
+
+          // 댓글 목록 조회
+          const commentResponse = await getBookChallengeCommentListAPI(
+            Number(id),
+            1,
+            10,
+          );
+          if (commentResponse.isSuccess) {
+            setCommentList(commentResponse.result.getBookChallengeCommentList);
+            setTotalComments(commentResponse.result.totalElements);
+          }
+        }
+      } catch (error) {
+        console.error("북챌린지 상세 조회 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchChallengeDetail();
+  }, [id]);
 
   useEffect(() => {
     const showListener = Keyboard.addListener(
@@ -98,7 +159,11 @@ export default function ChallengeDetail() {
           <BackIcon color="#FFFFFF" />
         </TouchableOpacity>
         <Image
-          source={require("@/assets/images/인기챌린지 책.png")}
+          source={
+            challengeDetail?.proofImageUrls?.[0]
+              ? { uri: challengeDetail.proofImageUrls[0] }
+              : require("@/assets/images/인기챌린지 책.png")
+          }
           style={{ width: 404, height: 404 }}
         />
         <View
@@ -110,35 +175,43 @@ export default function ChallengeDetail() {
         >
           <View style={styles.userInfo}>
             <Image
-              source={require("@/assets/images/인기챌린지 사진.png")}
+              source={
+                userInfo?.profileImageUrl
+                  ? { uri: userInfo.profileImageUrl }
+                  : require("@/assets/images/인기챌린지 사진.png")
+              }
               style={styles.profileImage}
             />
             <View style={styles.userHeader}>
-              <Text style={styles.username}>유딘딘</Text>
-              <Text style={styles.timeStamp}>1일 전</Text>
+              <Text style={styles.username}>
+                {userInfo?.nickName || "사용자"}
+              </Text>
+              <Text style={styles.timeStamp}>
+                {challengeDetail?.createdAt
+                  ? formatDateToDaysAgo(challengeDetail.createdAt)
+                  : ""}
+              </Text>
             </View>
           </View>
           <Text style={styles.description}>
-            대박 이 책을 받을 줄은 몰랐어요 잘 읽겠습니다 강릉 여행와서 기분이
-            너무 좋네요
+            {challengeDetail?.proofContent || ""}
           </Text>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <GiftBook
-              title="물고기는 존재하지 않는다"
-              author="룰루 밀러 / 정지인"
+              title={challengeDetail?.receivedBookTitle || ""}
+              author={challengeDetail?.receivedBookAuthor || ""}
               status="선물받은 책"
             />
             <GiftBook
-              title="물고기는 존재하지 않는다"
-              author="룰루 밀러 / 정지인"
+              title={challengeDetail?.givenBookTitle || ""}
+              author={challengeDetail?.givenBookAuthor || ""}
               status="선물할 책"
             />
           </View>
           <Text style={styles.description}>
-            대박 이 책을 받을 줄은 몰랐어요 잘 읽겠습니다 강릉 여행와서 기분이
-            너무 좋네요
+            {challengeDetail?.presentMessage || ""}
           </Text>
         </View>
         <View
@@ -163,7 +236,7 @@ export default function ChallengeDetail() {
                 color: "#716C69",
               }}
             >
-              댓글 (2)
+              댓글 ({totalComments})
             </Text>
             <View
               style={{ flexDirection: "row", gap: 3, alignItems: "center" }}
@@ -176,21 +249,19 @@ export default function ChallengeDetail() {
                   color: "#C5BFBB",
                 }}
               >
-                65
+                {challengeDetail?.likes || 0}
               </Text>
             </View>
           </View>
           <View style={{ flexDirection: "column", gap: 25 }}>
-            <ChallengeComment
-              userName="책벌레 501"
-              date="25.05.13"
-              text="저도 저 책 읽어봐야 겠어요! 사진 감성 너무 조아요. . 힐링"
-            />
-            <ChallengeComment
-              userName="책벌레 501"
-              date="25.05.13"
-              text="저도 저 책 읽어봐야 겠어요! 사진 감성 너무 조아요. . 힐링"
-            />
+            {commentList.map((comment, index) => (
+              <ChallengeComment
+                key={index}
+                userName={comment.nickname}
+                date={formatDateToDaysAgo(comment.createdAt)}
+                text={comment.comment}
+              />
+            ))}
           </View>
         </View>
       </ScrollView>

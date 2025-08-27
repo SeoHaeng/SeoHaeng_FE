@@ -34,7 +34,9 @@ export default function BookmarkCard({
       </View>
 
       <View style={styles.textContainer}>
-        <Text style={styles.mainTitle}>{title}</Text>
+        <Text style={styles.mainTitle}>
+          {title.length > 8 ? `${title.slice(0, 8)}...` : title}
+        </Text>
       </View>
     </View>
   );
@@ -73,7 +75,7 @@ const styles = StyleSheet.create({
     left: 13,
   },
   mainTitle: {
-    fontSize: 19,
+    fontSize: 17,
     fontFamily: "Gangwon",
     color: "#FFFFFF",
     marginBottom: 4,

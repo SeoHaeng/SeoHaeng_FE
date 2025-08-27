@@ -1,6 +1,8 @@
 import { API_BASE_URL } from "../config/api";
 import { getAuthHeadersAsync } from "./auth";
 import {
+  BookChallengeCommentListResponse,
+  BookChallengeDetailResponse,
   LoginRequest,
   LoginResponse,
   ProfileUpdateRequest,
@@ -114,6 +116,104 @@ export const getUserByIdAPI = async (
     return data;
   } catch (error) {
     console.error("getUserByIdAPI 실패:", error);
+    console.error("에러 타입:", typeof error);
+    console.error(
+      "에러 메시지:",
+      error instanceof Error ? error.message : String(error),
+    );
+    throw error;
+  }
+};
+
+// 북챌린지 인증 상세 개별조회 API
+export const getBookChallengeDetailAPI = async (
+  bookChallengeProofId: number,
+): Promise<BookChallengeDetailResponse> => {
+  console.log("getBookChallengeDetailAPI 시작:", bookChallengeProofId);
+  console.log(
+    "API URL:",
+    `${API_BASE_URL}/book-challenges/${bookChallengeProofId}`,
+  );
+
+  try {
+    const headers = await getAuthHeadersAsync();
+    console.log("getBookChallengeDetailAPI 헤더:", headers);
+
+    console.log("fetch 요청 시작...");
+    const response = await fetch(
+      `${API_BASE_URL}/book-challenges/${bookChallengeProofId}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    console.log("getBookChallengeDetailAPI 응답 상태:", response.status);
+    console.log("getBookChallengeDetailAPI 응답 헤더:", response.headers);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log("getBookChallengeDetailAPI 에러 응답:", errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("getBookChallengeDetailAPI 성공:", data);
+    return data;
+  } catch (error) {
+    console.error("getBookChallengeDetailAPI 실패:", error);
+    console.error("에러 타입:", typeof error);
+    console.error(
+      "에러 메시지:",
+      error instanceof Error ? error.message : String(error),
+    );
+    throw error;
+  }
+};
+
+// 북챌린지 댓글 목록 조회 API
+export const getBookChallengeCommentListAPI = async (
+  bookChallengeProofId: number,
+  page: number = 1,
+  size: number = 10,
+): Promise<BookChallengeCommentListResponse> => {
+  console.log("getBookChallengeCommentListAPI 시작:", {
+    bookChallengeProofId,
+    page,
+    size,
+  });
+  console.log(
+    "API URL:",
+    `${API_BASE_URL}/book-challenges/${bookChallengeProofId}/comments?page=${page}&size=${size}`,
+  );
+
+  try {
+    const headers = await getAuthHeadersAsync();
+    console.log("getBookChallengeCommentListAPI 헤더:", headers);
+
+    console.log("fetch 요청 시작...");
+    const response = await fetch(
+      `${API_BASE_URL}/book-challenges/${bookChallengeProofId}/comments?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    console.log("getBookChallengeCommentListAPI 응답 상태:", response.status);
+    console.log("getBookChallengeCommentListAPI 응답 헤더:", response.headers);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log("getBookChallengeCommentListAPI 에러 응답:", errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("getBookChallengeCommentListAPI 성공:", data);
+    return data;
+  } catch (error) {
+    console.error("getBookChallengeCommentListAPI 실패:", error);
     console.error("에러 타입:", typeof error);
     console.error(
       "에러 메시지:",

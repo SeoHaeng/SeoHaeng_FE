@@ -6,10 +6,13 @@ interface PopularChallengeItemProps {
   date: string;
   text: string;
   imageSource?: any;
-  bookImageSource?: any;
+  bookImageSource?: string;
+  receivedBookImage?: string;
+  profileImageUrl?: string;
   bookName: string;
   bookAuthor: string;
   year: string;
+  likedByMe?: boolean;
   onPress?: () => void;
 }
 
@@ -17,9 +20,13 @@ export default function PopularChallengeTotal({
   userName,
   date,
   text,
+  bookImageSource,
+  receivedBookImage,
+  profileImageUrl,
   bookName,
   bookAuthor,
   year,
+  likedByMe,
   onPress,
 }: PopularChallengeItemProps) {
   return (
@@ -35,19 +42,29 @@ export default function PopularChallengeTotal({
             >
               <View style={styles.userInfo}>
                 <Image
-                  source={require("@/assets/images/인기챌린지 사진.png")}
+                  source={
+                    profileImageUrl
+                      ? { uri: profileImageUrl }
+                      : require("@/assets/images/인기챌린지 사진.png")
+                  }
                   style={styles.profileImage}
                 />
                 <View style={styles.userHeader}>
                   <Text style={styles.username}>{userName}</Text>
-                  <Text style={styles.timeStamp}>{date}일 전</Text>
+                  <Text style={styles.timeStamp}>{date}</Text>
                 </View>
               </View>
 
-              <Text style={styles.description}>{text}</Text>
+              <Text style={styles.description}>
+                {text.length > 40 ? `${text.slice(0, 40)}...` : text}
+              </Text>
             </View>
             <Image
-              source={require("@/assets/images/인기챌린지 책.png")}
+              source={
+                bookImageSource
+                  ? { uri: bookImageSource }
+                  : require("@/assets/images/인기챌린지 책.png")
+              }
               style={styles.bookImage}
             />
           </View>
@@ -55,7 +72,12 @@ export default function PopularChallengeTotal({
           <View style={styles.bookInfoContainer}>
             <View style={styles.bookDetails}>
               <Image
-                source={require("@/assets/images/물고기는 존재하지 않는다.png")}
+                source={
+                  receivedBookImage
+                    ? { uri: receivedBookImage }
+                    : require("@/assets/images/물고기는 존재하지 않는다.png")
+                }
+                style={styles.receivedBookImage}
               />
               <View style={styles.bookTextContainer}>
                 <Text style={styles.bookTitle}>{bookName}</Text>
@@ -64,8 +86,16 @@ export default function PopularChallengeTotal({
                   <View style={styles.yearTag}>
                     <Text style={styles.tagText}>{year}</Text>
                   </View>
-                  <View style={styles.scrapButton}>
-                    <ScrapIcon size={9} />
+                  <View
+                    style={[
+                      styles.scrapButton,
+                      { backgroundColor: likedByMe ? "#302E2D" : "#C5BFBB" },
+                    ]}
+                  >
+                    <ScrapIcon
+                      size={9}
+                      color={likedByMe ? "#FFFFFF" : "#716C69"}
+                    />
                   </View>
                 </View>
               </View>
@@ -85,7 +115,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "#DBD6D3",
-    padding: 20,
+    padding: 17,
     position: "relative",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -110,7 +140,6 @@ const styles = StyleSheet.create({
   },
   userHeader: {
     flexDirection: "column",
-    alignItems: "center",
     gap: 5,
   },
   username: {
@@ -132,6 +161,12 @@ const styles = StyleSheet.create({
   bookImage: {
     width: 87,
     height: 87,
+  },
+  receivedBookImage: {
+    width: 50,
+    height: 70,
+    borderRadius: 3,
+    marginRight: 10,
   },
   bookInfoContainer: {
     width: "100%",

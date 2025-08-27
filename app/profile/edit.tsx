@@ -94,6 +94,13 @@ export default function ProfileEdit() {
           return;
         }
 
+        console.log("🔄 닉네임 중복확인 API 호출 시작");
+        console.log("📝 요청 닉네임:", nickname.trim());
+        console.log(
+          "🔗 API URL:",
+          `http://15.164.250.185:8081/api/v1/users/auth/check-nickname`,
+        );
+
         const response = await checkNicknameDuplicateAPI(nickname.trim());
         if (response.isSuccess) {
           if (response.result.isDuplicate) {
@@ -205,18 +212,21 @@ export default function ProfileEdit() {
         password2: string;
       }> = {};
 
-      // 아이디 변경 확인
-      if (id !== userInfo?.userName) {
+      // 카카오 사용자와 일반 사용자 구분
+      const isKakaoUser = userInfo?.loginType === "KAKAO";
+
+      // 아이디 변경 확인 (카카오 사용자가 아닌 경우에만)
+      if (!isKakaoUser && id !== userInfo?.userName) {
         changedFields.username = id;
       }
 
-      // 닉네임 변경 확인
+      // 닉네임 변경 확인 (모든 사용자)
       if (nickname !== userInfo?.nickName) {
         changedFields.nickname = nickname;
       }
 
-      // 비밀번호 변경 확인 (비밀번호가 입력된 경우에만)
-      if (password && password !== "") {
+      // 비밀번호 변경 확인 (카카오 사용자가 아닌 경우에만)
+      if (!isKakaoUser && password && password !== "") {
         changedFields.password1 = password;
         changedFields.password2 = confirmPassword;
       }
@@ -233,6 +243,17 @@ export default function ProfileEdit() {
         Alert.alert("알림", "변경된 내용이 없습니다.");
         return;
       }
+
+      // 디버깅을 위한 로그 추가
+      console.log("🔍 변경된 필드 상세:", {
+        isKakaoUser,
+        changedFields,
+        isProfileImageChanged,
+        nicknameChanged: nickname !== userInfo?.nickName,
+        idChanged: !isKakaoUser && id !== userInfo?.userName,
+        passwordChanged: !isKakaoUser && password && password !== "",
+        profileImageChanged: profileImage !== userInfo?.profileImageUrl,
+      });
 
       // 프로필 수정 API 호출 (변경된 필드만 전송)
       const response = await updateProfileAPI(
@@ -329,20 +350,36 @@ export default function ProfileEdit() {
     return password === confirmPassword && password.length > 0;
   };
 
-  // 폼 유효성 검사
-  const isFormValid =
-    nickname.trim() &&
-    id.trim() &&
-    validateId(id) &&
-    isNicknameChecked &&
-    isIdChecked &&
-    (password.length === 0 || validatePassword(password)) &&
-    (password.length === 0 ||
-      validatePasswordConfirm(password, confirmPassword)) &&
-    // 닉네임과 아이디가 현재 사용자 정보와 다르거나 중복확인이 완료된 경우
-    ((nickname !== userInfo?.nickName && isNicknameChecked) ||
-      nickname === userInfo?.nickName) &&
-    ((id !== userInfo?.userName && isIdChecked) || id === userInfo?.userName);
+  // 폼 유효성 검사 - 카카오 사용자와 일반 사용자 구분
+  const isKakaoUser = userInfo?.loginType === "KAKAO";
+
+  const hasChanges =
+    nickname !== userInfo?.nickName ||
+    (!isKakaoUser && id !== userInfo?.userName) ||
+    (!isKakaoUser && password.length > 0) ||
+    profileImage !== userInfo?.profileImageUrl;
+
+  const isFormValid = isKakaoUser
+    ? // 카카오 로그인 사용자: 닉네임만 검증
+      nickname.trim() &&
+      ((nickname !== userInfo?.nickName && isNicknameChecked) ||
+        nickname === userInfo?.nickName) &&
+      hasChanges
+    : // 일반 사용자: 모든 필드 검증
+      nickname.trim() &&
+      id.trim() &&
+      validateId(id) &&
+      // 변경된 필드에 대해서만 중복확인 필요
+      ((nickname !== userInfo?.nickName && isNicknameChecked) ||
+        nickname === userInfo?.nickName) &&
+      ((id !== userInfo?.userName && isIdChecked) ||
+        id === userInfo?.userName) &&
+      // 비밀번호가 입력된 경우에만 비밀번호 검증
+      (password.length === 0 || validatePassword(password)) &&
+      (password.length === 0 ||
+        validatePasswordConfirm(password, confirmPassword)) &&
+      // 변경사항이 있어야 함
+      hasChanges;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -427,124 +464,130 @@ export default function ProfileEdit() {
           )}
         </View>
 
-        {/* 아이디 입력 섹션 */}
-        <View style={styles.inputSection}>
-          <Text style={styles.inputLabel}>아이디</Text>
-          <View style={styles.inputRow}>
+        {/* 아이디 입력 섹션 - 카카오 로그인이 아닌 경우에만 표시 */}
+        {userInfo?.loginType !== "KAKAO" && (
+          <View style={styles.inputSection}>
+            <Text style={styles.inputLabel}>아이디</Text>
+            <View style={styles.inputRow}>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.textInput}
+                  value={id}
+                  onChangeText={handleIdChange}
+                  placeholder="아이디를 입력해주세요"
+                  placeholderTextColor="#9D9896"
+                />
+              </View>
+              <TouchableOpacity
+                style={[
+                  styles.duplicateCheckButton,
+                  isIdChecked && styles.duplicateCheckButtonCompleted,
+                ]}
+                onPress={() => handleDuplicateCheck("id")}
+              >
+                <Text
+                  style={[
+                    styles.duplicateCheckText,
+                    isIdChecked && styles.duplicateCheckTextCompleted,
+                  ]}
+                >
+                  {isIdChecked ? "확인완료" : "중복확인"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {id.length > 0 && !validateId(id) && (
+              <Text style={styles.validationText}>
+                아이디는 4-12자로 입력해주세요
+              </Text>
+            )}
+            {id.length > 0 && validateId(id) && !isIdChecked && (
+              <Text style={styles.validationText}>
+                아이디 중복확인이 필요합니다
+              </Text>
+            )}
+            {isIdChecked && (
+              <Text style={styles.validationTextSuccess}>
+                사용 가능한 아이디입니다
+              </Text>
+            )}
+          </View>
+        )}
+
+        {/* 비밀번호 입력 섹션 - 카카오 로그인이 아닌 경우에만 표시 */}
+        {userInfo?.loginType !== "KAKAO" && (
+          <View style={styles.inputSection}>
+            <Text style={styles.inputLabel}>비밀번호</Text>
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.textInput}
-                value={id}
-                onChangeText={handleIdChange}
-                placeholder="아이디를 입력해주세요"
+                value={password}
+                onChangeText={setPassword}
+                placeholder="영문, 숫자, 특수문자 포함 8-20자"
                 placeholderTextColor="#9D9896"
+                secureTextEntry={!showPassword}
               />
+              <View style={styles.inputIcons}>
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => setShowPassword(!showPassword)}
+                >
+                  <EyeIcon width={22} height={15} color="#9D9896" />
+                </TouchableOpacity>
+              </View>
             </View>
-            <TouchableOpacity
-              style={[
-                styles.duplicateCheckButton,
-                isIdChecked && styles.duplicateCheckButtonCompleted,
-              ]}
-              onPress={() => handleDuplicateCheck("id")}
-            >
+            {password.length > 0 && (
               <Text
                 style={[
-                  styles.duplicateCheckText,
-                  isIdChecked && styles.duplicateCheckTextCompleted,
+                  styles.validationText,
+                  validatePassword(password)
+                    ? styles.validationTextSuccess
+                    : styles.validationTextError,
                 ]}
               >
-                {isIdChecked ? "확인완료" : "중복확인"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {id.length > 0 && !validateId(id) && (
-            <Text style={styles.validationText}>
-              아이디는 4-12자로 입력해주세요
-            </Text>
-          )}
-          {id.length > 0 && validateId(id) && !isIdChecked && (
-            <Text style={styles.validationText}>
-              아이디 중복확인이 필요합니다
-            </Text>
-          )}
-          {isIdChecked && (
-            <Text style={styles.validationTextSuccess}>
-              사용 가능한 아이디입니다
-            </Text>
-          )}
-        </View>
-
-        {/* 비밀번호 입력 섹션 */}
-        <View style={styles.inputSection}>
-          <Text style={styles.inputLabel}>비밀번호</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.textInput}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="영문, 숫자, 특수문자 포함 8-20자"
-              placeholderTextColor="#9D9896"
-              secureTextEntry={!showPassword}
-            />
-            <View style={styles.inputIcons}>
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                <EyeIcon width={22} height={15} color="#9D9896" />
-              </TouchableOpacity>
-            </View>
-          </View>
-          {password.length > 0 && (
-            <Text
-              style={[
-                styles.validationText,
-                validatePassword(password)
-                  ? styles.validationTextSuccess
-                  : styles.validationTextError,
-              ]}
-            >
-              {validatePassword(password)
-                ? "✓ 비밀번호 조건을 만족합니다"
-                : "✗ 영문, 숫자, 특수문자 포함 8-20자 입력 필요"}
-            </Text>
-          )}
-        </View>
-
-        {/* 비밀번호 확인 입력 섹션 */}
-        <View style={styles.inputSection}>
-          <Text style={styles.inputLabel}>비밀번호 확인</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.textInput}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="비밀번호를 다시 입력해주세요"
-              placeholderTextColor="#9D9896"
-              secureTextEntry={!showConfirmPassword}
-            />
-            <View style={styles.inputIcons}>
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                <EyeIcon width={22} height={15} color="#9D9896" />
-              </TouchableOpacity>
-            </View>
-          </View>
-          {confirmPassword.length > 0 && password !== confirmPassword && (
-            <Text style={styles.validationTextError}>
-              비밀번호가 일치하지 않습니다
-            </Text>
-          )}
-          {confirmPassword.length > 0 &&
-            password === confirmPassword &&
-            password.length > 0 && (
-              <Text style={styles.validationTextSuccess}>
-                비밀번호가 일치합니다
+                {validatePassword(password)
+                  ? "✓ 비밀번호 조건을 만족합니다"
+                  : "✗ 영문, 숫자, 특수문자 포함 8-20자 입력 필요"}
               </Text>
             )}
-        </View>
+          </View>
+        )}
+
+        {/* 비밀번호 확인 입력 섹션 - 카카오 로그인이 아닌 경우에만 표시 */}
+        {userInfo?.loginType !== "KAKAO" && (
+          <View style={styles.inputSection}>
+            <Text style={styles.inputLabel}>비밀번호 확인</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.textInput}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="비밀번호를 다시 입력해주세요"
+                placeholderTextColor="#9D9896"
+                secureTextEntry={!showConfirmPassword}
+              />
+              <View style={styles.inputIcons}>
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  <EyeIcon width={22} height={15} color="#9D9896" />
+                </TouchableOpacity>
+              </View>
+            </View>
+            {confirmPassword.length > 0 && password !== confirmPassword && (
+              <Text style={styles.validationTextError}>
+                비밀번호가 일치하지 않습니다
+              </Text>
+            )}
+            {confirmPassword.length > 0 &&
+              password === confirmPassword &&
+              password.length > 0 && (
+                <Text style={styles.validationTextSuccess}>
+                  비밀번호가 일치합니다
+                </Text>
+              )}
+          </View>
+        )}
 
         {/* 하단 여백 */}
         <View style={styles.bottomPadding} />
@@ -663,7 +706,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#000000",
-    paddingRight: 90,
   },
   inputIcons: {
     position: "absolute",

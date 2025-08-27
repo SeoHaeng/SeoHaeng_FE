@@ -384,7 +384,12 @@ export default function Index() {
         <View style={styles.topSection}>
           <View style={styles.greetingContainer}>
             <Text style={styles.greetingText}>
-              <Text style={styles.userNameText}>{userInfo?.nickName}님의</Text>
+              <Text style={styles.userNameText}>
+                {userInfo?.nickName && userInfo.nickName.length > 18
+                  ? `${userInfo.nickName.slice(0, 18)}...`
+                  : userInfo?.nickName}
+                님의
+              </Text>
               {"\n"}다음 강원 북트립은?
             </Text>
             {lastVisitDays !== null && (

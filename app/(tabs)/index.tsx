@@ -127,12 +127,12 @@ export default function Index() {
     fetchLastVisit();
   }, []);
 
-  // 최신 공간 책갈피 조회 (5개)
+  // 최신 공간 책갈피 조회 (5개, 최신순)
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
         setIsLoadingBookmarks(true);
-        const response = await getReadingSpotsAPI(1, 5);
+        const response = await getReadingSpotsAPI(1, 5, "latest");
         if (response.isSuccess) {
           setBookmarkData(response.result);
         }
@@ -500,30 +500,9 @@ export default function Index() {
 
           {/* 추천 카드 */}
           <View style={styles.recommendationCard}>
-            {/* 첫 번째 추천 장소 (큰 카드) */}
-            {todayRecommendations.length > 0 && (
-              <View style={styles.featuredRecommendation}>
-                <View style={styles.featuredImageContainer}>
-                  <Image
-                    source={{ uri: todayRecommendations[0].imageUrl }}
-                    style={styles.featuredImage}
-                    resizeMode="cover"
-                  />
-                </View>
-                <View style={styles.featuredContent}>
-                  <Text style={styles.featuredTitle}>
-                    {todayRecommendations[0].name}
-                  </Text>
-                  <Text style={styles.featuredDescription} numberOfLines={3}>
-                    {todayRecommendations[0].overview}
-                  </Text>
-                </View>
-              </View>
-            )}
-
             {/* 나머지 추천 장소 리스트 */}
             <View style={styles.recommendationList}>
-              {todayRecommendations.slice(1).map((item, index) => (
+              {todayRecommendations.map((item, index) => (
                 <TouchableOpacity
                   key={item.placeId}
                   style={styles.recommendationItem}
@@ -945,13 +924,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   recommendationItemTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: "SUIT-700",
     color: "#262423",
     marginBottom: 4,
   },
   recommendationItemDescription: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
     lineHeight: 18,

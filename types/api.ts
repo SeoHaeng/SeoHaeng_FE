@@ -1,14 +1,13 @@
+import { API_BASE_URL } from "../config/api";
 import { getAuthHeadersAsync } from "./auth";
 import {
-  KakaoLoginResponse,
   LoginRequest,
   LoginResponse,
   ProfileUpdateRequest,
   ProfileUpdateResponse,
+  UserByIdResponse,
   UserInfoResponse,
 } from "./globalState";
-
-const API_BASE_URL = "http://15.164.250.185:8081/api/v1";
 
 export const loginAPI = async (
   credentials: LoginRequest,
@@ -49,17 +48,20 @@ export const loginAPI = async (
 // 사용자 정보 조회 API
 export const getUserInfoAPI = async (): Promise<UserInfoResponse> => {
   console.log("getUserInfoAPI 시작");
+  console.log("API URL:", "http://15.164.250.185:8081/api/v1/users");
 
   try {
     const headers = await getAuthHeadersAsync();
     console.log("getUserInfoAPI 헤더:", headers);
 
-    const response = await fetch("http://15.164.250.185:8081/api/v1/users", {
+    console.log("fetch 요청 시작...");
+    const response = await fetch(`${API_BASE_URL}/users`, {
       method: "GET",
       headers,
     });
 
     console.log("getUserInfoAPI 응답 상태:", response.status);
+    console.log("getUserInfoAPI 응답 헤더:", response.headers);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -71,7 +73,52 @@ export const getUserInfoAPI = async (): Promise<UserInfoResponse> => {
     console.log("getUserInfoAPI 성공:", data);
     return data;
   } catch (error) {
-    console.log("getUserInfoAPI 실패:", error);
+    console.error("getUserInfoAPI 실패:", error);
+    console.error("에러 타입:", typeof error);
+    console.error(
+      "에러 메시지:",
+      error instanceof Error ? error.message : String(error),
+    );
+    throw error;
+  }
+};
+
+// 아이디로 회원정보 조회 API
+export const getUserByIdAPI = async (
+  userId: number,
+): Promise<UserByIdResponse> => {
+  console.log("getUserByIdAPI 시작:", userId);
+  console.log("API URL:", `${API_BASE_URL}/users/${userId}`);
+
+  try {
+    const headers = await getAuthHeadersAsync();
+    console.log("getUserByIdAPI 헤더:", headers);
+
+    console.log("fetch 요청 시작...");
+    const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+      method: "GET",
+      headers,
+    });
+
+    console.log("getUserByIdAPI 응답 상태:", response.status);
+    console.log("getUserByIdAPI 응답 헤더:", response.headers);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log("getUserByIdAPI 에러 응답:", errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("getUserByIdAPI 성공:", data);
+    return data;
+  } catch (error) {
+    console.error("getUserByIdAPI 실패:", error);
+    console.error("에러 타입:", typeof error);
+    console.error(
+      "에러 메시지:",
+      error instanceof Error ? error.message : String(error),
+    );
     throw error;
   }
 };
@@ -161,12 +208,13 @@ export const getFestivalsAPI = async (): Promise<FestivalResponse> => {
 export const getReadingSpotsAPI = async (
   page: number = 1,
   size: number = 5,
+  sort: string = "latest",
 ): Promise<ReadingSpotResponse> => {
   try {
     const headers = await getAuthHeadersAsync();
 
     const response = await fetch(
-      `http://15.164.250.185:8081/api/v1/reading-spot?page=${page}&size=${size}`,
+      `http://15.164.250.185:8081/api/v1/reading-spot?page=${page}&size=${size}&sort=${sort}`,
       {
         method: "GET",
         headers,
@@ -404,9 +452,9 @@ export const searchBooksAPI = async (
   }
 };
 
-// 프로필 수정 API
+// 프로필 수정 API - 변경된 필드만 전송
 export const updateProfileAPI = async (
-  requestData: ProfileUpdateRequest,
+  requestData: Partial<ProfileUpdateRequest>,
   profileImage?: string | null,
 ): Promise<ProfileUpdateResponse> => {
   console.log("updateProfileAPI 시작");
@@ -418,14 +466,36 @@ export const updateProfileAPI = async (
     console.log("updateProfileAPI 헤더:", headers);
 
     const formData = new FormData();
-    formData.append("request", JSON.stringify(requestData));
 
-    if (profileImage) {
-      formData.append("profileImage", {
-        uri: profileImage,
-        type: "image/jpeg",
-        name: "profile.jpg",
-      } as any);
+    // 서버에서 요구하는 'request' 파트에 변경된 필드만 JSON으로 전송
+    // 변경된 필드가 없어도 빈 객체라도 request 파트는 항상 전송해야 함
+    const cleanRequestData = Object.fromEntries(
+      Object.entries(requestData).filter(
+        ([_, value]) => value !== undefined && value !== "",
+      ),
+    );
+
+    // request 파트는 항상 전송 (빈 객체라도)
+    formData.append("request", JSON.stringify(cleanRequestData));
+
+    // 프로필 이미지가 변경된 경우에만 추가
+    if (profileImage !== undefined) {
+      const imageUri = profileImage?.startsWith("file://")
+        ? profileImage
+        : profileImage
+          ? `file://${profileImage}`
+          : "";
+
+      if (imageUri) {
+        const imageName = profileImage?.split("/").pop() || "profile.jpg";
+        const imageType = "image/jpeg";
+
+        formData.append("profileImage", {
+          uri: imageUri,
+          name: imageName,
+          type: imageType,
+        } as any);
+      }
     }
 
     console.log("updateProfileAPI FormData:", formData);
@@ -452,48 +522,6 @@ export const updateProfileAPI = async (
     return data;
   } catch (error) {
     console.log("updateProfileAPI 실패:", error);
-    throw error;
-  }
-};
-
-// 카카오 소셜 로그인 API
-export const kakaoLoginAPI = async (
-  code: string,
-): Promise<KakaoLoginResponse> => {
-  try {
-    console.log("카카오 소셜 로그인 API 호출 시작:", { code });
-
-    const response = await fetch(
-      `${API_BASE_URL}/users/auth/kakao?code=${code}`,
-      {
-        method: "GET",
-        headers: {
-          accept: "*/*",
-        },
-      },
-    );
-
-    console.log(
-      "카카오 소셜 로그인 API 응답 상태:",
-      response.status,
-      response.statusText,
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("카카오 소셜 로그인 API 에러 응답:", errorText);
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data: KakaoLoginResponse = await response.json();
-    console.log("카카오 소셜 로그인 API 성공:", {
-      isSuccess: data.isSuccess,
-      userId: data.result?.userId,
-      message: data.message,
-    });
-    return data;
-  } catch (error) {
-    console.error("카카오 소셜 로그인 API 에러:", error);
     throw error;
   }
 };
@@ -829,4 +857,78 @@ export interface TokenReissueResponse {
     refreshToken: string;
     userId: number;
   };
+}
+
+// 중복확인 API 응답 타입
+export interface DuplicateCheckResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    isDuplicate: boolean;
+  };
+}
+
+// 닉네임 중복확인 API
+export const checkNicknameDuplicateAPI = async (
+  nickname: string,
+): Promise<DuplicateCheckResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/users/check-nickname?nickname=${encodeURIComponent(nickname)}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("닉네임 중복확인 API 에러:", error);
+    throw error;
+  }
+};
+
+// 아이디 중복확인 API
+export const checkUsernameDuplicateAPI = async (
+  username: string,
+): Promise<DuplicateCheckResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/users/check-username?username=${encodeURIComponent(username)}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("아이디 중복확인 API 에러:", error);
+    throw error;
+  }
+};
+
+// 카카오 로그인 결과 타입
+export interface KakaoLoginResult {
+  accessToken: string;
+  refreshToken: string;
+  scopes: string[];
+  tokenType: string;
 }

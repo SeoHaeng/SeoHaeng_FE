@@ -8,7 +8,7 @@ interface PopularChallengeItemProps {
   date: string;
   text: string;
   imageSource?: any;
-  bookImageSource?: any;
+  bookImageSource?: string;
   bookName: string;
   bookAuthor: string;
   year: string;
@@ -20,6 +20,7 @@ export default function PopularChallenge({
   userName,
   date,
   text,
+  bookImageSource,
   bookName,
   bookAuthor,
   year,
@@ -40,10 +41,16 @@ export default function PopularChallenge({
                 <Text style={styles.username}>{userName}</Text>
                 <Text style={styles.timeStamp}>{date}일 전</Text>
               </View>
-              <Text style={styles.description}>{text}</Text>
+              <Text style={styles.description}>
+                {text.length > 30 ? `${text.slice(0, 30)}...` : text}
+              </Text>
             </View>
             <Image
-              source={require("@/assets/images/인기챌린지 책.png")}
+              source={
+                bookImageSource
+                  ? { uri: bookImageSource }
+                  : require("@/assets/images/인기챌린지 책.png")
+              }
               style={styles.bookImage}
             />
           </View>

@@ -2,7 +2,11 @@ import BackIcon from "@/components/icons/BackIcon";
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
 import EyeIcon from "@/components/icons/EyeIcon";
-import { updateProfileAPI } from "@/types/api";
+import {
+  checkNicknameDuplicateAPI,
+  checkUsernameDuplicateAPI,
+  updateProfileAPI,
+} from "@/types/api";
 import { getUserInfo, setUserInfo } from "@/types/globalState";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
@@ -23,7 +27,7 @@ export default function ProfileEdit() {
   const router = useRouter();
   const [userInfo, setLocalUserInfo] = useState(getUserInfo());
   const [nickname, setNickname] = useState(userInfo?.nickName || "");
-  const [id, setId] = useState(""); // 아이디는 API에서 제공되지 않으므로 빈 문자열로 유지
+  const [id, setId] = useState(userInfo?.userName || ""); // 현재 사용자 아이디로 초기화
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,8 +35,8 @@ export default function ProfileEdit() {
   const [profileImage, setProfileImage] = useState<string | null>(
     userInfo?.profileImageUrl || null,
   );
-  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
-  const [isIdChecked, setIsIdChecked] = useState(false);
+  const [isNicknameChecked, setIsNicknameChecked] = useState(true); // 현재 닉네임은 이미 확인됨
+  const [isIdChecked, setIsIdChecked] = useState(true); // 현재 아이디는 이미 확인됨
 
   // 사용자 정보 업데이트를 위한 주기적 체크
   useEffect(() => {
@@ -46,6 +50,9 @@ export default function ProfileEdit() {
           currentUserInfo.nickName !== nickname
         ) {
           setNickname(currentUserInfo.nickName);
+        }
+        if (currentUserInfo?.userName && currentUserInfo.userName !== id) {
+          setId(currentUserInfo.userName);
         }
         if (
           currentUserInfo?.profileImageUrl &&
@@ -72,17 +79,79 @@ export default function ProfileEdit() {
     }
   };
 
-  const handleDuplicateCheck = (type: "nickname" | "id") => {
-    // 실제 중복확인 API 호출 대신 모의 응답
-    if (type === "nickname") {
-      setIsNicknameChecked(true);
-    } else {
-      setIsIdChecked(true);
+  const handleDuplicateCheck = async (type: "nickname" | "id") => {
+    try {
+      if (type === "nickname") {
+        if (!nickname.trim()) {
+          Alert.alert("입력 오류", "닉네임을 입력해주세요.");
+          return;
+        }
+
+        // 현재 사용자와 동일한 닉네임인 경우 중복확인 건너뛰기
+        if (nickname.trim() === userInfo?.nickName) {
+          setIsNicknameChecked(true);
+          Alert.alert("중복 확인", "현재 사용 중인 닉네임입니다.");
+          return;
+        }
+
+        const response = await checkNicknameDuplicateAPI(nickname.trim());
+        if (response.isSuccess) {
+          if (response.result.isDuplicate) {
+            Alert.alert("중복 확인", "이미 사용 중인 닉네임입니다.");
+            setIsNicknameChecked(false);
+          } else {
+            setIsNicknameChecked(true);
+            Alert.alert("중복 확인", "사용 가능한 닉네임입니다.");
+          }
+        } else {
+          Alert.alert(
+            "오류",
+            response.message || "닉네임 중복확인에 실패했습니다.",
+          );
+        }
+      } else {
+        if (!id.trim()) {
+          Alert.alert("입력 오류", "아이디를 입력해주세요.");
+          return;
+        }
+
+        if (!validateId(id.trim())) {
+          Alert.alert("입력 오류", "아이디는 4-12자로 입력해주세요.");
+          return;
+        }
+
+        // 현재 사용자와 동일한 아이디인 경우 중복확인 건너뛰기
+        if (id.trim() === userInfo?.userName) {
+          setIsIdChecked(true);
+          Alert.alert("중복 확인", "현재 사용 중인 아이디입니다.");
+          return;
+        }
+
+        const response = await checkUsernameDuplicateAPI(id.trim());
+        if (response.isSuccess) {
+          if (response.result.isDuplicate) {
+            Alert.alert("중복 확인", "이미 사용 중인 아이디입니다.");
+            setIsIdChecked(false);
+          } else {
+            setIsIdChecked(true);
+            Alert.alert("중복 확인", "사용 가능한 아이디입니다.");
+          }
+        } else {
+          Alert.alert(
+            "오류",
+            response.message || "아이디 중복확인에 실패했습니다.",
+          );
+        }
+      }
+    } catch (error) {
+      console.error("중복확인 API 에러:", error);
+      Alert.alert("오류", "네트워크 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
   const handleNicknameChange = (text: string) => {
     setNickname(text);
+    // 닉네임이 변경되면 중복확인 상태 초기화
     if (isNicknameChecked) {
       setIsNicknameChecked(false);
     }
@@ -90,6 +159,7 @@ export default function ProfileEdit() {
 
   const handleIdChange = (text: string) => {
     setId(text);
+    // 아이디가 변경되면 중복확인 상태 초기화
     if (isIdChecked) {
       setIsIdChecked(false);
     }
@@ -127,27 +197,59 @@ export default function ProfileEdit() {
       const currentUserInfo = getUserInfo();
       console.log("현재 사용자 정보:", currentUserInfo);
 
-      // API 요청 데이터 준비
-      const requestData = {
-        username: id,
-        nickname: nickname,
-        password1: password || "", // 비밀번호가 비어있으면 빈 문자열
-        password2: confirmPassword || "", // 비밀번호 확인이 비어있으면 빈 문자열
-      };
+      // 변경된 필드만 감지하여 요청 데이터 준비
+      const changedFields: Partial<{
+        username: string;
+        nickname: string;
+        password1: string;
+        password2: string;
+      }> = {};
 
-      console.log("프로필 수정 요청 데이터:", requestData);
+      // 아이디 변경 확인
+      if (id !== userInfo?.userName) {
+        changedFields.username = id;
+      }
+
+      // 닉네임 변경 확인
+      if (nickname !== userInfo?.nickName) {
+        changedFields.nickname = nickname;
+      }
+
+      // 비밀번호 변경 확인 (비밀번호가 입력된 경우에만)
+      if (password && password !== "") {
+        changedFields.password1 = password;
+        changedFields.password2 = confirmPassword;
+      }
+
+      // 프로필 이미지 변경 확인
+      const isProfileImageChanged = profileImage !== userInfo?.profileImageUrl;
+
+      console.log("변경된 필드:", changedFields);
+      console.log("프로필 이미지 변경됨:", isProfileImageChanged);
       console.log("프로필 이미지:", profileImage);
 
-      // 프로필 수정 API 호출
-      const response = await updateProfileAPI(requestData, profileImage);
+      // 변경된 필드가 없는 경우
+      if (Object.keys(changedFields).length === 0 && !isProfileImageChanged) {
+        Alert.alert("알림", "변경된 내용이 없습니다.");
+        return;
+      }
+
+      // 프로필 수정 API 호출 (변경된 필드만 전송)
+      const response = await updateProfileAPI(
+        changedFields,
+        isProfileImageChanged ? profileImage : undefined,
+      );
 
       if (response.isSuccess) {
         // 성공 시 사용자 정보 업데이트
         if (userInfo) {
           const updatedUserInfo = {
             ...userInfo,
-            nickName: nickname,
-            profileImageUrl: profileImage,
+            nickName: changedFields.nickname || userInfo.nickName,
+            userName: changedFields.username || userInfo.userName,
+            profileImageUrl: isProfileImageChanged
+              ? profileImage
+              : userInfo.profileImageUrl,
           };
           setUserInfo(updatedUserInfo);
         }
@@ -236,7 +338,11 @@ export default function ProfileEdit() {
     isIdChecked &&
     (password.length === 0 || validatePassword(password)) &&
     (password.length === 0 ||
-      validatePasswordConfirm(password, confirmPassword));
+      validatePasswordConfirm(password, confirmPassword)) &&
+    // 닉네임과 아이디가 현재 사용자 정보와 다르거나 중복확인이 완료된 경우
+    ((nickname !== userInfo?.nickName && isNicknameChecked) ||
+      nickname === userInfo?.nickName) &&
+    ((id !== userInfo?.userName && isIdChecked) || id === userInfo?.userName);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -554,7 +660,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 15,
     paddingVertical: 12,
-    fontSize: 16,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#000000",
     paddingRight: 90,

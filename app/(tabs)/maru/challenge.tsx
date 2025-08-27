@@ -17,6 +17,18 @@ import {
   View,
 } from "react-native";
 
+// 날짜를 "X일 전" 형식으로 변환하는 함수
+const formatDateToDaysAgo = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return "오늘";
+  if (diffDays === 1) return "어제";
+  return `${diffDays}일 전`;
+};
+
 export default function Challenge() {
   const router = useRouter();
   const [bookstores, setBookstores] = useState<BookChallengePlace[]>([]);
@@ -138,11 +150,15 @@ export default function Challenge() {
               key={challenge.bookChallengeProofId}
               id={challenge.bookChallengeProofId}
               userName="사용자" // API에 userName이 없으므로 기본값 사용
-              date={challenge.createdAt}
+              date={formatDateToDaysAgo(challenge.createdAt)}
               text={challenge.proofContent}
+              bookImageSource={challenge.receivedBookImage}
               bookName={challenge.receivedBookTitle}
               bookAuthor={challenge.receivedBookAuthor}
-              year={challenge.receivedBookPubDate}
+              year={
+                challenge.receivedBookPubDate?.split("-")[0] ||
+                challenge.receivedBookPubDate
+              }
               onPress={() =>
                 router.push({
                   pathname: "/popularity/[id]",

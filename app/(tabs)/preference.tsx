@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
   planButton: {
     backgroundColor: "#302E2D",
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderRadius: 20,
     flexDirection: "row",
     alignItems: "center",
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   },
   planButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 13,
     fontFamily: "SUIT-600",
   },
   viewAllContainer: {

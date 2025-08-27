@@ -9,6 +9,7 @@ export interface BookData {
 // 사용자 정보 타입
 export interface UserInfo {
   userId: number;
+  userName: string;
   nickName: string;
   profileImageUrl: string | null;
   loginType: string;
@@ -69,24 +70,24 @@ export interface LoginResponse {
   };
 }
 
-// 카카오 소셜 로그인 API 응답 타입
-export interface KakaoLoginResponse {
-  isSuccess: boolean;
-  code: string;
-  message: string;
-  result: {
-    accessToken: string;
-    refreshToken: string;
-    userId: number;
-  };
-}
-
 // 사용자 정보 조회 API 응답 타입
 export interface UserInfoResponse {
   isSuccess: boolean;
   code: string;
   message: string;
   result: UserInfo;
+}
+
+// 아이디로 회원정보 조회 API 응답 타입
+export interface UserByIdResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    userId: number;
+    nickName: string;
+    profileImageUrl: string;
+  };
 }
 
 // 프로필 수정 API 요청 타입

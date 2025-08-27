@@ -6,6 +6,7 @@ interface PopularChallengeItemProps {
   text: string;
   imageSource?: any;
   color?: string;
+  userProfileImageUrl?: string;
 }
 
 export default function ChallengeComment({
@@ -13,12 +14,17 @@ export default function ChallengeComment({
   date,
   text,
   color,
+  userProfileImageUrl,
 }: PopularChallengeItemProps) {
   return (
     <View style={styles.commentContainer}>
       <View style={styles.commentHeader}>
         <Image
-          source={require("@/assets/images/인기챌린지 사진.png")}
+          source={
+            userProfileImageUrl
+              ? { uri: userProfileImageUrl }
+              : require("@/assets/images/인기챌린지 사진.png")
+          }
           style={styles.commentAvatar}
         />
         <View style={styles.commentInfo}>
@@ -37,6 +43,7 @@ const styles = StyleSheet.create({
   commentContainer: {
     flexDirection: "column",
     gap: 10,
+    marginBottom: 12,
   },
   commentHeader: {
     flexDirection: "row",
@@ -46,6 +53,7 @@ const styles = StyleSheet.create({
   commentAvatar: {
     width: 35,
     height: 35,
+    borderRadius: 50,
   },
   commentInfo: {
     flexDirection: "column",

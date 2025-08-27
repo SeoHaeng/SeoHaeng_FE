@@ -1,17 +1,9 @@
 import { getStampsAPI } from "@/types/api";
 import React, { useEffect, useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import MapView from "./mapView";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import StampBoard from "./stampBoard";
 
 export default function StampView() {
-  const [activeView, setActiveView] = useState("도장판");
   const [stamps, setStamps] = useState<
     {
       id: number;
@@ -99,42 +91,6 @@ export default function StampView() {
             <Text style={styles.progressCountText}> / {totalCount}개</Text>
           </View>
         </View>
-
-        {/* 토글 버튼 */}
-        <View style={styles.toggleContainer}>
-          <TouchableOpacity
-            style={[
-              styles.toggleButton,
-              activeView === "도장판" && styles.activeToggleButton,
-            ]}
-            onPress={() => setActiveView("도장판")}
-          >
-            <Text
-              style={[
-                styles.toggleText,
-                activeView === "도장판" && styles.activeToggleText,
-              ]}
-            >
-              도장판
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.toggleButton,
-              activeView === "지도" && styles.activeToggleButton,
-            ]}
-            onPress={() => setActiveView("지도")}
-          >
-            <Text
-              style={[
-                styles.toggleText,
-                activeView === "지도" && styles.activeToggleText,
-              ]}
-            >
-              지도
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
 
       {/* 안내 텍스트 */}
@@ -142,8 +98,8 @@ export default function StampView() {
         강원도 18개 시/군에 도서여행을 떠나고{"\n"}내 발자국을 남겨봐요.
       </Text>
 
-      {/* 조건부 렌더링 */}
-      {activeView === "도장판" ? <StampBoard stamps={stamps} /> : <MapView />}
+      {/* 도장판 */}
+      <StampBoard stamps={stamps} />
     </ScrollView>
   );
 }
@@ -182,34 +138,7 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-700",
     color: "#9D9896",
   },
-  toggleContainer: {
-    flexDirection: "row",
-    backgroundColor: "#DBD6D3",
-    borderRadius: 20,
-    padding: 2,
-  },
-  toggleButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 18,
-  },
-  activeToggleButton: {
-    backgroundColor: "#EEE9E6",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  toggleText: {
-    fontSize: 13,
-    fontFamily: "SUIT-700",
-    color: "#9D9896",
-  },
-  activeToggleText: {
-    color: "#262423",
-    fontFamily: "SUIT-700",
-  },
+
   instructionText: {
     fontSize: 14,
     color: "#716C69",

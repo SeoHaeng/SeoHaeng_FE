@@ -135,6 +135,15 @@ export default function Index() {
         const response = await getReadingSpotsAPI(1, 5, "latest");
         if (response.isSuccess) {
           setBookmarkData(response.result);
+
+          // API 응답에서 scraped 상태를 scrapedItems에 반영
+          const scrapedIds = new Set<number>();
+          response.result.readingSpotList.forEach((spot) => {
+            if (spot.scraped) {
+              scrapedIds.add(spot.readingSpotId);
+            }
+          });
+          setScrapedItems(scrapedIds);
         }
       } catch (error) {
         console.error("책갈피 조회 실패:", error);
@@ -623,16 +632,30 @@ export default function Index() {
 
                       {/* 카드 내용 */}
                       <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>{spot.title}</Text>
+                        <Text style={styles.cardTitle}>
+                          {spot.title.length > 13
+                            ? `${spot.title.slice(0, 13)}...`
+                            : spot.title}
+                        </Text>
                         <View style={styles.cardBottomRow}>
-                          <Text style={styles.cardAddress}>{spot.address}</Text>
+                          <Text style={styles.cardAddress}>
+                            {spot.address.length > 18
+                              ? `${spot.address.slice(0, 18)}...`
+                              : spot.address}
+                          </Text>
                           <TouchableOpacity
                             style={styles.scrapButton}
                             onPress={() => handleScrapPress(spot.readingSpotId)}
                           >
                             <ScrapIcon
-                              width={25}
+                              width={24}
+                              height={24}
                               isActive={scrapedItems.has(spot.readingSpotId)}
+                              color={
+                                scrapedItems.has(spot.readingSpotId)
+                                  ? "#262423"
+                                  : "#716C69"
+                              }
                             />
                           </TouchableOpacity>
                         </View>
@@ -1057,9 +1080,12 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   scrapButton: {
-    padding: 8,
-    borderRadius: 8,
+    borderRadius: 6,
     backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 32,
+    height: 32,
   },
   emptyStateContainer: {
     alignItems: "center",

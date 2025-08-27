@@ -23,11 +23,32 @@ const formatDateToDaysAgo = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffHours = diffTime / (1000 * 60 * 60);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return "오늘";
+  if (diffHours < 1) return "방금 전";
+  if (diffHours < 24) return `${Math.floor(diffHours)}시간 전`;
   if (diffDays === 1) return "어제";
   return `${diffDays}일 전`;
+};
+
+// 주소에서 시/군 이름만 추출하는 함수
+const extractCityFromAddress = (address: string): string => {
+  // 강원특별자치도 춘천시 호반로 45 -> 춘천
+  const match = address.match(/강원특별자치도\s*([^\s]+시|[^\s]+군)/);
+  if (match) {
+    // 시/군 접미사 제거
+    return match[1].replace(/시$|군$/, "");
+  }
+
+  // 다른 형식의 주소 처리
+  const cityMatch = address.match(/([^\s]+시|[^\s]+군)/);
+  if (cityMatch) {
+    // 시/군 접미사 제거
+    return cityMatch[1].replace(/시$|군$/, "");
+  }
+
+  return address; // 매칭되지 않으면 원본 주소 반환
 };
 
 export default function Challenge() {
@@ -42,6 +63,7 @@ export default function Challenge() {
         setIsLoadingBookstores(true);
         const response = await getBookChallengesAPI();
         if (response.isSuccess) {
+          console.log("북챌린지 서점 API 응답:", response.result.placeList);
           setBookstores(response.result.placeList);
         }
       } catch (error) {
@@ -159,7 +181,8 @@ export default function Challenge() {
             <BookStoreItem
               key={store.id}
               name={store.name}
-              location={store.address}
+              location={extractCityFromAddress(store.address)}
+              imageUrl={(store as any).imageUrl} // API 응답에 imageUrl이 있다면 사용
               onPress={() =>
                 router.push({
                   pathname: "/bookstore/[id]",

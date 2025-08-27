@@ -4,22 +4,29 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 interface BookStoreItemProps {
   name: string;
   location: string;
-  imageSource?: any;
+  imageUrl?: string;
   onPress?: () => void;
 }
 
 export default function BookStoreItem({
   name,
   location,
-  imageSource,
+  imageUrl,
   onPress,
 }: BookStoreItemProps) {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image
-        source={imageSource || require("@/assets/images/북챌린지 사진.png")}
+        source={
+          imageUrl
+            ? { uri: imageUrl }
+            : require("@/assets/images/북챌린지 사진.png")
+        }
+        style={styles.storeImage}
       />
-      <Text style={styles.storeName}>{name}</Text>
+      <Text style={styles.storeName}>
+        {name.length > 6 ? `${name.slice(0, 6)}...` : name}
+      </Text>
       <View style={styles.locationButton}>
         <Text style={styles.locationText}>{location}</Text>
       </View>
@@ -34,8 +41,14 @@ const styles = StyleSheet.create({
     gap: 7,
     height: 140,
   },
+  storeImage: {
+    width: 82,
+    height: 82,
+    borderRadius: 50,
+  },
   storeName: {
     fontFamily: "SUIT-700",
+    fontSize: 13,
   },
   locationButton: {
     backgroundColor: "#EEE9E6",

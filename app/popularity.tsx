@@ -25,9 +25,11 @@ const formatDateToDaysAgo = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffHours = diffTime / (1000 * 60 * 60);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return "오늘";
+  if (diffHours < 1) return "방금 전";
+  if (diffHours < 24) return `${Math.floor(diffHours)}시간 전`;
   if (diffDays === 1) return "어제";
   return `${diffDays}일 전`;
 };
@@ -228,13 +230,6 @@ export default function Popularity() {
             <Text style={styles.loadingText}>
               더 많은 챌린지를 불러오는 중...
             </Text>
-          </View>
-        )}
-
-        {/* 더 이상 데이터가 없는 경우 */}
-        {!hasMore && challenges.length > 0 && (
-          <View style={styles.noMoreContainer}>
-            <Text style={styles.noMoreText}>모든 챌린지를 불러왔습니다</Text>
           </View>
         )}
       </ScrollView>

@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingTop: 80,
-    gap: 20,
+    gap: 15,
   },
   bookImage: {
     width: 63,

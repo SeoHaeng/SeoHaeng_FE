@@ -9,7 +9,7 @@ export default function Bookmark() {
   const [scrapList, setScrapList] = useState<ReadingSpot[]>([]);
   const [totalElements, setTotalElements] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [sortType, setSortType] = useState<"latest" | "popular">("popular");
+  const [sortType, setSortType] = useState<"latest" | "popular">("latest");
 
   // 책갈피 조회 API 호출
   useEffect(() => {
@@ -121,10 +121,6 @@ export default function Bookmark() {
                     pathname: `/bookmark/[id]`,
                     params: {
                       id: item.readingSpotId.toString(),
-                      imageUrl: item.readingSpotImages[0] || "",
-                      title: item.title,
-                      address: item.address,
-                      templateId: item.templateId,
                       from: "maruBookmark",
                     },
                   })
@@ -147,9 +143,13 @@ export default function Bookmark() {
                 address={item.address}
                 templateId={item.templateId}
                 onPress={() =>
-                  router.push(
-                    `/bookmark/${item.readingSpotId}?imageUrl=${item.readingSpotImages[0] || ""}&title=${item.title}&address=${item.address}&templateId=${item.templateId}` as any,
-                  )
+                  router.push({
+                    pathname: `/bookmark/[id]`,
+                    params: {
+                      id: item.readingSpotId.toString(),
+                      from: "maruBookmark",
+                    },
+                  })
                 }
               />
             ))}

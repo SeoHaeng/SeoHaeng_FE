@@ -90,6 +90,56 @@ export interface UserByIdResponse {
   };
 }
 
+// 북챌린지 인증 상세 개별조회 API 응답 타입
+export interface BookChallengeDetailResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    createdAt: string;
+    creatorId: number;
+    bookStoreName: string;
+    bookChallengeProofId: number;
+    presentMessage: string;
+    proofContent: string;
+    likes: number;
+    likedByMe: boolean;
+    receivedBookTitle: string;
+    receivedBookAuthor: string;
+    receivedBookImage: string;
+    receivedBookPubDate: string;
+    givenBookTitle: string;
+    givenBookAuthor: string;
+    givenBookImage: string;
+    givenBookPubDate: string;
+    proofImageUrls: string[];
+  };
+}
+
+// 북챌린지 댓글 목록 조회 API 응답 타입
+export interface BookChallengeCommentListResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    listSize: number;
+    totalPage: number;
+    totalElements: number;
+    isFirst: boolean;
+    isLast: boolean;
+    getBookChallengeCommentList: BookChallengeComment[];
+  };
+}
+
+// 북챌린지 댓글 타입
+export interface BookChallengeComment {
+  createdAt: string;
+  userId: number;
+  nickname: string;
+  userProfileImageUrl: string | null;
+  comment: string;
+}
+
 // 프로필 수정 API 요청 타입
 export interface ProfileUpdateRequest {
   username: string;

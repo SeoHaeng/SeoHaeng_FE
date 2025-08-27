@@ -229,37 +229,6 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
             {/* 구분선 */}
             <View style={styles.separator} />
 
-            {/* 메뉴 항목들 */}
-            <View style={styles.menuItems}>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemIcon}>
-                  <Text style={styles.menuItemIconText}>🏢</Text>
-                </View>
-                <Text style={styles.menuItemText}>업체 추가하기</Text>
-                <Text style={styles.arrowIcon}>›</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemIcon}>
-                  <Text style={styles.menuItemIconText}>🚨</Text>
-                </View>
-                <Text style={styles.menuItemText}>신고하기</Text>
-                <Text style={styles.arrowIcon}>›</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemIcon}>
-                  <Text style={styles.menuItemIconText}>💡</Text>
-                </View>
-                <Text style={styles.menuItemText}>앱 개선 요청</Text>
-                <Text style={styles.arrowIcon}>›</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* 구분선 */}
-            <View style={styles.separator} />
-
-            {/* 계정 관련 메뉴 */}
             <View style={styles.accountMenuItems}>
               <TouchableOpacity
                 style={styles.menuItem}
@@ -280,6 +249,14 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                   <Text style={styles.menuItemIconText}>❌</Text>
                 </View>
                 <Text style={styles.menuItemText}>회원 탈퇴</Text>
+                <Text style={styles.arrowIcon}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem}>
+                <View style={styles.menuItemIcon}>
+                  <Text style={styles.menuItemIconText}>💡</Text>
+                </View>
+                <Text style={styles.menuItemText}>앱 개선 요청</Text>
                 <Text style={styles.arrowIcon}>›</Text>
               </TouchableOpacity>
             </View>
@@ -346,10 +323,6 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
   },
-  profileIconText: {
-    fontSize: 24,
-    fontFamily: "SUIT-700",
-  },
   profileInfo: {
     flex: 1,
   },
@@ -382,11 +355,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#DBD6D3",
     marginVertical: 20,
   },
-  menuItems: {
-    marginBottom: 20,
-  },
   accountMenuItems: {
-    marginTop: 20,
+    marginTop: 0,
   },
   menuItem: {
     flexDirection: "row",

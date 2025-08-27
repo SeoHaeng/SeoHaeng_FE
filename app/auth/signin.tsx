@@ -16,9 +16,9 @@ import { useAuth } from "../../components/AuthProvider";
 import BackIcon from "../../components/icons/BackIcon";
 import EyeIcon from "../../components/icons/EyeIcon";
 import GoogleLoginIcon from "../../components/icons/GoogleLoginIcon";
-import KakaoLoginIcon from "../../components/icons/KakaoLoginIcon";
+import KakaoIcon from "../../components/icons/KakaoIcon";
 import NaverLoginIcon from "../../components/icons/NaverLoginIcon";
-import { kakaoLoginAPI, loginAPI } from "../../types/api";
+import { loginAPI } from "../../types/api";
 import { saveToken } from "../../types/auth";
 
 const { width, height } = Dimensions.get("window");
@@ -31,7 +31,6 @@ export default function SignInScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { refreshAuthState } = useAuth();
-  const [showKakaoWebView, setShowKakaoWebView] = useState(false);
 
   const handleBack = () => {
     // WelcomeScreen으로 이동
@@ -95,93 +94,9 @@ export default function SignInScreen() {
     console.log("비밀번호 찾기 클릭");
   };
 
-  const handleKakaoLogin = async () => {
-    try {
-      console.log("=== 카카오 로그인 시작 ===");
-      console.log("카카오 웹뷰를 열어서 인증 코드 획득을 시작합니다.");
-
-      // 카카오 웹뷰를 열어서 인증 코드 획득
-      setShowKakaoWebView(true);
-      console.log("카카오 웹뷰 상태를 true로 설정했습니다.");
-    } catch (error) {
-      console.error("카카오 로그인 에러:", error);
-      Alert.alert(
-        "카카오 로그인 실패",
-        "카카오 로그인을 시작할 수 없습니다. 다시 시도해주세요.",
-      );
-    }
-  };
-
-  // 카카오 웹뷰에서 인증 코드를 받아서 처리
-  const handleKakaoCallback = async (code: string) => {
-    try {
-      console.log("=== 카카오 인증 코드 획득 ===");
-      console.log("웹뷰에서 인증 코드를 받았습니다:", code);
-      console.log("인증 코드 길이:", code.length);
-
-      // 카카오 소셜 로그인 API 호출
-      console.log("카카오 소셜 로그인 API를 호출합니다...");
-      const response = await kakaoLoginAPI(code);
-
-      console.log("=== 카카오 소셜 로그인 API 응답 ===");
-      console.log("응답 전체:", response);
-      console.log("성공 여부:", response.isSuccess);
-      console.log("응답 코드:", response.code);
-      console.log("응답 메시지:", response.message);
-
-      if (response.isSuccess) {
-        try {
-          console.log("=== 카카오 로그인 성공 처리 ===");
-          console.log("결과 데이터:", response.result);
-          console.log("액세스 토큰:", response.result.accessToken);
-          console.log("리프레시 토큰:", response.result.refreshToken);
-          console.log("사용자 ID:", response.result.userId);
-
-          // 토큰과 사용자 정보 저장
-          console.log("토큰을 저장합니다...");
-          await saveToken(response.result.accessToken, response.result.userId);
-          console.log("토큰 저장 완료");
-
-          console.log("카카오 로그인 성공:", response.result);
-
-          // 인증 상태 새로고침
-          console.log("인증 상태를 새로고침합니다...");
-          await refreshAuthState();
-          console.log("카카오 로그인 후 인증 상태 새로고침 완료");
-
-          // 웹뷰 닫기
-          console.log("웹뷰를 닫습니다...");
-          setShowKakaoWebView(false);
-          console.log("웹뷰 닫기 완료");
-
-          // 홈 화면으로 이동
-          console.log("홈 화면으로 이동합니다...");
-          router.push("/(tabs)");
-          console.log("홈 화면 이동 완료");
-        } catch (error) {
-          console.error("=== 카카오 로그인 토큰 저장 실패 ===");
-          console.error("에러 상세:", error);
-          Alert.alert(
-            "로그인 실패",
-            "토큰 저장에 실패했습니다. 다시 시도해주세요.",
-          );
-        }
-      } else {
-        console.error("=== 카카오 소셜 로그인 API 실패 ===");
-        console.error("실패 응답:", response);
-        Alert.alert(
-          "카카오 로그인 실패",
-          response.message || "카카오 로그인에 실패했습니다.",
-        );
-      }
-    } catch (error) {
-      console.error("=== 카카오 로그인 API 에러 ===");
-      console.error("에러 상세:", error);
-      Alert.alert(
-        "카카오 로그인 실패",
-        "네트워크 오류가 발생했습니다. 다시 시도해주세요.",
-      );
-    }
+  const handleKakaoLogin = () => {
+    // 카카오 로그인 기능은 현재 비활성화
+    Alert.alert("카카오 로그인", "카카오 로그인 기능은 현재 준비 중입니다.");
   };
 
   const handleNaverLogin = () => {
@@ -348,11 +263,11 @@ export default function SignInScreen() {
 
       {/* 소셜 로그인 */}
       <View style={styles.socialContainer}>
-        <TouchableOpacity
-          style={styles.socialButton}
-          onPress={handleKakaoLogin}
-        >
-          <KakaoLoginIcon />
+        <TouchableOpacity style={styles.kakaoButton} onPress={handleKakaoLogin}>
+          <View style={styles.kakaoIcon}>
+            <KakaoIcon />
+          </View>
+          <Text style={styles.kakaoButtonText}>카카오로 로그인</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -445,53 +360,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#424242",
   },
-  optionsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: "#E0E0E0",
-    backgroundColor: "#FFFFFF",
-    marginRight: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  checkboxChecked: {
-    backgroundColor: "#FF6B35",
-    borderColor: "#FF6B35",
-  },
-  checkmark: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-  checkboxText: {
-    fontSize: 14,
-    color: "#424242",
-  },
-  findLinks: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  findLinkText: {
-    fontSize: 14,
-    color: "#757575",
-  },
-  findLinkDivider: {
-    fontSize: 14,
-    color: "#E0E0E0",
-    marginHorizontal: 8,
-  },
+
   loginButton: {
     backgroundColor: "#DBD6D3",
     borderRadius: 5,
@@ -510,7 +379,7 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: "#716C69",
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     fontWeight: "600", // 폰트 로딩 실패 시 대체
   },
@@ -531,6 +400,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#424242",
     fontWeight: "500",
+  },
+  kakaoButton: {
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#EEE9E6",
+    borderRadius: 5,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
+  },
+  kakaoButtonText: {
+    fontSize: 14,
+    color: "#262423",
+    fontFamily: "SUIT-600",
+  },
+  kakaoIcon: {
+    position: "absolute",
+    left: 15,
+    top: 13,
   },
   bottomContainer: {
     paddingHorizontal: 20,
@@ -557,46 +448,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#F44336",
     textAlign: "center",
-  },
-  webViewContainer: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 10,
-    overflow: "hidden",
-    marginTop: 20,
-    marginHorizontal: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  webViewHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
-  },
-  webViewCloseButton: {
-    padding: 8,
-  },
-  webViewCloseButtonText: {
-    fontSize: 20,
-    color: "#757575",
-  },
-  webViewTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#212121",
-    flex: 1,
-    textAlign: "center",
-  },
-  webViewSpacer: {
-    width: 40,
-  },
-  webView: {
-    flex: 1,
   },
 });

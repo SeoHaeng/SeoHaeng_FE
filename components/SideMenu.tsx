@@ -1,4 +1,6 @@
+import { useAuth } from "@/components/AuthProvider";
 import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
+import LogoutConfirmModal from "@/components/LogoutConfirmModal";
 import { removeToken } from "@/types/auth";
 import { getUserInfo } from "@/types/globalState";
 import { useRouter } from "expo-router";
@@ -24,9 +26,11 @@ const { width } = Dimensions.get("window");
 
 export default function SideMenu({ visible, onClose }: SideMenuProps) {
   const router = useRouter();
+  const { refreshAuthState } = useAuth();
   const slideAnim = React.useRef(new Animated.Value(width)).current;
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const [userInfo, setUserInfo] = React.useState(getUserInfo());
+  const [showLogoutModal, setShowLogoutModal] = React.useState(false);
 
   // 사용자 정보 업데이트를 위한 주기적 체크
   React.useEffect(() => {
@@ -90,15 +94,40 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
     });
   };
 
-  const handleLogout = async () => {
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleLogoutConfirm = async () => {
     try {
+      // 토큰 삭제
       await removeToken();
+
+      // 전역 상태 초기화
+      setUserInfo(null);
+
+      // AuthProvider의 인증 상태도 새로고침
+      await refreshAuthState();
+
+      // 모달과 사이드 메뉴 닫기
+      setShowLogoutModal(false);
       onClose();
-      // 로그인 화면으로 이동
+
+      // 강제로 로그인 화면으로 이동 (replace 사용)
+      console.log("로그아웃 완료, 로그인 화면으로 이동");
       router.replace("/auth");
+
+      // 추가적으로 홈 화면으로 이동 시도 (혹시 캐시된 라우트가 있을 경우)
+      setTimeout(() => {
+        router.replace("/auth");
+      }, 100);
     } catch (error) {
       console.error("로그아웃 실패:", error);
     }
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutModal(false);
   };
 
   if (!visible) return null;
@@ -151,11 +180,7 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                 <Text style={styles.userName}>
                   {userInfo?.nickName || "사용자"}
                 </Text>
-                <Text style={styles.userEmail}>
-                  {userInfo?.loginType === "LOCAL"
-                    ? "로컬 계정"
-                    : userInfo?.loginType || "계정 정보 없음"}
-                </Text>
+                <Text style={styles.userEmail}>{userInfo?.userName}</Text>
               </View>
             </View>
 
@@ -201,7 +226,10 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
 
             {/* 계정 관련 메뉴 */}
             <View style={styles.accountMenuItems}>
-              <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={handleLogoutClick}
+              >
                 <View style={styles.menuItemIcon}>
                   <Text style={styles.menuItemIconText}>🚪</Text>
                 </View>
@@ -220,6 +248,13 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
           </SafeAreaView>
         </Animated.View>
       </View>
+
+      {/* 로그아웃 확인 모달 */}
+      <LogoutConfirmModal
+        visible={showLogoutModal}
+        onClose={handleLogoutCancel}
+        onConfirm={handleLogoutConfirm}
+      />
     </Modal>
   );
 }

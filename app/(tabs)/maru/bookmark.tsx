@@ -10,12 +10,12 @@ export default function Bookmark() {
   const [totalElements, setTotalElements] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 책갈피 조회 API 호출
+  // 책갈피 조회 API 호출 (인기순)
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
         setIsLoading(true);
-        const response = await getReadingSpotsAPI(1, 10); // 10개씩 로드
+        const response = await getReadingSpotsAPI(1, 10, "popular"); // 10개씩 로드, 인기순
         if (response.isSuccess) {
           setScrapList(response.result.readingSpotList);
           setTotalElements(response.result.totalElements);

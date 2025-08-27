@@ -1,7 +1,8 @@
 import { useAuth } from "@/components/AuthProvider";
+import DeleteUserConfirmModal from "@/components/DeleteUserConfirmModal";
 import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
 import LogoutConfirmModal from "@/components/LogoutConfirmModal";
-import { removeToken } from "@/types/auth";
+import { deleteUser, removeToken } from "@/types/auth";
 import { getUserInfo } from "@/types/globalState";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -31,6 +32,7 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const [userInfo, setUserInfo] = React.useState(getUserInfo());
   const [showLogoutModal, setShowLogoutModal] = React.useState(false);
+  const [showDeleteUserModal, setShowDeleteUserModal] = React.useState(false);
 
   // 사용자 정보 업데이트를 위한 주기적 체크
   React.useEffect(() => {
@@ -128,6 +130,39 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
 
   const handleLogoutCancel = () => {
     setShowLogoutModal(false);
+  };
+
+  const handleDeleteUserClick = () => {
+    setShowDeleteUserModal(true);
+  };
+
+  const handleDeleteUserConfirm = async () => {
+    try {
+      console.log("회원탈퇴 확인됨");
+
+      // 회원탈퇴 API 호출
+      const success = await deleteUser();
+
+      if (success) {
+        console.log("회원탈퇴 성공");
+
+        // 모달과 사이드 메뉴 닫기
+        setShowDeleteUserModal(false);
+        onClose();
+
+        // 로그인 화면으로 이동
+        router.replace("/auth");
+      } else {
+        console.error("회원탈퇴 실패");
+        // 에러 처리 (필요시 Alert 표시)
+      }
+    } catch (error) {
+      console.error("회원탈퇴 중 오류:", error);
+    }
+  };
+
+  const handleDeleteUserCancel = () => {
+    setShowDeleteUserModal(false);
   };
 
   if (!visible) return null;
@@ -237,7 +272,10 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                 <Text style={styles.arrowIcon}>›</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.menuItem}>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={handleDeleteUserClick}
+              >
                 <View style={styles.menuItemIcon}>
                   <Text style={styles.menuItemIconText}>❌</Text>
                 </View>
@@ -254,6 +292,13 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
         visible={showLogoutModal}
         onClose={handleLogoutCancel}
         onConfirm={handleLogoutConfirm}
+      />
+
+      {/* 회원탈퇴 확인 모달 */}
+      <DeleteUserConfirmModal
+        visible={showDeleteUserModal}
+        onClose={handleDeleteUserCancel}
+        onConfirm={handleDeleteUserConfirm}
       />
     </Modal>
   );

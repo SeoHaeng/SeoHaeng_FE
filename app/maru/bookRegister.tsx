@@ -31,6 +31,26 @@ export default function BookRegister() {
   const [bookAuthor, setBookAuthor] = useState("");
   const [bookPubDate, setBookPubDate] = useState("");
 
+  // 출판년도 유효성 검사 함수
+  const isValidPubDate = (pubDate: string): boolean => {
+    if (pubDate.length !== 8) return false;
+
+    const year = parseInt(pubDate.substring(0, 4));
+    const month = parseInt(pubDate.substring(4, 6));
+    const day = parseInt(pubDate.substring(6, 8));
+
+    // 기본 범위 검사
+    if (year < 1900 || year > 2030) return false;
+    if (month < 1 || month > 12) return false;
+    if (day < 1 || day > 31) return false;
+
+    // 월별 일수 검사
+    const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if (day > daysInMonth[month - 1]) return false;
+
+    return true;
+  };
+
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -79,8 +99,8 @@ export default function BookRegister() {
           registeredBook,
         );
         console.log("전역변수 확인:", getMarkerBookData());
-        // 마커 등록 화면으로 돌아가기
-        router.back();
+        // 마커 등록 화면으로 직접 이동
+        router.push("/marker/register");
       } else {
         console.log("알 수 없는 bookType:", bookType);
       }
@@ -88,7 +108,12 @@ export default function BookRegister() {
   };
 
   const isFormValid =
-    bookImage && bookTitle.trim() && bookAuthor.trim() && bookPubDate.trim();
+    bookImage &&
+    bookTitle.trim() &&
+    bookAuthor.trim() &&
+    bookPubDate.trim() &&
+    bookPubDate.length === 8 &&
+    isValidPubDate(bookPubDate);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -155,12 +180,24 @@ export default function BookRegister() {
           <TextInput
             style={styles.pubDateInput}
             value={bookPubDate}
-            onChangeText={setBookPubDate}
-            placeholder="출판년도를 적어주세요."
+            onChangeText={(text) => {
+              // 숫자만 입력 가능
+              const numericText = text.replace(/[^0-9]/g, "");
+              setBookPubDate(numericText);
+            }}
+            placeholder="출판년도를 적어주세요. ex) 20250827"
             placeholderTextColor="#9D9896"
             keyboardType="numeric"
-            maxLength={4}
+            maxLength={8}
           />
+          {bookPubDate.length > 0 && bookPubDate.length < 8 && (
+            <Text style={styles.pubDateHint}>
+              YYYYMMDD 형식으로 8자리 입력해주세요
+            </Text>
+          )}
+          {bookPubDate.length === 8 && !isValidPubDate(bookPubDate) && (
+            <Text style={styles.pubDateError}>올바른 날짜 형식이 아닙니다</Text>
+          )}
         </View>
       </ScrollView>
 
@@ -259,10 +296,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "SUIT-700",
     color: "#000000",
-    marginBottom: 15,
+    marginBottom: 10,
   },
   titleInput: {
-    minHeight: 52,
     padding: 15,
     backgroundColor: "#EEE9E6",
     borderWidth: 1,
@@ -274,7 +310,6 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
   },
   authorInput: {
-    height: 52,
     padding: 15,
     backgroundColor: "#EEE9E6",
     borderWidth: 1,
@@ -285,7 +320,6 @@ const styles = StyleSheet.create({
     color: "#000000",
   },
   pubDateInput: {
-    height: 52,
     padding: 15,
     backgroundColor: "#EEE9E6",
     borderWidth: 1,
@@ -294,6 +328,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#000000",
+  },
+  pubDateHint: {
+    fontSize: 11,
+    fontFamily: "SUIT-400",
+    color: "#716C69",
+    marginTop: 5,
+    marginLeft: 5,
+  },
+  pubDateError: {
+    fontSize: 11,
+    fontFamily: "SUIT-400",
+    color: "#E55E5E",
+    marginTop: 5,
+    marginLeft: 5,
   },
   fixedButtonContainer: {
     position: "absolute",

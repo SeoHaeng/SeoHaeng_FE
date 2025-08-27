@@ -593,6 +593,7 @@ const styles = StyleSheet.create({
   commentInputContainer: {
     flexDirection: "row",
     alignItems: "center",
+    paddingBottom: 30,
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: "#302E2D",

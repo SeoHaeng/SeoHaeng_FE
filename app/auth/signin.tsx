@@ -54,6 +54,7 @@ export default function SignInScreen() {
             // 토큰과 사용자 정보 저장
             await saveToken(
               response.result.accessToken,
+              response.result.refreshToken,
               response.result.userId,
             );
 

@@ -1,3 +1,4 @@
+import { setMarkerLocationData } from "@/types/globalState";
 import Constants from "expo-constants";
 import * as Location from "expo-location";
 import { router } from "expo-router";
@@ -397,15 +398,17 @@ const LocationPickerMap = ({
             <TouchableOpacity
               style={styles.confirmButton}
               onPress={() => {
-                // 마커 등록 화면으로 이동하면서 위치 정보 전달
-                router.push({
-                  pathname: "/marker/register",
-                  params: {
-                    latitude: selectedLocation.lat.toString(),
-                    longitude: selectedLocation.lng.toString(),
-                    address: selectedLocation.address,
-                  },
-                });
+                // 선택한 위치 정보를 전역 변수에 저장
+                const locationData = {
+                  latitude: selectedLocation.lat,
+                  longitude: selectedLocation.lng,
+                  address: selectedLocation.address,
+                };
+                setMarkerLocationData(locationData);
+                console.log("위치 정보 전역 변수에 저장됨:", locationData);
+
+                // 마커 등록 화면으로 이동
+                router.push("/marker/register");
               }}
             >
               <Text style={styles.confirmButtonText}>여기로 하기 {">"}</Text>

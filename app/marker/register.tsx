@@ -4,7 +4,14 @@ import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
 import { createReadingSpotAPI } from "@/types/api";
-import { getMarkerBookData, setMarkerBookData } from "@/types/globalState";
+import {
+  getMarkerBookData,
+  getMarkerLocationData,
+  getMarkerTemplateData,
+  setMarkerBookData,
+  setMarkerLocationData,
+  setMarkerTemplateData,
+} from "@/types/globalState";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -31,10 +38,26 @@ export default function MarkerRegister() {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState(false);
 
-  // URL 파라미터에서 위치 정보 가져오기
-  const address = (params.address as string) || "주소를 불러올 수 없습니다";
-  const latitude = parseFloat(params.latitude as string) || 0;
-  const longitude = parseFloat(params.longitude as string) || 0;
+  // 전역 변수에서 위치 정보 가져오기 (우선순위: 전역 변수 > URL 파라미터)
+  const getLocationInfo = () => {
+    const globalLocation = getMarkerLocationData();
+    if (globalLocation) {
+      return {
+        address: globalLocation.address,
+        latitude: globalLocation.latitude,
+        longitude: globalLocation.longitude,
+      };
+    }
+
+    // 전역 변수에 없으면 URL 파라미터에서 가져오기
+    return {
+      address: (params.address as string) || "주소를 불러올 수 없습니다",
+      latitude: parseFloat(params.latitude as string) || 0,
+      longitude: parseFloat(params.longitude as string) || 0,
+    };
+  };
+
+  const { address, latitude, longitude } = getLocationInfo();
 
   // 주소 정보 콘솔 출력
   console.log("마커 등록 화면 - 주소 정보:", {
@@ -58,8 +81,17 @@ export default function MarkerRegister() {
       console.log("선택된 책 정보가 없음");
     }
 
-    // 책 정보는 등록 완료 후에만 초기화 (여기서는 초기화하지 않음)
-    console.log("책 정보 유지됨");
+    // 전역변수에서 선택된 템플릿 정보 가져오기
+    const selectedTemplate = getMarkerTemplateData();
+    if (selectedTemplate) {
+      setSelectedTemplate(selectedTemplate);
+      console.log("템플릿 선택 상태 복원됨:", selectedTemplate);
+    } else {
+      console.log("저장된 템플릿 선택 상태 없음");
+    }
+
+    // 책 정보와 템플릿 정보는 등록 완료 후에만 초기화 (여기서는 초기화하지 않음)
+    console.log("책 정보와 템플릿 정보 유지됨");
   }, []);
 
   // 도서가 선택되었는지 확인
@@ -137,7 +169,11 @@ export default function MarkerRegister() {
                   styles.templateButton,
                   selectedTemplate === templateId && styles.selectedTemplate,
                 ]}
-                onPress={() => setSelectedTemplate(templateId)}
+                onPress={() => {
+                  setSelectedTemplate(templateId);
+                  setMarkerTemplateData(templateId);
+                  console.log("템플릿 선택됨:", templateId);
+                }}
               >
                 <BookmarkTemplateMini templateId={templateId} />
                 {selectedTemplate === templateId && (
@@ -299,11 +335,31 @@ export default function MarkerRegister() {
                 content: impressions,
               };
 
-              // API 호출
-              console.log("=== 마커 등록 API 호출 시작 ===");
-              console.log("요청 데이터:", requestData);
-              console.log("선택된 이미지 개수:", selectedImages.length);
-              console.log("선택된 책 정보:", selectedBook);
+              // API 요청 데이터 상세 로그
+              console.log("=== 마커 등록 API 요청 데이터 ===");
+              console.log(" 책 정보:");
+              console.log("  - 제목:", requestData.bookTitle);
+              console.log("  - 저자:", requestData.bookAuthor);
+              console.log("  - 출판일:", requestData.bookPubDate);
+              console.log("  - 책 이미지:", requestData.bookImage);
+              console.log("");
+              console.log(" 위치 정보:");
+              console.log("  - 위도:", requestData.latitude);
+              console.log("  - 경도:", requestData.longitude);
+              console.log("  - 주소:", requestData.address);
+              console.log("");
+              console.log(" 마커 정보:");
+              console.log("  - 템플릿 ID:", requestData.templateId);
+              console.log("  - 장소 이름:", requestData.title);
+              console.log("  - 감상:", requestData.content);
+              console.log("  - 공개 여부:", requestData.opened);
+              console.log("");
+              console.log(" 이미지 정보:");
+              console.log("  - 선택된 이미지 개수:", selectedImages.length);
+              console.log(
+                "  - 메인 이미지 인덱스:",
+                requestData.mainImageIndex,
+              );
               console.log("================================");
 
               const response = await createReadingSpotAPI(
@@ -320,9 +376,13 @@ export default function MarkerRegister() {
                     {
                       text: "확인",
                       onPress: () => {
-                        // 등록 완료 후 책 정보 초기화
+                        // 등록 완료 후 모든 정보 초기화
                         setMarkerBookData(null);
-                        console.log("등록 완료 후 책 정보 초기화됨");
+                        setMarkerTemplateData(null);
+                        setMarkerLocationData(null);
+                        console.log(
+                          "등록 완료 후 모든 정보 초기화됨 (책, 템플릿, 위치)",
+                        );
                         // 이전 화면으로 이동
                         router.back();
                       },
@@ -489,7 +549,7 @@ const styles = StyleSheet.create({
   },
   searchPlaceholder: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },

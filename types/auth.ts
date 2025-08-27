@@ -5,16 +5,60 @@ import { AuthState, UserInfo } from "./globalState";
 // AsyncStorage 키 상수
 const STORAGE_KEYS = {
   ACCESS_TOKEN: "accessToken",
+  REFRESH_TOKEN: "refreshToken",
   USER_ID: "userId",
   IS_AUTHENTICATED: "isAuthenticated",
 };
 
 // 토큰 저장 (AsyncStorage 기반)
-export const saveToken = async (accessToken: string, userId: number) => {
+export const saveToken = async (
+  accessToken: string,
+  refreshToken: string,
+  userId: number,
+) => {
   try {
     // 토큰 유효성 검증
     if (!accessToken || accessToken.length < 10) {
-      throw new Error("유효하지 않은 토큰입니다.");
+      throw new Error("유효하지 않은 액세스 토큰입니다.");
+    }
+
+    if (!refreshToken || refreshToken.length < 10) {
+      throw new Error("유효하지 않은 리프레시 토큰입니다.");
+    }
+
+    // AsyncStorage에 저장
+    await AsyncStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
+    await AsyncStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_ID, userId.toString());
+    await AsyncStorage.setItem(STORAGE_KEYS.IS_AUTHENTICATED, "true");
+
+    // 전역 상태도 업데이트
+    const { setAuthState } = await import("./globalState");
+    setAuthState({
+      accessToken,
+      refreshToken,
+      userId,
+      isAuthenticated: true,
+    });
+
+    console.log("토큰 저장됨 (AsyncStorage):", {
+      accessToken: accessToken.substring(0, 20) + "...",
+      refreshToken: refreshToken.substring(0, 20) + "...",
+      userId,
+      tokenLength: accessToken.length,
+    });
+  } catch (error) {
+    console.error("토큰 저장 실패:", error);
+    throw error;
+  }
+};
+
+// 액세스 토큰만 저장 (기존 호환성 유지)
+export const saveAccessToken = async (accessToken: string, userId: number) => {
+  try {
+    // 토큰 유효성 검증
+    if (!accessToken || accessToken.length < 10) {
+      throw new Error("유효하지 않은 액세스 토큰입니다.");
     }
 
     // AsyncStorage에 저장
@@ -22,13 +66,21 @@ export const saveToken = async (accessToken: string, userId: number) => {
     await AsyncStorage.setItem(STORAGE_KEYS.USER_ID, userId.toString());
     await AsyncStorage.setItem(STORAGE_KEYS.IS_AUTHENTICATED, "true");
 
-    console.log("토큰 저장됨 (AsyncStorage):", {
+    // 전역 상태도 업데이트
+    const { setAuthState } = await import("./globalState");
+    setAuthState({
+      accessToken,
+      userId,
+      isAuthenticated: true,
+    });
+
+    console.log("액세스 토큰만 저장됨 (AsyncStorage):", {
       accessToken: accessToken.substring(0, 20) + "...",
       userId,
       tokenLength: accessToken.length,
     });
   } catch (error) {
-    console.error("토큰 저장 실패:", error);
+    console.error("액세스 토큰 저장 실패:", error);
     throw error;
   }
 };
@@ -40,6 +92,17 @@ export const getToken = async (): Promise<string | null> => {
     return token;
   } catch (error) {
     console.error("토큰 조회 실패:", error);
+    return null;
+  }
+};
+
+// 리프레시 토큰 가져오기 (AsyncStorage에서)
+export const getRefreshToken = async (): Promise<string | null> => {
+  try {
+    const token = await AsyncStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+    return token;
+  } catch (error) {
+    console.error("리프레시 토큰 조회 실패:", error);
     return null;
   }
 };
@@ -66,15 +129,27 @@ export const isAuthenticated = async (): Promise<boolean> => {
   }
 };
 
-// 토큰 재발급
+// 토큰 재발급 (리프레시 토큰 사용)
 export const reissueToken = async (): Promise<boolean> => {
   try {
     console.log("토큰 재발급 시도");
-    const response = await reissueTokenAPI();
+
+    // 리프레시 토큰 가져오기
+    const refreshToken = await getRefreshToken();
+    if (!refreshToken) {
+      console.error("리프레시 토큰이 없습니다.");
+      return false;
+    }
+
+    const response = await reissueTokenAPI(refreshToken);
 
     if (response.isSuccess && response.result) {
       // 새로운 토큰 저장
-      await saveToken(response.result.accessToken, response.result.userId);
+      await saveToken(
+        response.result.accessToken,
+        response.result.refreshToken,
+        response.result.userId,
+      );
       console.log("토큰 재발급 성공");
       return true;
     } else {
@@ -87,15 +162,72 @@ export const reissueToken = async (): Promise<boolean> => {
   }
 };
 
+// 403 에러 시 자동 토큰 재발급 시도
+export const handleTokenError = async (error: any): Promise<boolean> => {
+  try {
+    // 403 에러인 경우 토큰 재발급 시도
+    if (error instanceof Error && error.message.includes("403")) {
+      console.log("403 에러 감지: 토큰 재발급 시도");
+      const reissueSuccess = await reissueToken();
+      if (reissueSuccess) {
+        console.log("토큰 재발급 성공, API 재시도 가능");
+        return true;
+      } else {
+        console.log("토큰 재발급 실패, 로그아웃 필요");
+        await removeToken();
+        return false;
+      }
+    }
+    return false;
+  } catch (handleError) {
+    console.error("토큰 에러 처리 중 오류:", handleError);
+    return false;
+  }
+};
+
+// 회원탈퇴
+export const deleteUser = async (): Promise<boolean> => {
+  try {
+    console.log("회원탈퇴 시작");
+
+    const { deleteUserAPI } = await import("./api");
+    const response = await deleteUserAPI();
+
+    if (response.isSuccess) {
+      console.log("회원탈퇴 성공");
+      // 모든 토큰과 사용자 정보 삭제
+      await removeToken();
+      return true;
+    } else {
+      console.error("회원탈퇴 실패:", response.message);
+      return false;
+    }
+  } catch (error) {
+    console.error("회원탈퇴 중 오류:", error);
+    return false;
+  }
+};
+
 // 토큰 삭제 (로그아웃)
 export const removeToken = async () => {
   try {
     // AsyncStorage에서 삭제
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.ACCESS_TOKEN,
+      STORAGE_KEYS.REFRESH_TOKEN,
       STORAGE_KEYS.USER_ID,
       STORAGE_KEYS.IS_AUTHENTICATED,
     ]);
+
+    // 전역 상태도 업데이트
+    const { setAuthState } = await import("./globalState");
+    setAuthState({
+      accessToken: null,
+      refreshToken: null,
+      userId: null,
+      isAuthenticated: false,
+      userInfo: null,
+    });
 
     console.log("토큰 삭제됨 (AsyncStorage)");
   } catch (error) {
@@ -203,8 +335,9 @@ const isTokenExpired = (token: string): boolean => {
 // 저장된 토큰 복원 (앱 시작 시 호출)
 export const restoreAuthState = async (): Promise<AuthState> => {
   try {
-    const [accessToken, userId, isAuth] = await Promise.all([
+    const [accessToken, refreshToken, userId, isAuth] = await Promise.all([
       AsyncStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN),
+      AsyncStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN),
       AsyncStorage.getItem(STORAGE_KEYS.USER_ID),
       AsyncStorage.getItem(STORAGE_KEYS.IS_AUTHENTICATED),
     ]);
@@ -212,9 +345,11 @@ export const restoreAuthState = async (): Promise<AuthState> => {
     // 토큰이 실제로 존재하고 유효한지 더 엄격하게 검증
     const hasValidToken =
       !!accessToken && accessToken.length > 10 && !isTokenExpired(accessToken);
+    const hasRefreshToken = !!refreshToken && refreshToken.length > 10;
     const authState: AuthState = {
       isAuthenticated: isAuth === "true" && hasValidToken,
       accessToken: hasValidToken ? accessToken : null,
+      refreshToken: hasRefreshToken ? refreshToken : null,
       userId: hasValidToken && userId ? parseInt(userId, 10) : null,
       userInfo: null, // 초기에는 null로 설정
     };
@@ -269,6 +404,7 @@ export const restoreAuthState = async (): Promise<AuthState> => {
           const errorState: AuthState = {
             isAuthenticated: false,
             accessToken: null,
+            refreshToken: null,
             userId: null,
             userInfo: null,
           };
@@ -285,6 +421,7 @@ export const restoreAuthState = async (): Promise<AuthState> => {
     const defaultState: AuthState = {
       isAuthenticated: false,
       accessToken: null,
+      refreshToken: null,
       userId: null,
       userInfo: null,
     };

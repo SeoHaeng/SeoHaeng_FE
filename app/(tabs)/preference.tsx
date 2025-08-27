@@ -4,6 +4,7 @@ import TravelCard from "@/components/TravelCard";
 import {
   Festival,
   getFestivalsAPI,
+  getLastVisitAPI,
   getMyTravelCoursesAPI,
   TravelCourse,
 } from "@/types/api";
@@ -48,9 +49,6 @@ const FestivalCard: React.FC<FestivalCardProps> = ({ image, title, dates }) => (
           </View>
           <Text style={styles.festivalCardDates}>{dates}</Text>
         </View>
-        <View style={styles.festivalCardLocationContainer}>
-          <Text style={styles.festivalCardLocation}>평창</Text>
-        </View>
       </View>
     </View>
   </TouchableOpacity>
@@ -63,6 +61,7 @@ export default function Preference() {
     TravelCourse[]
   >([]);
   const [isLoadingTravelCourses, setIsLoadingTravelCourses] = useState(false);
+  const [lastVisitDaysAgo, setLastVisitDaysAgo] = useState<number | null>(null);
 
   // 강원도 축제 조회
   useEffect(() => {
@@ -102,6 +101,22 @@ export default function Preference() {
     fetchTravelCourses();
   }, []);
 
+  // 마지막 강원도 방문 날짜 조회
+  useEffect(() => {
+    const fetchLastVisit = async () => {
+      try {
+        const response = await getLastVisitAPI();
+        if (response.isSuccess) {
+          setLastVisitDaysAgo(response.result.daysAgo);
+        }
+      } catch (error) {
+        console.error("마지막 방문 날짜 조회 실패:", error);
+      }
+    };
+
+    fetchLastVisit();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       <ScrollView
@@ -124,22 +139,32 @@ export default function Preference() {
                 </Text>
                 <TouchableOpacity
                   style={styles.planButton}
-                  onPress={() => router.push("/plan")}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/plan",
+                      params: { from: "preference" },
+                    })
+                  }
                 >
                   <CalendarIcon />
                   <Text style={styles.planButtonText}>일정 짜기</Text>
                 </TouchableOpacity>
               </View>
               {/* 두 번째 row: 부제목과 전체보기 */}
-              <View style={styles.secondRow}>
-                <Text style={styles.sectionSubtitle}>
-                  마지막 강원도 여행이{" "}
-                  <Text style={styles.highlightText}>37일</Text> 전이에요.
-                </Text>
-                <TouchableOpacity>
-                  <Text style={styles.viewAllText}>전체 보기 {">"}</Text>
-                </TouchableOpacity>
-              </View>
+              {lastVisitDaysAgo !== null && (
+                <View style={styles.secondRow}>
+                  <Text style={styles.sectionSubtitle}>
+                    마지막 강원도 여행이{" "}
+                    <Text style={styles.highlightText}>
+                      {lastVisitDaysAgo}일
+                    </Text>{" "}
+                    전이에요.
+                  </Text>
+                  <TouchableOpacity>
+                    <Text style={styles.viewAllText}>전체 보기 {">"}</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           </View>
 
@@ -226,9 +251,6 @@ const styles = StyleSheet.create({
     color: "#000000",
     fontWeight: "bold",
   },
-  section: {
-    marginBottom: 30,
-  },
   firstSection: {
     marginBottom: 30,
     borderBottomWidth: 7,
@@ -237,13 +259,6 @@ const styles = StyleSheet.create({
   },
   secondSection: {
     marginBottom: 30,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    paddingHorizontal: 20,
-    marginBottom: 10,
   },
   firstSectionHeader: {
     flexDirection: "row",
@@ -304,10 +319,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "SUIT-600",
   },
-  viewAllContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 15,
-  },
   viewAllText: {
     fontSize: 13,
     color: "#716C69",
@@ -317,104 +328,11 @@ const styles = StyleSheet.create({
     textDecorationColor: "#716C69",
     lineHeight: 20,
   },
-  moreText: {
-    fontSize: 14,
-    color: "#666666",
-    fontFamily: "SUIT-500",
-    textDecorationLine: "underline",
-  },
   cardsScrollView: {
     paddingLeft: 20,
   },
   cardsContainer: {
     paddingRight: 20,
-  },
-  travelCard: {
-    width: 300,
-    height: 295,
-    backgroundColor: "#EEE9E6",
-    borderRadius: 5,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: "#DBD6D3",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    position: "relative",
-  },
-  travelCardImage: {
-    width: "100%",
-    height: 171,
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-    resizeMode: "cover",
-  },
-  travelCardContent: {
-    padding: 20,
-  },
-  travelCardTitle: {
-    fontSize: 20,
-    fontFamily: "SUIT-700",
-    color: "#262423",
-    marginBottom: 5,
-  },
-  travelCardDates: {
-    fontSize: 14,
-    fontFamily: "SUIT-500",
-    color: "#716C69",
-  },
-  travelCardDuration: {
-    fontSize: 14,
-    fontFamily: "SUIT-500",
-    color: "#4D4947",
-  },
-  travelCardDateContainer: {
-    flexDirection: "row",
-    gap: 10,
-    alignItems: "center",
-    marginBottom: 13,
-  },
-  travelCardMenuIcon: {
-    position: "absolute",
-    top: 5,
-    right: 5,
-  },
-  travelCardTags: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 5,
-  },
-  travelCardTag: {
-    backgroundColor: "#C5BFBB",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 5,
-  },
-  travelCardTagText: {
-    fontSize: 14,
-    fontFamily: "SUIT-500",
-    color: "#EEE9E6",
-  },
-  travelCardIcon: {
-    position: "absolute",
-    bottom: 15,
-    right: 15,
-    width: 30,
-    height: 30,
-    backgroundColor: "#4D4947",
-    borderRadius: 15,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  travelCardIconText: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    fontFamily: "SUIT-600",
   },
   festivalCard: {
     width: 128,
@@ -470,18 +388,6 @@ const styles = StyleSheet.create({
   },
   festivalCardDates: {
     fontSize: 12,
-    fontFamily: "SUIT-500",
-    color: "#FFFFFF",
-  },
-  festivalCardLocationContainer: {
-    alignSelf: "flex-end",
-    backgroundColor: "rgba(255,255,255,0.4)",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 5,
-  },
-  festivalCardLocation: {
-    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#FFFFFF",
   },

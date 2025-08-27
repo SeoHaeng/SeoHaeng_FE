@@ -42,11 +42,7 @@ export default function PopularChallengeTotal({
             >
               <View style={styles.userInfo}>
                 <Image
-                  source={
-                    profileImageUrl
-                      ? { uri: profileImageUrl }
-                      : require("@/assets/images/인기챌린지 사진.png")
-                  }
+                  source={{ uri: profileImageUrl }}
                   style={styles.profileImage}
                 />
                 <View style={styles.userHeader}>
@@ -118,6 +114,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 43,
     height: 43,
+    borderRadius: 50,
   },
   contentContainer: {
     flexDirection: "column",

@@ -15,9 +15,7 @@ import {
 import { useAuth } from "../../components/AuthProvider";
 import BackIcon from "../../components/icons/BackIcon";
 import EyeIcon from "../../components/icons/EyeIcon";
-import GoogleLoginIcon from "../../components/icons/GoogleLoginIcon";
 import KakaoIcon from "../../components/icons/KakaoIcon";
-import NaverLoginIcon from "../../components/icons/NaverLoginIcon";
 import KakaoLoginWebView from "../../components/KakaoLoginWebView";
 import { kakaoLoginWithCodeAPI, loginAPI } from "../../types/api";
 import { saveToken } from "../../types/auth";
@@ -87,16 +85,6 @@ export default function SignInScreen() {
     }
   };
 
-  const handleFindId = () => {
-    // 아이디 찾기 로직
-    console.log("아이디 찾기 클릭");
-  };
-
-  const handleFindPassword = () => {
-    // 비밀번호 찾기 로직
-    console.log("비밀번호 찾기 클릭");
-  };
-
   const handleKakaoLogin = () => {
     console.log("=== 카카오 로그인 시작 ===");
     setShowKakaoWebView(true);
@@ -141,16 +129,6 @@ export default function SignInScreen() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleNaverLogin = () => {
-    // 네이버 로그인 로직
-    console.log("네이버 로그인 클릭");
-  };
-
-  const handleGoogleLogin = () => {
-    // 구글 로그인 로직
-    console.log("구글 로그인 클릭");
   };
 
   const handleSignUp = () => {
@@ -312,20 +290,6 @@ export default function SignInScreen() {
             <KakaoIcon />
           </View>
           <Text style={styles.kakaoButtonText}>카카오로 로그인</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.socialButton}
-          onPress={handleNaverLogin}
-        >
-          <NaverLoginIcon />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.socialButton}
-          onPress={handleGoogleLogin}
-        >
-          <GoogleLoginIcon />
         </TouchableOpacity>
       </View>
 

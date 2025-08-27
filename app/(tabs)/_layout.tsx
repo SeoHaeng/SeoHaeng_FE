@@ -16,6 +16,7 @@ export default function TabsLayout() {
             fontFamily: "SUIT-500",
             fontSize: 11,
           },
+
         }}
       >
         <Tabs.Screen

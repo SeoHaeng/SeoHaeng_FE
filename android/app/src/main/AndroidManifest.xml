@@ -31,7 +31,5 @@
         <data android:scheme="exp+seohaengfe"/>
       </intent-filter>
     </activity>
-    
-
   </application>
 </manifest>

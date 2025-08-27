@@ -2,9 +2,10 @@ import BackIcon from "@/components/icons/BackIcon";
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import GiftBook from "@/components/maruChallenge/detail/giftBook";
+import { createBookChallengeProofAPI } from "@/types/api";
 import { getGiftBookData, getReceivedBookData } from "@/types/globalState";
 import * as ImagePicker from "expo-image-picker";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
   Image,
@@ -21,6 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ChallengeCertification() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const [giftMessage, setGiftMessage] = useState("");
   const [challengeReview, setChallengeReview] = useState("");
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
@@ -31,9 +33,9 @@ export default function ChallengeCertification() {
     cover: { uri: string };
   } | null>({
     id: "",
-    title: "",
-    author: "어떤 책을 받았나요?",
-    cover: { uri: "" },
+    title: (params.receivedBookTitle as string) || "",
+    author: (params.receivedBookAuthor as string) || "어떤 책을 받았나요?",
+    cover: { uri: (params.receivedBookImage as string) || "" },
   });
   const [giftBook, setGiftBook] = useState<{
     id: string;
@@ -42,9 +44,9 @@ export default function ChallengeCertification() {
     cover: { uri: string };
   } | null>({
     id: "",
-    title: "",
-    author: "어떤 책을 선물할까요?",
-    cover: { uri: "" },
+    title: (params.givenBookTitle as string) || "",
+    author: (params.givenBookAuthor as string) || "어떤 책을 선물할까요?",
+    cover: { uri: (params.givenBookImage as string) || "" },
   });
 
   // 등록하기 버튼 활성화 조건
@@ -108,13 +110,40 @@ export default function ChallengeCertification() {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = () => {
-    // 인증 등록 로직
-    console.log("북챌린지 인증 등록", {
-      giftMessage,
-      challengeReview,
-      selectedImages,
-    });
+  const handleSubmit = async () => {
+    try {
+      console.log("북챌린지 인증 등록 시작:", {
+        bookChallengeId: params.bookChallengeId,
+        giftMessage,
+        challengeReview,
+        selectedImages,
+      });
+
+      if (!params.bookChallengeId) {
+        alert("북챌린지 ID가 없습니다.");
+        return;
+      }
+
+      const bookChallengeId = parseInt(params.bookChallengeId as string);
+
+      const response = await createBookChallengeProofAPI(
+        bookChallengeId,
+        giftMessage,
+        challengeReview,
+        selectedImages,
+      );
+
+      if (response.isSuccess) {
+        alert("북챌린지 인증이 성공적으로 등록되었습니다!");
+        // 성공 후 이전 화면으로 이동
+        router.push("/(tabs)/maru/challenge");
+      } else {
+        alert(`인증 등록 실패: ${response.message}`);
+      }
+    } catch (error) {
+      console.error("북챌린지 인증 등록 실패:", error);
+      alert("인증 등록 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -146,33 +175,26 @@ export default function ChallengeCertification() {
             <View style={styles.locationContainer}>
               <View style={styles.locationInfo}>
                 <PlaceIcon width={17} height={20} color="#716C69" />
-                <Text style={styles.locationText}>행복 서점</Text>
+                <Text style={styles.locationText}>
+                  {params.bookStoreName as string}
+                </Text>
               </View>
             </View>
 
             <View style={styles.bookCardsContainer}>
-              <TouchableOpacity
-                onPress={() => router.push("/maru/bookSearch?type=received")}
-                style={styles.bookCardTouchable}
-              >
-                <GiftBook
-                  title={receivedBook?.title || ""}
-                  author={receivedBook?.author || ""}
-                  status="선물받은 책"
-                  bookImage={receivedBook?.cover}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => router.push("/maru/bookSearch?type=gift")}
-                style={styles.bookCardTouchable}
-              >
-                <GiftBook
-                  title={giftBook?.title || ""}
-                  author={giftBook?.author || ""}
-                  status="선물할 책"
-                  bookImage={giftBook?.cover}
-                />
-              </TouchableOpacity>
+              <GiftBook
+                title={receivedBook?.title || ""}
+                author={receivedBook?.author || ""}
+                status="선물받은 책"
+                bookImage={receivedBook?.cover}
+              />
+
+              <GiftBook
+                title={giftBook?.title || ""}
+                author={giftBook?.author || ""}
+                status="선물할 책"
+                bookImage={giftBook?.cover}
+              />
             </View>
           </View>
 

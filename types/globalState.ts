@@ -4,6 +4,7 @@ export interface BookData {
   title: string;
   author: string;
   cover: { uri: string };
+  pubDate?: string; // 출판일 (YYYYMMDD 형식)
 }
 
 // 사용자 정보 타입

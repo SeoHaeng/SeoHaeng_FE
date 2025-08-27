@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     borderTopColor: "#E0E0E0",
   },
   instructionText: {
-    fontSize: 16,
+    fontSize: 13,
     color: "#666",
     textAlign: "center",
   },

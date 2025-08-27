@@ -662,6 +662,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     gap: 4,
     paddingTop: 2,
+    width: "75%",
   },
   bookTitle: {
     fontSize: 13,

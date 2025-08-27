@@ -185,9 +185,6 @@ export default function Preference() {
         <View style={styles.secondSection}>
           <View style={styles.secondSectionHeader}>
             <Text style={styles.headerTitle}>강원도의 축제</Text>
-            <TouchableOpacity>
-              <Text style={styles.moreText}>더보기 {">"}</Text>
-            </TouchableOpacity>
           </View>
 
           <ScrollView
@@ -260,7 +257,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    marginBottom: 30,
+    marginBottom: 20,
   },
   sectionTitleContainer: {
     flex: 1,
@@ -312,7 +309,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   viewAllText: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#716C69",
     fontFamily: "SUIT-500",
     textDecorationLine: "underline",
@@ -467,12 +464,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   festivalCardTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: "SUIT-700",
     color: "#FFFFFF",
   },
   festivalCardDates: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#FFFFFF",
   },
@@ -484,7 +481,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   festivalCardLocation: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#FFFFFF",
   },

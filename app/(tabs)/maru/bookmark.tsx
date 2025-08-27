@@ -9,7 +9,7 @@ export default function Bookmark() {
   const [scrapList, setScrapList] = useState<ReadingSpot[]>([]);
   const [totalElements, setTotalElements] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [sortType, setSortType] = useState<"latest" | "popular">("latest");
+  const [sortType, setSortType] = useState<"latest" | "popular">("popular");
 
   // 책갈피 조회 API 호출
   useEffect(() => {

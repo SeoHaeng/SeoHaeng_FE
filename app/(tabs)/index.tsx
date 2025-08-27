@@ -570,7 +570,11 @@ export default function Index() {
                 좌우로 넘겨 책갈피를 저장하세요
               </Text> */}
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                router.push("/(tabs)/maru/bookmark");
+              }}
+            >
               <Text style={styles.spaceBookmarkLink}>공간책갈피 &gt;</Text>
             </TouchableOpacity>
           </View>
@@ -828,9 +832,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   moreButton: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
+    textDecorationLine: "underline",
   },
   userContentScroll: {
     flexDirection: "row",
@@ -993,9 +998,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   spaceBookmarkLink: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
+    textDecorationLine: "underline",
   },
   swipeActionContainer: {
     flexDirection: "row",
@@ -1100,7 +1106,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   emptyStateSubtitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     marginBottom: 24,

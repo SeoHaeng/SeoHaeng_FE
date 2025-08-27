@@ -14,6 +14,7 @@ import BookStayIcon from "@/components/icons/BookStayIcon";
 import HotPlaceIcon from "@/components/icons/HotPlaceIcon";
 import IndependentBookstoreIcon from "@/components/icons/IndependentBookstoreIcon";
 import MyLocationIcon from "@/components/icons/MyLocationIcon";
+import PlusIcon from "@/components/icons/PlusIcon";
 import RestaurantIcon from "@/components/icons/RestaurantIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
 import SpaceBookmarkIcon from "@/components/icons/SpaceBookmarkIcon";
@@ -246,6 +247,16 @@ function Milestone() {
       }
 
       if (webViewRef.current) {
+        // 내 위치 마커 표시 메시지 전송
+        const myLocationMessage = JSON.stringify({
+          type: "showMyLocationMarker",
+          latitude: newLocation.latitude,
+          longitude: newLocation.longitude,
+        });
+        console.log("내 위치 마커 표시 메시지:", myLocationMessage);
+        webViewRef.current.postMessage(myLocationMessage);
+
+        // 지도 이동 메시지 전송
         const message = JSON.stringify({
           type: "updateLocation",
           latitude: newLocation.latitude,
@@ -324,10 +335,12 @@ function Milestone() {
           }
         }}
       />
-
       {/* 상단 검색바 */}
       <TouchableOpacity
-        style={styles.searchBar}
+        style={[
+          styles.searchBar,
+          (isFilterActive || selectedMarker) && styles.searchBarWithBack,
+        ]}
         onPress={() => {
           if (!selectedMarker) {
             router.push({
@@ -350,7 +363,7 @@ function Milestone() {
               }
             }}
           >
-            <BackIcon style={styles.backIcon} width={14} height={14} />
+            <BackIcon style={styles.backIcon} width={25} height={25} />
           </TouchableOpacity>
         )}
         <TextInput
@@ -390,7 +403,6 @@ function Milestone() {
           </View>
         )}
       </TouchableOpacity>
-
       {/* 필터 버튼들 */}
       <View
         style={[
@@ -444,7 +456,6 @@ function Milestone() {
           <Text style={styles.filterText}>북카페</Text>
         </TouchableOpacity>
       </View>
-
       {/* 나의 위치 버튼 */}
       <TouchableOpacity
         style={[
@@ -489,12 +500,23 @@ function Milestone() {
 
             // 지도를 내 위치로 이동하고 마커 업데이트
             if (webViewRef.current) {
-              webViewRef.current.moveToLocation(
-                newLocation.latitude,
-                newLocation.longitude,
-              );
-              // 내 위치 마커 표시
-              webViewRef.current.showMyLocationMarker();
+              // 내 위치 마커 표시 메시지 전송
+              const myLocationMessage = JSON.stringify({
+                type: "showMyLocationMarker",
+                latitude: newLocation.latitude,
+                longitude: newLocation.longitude,
+              });
+              console.log("내 위치 마커 표시 메시지:", myLocationMessage);
+              webViewRef.current.postMessage(myLocationMessage);
+
+              // 지도 이동 메시지 전송
+              const moveMessage = JSON.stringify({
+                type: "updateLocation",
+                latitude: newLocation.latitude,
+                longitude: newLocation.longitude,
+              });
+              console.log("지도 이동 메시지:", moveMessage);
+              webViewRef.current.postMessage(moveMessage);
             }
 
             console.log("내 위치로 이동 완료:", newLocation);
@@ -506,7 +528,6 @@ function Milestone() {
       >
         <MyLocationIcon style={styles.myLocationIcon} color="#716C69" />
       </TouchableOpacity>
-
       {/* 줌 버튼 - 오른쪽 끝에 별도 배치 */}
       <TouchableOpacity
         style={[
@@ -525,9 +546,8 @@ function Milestone() {
           });
         }}
       >
-        <Text style={styles.zoomIcon}>+</Text>
+        <PlusIcon />
       </TouchableOpacity>
-
       {/* 하단 카드 */}
       <View
         style={[
@@ -646,7 +666,6 @@ function Milestone() {
           </TouchableOpacity>
         </View>
       </View>
-
       {/* 선택된 마커 모달 */}
       <SelectedMarkerModal
         marker={selectedMarker}
@@ -681,10 +700,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 5,
+    zIndex: 1,
+  },
+  searchBarWithBack: {
+    left: 60, // 왼쪽 여백을 늘려서 뒤로가기 버튼 공간 확보
+    right: 20,
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#C5BFBB",
   },
@@ -736,7 +760,7 @@ const styles = StyleSheet.create({
     height: 16,
   },
   filterText: {
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: "SUIT-600",
     color: "#716C69",
   },
@@ -841,7 +865,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#4D4947",
   },
   bottomFilterText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: "SUIT-600",
     color: "#9D9896",
   },
@@ -881,8 +905,14 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   backButton: {
-    marginRight: 10,
-    padding: 5,
+    position: "absolute",
+    left: -45,
+    top: 0,
+    width: 35,
+    height: 45,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 100,
   },
   backIcon: {
     width: 16,

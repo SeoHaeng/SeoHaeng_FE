@@ -55,6 +55,38 @@ export const getMarkerBookData = (): BookData | null => {
   return markerBookData;
 };
 
+// 마커 등록용 템플릿 선택 상태
+export let markerTemplateData: number | null = null;
+
+// 마커 등록용 템플릿 선택 상태 설정
+export const setMarkerTemplateData = (templateId: number | null) => {
+  markerTemplateData = templateId;
+};
+
+// 마커 등록용 템플릿 선택 상태 가져오기
+export const getMarkerTemplateData = (): number | null => {
+  return markerTemplateData;
+};
+
+// 마커 등록용 위치 정보
+export interface MarkerLocationData {
+  latitude: number;
+  longitude: number;
+  address: string;
+}
+
+export let markerLocationData: MarkerLocationData | null = null;
+
+// 마커 등록용 위치 정보 설정
+export const setMarkerLocationData = (location: MarkerLocationData | null) => {
+  markerLocationData = location;
+};
+
+// 마커 등록용 위치 정보 가져오기
+export const getMarkerLocationData = (): MarkerLocationData | null => {
+  return markerLocationData;
+};
+
 // 로그인 API 관련 타입
 export interface LoginRequest {
   username: string;
@@ -67,6 +99,7 @@ export interface LoginResponse {
   message: string;
   result: {
     accessToken: string;
+    refreshToken: string;
     userId: number;
   };
 }
@@ -161,6 +194,7 @@ export interface ProfileUpdateResponse {
 export interface AuthState {
   isAuthenticated: boolean;
   accessToken: string | null;
+  refreshToken: string | null;
   userId: number | null;
   userInfo: UserInfo | null;
 }
@@ -168,6 +202,7 @@ export interface AuthState {
 export let authState: AuthState = {
   isAuthenticated: false,
   accessToken: null,
+  refreshToken: null,
   userId: null,
   userInfo: null,
 };
@@ -197,6 +232,7 @@ export const logout = () => {
   authState = {
     isAuthenticated: false,
     accessToken: null,
+    refreshToken: null,
     userId: null,
     userInfo: null,
   };

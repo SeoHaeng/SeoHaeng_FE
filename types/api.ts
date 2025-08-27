@@ -328,6 +328,41 @@ export const authenticatedFetch = async (
     if (!response.ok) {
       const errorText = await response.text();
       console.log("authenticatedFetch 에러 응답:", errorText);
+
+      // 403 에러인 경우 토큰 재발급 시도
+      if (response.status === 403) {
+        console.log("403 에러 감지: 토큰 재발급 시도");
+
+        // handleTokenError 함수 import
+        const { handleTokenError } = await import("./auth");
+        const reissueSuccess = await handleTokenError(
+          new Error(`HTTP ${response.status}: ${errorText}`),
+        );
+
+        if (reissueSuccess) {
+          console.log("토큰 재발급 성공, API 재시도");
+          // 새로운 토큰으로 재시도
+          const newHeaders = await getAuthHeadersAsync();
+          const retryResponse = await fetch(url, {
+            ...options,
+            headers: {
+              ...newHeaders,
+              ...options.headers,
+            },
+          });
+
+          if (!retryResponse.ok) {
+            const retryErrorText = await retryResponse.text();
+            throw new Error(`HTTP ${retryResponse.status}: ${retryErrorText}`);
+          }
+
+          console.log("토큰 재발급 후 API 재시도 성공");
+          return retryResponse;
+        } else {
+          console.log("토큰 재발급 실패, 에러 발생");
+        }
+      }
+
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
@@ -560,6 +595,37 @@ export const getStampsAPI = async (): Promise<StampsResponse> => {
   }
 };
 
+// 북챌린지 진행 여부 조회 API
+export const getBookChallengeInProgressInfoAPI = async (): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result?: any;
+}> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/book-challenges/inprogress-info`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("북챌린지 진행 여부 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
 // 북챌린지 챌린지 인증 조회 API
 export const getBookChallengeListAPI = async (
   page: number = 1,
@@ -673,15 +739,18 @@ export const getTodayRecommendationsAPI =
   };
 
 // 토큰 재발급 API
-export const reissueTokenAPI = async (): Promise<TokenReissueResponse> => {
+export const reissueTokenAPI = async (
+  refreshToken: string,
+): Promise<TokenReissueResponse> => {
   try {
-    const headers = await getAuthHeadersAsync();
-
     const response = await fetch(
       "http://15.164.250.185:8081/api/v1/users/reissue",
       {
         method: "POST",
-        headers,
+        headers: {
+          Authorization: `Bearer ${refreshToken}`,
+          "Content-Type": "application/json",
+        },
       },
     );
 
@@ -1161,6 +1230,33 @@ export interface TokenReissueResponse {
     userId: number;
   };
 }
+
+// 회원탈퇴 API
+export const deleteUserAPI = async (): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+}> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch("http://15.164.250.185:8081/api/v1/users", {
+      method: "DELETE",
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("회원탈퇴 API 호출 실패:", error);
+    throw error;
+  }
+};
 
 // 중복확인 API 응답 타입
 export interface DuplicateCheckResponse {

@@ -4,6 +4,7 @@ import PopularChallenge from "@/components/maruChallenge/popularChallenge";
 import {
   BookChallenge,
   BookChallengePlace,
+  getBookChallengeInProgressInfoAPI,
   getBookChallengeListAPI,
   getBookChallengesAPI,
   getUserByIdAPI,
@@ -55,6 +56,35 @@ export default function Challenge() {
   const router = useRouter();
   const [bookstores, setBookstores] = useState<BookChallengePlace[]>([]);
   const [isLoadingBookstores, setIsLoadingBookstores] = useState(false);
+  const [hasInProgressChallenge, setHasInProgressChallenge] = useState<
+    boolean | null
+  >(null);
+  const [isLoadingChallengeStatus, setIsLoadingChallengeStatus] =
+    useState(false);
+
+  // 북챌린지 진행 여부 조회
+  useEffect(() => {
+    const fetchChallengeStatus = async () => {
+      try {
+        setIsLoadingChallengeStatus(true);
+        const response = await getBookChallengeInProgressInfoAPI();
+        if (response.isSuccess) {
+          setHasInProgressChallenge(true);
+          console.log("진행 중인 북챌린지가 있습니다:", response.result);
+        } else {
+          setHasInProgressChallenge(false);
+          console.log("진행 중인 북챌린지가 없습니다:", response.message);
+        }
+      } catch (error) {
+        console.error("북챌린지 진행 여부 조회 실패:", error);
+        setHasInProgressChallenge(false);
+      } finally {
+        setIsLoadingChallengeStatus(false);
+      }
+    };
+
+    fetchChallengeStatus();
+  }, []);
 
   // 북챌린지 서점 조회
   useEffect(() => {
@@ -145,14 +175,30 @@ export default function Challenge() {
       contentContainerStyle={styles.mainContainer}
       showsVerticalScrollIndicator={false}
     >
-      <TouchableOpacity
-        style={styles.emptyBookContainer}
-        onPress={() => router.push("/maru/challengeCertification")}
-      >
-        <Text style={styles.emptyBookText}>아직 책이 오지 않았어요</Text>
-        <Text style={styles.bookComingText}>어떤 책이 올까요?</Text>
-        <EmptyBookIcon style={styles.emptyBookImage} />
-      </TouchableOpacity>
+      {isLoadingChallengeStatus ? (
+        <View style={styles.emptyBookContainer}>
+          <Text style={styles.emptyBookText}>북챌린지 상태 확인 중...</Text>
+        </View>
+      ) : hasInProgressChallenge ? (
+        <TouchableOpacity
+          style={styles.inProgressContainer}
+          onPress={() => router.push("/maru/challengeCertification")}
+        >
+          <Text style={styles.inProgressText}>
+            진행 중인 북챌린지가 있어요!
+          </Text>
+          <Text style={styles.inProgressSubText}>인증하러 가기</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={styles.emptyBookContainer}
+          onPress={() => router.push("/maru/challengeCertification")}
+        >
+          <Text style={styles.emptyBookText}>아직 책이 오지 않았어요</Text>
+          <Text style={styles.bookComingText}>어떤 책이 올까요?</Text>
+          <EmptyBookIcon style={styles.emptyBookImage} />
+        </TouchableOpacity>
+      )}
 
       <View style={styles.bookStoreSection}>
         <View style={styles.bookStoreHeader}>
@@ -279,6 +325,29 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -2,
     right: 30,
+  },
+  inProgressContainer: {
+    width: 360,
+    height: 85,
+    backgroundColor: "#4A90E2",
+    borderRadius: 5,
+    paddingHorizontal: 18,
+    paddingVertical: 20,
+    flexDirection: "column",
+    justifyContent: "space-between",
+    position: "relative",
+    marginTop: 30,
+  },
+  inProgressText: {
+    fontSize: 16,
+    color: "#FFFFFF",
+    fontFamily: "SUIT-700",
+  },
+  inProgressSubText: {
+    fontSize: 13,
+    color: "#FFFFFF",
+    fontFamily: "SUIT-500",
+    opacity: 0.8,
   },
   bookStoreSection: {
     height: 210,

@@ -14,7 +14,7 @@ const ScrapIcon: React.FC<ScrapIconProps> = ({
   ...props
 }) => {
   const height = (size * 22) / 14; // 원본 비율 유지
-  const iconColor = isActive ? "#56AC70" : "#9D9896"; // 활성화되었을 때는 초록색, 비활성화일 때는 회색
+  const iconColor = color || (isActive ? "#56AC70" : "#9D9896"); // color prop 우선, 없으면 isActive 기반
 
   return (
     <Svg

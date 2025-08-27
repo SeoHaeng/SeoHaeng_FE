@@ -75,15 +75,10 @@ export default function PopularChallenge({
                   <View style={styles.yearTag}>
                     <Text style={styles.tagText}>{year}</Text>
                   </View>
-                  <View
-                    style={[
-                      styles.scrapButton,
-                      { backgroundColor: likedByMe ? "#302E2D" : "#C5BFBB" },
-                    ]}
-                  >
+                  <View style={styles.scrapButton}>
                     <ScrapIcon
                       size={9}
-                      color={likedByMe ? "#FFFFFF" : "#716C69"}
+                      color={likedByMe ? "#302E2D" : "#716C69"}
                     />
                   </View>
                 </View>

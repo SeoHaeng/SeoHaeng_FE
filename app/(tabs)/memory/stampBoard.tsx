@@ -20,8 +20,13 @@ export default function StampBoard({ stamps }: StampBoardProps) {
         <View key={stamp.id} style={styles.stampItem}>
           <View style={styles.stampImageContainer}>
             <Image
-              source={require("@/assets/images/stamp_basic.png")}
+              source={
+                stamp.image
+                  ? { uri: stamp.image }
+                  : require("@/assets/images/stamp_basic.png")
+              }
               style={styles.stampImage}
+              resizeMode="cover"
             />
 
             <View style={styles.stampOverlay}>
@@ -35,7 +40,10 @@ export default function StampBoard({ stamps }: StampBoardProps) {
       return (
         <View key={stamp.id} style={styles.stampItem}>
           <View style={styles.emptyStamp}>
-            <Image source={require("@/assets/images/stamp_basic.png")} />
+            <Image
+              source={require("@/assets/images/stamp_basic.png")}
+              style={styles.emptyStampImage}
+            />
           </View>
         </View>
       );
@@ -97,11 +105,14 @@ const styles = StyleSheet.create({
   emptyStamp: {
     flex: 1,
     backgroundColor: "#f0f0f0",
-    borderRadius: 8,
+    borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    borderStyle: "dashed",
+  },
+  emptyStampImage: {
+    width: "100%",
+    height: "100%",
+    opacity: 0.5,
+    resizeMode: "contain",
   },
 });

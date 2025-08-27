@@ -171,6 +171,87 @@ export const getBookChallengeDetailAPI = async (
   }
 };
 
+// 북챌린지 좋아요 토글 API
+export const toggleBookChallengeLikeAPI = async (
+  bookChallengeProofId: number,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: { nowLikeCount: number };
+}> => {
+  console.log("toggleBookChallengeLikeAPI 시작:", bookChallengeProofId);
+  console.log(
+    "API URL:",
+    `${API_BASE_URL}/book-challenges/${bookChallengeProofId}/like`,
+  );
+  try {
+    const headers = await getAuthHeadersAsync();
+    const response = await fetch(
+      `${API_BASE_URL}/book-challenges/${bookChallengeProofId}/like`,
+      {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("toggleBookChallengeLikeAPI 에러:", error);
+    throw error;
+  }
+};
+
+// 북챌린지 댓글 등록 API
+export const createBookChallengeCommentAPI = async (
+  bookChallengeProofId: number,
+  commentContent: string,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: string;
+}> => {
+  console.log("createBookChallengeCommentAPI 시작:", {
+    bookChallengeProofId,
+    commentContent,
+  });
+  console.log(
+    "API URL:",
+    `${API_BASE_URL}/book-challenges/${bookChallengeProofId}/comments`,
+  );
+  try {
+    const headers = await getAuthHeadersAsync();
+    const response = await fetch(
+      `${API_BASE_URL}/book-challenges/${bookChallengeProofId}/comments`,
+      {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ commentContent }),
+      },
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("createBookChallengeCommentAPI 에러:", error);
+    throw error;
+  }
+};
+
 // 북챌린지 댓글 목록 조회 API
 export const getBookChallengeCommentListAPI = async (
   bookChallengeProofId: number,
@@ -330,6 +411,64 @@ export const getReadingSpotsAPI = async (
     return data;
   } catch (error) {
     console.error("책갈피 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 내가 저장한 책갈피 조회 API
+export const getMyScrapedReadingSpotsAPI = async (
+  page: number = 1,
+  size: number = 10,
+): Promise<ReadingSpotResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/reading-spot/scraps/my?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("내가 저장한 책갈피 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 내가 등록한 공간 책갈피 조회 API
+export const getMyCreatedReadingSpotsAPI = async (
+  page: number = 1,
+  size: number = 10,
+): Promise<ReadingSpotResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/reading-spot/my?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("내가 등록한 공간 책갈피 조회 API 호출 실패:", error);
     throw error;
   }
 };
@@ -1032,3 +1171,230 @@ export interface KakaoLoginResult {
   scopes: string[];
   tokenType: string;
 }
+
+// 공간 책갈피 스크랩 토글 API
+export const toggleReadingSpotScrapAPI = async (
+  readingSpotId: number,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: { nowScrapCount: number };
+}> => {
+  console.log("toggleReadingSpotScrapAPI 시작:", readingSpotId);
+  console.log(
+    "API URL:",
+    `${API_BASE_URL}/reading-spot/${readingSpotId}/scraps`,
+  );
+  try {
+    const headers = await getAuthHeadersAsync();
+    const response = await fetch(
+      `${API_BASE_URL}/reading-spot/${readingSpotId}/scraps`,
+      {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("toggleReadingSpotScrapAPI 에러:", error);
+    throw error;
+  }
+};
+
+// 공간 책갈피 좋아요 토글 API
+export const toggleReadingSpotLikeAPI = async (
+  readingSpotId: number,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: { nowLikeCount: number };
+}> => {
+  console.log("toggleReadingSpotLikeAPI 시작:", readingSpotId);
+  console.log(
+    "API URL:",
+    `${API_BASE_URL}/reading-spot/${readingSpotId}/likes`,
+  );
+  try {
+    const headers = await getAuthHeadersAsync();
+    const response = await fetch(
+      `${API_BASE_URL}/reading-spot/${readingSpotId}/likes`,
+      {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("toggleReadingSpotLikeAPI 에러:", error);
+    throw error;
+  }
+};
+
+// 공간 책갈피 댓글 등록 API
+export const createReadingSpotCommentAPI = async (
+  readingSpotId: number,
+  content: string,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: { commentId: number };
+}> => {
+  console.log("createReadingSpotCommentAPI 시작:", {
+    readingSpotId,
+    content,
+  });
+  console.log(
+    "API URL:",
+    `${API_BASE_URL}/reading-spot/${readingSpotId}/comments`,
+  );
+  try {
+    const headers = await getAuthHeadersAsync();
+    const response = await fetch(
+      `${API_BASE_URL}/reading-spot/${readingSpotId}/comments`,
+      {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content }),
+      },
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("createReadingSpotCommentAPI 에러:", error);
+    throw error;
+  }
+};
+
+// 공간 책갈피 댓글 목록 조회 API
+export const getReadingSpotCommentListAPI = async (
+  readingSpotId: number,
+  page: number = 1,
+  size: number = 10,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    listSize: number;
+    totalPage: number;
+    totalElements: number;
+    isFirst: boolean;
+    isLast: boolean;
+    comments: {
+      commentId: number;
+      createdAt: string;
+      userId: number;
+      commentContent: string;
+    }[];
+  };
+}> => {
+  console.log("getReadingSpotCommentListAPI 시작:", {
+    readingSpotId,
+    page,
+    size,
+  });
+  console.log(
+    "API URL:",
+    `${API_BASE_URL}/reading-spot/${readingSpotId}/comments?page=${page}&size=${size}`,
+  );
+  try {
+    const headers = await getAuthHeadersAsync();
+    const response = await fetch(
+      `${API_BASE_URL}/reading-spot/${readingSpotId}/comments?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("getReadingSpotCommentListAPI 에러:", error);
+    throw error;
+  }
+};
+
+// 북마크 상세 조회 API
+export const getReadingSpotDetailAPI = async (
+  readingSpotId: number,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    userId: number;
+    userNickname: string;
+    userProfilImage: string;
+    readingSpotId: number;
+    region: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    createdAt: string;
+    templateId: number;
+    title: string;
+    content: string;
+    readingSpotImages: string[];
+    bookTitle: string;
+    bookAuthor: string;
+    bookImage: string;
+    bookPubDate: string;
+    likes: number;
+    scraps: number;
+    opened: boolean;
+    liked: boolean;
+    scraped: boolean;
+  };
+}> => {
+  console.log("getReadingSpotDetailAPI 시작:", readingSpotId);
+  console.log("API URL:", `${API_BASE_URL}/reading-spot/${readingSpotId}`);
+  try {
+    const headers = await getAuthHeadersAsync();
+    const response = await fetch(
+      `${API_BASE_URL}/reading-spot/${readingSpotId}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("getReadingSpotDetailAPI 에러:", error);
+    throw error;
+  }
+};

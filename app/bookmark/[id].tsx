@@ -3,6 +3,14 @@ import BookmarkTemplate from "@/components/icons/bookmarkTemplate/BookmarkTempla
 import FilledHeartIcon from "@/components/icons/FilledHeartIcon";
 import ScrapIcon from "@/components/icons/ScrapIcon";
 import ChallengeComment from "@/components/maruChallenge/detail/comment";
+import {
+  createReadingSpotCommentAPI,
+  getReadingSpotCommentListAPI,
+  getReadingSpotDetailAPI,
+  getUserByIdAPI,
+  toggleReadingSpotLikeAPI,
+  toggleReadingSpotScrapAPI,
+} from "@/types/api";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -17,12 +25,37 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 export default function BookmarkDetail() {
-  const { id, title, address, from } = useLocalSearchParams();
+  const { id, from } = useLocalSearchParams();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [fromScreen, setFromScreen] = useState<string>("");
+  const [bookmarkDetail, setBookmarkDetail] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [commentList, setCommentList] = useState<any[]>([]);
+  const [totalComments, setTotalComments] = useState(0);
+
+  // 날짜 형식을 변환하는 함수 (2025-08-27 -> 2025.8.27)
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // getMonth()는 0부터 시작
+    const day = date.getDate();
+    const dayOfWeek = date.getDay(); // 0: 일요일, 6: 토요일
+
+    let formattedDate = `${year}.${month}.${day}`;
+
+    // 요일 추가
+    const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+    formattedDate += ` ${dayNames[dayOfWeek]}`;
+
+    return formattedDate;
+  };
 
   // 파라미터에서 출발 화면 정보 가져오기
   useEffect(() => {
@@ -31,10 +64,124 @@ export default function BookmarkDetail() {
       console.log("🔖 북마크 상세 화면 진입 - 출발 화면:", from);
     }
   }, [from]);
+
+  // 북마크 상세 정보 조회
+  useEffect(() => {
+    const fetchBookmarkDetail = async () => {
+      if (!id) return;
+
+      try {
+        setIsLoading(true);
+        const response = await getReadingSpotDetailAPI(Number(id));
+        if (response.isSuccess) {
+          console.log("북마크 상세 조회 성공:", response.result);
+          console.log("좋아요 상태:", response.result.liked);
+          console.log("스크랩 상태:", response.result.scraped);
+          console.log("좋아요 수:", response.result.likes);
+          console.log("스크랩 수:", response.result.scraps);
+          setBookmarkDetail(response.result);
+
+          // 댓글 목록 조회
+          const commentResponse = await getReadingSpotCommentListAPI(
+            Number(id),
+            1,
+            10,
+          );
+          if (commentResponse.isSuccess) {
+            console.log("댓글 목록 조회 성공:", commentResponse.result);
+
+            // 각 댓글의 userId로 사용자 정보 가져오기
+            const commentWithUserInfo = await Promise.all(
+              commentResponse.result.comments.map(async (comment) => {
+                try {
+                  const userResponse = await getUserByIdAPI(comment.userId);
+                  if (userResponse.isSuccess) {
+                    return {
+                      ...comment,
+                      nickName: userResponse.result.nickName,
+                      profileImageUrl: userResponse.result.profileImageUrl,
+                    };
+                  }
+                } catch (error) {
+                  console.error(
+                    `사용자 ${comment.userId} 정보 조회 실패:`,
+                    error,
+                  );
+                }
+                return {
+                  ...comment,
+                  nickName: "사용자",
+                  profileImageUrl: "",
+                };
+              }),
+            );
+
+            setCommentList(commentWithUserInfo);
+            setTotalComments(commentResponse.result.totalElements);
+          }
+        }
+      } catch (error) {
+        console.error("북마크 상세 조회 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBookmarkDetail();
+  }, [id]);
+
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+
+  // API 응답에서 좋아요/스크랩 상태 초기화
+  useEffect(() => {
+    if (bookmarkDetail) {
+      setIsLiked(bookmarkDetail.liked);
+      setIsBookmarked(bookmarkDetail.scraped);
+    }
+  }, [bookmarkDetail]);
   const [comment, setComment] = useState("");
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  // 좋아요 토글 함수
+  const toggleLike = async () => {
+    if (!id) return;
+
+    try {
+      const response = await toggleReadingSpotLikeAPI(Number(id));
+
+      if (response.isSuccess) {
+        // 좋아요 상태 토글
+        setBookmarkDetail((prev: any) => ({
+          ...prev,
+          liked: !prev?.liked,
+          likes: response.result.nowLikeCount,
+        }));
+      }
+    } catch (error) {
+      console.error("좋아요 토글 실패:", error);
+    }
+  };
+
+  // 스크랩 토글 함수
+  const toggleScrap = async () => {
+    if (!id) return;
+
+    try {
+      const response = await toggleReadingSpotScrapAPI(Number(id));
+
+      if (response.isSuccess) {
+        // 스크랩 상태 토글
+        setBookmarkDetail((prev: any) => ({
+          ...prev,
+          scraped: !prev?.scraped,
+          scraps: response.result.nowScrapCount,
+        }));
+      }
+    } catch (error) {
+      console.error("스크랩 토글 실패:", error);
+    }
+  };
 
   useEffect(() => {
     const showListener = Keyboard.addListener(
@@ -56,55 +203,62 @@ export default function BookmarkDetail() {
     };
   }, []);
 
-  // API 데이터 형식에 맞춘 예시 데이터 (전달받은 파라미터 사용)
-  const bookmarkData = {
-    readingSpotId: Number(id) || 1,
-    address: address || "서울특별시 중구 세종대로 110",
-    latitude: 37.5665,
-    longitude: 126.978,
-    templateId: 1,
-    title: title || "개발자의 독서 공간",
-    content:
-      "이 책은 개발자 삶에 대한 통찰을 담고 있습니다. 광화문 근처 카페에서 읽으면 좋아요.",
-    readingSpotImages: [
-      "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-      "https://shopping-phinf.pstatic.net/main_3248337/32483376086.20250627083930.jpg",
-    ],
-    bookTitle: "오늘도 개발자를 꿈꾸다",
-    bookAuthor: "이소정",
-    bookImage:
-      "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-    bookPubDate: "2022-05-10",
-    likes: 0,
-    scraps: 0,
-    opened: true,
-    comments: [
-      {
-        commentId: 3,
-        createdAt: "2025-08-05",
-        userId: 1,
-        commentContent: "와박",
-      },
-      {
-        commentId: 2,
-        createdAt: "2025-08-05",
-        userId: 1,
-        commentContent: "와대박",
-      },
-      {
-        commentId: 1,
-        createdAt: "2025-08-05",
-        userId: 1,
-        commentContent: "와대박",
-      },
-    ],
-  };
+  // 로딩 중일 때 표시
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text style={{ color: "#FFFFFF", fontSize: 16 }}>로딩 중...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
-  const handleSubmitComment = () => {
-    if (comment.trim()) {
-      // 댓글 등록 로직
-      console.log("댓글 등록:", comment);
-      setComment("");
+  // 데이터가 없을 때 표시
+  if (!bookmarkDetail) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text style={{ color: "#FFFFFF", fontSize: 16 }}>
+            북마크 정보를 불러올 수 없습니다.
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const handleSubmitComment = async () => {
+    if (!comment.trim() || !id) return;
+
+    try {
+      const response = await createReadingSpotCommentAPI(
+        Number(id),
+        comment.trim(),
+      );
+
+      if (response.isSuccess) {
+        console.log("댓글 등록 성공:", response.result);
+
+        // 댓글 입력창 초기화
+        setComment("");
+
+        // 댓글 목록 새로고침
+        const commentResponse = await getReadingSpotCommentListAPI(
+          Number(id),
+          1,
+          10,
+        );
+        if (commentResponse.isSuccess) {
+          setCommentList(commentResponse.result.comments);
+          setTotalComments(commentResponse.result.totalElements);
+        }
+      }
+    } catch (error) {
+      console.error("댓글 등록 실패:", error);
     }
   };
 
@@ -157,19 +311,21 @@ export default function BookmarkDetail() {
               <BookmarkTemplate
                 width={360}
                 height={360}
-                templateId={bookmarkData.templateId}
+                templateId={bookmarkDetail.templateId}
               />
               <View style={styles.mainCard}>
                 <Image
-                  source={{ uri: bookmarkData.readingSpotImages[0] }}
+                  source={{ uri: bookmarkDetail.readingSpotImages[0] }}
                   style={styles.cardImage}
                   resizeMode="cover"
                 />
 
                 {/* 카드 내용 */}
                 <View style={styles.cardContent}>
-                  <Text style={styles.cardTitle}>{bookmarkData.title}</Text>
-                  <Text style={styles.cardAddress}>{bookmarkData.address}</Text>
+                  <Text style={styles.cardTitle}>{bookmarkDetail.title}</Text>
+                  <Text style={styles.cardAddress}>
+                    {bookmarkDetail.address}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -177,32 +333,37 @@ export default function BookmarkDetail() {
             {/* 소셜미디어 포스트 */}
             <View style={styles.socialPost}>
               <View style={styles.postHeader}>
-                <View style={styles.userAvatar} />
-
-                <Text style={styles.username}>유딘딘</Text>
-                <Text style={styles.postDate}>2025.05.13 토</Text>
+                <Image
+                  source={{ uri: bookmarkDetail.userProfilImage }}
+                  style={styles.userAvatar}
+                />
+                <Text style={styles.username}>
+                  {bookmarkDetail.userNickname}
+                </Text>
+                <Text style={styles.postDate}>
+                  {formatDate(bookmarkDetail.createdAt)}
+                </Text>
               </View>
 
-              <Text style={styles.postContent}>
-                안목해변 가서 책 읽었다. 사람이 많기는 한데 독서 스팟을 잘
-                찾으면 책 읽기에 베리베리 굿굿이다ㅎㅎ 좌표 남길테니 다른 분들도
-                여기서 함 읽어보시길 은근 집중이 잘 돼서 한 100페이지 읽은 거
-                같다... + 바다 짠 냄새 나서 매운탕 땡긴다: 🌊 이따 집 가는 길에
-                매운탕 포장해서 가야겠삼 야호
-              </Text>
+              <Text style={styles.postContent}>{bookmarkDetail.content}</Text>
 
               <View style={styles.bookRecommendation}>
                 <Image
-                  source={{
-                    uri: "https://shopping-phinf.pstatic.net/main_5441999/54419996237.20250429093306.jpg",
-                  }}
+                  source={{ uri: bookmarkDetail.bookImage }}
                   style={styles.bookCover}
                 />
                 <View style={styles.bookInfo}>
-                  <Text style={styles.bookTitle}>물고기는 존재하지 않는다</Text>
-                  <Text style={styles.bookAuthor}>룰루 밀러 / 정지인</Text>
+                  <Text style={styles.bookTitle}>
+                    {bookmarkDetail.bookTitle}
+                  </Text>
+                  <Text style={styles.bookAuthor}>
+                    {bookmarkDetail.bookAuthor}
+                  </Text>
                   <View style={styles.bookYearContainer}>
-                    <Text style={styles.bookYear}>2022</Text>
+                    <Text style={styles.bookYear}>
+                      {bookmarkDetail.bookPubDate?.split("-")[0] ||
+                        bookmarkDetail.bookPubDate}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -218,35 +379,54 @@ export default function BookmarkDetail() {
             </TouchableOpacity>
 
             <View style={styles.statsContainer}>
-              <TouchableOpacity
-                style={styles.statItem}
-                onPress={() => setIsBookmarked(!isBookmarked)}
-              >
-                <ScrapIcon isActive={isBookmarked} />
-                <Text style={styles.statNumber}>{bookmarkData.scraps}</Text>
+              <TouchableOpacity style={styles.statItem} onPress={toggleScrap}>
+                <ScrapIcon
+                  isActive={bookmarkDetail.scraped}
+                  color={bookmarkDetail.scraped ? "#56AC70" : "#716C69"}
+                />
+                <Text style={styles.statNumber}>{bookmarkDetail.scraps}</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.statItem}
-                onPress={() => setIsLiked(!isLiked)}
-              >
-                <FilledHeartIcon isActive={isLiked} />
-                <Text style={styles.statNumber}>{bookmarkData.likes}</Text>
+              <TouchableOpacity style={styles.statItem} onPress={toggleLike}>
+                <FilledHeartIcon
+                  isActive={bookmarkDetail.liked}
+                  color={bookmarkDetail.liked ? "#E55E5E" : "#716C69"}
+                />
+                <Text style={styles.statNumber}>{bookmarkDetail.likes}</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           {/* 댓글 섹션 */}
           <View style={styles.commentsSection}>
-            {bookmarkData.comments.map((comment) => (
-              <ChallengeComment
-                key={comment.commentId}
-                userName={`사용자 ${comment.userId}`}
-                date={comment.createdAt}
-                text={comment.commentContent}
-                color="#FFFFFF"
-              />
-            ))}
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: 16,
+                fontFamily: "SUIT-600",
+                marginBottom: 15,
+              }}
+            >
+              댓글 ({totalComments})
+            </Text>
+            {commentList.length > 0 ? (
+              commentList.map((comment) => (
+                <ChallengeComment
+                  key={comment.commentId}
+                  userName={comment.nickName || `사용자 ${comment.userId}`}
+                  date={formatDate(comment.createdAt)}
+                  text={comment.commentContent}
+                  color="#FFFFFF"
+                  userProfileImageUrl={comment.profileImageUrl}
+                />
+              ))
+            ) : (
+              <Text
+                style={{ color: "#FFFFFF", fontSize: 14, textAlign: "center" }}
+              >
+                아직 댓글이 없습니다.
+              </Text>
+            )}
           </View>
         </ScrollView>
 
@@ -258,7 +438,7 @@ export default function BookmarkDetail() {
               position: "absolute",
               left: 0,
               right: 0,
-              bottom: keyboardHeight,
+              bottom: insets.bottom,
             },
           ]}
         >
@@ -268,12 +448,15 @@ export default function BookmarkDetail() {
             placeholderTextColor="#9D9896"
             value={comment}
             onChangeText={setComment}
+            multiline={false}
           />
           <TouchableOpacity
             style={styles.sendButton}
             onPress={handleSubmitComment}
           >
-            <Text style={styles.sendButtonText}>등록</Text>
+            <Text style={styles.sendButtonText}>
+              {comment.trim() ? "등록" : "등록"}
+            </Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -403,7 +586,7 @@ const styles = StyleSheet.create({
   commentsSection: {
     paddingHorizontal: 20,
     flexDirection: "column",
-    gap: 13,
+    gap: 15,
     width: "100%",
   },
 
@@ -412,7 +595,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: "#262423",
+    backgroundColor: "#302E2D",
   },
   horizontalScrollContainer: {
     paddingHorizontal: 20,
@@ -481,7 +664,7 @@ const styles = StyleSheet.create({
     paddingTop: 2,
   },
   bookTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
@@ -499,12 +682,12 @@ const styles = StyleSheet.create({
   bookYearContainer: {
     backgroundColor: "#C5BFBB",
     borderRadius: 5,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
+    paddingHorizontal: 5,
+    paddingVertical: 3,
     alignSelf: "flex-start",
   },
   bookYear: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: "SUIT-600",
     color: "#EEE9E6",
   },
@@ -513,21 +696,16 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 45,
     backgroundColor: "#302E2D",
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
+    borderRadius: 10,
     paddingHorizontal: 15,
     fontSize: 14,
     fontFamily: "SUIT-500",
-    marginRight: 0,
+    marginRight: 10,
+    color: "#FFFFFF",
   },
   sendButton: {
     backgroundColor: "#302E2D",
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
+    borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,
     height: 45,

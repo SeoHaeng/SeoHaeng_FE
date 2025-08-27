@@ -26,6 +26,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     accessToken: null,
+    refreshToken: null,
     userId: null,
     userInfo: null,
   });
@@ -37,13 +38,39 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const refreshAuthState = async () => {
     try {
       const restoredState = await restoreAuthState();
-      setAuthState(restoredState);
-      console.log("인증 상태 새로고침 완료:", restoredState);
+      
+      // 토큰 유효성 검증 강화
+      const isValidToken =
+        restoredState.accessToken &&
+        restoredState.accessToken.length > 10 &&
+        restoredState.refreshToken &&
+        restoredState.refreshToken.length > 10;
+
+      if (isValidToken) {
+        setAuthState(restoredState);
+        console.log("✅ 유효한 토큰으로 인증 상태 복원 완료:", {
+          isAuthenticated: restoredState.isAuthenticated,
+          hasAccessToken: !!restoredState.accessToken,
+          hasRefreshToken: !!restoredState.refreshToken,
+          userId: restoredState.userId,
+        });
+      } else {
+        console.log("❌ 토큰이 유효하지 않음, 기본 상태로 설정");
+        const defaultState = {
+          isAuthenticated: false,
+          accessToken: null,
+          refreshToken: null,
+          userId: null,
+          userInfo: null,
+        };
+        setAuthState(defaultState);
+      }
     } catch (error) {
       console.error("인증 상태 복원 실패:", error);
       const defaultState = {
         isAuthenticated: false,
         accessToken: null,
+        refreshToken: null,
         userId: null,
         userInfo: null,
       };
@@ -63,6 +90,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthState({
           isAuthenticated: false,
           accessToken: null,
+          refreshToken: null,
           userId: null,
           userInfo: null,
         });

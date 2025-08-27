@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-700",
   },
   timeStamp: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },

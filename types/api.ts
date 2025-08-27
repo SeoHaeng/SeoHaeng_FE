@@ -1275,13 +1275,15 @@ export const checkNicknameDuplicateAPI = async (
   try {
     const headers = await getAuthHeadersAsync();
 
-    const response = await fetch(
-      `${API_BASE_URL}/users/check-nickname?nickname=${encodeURIComponent(nickname)}`,
-      {
-        method: "GET",
-        headers,
-      },
-    );
+    const requestUrl = `${API_BASE_URL}/users/auth/check-nickname?nickname=${encodeURIComponent(nickname)}`;
+    console.log("🔗 닉네임 중복확인 API 요청 URL:", requestUrl);
+    console.log("📝 요청 닉네임:", nickname);
+    console.log("🔑 인증 헤더:", headers);
+
+    const response = await fetch(requestUrl, {
+      method: "GET",
+      headers,
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -1304,7 +1306,7 @@ export const checkUsernameDuplicateAPI = async (
     const headers = await getAuthHeadersAsync();
 
     const response = await fetch(
-      `${API_BASE_URL}/users/check-username?username=${encodeURIComponent(username)}`,
+      `${API_BASE_URL}/users/auth/check-username?username=${encodeURIComponent(username)}`,
       {
         method: "GET",
         headers,
@@ -1331,6 +1333,44 @@ export interface KakaoLoginResult {
   scopes: string[];
   tokenType: string;
 }
+
+// 카카오 로그인 API (인가 코드 사용)
+export const kakaoLoginWithCodeAPI = async (
+  code: string,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result?: {
+    isNewUser: boolean;
+    accessToken: string;
+    refreshToken: string;
+    userId: number;
+  };
+}> => {
+  try {
+    const response = await fetch(
+      `http://15.164.250.185:8081/api/v1/users/auth/kakao?code=${code}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("카카오 로그인 API 호출 실패:", error);
+    throw error;
+  }
+};
 
 // 공간 책갈피 스크랩 토글 API
 export const toggleReadingSpotScrapAPI = async (

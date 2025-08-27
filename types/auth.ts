@@ -70,6 +70,7 @@ export const saveAccessToken = async (accessToken: string, userId: number) => {
     const { setAuthState } = await import("./globalState");
     setAuthState({
       accessToken,
+      refreshToken: null, // saveAccessToken은 refreshToken을 저장하지 않음
       userId,
       isAuthenticated: true,
     });
@@ -346,11 +347,15 @@ export const restoreAuthState = async (): Promise<AuthState> => {
     const hasValidToken =
       !!accessToken && accessToken.length > 10 && !isTokenExpired(accessToken);
     const hasRefreshToken = !!refreshToken && refreshToken.length > 10;
+
+    // accessToken과 refreshToken 모두 있어야 유효한 상태
+    const isFullyAuthenticated = hasValidToken && hasRefreshToken;
+
     const authState: AuthState = {
-      isAuthenticated: isAuth === "true" && hasValidToken,
-      accessToken: hasValidToken ? accessToken : null,
-      refreshToken: hasRefreshToken ? refreshToken : null,
-      userId: hasValidToken && userId ? parseInt(userId, 10) : null,
+      isAuthenticated: isAuth === "true" && isFullyAuthenticated,
+      accessToken: isFullyAuthenticated ? accessToken : null,
+      refreshToken: isFullyAuthenticated ? refreshToken : null,
+      userId: isFullyAuthenticated && userId ? parseInt(userId, 10) : null,
       userInfo: null, // 초기에는 null로 설정
     };
 

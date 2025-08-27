@@ -1,8 +1,8 @@
+// import * as KakaoLogins from "@react-native-seoul/kakao-login";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Dimensions,
   SafeAreaView,
   StatusBar,
@@ -18,7 +18,8 @@ import EyeIcon from "../../components/icons/EyeIcon";
 import GoogleLoginIcon from "../../components/icons/GoogleLoginIcon";
 import KakaoIcon from "../../components/icons/KakaoIcon";
 import NaverLoginIcon from "../../components/icons/NaverLoginIcon";
-import { loginAPI } from "../../types/api";
+import KakaoLoginWebView from "../../components/KakaoLoginWebView";
+import { kakaoLoginWithCodeAPI, loginAPI } from "../../types/api";
 import { saveToken } from "../../types/auth";
 
 const { width, height } = Dimensions.get("window");
@@ -30,6 +31,7 @@ export default function SignInScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showKakaoWebView, setShowKakaoWebView] = useState(false);
   const { refreshAuthState } = useAuth();
 
   const handleBack = () => {
@@ -96,8 +98,49 @@ export default function SignInScreen() {
   };
 
   const handleKakaoLogin = () => {
-    // 카카오 로그인 기능은 현재 비활성화
-    Alert.alert("카카오 로그인", "카카오 로그인 기능은 현재 준비 중입니다.");
+    console.log("=== 카카오 로그인 시작 ===");
+    setShowKakaoWebView(true);
+  };
+
+  const handleKakaoCodeReceived = async (code: string) => {
+    try {
+      setIsLoading(true);
+      console.log("🔄 카카오 인가 코드로 서버 로그인 시도:", code);
+
+      // 카카오 로그인 API 호출
+      const response = await kakaoLoginWithCodeAPI(code);
+
+      if (response.isSuccess && response.result) {
+        // 토큰과 사용자 정보 저장
+        await saveToken(
+          response.result.accessToken,
+          response.result.refreshToken,
+          response.result.userId,
+        );
+
+        console.log("✅ 카카오 로그인 성공:", response.result);
+        setErrorMessage("");
+
+        // 신규 사용자인 경우 약관 동의 화면으로 이동
+        if (response.result.isNewUser) {
+          console.log("🔄 신규 사용자 - 약관 동의 화면으로 이동");
+          router.push("/auth/signup");
+        } else {
+          console.log("🔄 기존 사용자 - 홈 화면으로 이동");
+          // 인증 상태 새로고침 후 홈 화면으로 이동
+          await refreshAuthState();
+          router.push("/(tabs)");
+        }
+      } else {
+        console.error("❌ 카카오 로그인 실패:", response.message);
+        setErrorMessage(response.message || "카카오 로그인에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("❌ 카카오 로그인 에러:", error);
+      setErrorMessage("카카오 로그인 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleNaverLogin = () => {
@@ -295,6 +338,13 @@ export default function SignInScreen() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* 카카오 로그인 WebView */}
+      <KakaoLoginWebView
+        visible={showKakaoWebView}
+        onClose={() => setShowKakaoWebView(false)}
+        onCodeReceived={handleKakaoCodeReceived}
+      />
     </SafeAreaView>
   );
 }

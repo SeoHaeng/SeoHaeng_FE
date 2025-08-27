@@ -203,9 +203,7 @@ export default function Plan() {
             <Text style={styles.headerTitle}>
               여행 일자를{"\n"}선택해주세요.
             </Text>
-            {fromHome && (
-              <Text style={styles.fromHomeText}>홈화면에서 이동</Text>
-            )}
+
             {selectedStartDate && selectedEndDate && (
               <Text style={styles.dateRange}>{formatDateRange()}</Text>
             )}
@@ -302,7 +300,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   dateRange: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: "SUIT-600",
     color: "#262423",
   },

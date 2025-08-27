@@ -51,20 +51,24 @@ function RootLayoutNav() {
       inTabsGroup,
     });
 
-    // 토큰이 있고 인증된 상태일 때만 홈 화면으로 이동
-    if (
+    // 토큰 유효성 검증 강화
+    const hasValidToken =
       authState.isAuthenticated &&
       authState.accessToken &&
-      authState.accessToken.length > 10
-    ) {
+      authState.accessToken.length > 10 &&
+      authState.refreshToken &&
+      authState.refreshToken.length > 10;
+
+    if (hasValidToken) {
+      // 유효한 토큰이 있으면 홈 화면으로 이동
       if (inAuthGroup) {
-        console.log("토큰 있음: auth 화면에서 홈 화면으로 이동");
+        console.log("✅ 유효한 토큰 있음: auth 화면에서 홈 화면으로 이동");
         router.replace("/(tabs)");
       }
     } else {
-      // 토큰이 없거나 인증되지 않은 상태일 때는 WelcomeScreen으로 이동
+      // 토큰이 없거나 유효하지 않으면 WelcomeScreen으로 이동
       if (inTabsGroup) {
-        console.log("토큰 없음: 홈 화면에서 WelcomeScreen으로 이동");
+        console.log("❌ 토큰 없음 또는 유효하지 않음: 홈 화면에서 WelcomeScreen으로 이동");
         router.replace("/auth/WelcomeScreen");
       }
     }

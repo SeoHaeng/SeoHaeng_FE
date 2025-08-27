@@ -3,11 +3,13 @@ import BookmarkTemplateMini from "@/components/icons/bookmarkTemplate/BookmarkTe
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
+import { createReadingSpotAPI } from "@/types/api";
 import { getMarkerBookData, setMarkerBookData } from "@/types/globalState";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Image,
   SafeAreaView,
   ScrollView,
@@ -47,12 +49,17 @@ export default function MarkerRegister() {
   useEffect(() => {
     // 전역변수에서 선택된 도서 정보 가져오기
     const selectedBook = getMarkerBookData();
+    console.log("마커 등록 화면 진입 - 선택된 책 정보:", selectedBook);
+
     if (selectedBook) {
       setBookTitle(selectedBook.title);
+      console.log("책 제목 설정됨:", selectedBook.title);
+    } else {
+      console.log("선택된 책 정보가 없음");
     }
 
-    // 마커 등록 화면 진입 시 책 정보 초기화
-    setMarkerBookData(null);
+    // 책 정보는 등록 완료 후에만 초기화 (여기서는 초기화하지 않음)
+    console.log("책 정보 유지됨");
   }, []);
 
   // 도서가 선택되었는지 확인
@@ -248,17 +255,88 @@ export default function MarkerRegister() {
             styles.registerButton,
             !isFormValid && styles.registerButtonDisabled,
           ]}
-          onPress={() => {
-            // 등록 로직 구현
-            console.log("마커 등록:", {
-              address,
-              selectedTemplate,
-              bookTitle,
-              placeName,
-              impressions,
-              selectedImages: selectedImages.length,
-              isPublic,
-            });
+          onPress={async () => {
+            try {
+              // 등록 로직 구현
+              console.log("마커 등록 시작:", {
+                address,
+                selectedTemplate,
+                bookTitle,
+                placeName,
+                impressions,
+                selectedImages: selectedImages.length,
+                isPublic,
+              });
+
+              // 선택된 책 정보 가져오기
+              const selectedBook = getMarkerBookData();
+              if (!selectedBook) {
+                console.log("오류: 선택된 책 정보를 찾을 수 없습니다.");
+                return;
+              }
+
+              // 출판일 형식 변환 (YYYYMMDD → YYYY-MM-DD)
+              const formatPubDate = (pubDate: string) => {
+                if (pubDate && pubDate.length === 8) {
+                  return `${pubDate.substring(0, 4)}-${pubDate.substring(4, 6)}-${pubDate.substring(6, 8)}`;
+                }
+                return pubDate;
+              };
+
+              // API 요청 데이터 구성
+              const requestData = {
+                bookPubDate: formatPubDate(selectedBook.pubDate || ""),
+                opened: isPublic,
+                latitude,
+                bookTitle: selectedBook.title,
+                longitude,
+                mainImageIndex: 0,
+                bookImage: selectedBook.cover?.uri || "",
+                bookAuthor: selectedBook.author,
+                address,
+                templateId: selectedTemplate,
+                title: placeName,
+                content: impressions,
+              };
+
+              // API 호출
+              console.log("=== 마커 등록 API 호출 시작 ===");
+              console.log("요청 데이터:", requestData);
+              console.log("선택된 이미지 개수:", selectedImages.length);
+              console.log("선택된 책 정보:", selectedBook);
+              console.log("================================");
+
+              const response = await createReadingSpotAPI(
+                requestData,
+                selectedImages,
+              );
+
+              if (response.isSuccess) {
+                console.log("공간 책갈피 등록 성공:", response.result);
+                Alert.alert(
+                  "등록 완료",
+                  "공간 책갈피가 성공적으로 등록되었습니다!",
+                  [
+                    {
+                      text: "확인",
+                      onPress: () => {
+                        // 등록 완료 후 책 정보 초기화
+                        setMarkerBookData(null);
+                        console.log("등록 완료 후 책 정보 초기화됨");
+                        // 이전 화면으로 이동
+                        router.back();
+                      },
+                    },
+                  ],
+                );
+              } else {
+                console.error("공간 책갈피 등록 실패:", response.message);
+                Alert.alert("등록 실패", response.message);
+              }
+            } catch (error) {
+              console.error("공간 책갈피 등록 중 오류:", error);
+              Alert.alert("등록 실패", "등록 중 오류가 발생했습니다.");
+            }
           }}
           disabled={!isFormValid}
         >
@@ -405,7 +483,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#000000",
   },
@@ -433,7 +511,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
     paddingHorizontal: 15,
     paddingVertical: 13,
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#000000",
     marginTop: 12,
@@ -449,7 +527,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
     paddingHorizontal: 15,
     paddingVertical: 12,
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#000000",
     minHeight: 120,
@@ -528,7 +606,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   publicDescription: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     lineHeight: 20,

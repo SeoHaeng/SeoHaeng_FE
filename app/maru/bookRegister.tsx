@@ -52,6 +52,7 @@ export default function BookRegister() {
         title: bookTitle.trim(),
         author: bookAuthor.trim(),
         cover: { uri: bookImage },
+        pubDate: bookPubDate.trim(), // 출판일 저장
       };
 
       // bookType에 따라 적절한 전역변수에 저장

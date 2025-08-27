@@ -95,6 +95,7 @@ export default function BookSearch() {
           title: selectedBookData.title,
           author: selectedBookData.author,
           cover: { uri: selectedBookData.bookImage },
+          pubDate: selectedBookData.pubDate || "", // 출판일 저장 (API에 있다면)
         };
 
         // 선택된 책 정보를 전역 변수에 저장

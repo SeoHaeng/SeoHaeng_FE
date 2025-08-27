@@ -473,6 +473,70 @@ export const getMyCreatedReadingSpotsAPI = async (
   }
 };
 
+// 공간 책갈피 등록 API
+export const createReadingSpotAPI = async (
+  requestData: {
+    bookPubDate: string;
+    opened: boolean;
+    latitude: number;
+    bookTitle: string;
+    longitude: number;
+    mainImageIndex: number;
+    bookImage: string;
+    bookAuthor: string;
+    address: string;
+    templateId: number;
+    title: string;
+    content: string;
+  },
+  images: string[],
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: { readingSpotId: number };
+}> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    // FormData 생성
+    const formData = new FormData();
+
+    // request 데이터를 JSON 문자열로 변환하여 추가
+    formData.append("request", JSON.stringify(requestData));
+
+    // 이미지들을 FormData에 추가
+    images.forEach((imageUri, index) => {
+      const imageFile = {
+        uri: imageUri,
+        type: "image/jpeg",
+        name: `image_${index}.jpg`,
+      } as any;
+      formData.append("images", imageFile);
+    });
+
+    const response = await fetch(`${API_BASE_URL}/reading-spot`, {
+      method: "POST",
+      headers: {
+        ...headers,
+        "Content-Type": "multipart/form-data",
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("공간 책갈피 등록 API 호출 실패:", error);
+    throw error;
+  }
+};
+
 // 내가 모은 스탬프 조회 API
 export const getStampsAPI = async (): Promise<StampsResponse> => {
   try {

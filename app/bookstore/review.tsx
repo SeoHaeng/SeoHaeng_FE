@@ -150,7 +150,16 @@ export default function ReviewTab({ reviewData, placeId }: ReviewTabProps) {
       {/* 후기 남기기 버튼 */}
       <TouchableOpacity
         style={styles.writeReviewButton}
-        onPress={() => router.push("/bookstore/writeReview")}
+        onPress={() => {
+          if (placeId) {
+            router.push({
+              pathname: "/bookstore/writeReview",
+              params: {
+                placeId: placeId.toString(),
+              },
+            });
+          }
+        }}
       >
         <Text style={styles.writeReviewText}>나도 후기 남기기</Text>
         <ReviewMoreArrowIcon color="#4D4947" />
@@ -335,9 +344,11 @@ const styles = StyleSheet.create({
   imagesContainer: {
     flexDirection: "row",
     gap: 8,
+    paddingHorizontal: 4,
   },
   reviewImage: {
     borderRadius: 8,
+    marginRight: 8,
   },
   singleImage: {
     width: 200,

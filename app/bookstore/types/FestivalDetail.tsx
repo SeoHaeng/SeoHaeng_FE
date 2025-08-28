@@ -17,43 +17,66 @@ interface FestivalDetailProps {
 
 export default function FestivalDetail({ placeDetail }: FestivalDetailProps) {
   const handleWebsitePress = () => {
-    // 축제 웹사이트 URL로 변경
-    Linking.openURL("https://www.example.com");
+    if (placeDetail?.websiteUrl) {
+      Linking.openURL(placeDetail.websiteUrl);
+    }
   };
 
   return (
     <View style={styles.tabContent}>
-      <View style={styles.tabTitleContainer}>
-        <BusinessHoursIcon />
-        <Text style={styles.tabTitle}>축제 기간</Text>
-      </View>
-      <Text style={styles.description}>2024년 6월 1일 - 6월 30일</Text>
-      
-      <View style={styles.tabTitleContainer}>
-        <WebsiteIcon />
-        <Text style={styles.tabTitle}>공식 웹사이트</Text>
-      </View>
-      <TouchableOpacity onPress={handleWebsitePress}>
-        <Text style={styles.websiteLink}>
-          https://www.example.com
-        </Text>
-      </TouchableOpacity>
-      
+      {placeDetail?.usetime && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <BusinessHoursIcon />
+            <Text style={styles.tabTitle}>영업 시간</Text>
+          </View>
+          <Text style={styles.description}>{placeDetail.usetime}</Text>
+        </>
+      )}
+
+      {placeDetail?.placeDetail?.startDate &&
+        placeDetail?.placeDetail?.endDate && (
+          <>
+            <View style={styles.tabTitleContainer}>
+              <BusinessHoursIcon />
+              <Text style={styles.tabTitle}>축제 기간</Text>
+            </View>
+            <Text style={styles.description}>
+              {placeDetail.placeDetail.startDate.replace(/-/g, ".")} ~{" "}
+              {placeDetail.placeDetail.endDate.replace(/-/g, ".")}
+            </Text>
+          </>
+        )}
+
+      {placeDetail?.websiteUrl && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <WebsiteIcon />
+            <Text style={styles.tabTitle}>공식 웹사이트</Text>
+          </View>
+          <TouchableOpacity onPress={handleWebsitePress}>
+            <Text style={styles.websiteLink}>{placeDetail.websiteUrl}</Text>
+          </TouchableOpacity>
+        </>
+      )}
+
       <View style={styles.tabTitleContainer}>
         <StoreIntroIcon />
         <Text style={styles.tabTitle}>축제 소개</Text>
       </View>
-      <Text style={styles.description}>
-        다양한 문화와 예술을 체험할 수 있는 축제입니다. 
-        음악, 공연, 전시 등 다채로운 프로그램을 통해 
-        방문객들에게 특별한 경험을 제공합니다.
-      </Text>
-      
-      <View style={styles.tabTitleContainer}>
-        <StoreInfoIcon />
-        <Text style={styles.tabTitle}>축제 정보</Text>
-      </View>
-      <Text style={styles.infoText}>033-123-4567</Text>
+      <Text style={styles.description}>{placeDetail.placeDetail.overview}</Text>
+
+      {placeDetail?.placeDetail?.programs && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <StoreInfoIcon />
+            <Text style={styles.tabTitle}>축제 프로그램</Text>
+          </View>
+          <Text style={styles.infoText}>
+            {placeDetail.placeDetail.programs.replace(/<br\s*\/?>/gi, "\n")}
+          </Text>
+        </>
+      )}
     </View>
   );
 }
@@ -79,6 +102,7 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginBottom: 4,
+    lineHeight: 20,
   },
   websiteLink: {
     fontSize: 14,

@@ -28,9 +28,7 @@ export default function BookstoreDetail({ placeDetail }: BookstoreDetailProps) {
         <BusinessHoursIcon />
         <Text style={styles.tabTitle}>영업 시간</Text>
       </View>
-      <Text style={styles.description}>
-        {placeDetail?.placeDetail?.bookCafe ? "북카페 운영" : "북카페 미운영"}
-      </Text>
+      <Text style={styles.description}>{placeDetail?.usetime}</Text>
 
       <View style={styles.tabTitleContainer}>
         <WebsiteIcon />

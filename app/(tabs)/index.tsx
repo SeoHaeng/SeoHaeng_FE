@@ -479,6 +479,16 @@ export default function Index() {
                 <TouchableOpacity
                   key={item.placeId}
                   style={styles.recommendationItem}
+                  onPress={() => {
+                    // 장소 상세 페이지로 이동
+                    router.push({
+                      pathname: `/bookstore/[id]`,
+                      params: {
+                        id: item.placeId.toString(),
+                        from: "home",
+                      },
+                    });
+                  }}
                 >
                   <View style={styles.recommendationImageContainer}>
                     <Image

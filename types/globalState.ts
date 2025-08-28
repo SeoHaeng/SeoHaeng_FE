@@ -41,11 +41,11 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({
     null,
   );
 
-  console.log("🌍 GlobalStateProvider 초기화됨");
-  console.log("📍 초기 상태:", { viewport, userLocation });
+  //console.log("🌍 GlobalStateProvider 초기화됨");
+  //console.log("📍 초기 상태:", { viewport, userLocation });
 
   const setViewport = (newViewport: ViewportInfo) => {
-    console.log("🌍 전역 뷰포트 업데이트:", newViewport);
+    //console.log("🌍 전역 뷰포트 업데이트:", newViewport);
     setViewportState(newViewport);
   };
 

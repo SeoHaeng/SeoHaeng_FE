@@ -237,7 +237,7 @@ export const getBookstoreMarkersAPI = async (): Promise<
     }
 
     const data: BookstoreMarkerResponse[] = await response.json();
-    console.log("독립서점 마커 조회 API 성공:", data);
+    //console.log("독립서점 마커 조회 API 성공:", data);
     return data;
   } catch (error) {
     console.error("독립서점 마커 조회 API 에러:", error);
@@ -265,7 +265,7 @@ export const getBookstayMarkersAPI = async (): Promise<
     }
 
     const data: BookstayMarkerResponse[] = await response.json();
-    console.log("북스테이 마커 조회 API 성공:", data);
+    //console.log("북스테이 마커 조회 API 성공:", data);
     return data;
   } catch (error) {
     console.error("북스테이 마커 조회 API 에러:", error);
@@ -293,7 +293,7 @@ export const getBookcafeMarkersAPI = async (): Promise<
     }
 
     const data: BookcafeMarkerResponse[] = await response.json();
-    console.log("북카페 마커 조회 API 성공:", data);
+    //console.log("북카페 마커 조회 API 성공:", data);
     return data;
   } catch (error) {
     console.error("북카페 마커 조회 API 에러:", error);

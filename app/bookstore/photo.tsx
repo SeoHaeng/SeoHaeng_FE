@@ -19,16 +19,7 @@ export default function PhotoTab({ placeImageUrls }: PhotoTabProps) {
             />
           ))
         ) : (
-          <>
-            <Image
-              source={require("@/assets/images/서점.png")}
-              style={styles.photoItem}
-            />
-            <Image
-              source={require("@/assets/images/독립서점.png")}
-              style={styles.photoItem}
-            />
-          </>
+          <Text style={styles.noPhotos}>사진이 없습니다.</Text>
         )}
       </View>
     </View>
@@ -54,5 +45,12 @@ const styles = StyleSheet.create({
     width: "48%",
     height: 150,
     borderRadius: 8,
+  },
+  noPhotos: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#9D9896",
+    textAlign: "center",
+    marginTop: 20,
   },
 });

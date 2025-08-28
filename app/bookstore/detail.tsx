@@ -1,13 +1,12 @@
-import BusinessHoursIcon from "@/components/icons/BusinessHoursIcon";
 import StoreInfoIcon from "@/components/icons/StoreInfoIcon";
 import StoreIntroIcon from "@/components/icons/StoreIntroIcon";
 import WebsiteIcon from "@/components/icons/WebsiteIcon";
 import {
-  PlaceDetailResponse,
   BookstorePlaceDetail,
-  TouristSpotPlaceDetail,
-  RestaurantPlaceDetail,
   FestivalPlaceDetail,
+  PlaceDetailResponse,
+  RestaurantPlaceDetail,
+  TouristSpotPlaceDetail,
 } from "@/types/api";
 import React from "react";
 import {
@@ -208,7 +207,7 @@ const styles = StyleSheet.create({
   tabTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 13,
+    marginBottom: 12,
     gap: 7,
   },
   serviceList: {

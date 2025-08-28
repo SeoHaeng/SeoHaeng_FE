@@ -17,7 +17,6 @@ import { useEffect, useState } from "react";
 import {
   Alert,
   Image,
-  Linking,
   ScrollView,
   Share,
   StyleSheet,
@@ -334,18 +333,6 @@ export default function PlaceDetail() {
             <PlaceIcon width={11} height={15} />
             <Text style={styles.storeLocation}>{placeDetail?.address}</Text>
           </View>
-          {placeDetail?.tel && (
-            <TouchableOpacity
-              style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
-              onPress={() => {
-                if (placeDetail.tel) {
-                  Linking.openURL(`tel:${placeDetail.tel}`);
-                }
-              }}
-            >
-              <Text style={styles.storeStatus}>{placeDetail.tel}</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         {/* 탭 네비게이션 */}

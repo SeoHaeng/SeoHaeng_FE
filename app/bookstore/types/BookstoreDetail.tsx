@@ -30,6 +30,24 @@ export default function BookstoreDetail({ placeDetail }: BookstoreDetailProps) {
       </View>
       <Text style={styles.description}>{placeDetail?.usetime}</Text>
 
+      {placeDetail?.tel && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <StoreInfoIcon />
+            <Text style={styles.tabTitle}>연락처</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              if (placeDetail.tel) {
+                Linking.openURL(`tel:${placeDetail.tel}`);
+              }
+            }}
+          >
+            <Text style={styles.phoneLink}>{placeDetail.tel}</Text>
+          </TouchableOpacity>
+        </>
+      )}
+
       <View style={styles.tabTitleContainer}>
         <WebsiteIcon />
         <Text style={styles.tabTitle}>웹사이트</Text>
@@ -60,14 +78,6 @@ export default function BookstoreDetail({ placeDetail }: BookstoreDetailProps) {
         {placeDetail?.placeDetail?.parking ? ", 주차 가능" : ""}
         {placeDetail?.placeDetail?.petFriendly ? ", 반려동물 동반 가능" : ""}
       </Text>
-
-      <View style={styles.tabTitleContainer}>
-        <StoreInfoIcon />
-        <Text style={styles.tabTitle}>매장 정보</Text>
-      </View>
-      <Text style={styles.infoText}>
-        {placeDetail?.tel || "연락처 정보가 없습니다."}
-      </Text>
     </View>
   );
 }
@@ -86,7 +96,7 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#262423",
     lineHeight: 20,
-    marginBottom: 40,
+    marginBottom: 25,
   },
   infoText: {
     fontSize: 14,
@@ -101,10 +111,17 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     marginBottom: 40,
   },
+  phoneLink: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#3871E0",
+    textDecorationLine: "underline",
+    marginBottom: 40,
+  },
   tabTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 13,
+    marginBottom: 12,
     gap: 7,
   },
 });

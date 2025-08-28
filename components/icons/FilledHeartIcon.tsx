@@ -11,7 +11,7 @@ const FilledHeartIcon: React.FC<FilledHeartIconProps> = ({
   isActive = false,
   ...props
 }) => {
-  const iconColor = isActive ? color : "#9D9896"; // 활성화되지 않았을 때는 회색
+  const iconColor = isActive ? color : "#C5BFBB"; // 활성화되지 않았을 때는 회색
 
   return (
     <Svg width="21" height="20" viewBox="0 0 21 20" fill="none" {...props}>

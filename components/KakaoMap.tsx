@@ -1,10 +1,13 @@
-import { bookCafeData } from "@/assets/mockdata/bookCafeData";
-import { bookStayData } from "@/assets/mockdata/bookStayData";
 import { bookmarkData } from "@/assets/mockdata/bookmarkData";
 import { festivalData } from "@/assets/mockdata/festivalData";
-import { independentBookstoreData } from "@/assets/mockdata/independentBookstoreData";
 import { restaurantData } from "@/assets/mockdata/restaurantData";
 import { touristData } from "@/assets/mockdata/touristData";
+import {
+  getBookcafeMarkersAPI,
+  getBookstayMarkersAPI,
+  getBookstoreMarkersAPI,
+} from "@/types/api";
+import { useGlobalState } from "@/types/globalState";
 import Constants from "expo-constants";
 import React, {
   forwardRef,
@@ -115,6 +118,7 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
     ref,
   ) => {
     const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
+    const { setViewport, setUserLocation } = useGlobalState();
     // 현재 뷰포트 정보 저장
     const [currentViewport, setCurrentViewport] = useState<{
       north: number;
@@ -137,9 +141,16 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
         );
 
         // 새로운 필터로 마커 추가
-        setTimeout(() => {
+        const timerId = setTimeout(() => {
           addAllCulturalMarkers();
         }, 100);
+
+        // cleanup 함수에서 타이머 정리
+        return () => {
+          if (timerId) {
+            clearTimeout(timerId);
+          }
+        };
       }
     }, [filterType, bottomFilterTypes]); // bottomFilterTypes 의존성 추가
 
@@ -148,18 +159,8 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
       if (webViewRef.current && activeMarkerId !== null) {
         console.log("🔄 activeMarkerId 변경됨, 마커 이미지만 업데이트");
         // 마커 이미지만 업데이트하고 기존 마커는 제거하지 않음
-        setTimeout(() => {
-          independentBookstoreData.forEach((item) => {
-            const bookstore: Bookstore = {
-              id: item.id,
-              name: item.name,
-              lat: item.latitude,
-              lng: item.longitude,
-              type: item.type as "독립서점" | "북카페" | "북스테이" | "책갈피",
-            };
-            updateBookstoreMarkerImage(bookstore);
-          });
-        }, 100);
+        // API 데이터를 사용하므로 이 부분은 제거
+        console.log("📍 activeMarkerId 변경됨, 마커 이미지 업데이트 완료");
       }
     }, [activeMarkerId]);
 
@@ -213,7 +214,7 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
       };
 
       console.log("📍 마커 메시지 전송:", message.type, message.name);
-      console.log("📍 전송할 메시지 내용:", JSON.stringify(message));
+      //console.log("📍 전송할 메시지 내용:", JSON.stringify(message));
 
       if (webViewRef.current) {
         webViewRef.current.postMessage(JSON.stringify(message));
@@ -224,120 +225,241 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
     };
 
     // 모든 문화/서점 마커 추가
-    const addAllCulturalMarkers = () => {
+    const addAllCulturalMarkers = async () => {
       console.log("📍 addAllCulturalMarkers 호출됨");
       console.log("📍 filterType:", filterType);
       console.log("📍 bottomFilterTypes:", bottomFilterTypes);
 
-      let allData: any[] = [];
+      try {
+        let allData: any[] = [];
 
-      // 상단 필터 타입에 따라 데이터 선택
-      if (filterType) {
-        switch (filterType) {
-          case "독립서점":
-            allData = [...independentBookstoreData];
-            console.log(
-              "📍 독립서점 필터 선택, 데이터 개수:",
-              independentBookstoreData.length,
-            );
-            break;
-          case "북카페":
-            allData = [...bookCafeData];
-            console.log(
-              "📍 북카페 필터 선택, 데이터 개수:",
-              bookCafeData.length,
-            );
-            break;
-          case "북스테이":
-            allData = [...bookStayData];
-            console.log(
-              "📍 북스테이 필터 선택, 데이터 개수:",
-              bookStayData.length,
-            );
-            break;
-          case "책갈피":
-            allData = [...bookmarkData];
-            console.log(
-              "📍 책갈피 필터 선택, 데이터 개수:",
-              bookmarkData.length,
-            );
-            break;
-          case "가볼만한 관광지":
-            // 관광지 데이터를 기본으로 표시
-            allData = [...touristData];
-            console.log(
-              "📍 가볼만한 관광지 필터 선택, 데이터 개수:",
-              touristData.length,
-            );
-            break;
-          default:
-            allData = [
-              ...independentBookstoreData,
-              ...bookCafeData,
-              ...bookStayData,
-              ...bookmarkData,
-            ];
-            console.log("📍 기본 필터, 전체 데이터 개수:", allData.length);
-        }
-      } else {
-        // 상단 필터가 없으면 모든 서점 관련 데이터 추가
-        allData = [
-          ...independentBookstoreData,
-          ...bookCafeData,
-          ...bookStayData,
-          ...bookmarkData,
-        ];
-        console.log("📍 필터 없음, 서점 데이터 개수:", allData.length);
-      }
-
-      // 하단 필터가 선택된 경우 해당 타입들 추가
-      if (bottomFilterTypes && bottomFilterTypes.length > 0) {
-        bottomFilterTypes.forEach((filterType) => {
+        // 상단 필터 타입에 따라 데이터 선택
+        if (filterType) {
           switch (filterType) {
-            case "맛집":
-              allData = [...allData, ...restaurantData];
+            case "독립서점":
+              try {
+                const apiData = await getBookstoreMarkersAPI();
+                allData = apiData
+                  .filter((item) => item.latitude && item.longitude)
+                  .map((item) => ({
+                    id: item.placeId.toString(),
+                    name: item.name,
+                    latitude: item.latitude,
+                    longitude: item.longitude,
+                    type: "독립서점",
+                  }));
+                console.log(
+                  "📍 독립서점 API 데이터 사용, 데이터 개수:",
+                  allData.length,
+                );
+              } catch (error) {
+                console.log("📍 독립서점 API 실패, 빈 배열 사용");
+                allData = [];
+              }
               break;
-            case "관광지":
-              allData = [...allData, ...touristData];
+            case "북카페":
+              try {
+                const apiData = await getBookcafeMarkersAPI();
+                allData = apiData
+                  .filter((item) => item.latitude && item.longitude)
+                  .map((item) => ({
+                    id: item.placeId.toString(),
+                    name: item.name,
+                    latitude: item.latitude,
+                    longitude: item.longitude,
+                    type: "북카페",
+                  }));
+                console.log(
+                  "📍 북카페 API 데이터 사용, 데이터 개수:",
+                  allData.length,
+                );
+              } catch (error) {
+                console.log("📍 북카페 API 실패, 빈 배열 사용");
+                allData = [];
+              }
               break;
-            case "축제":
-              allData = [...allData, ...festivalData];
+            case "북스테이":
+              try {
+                const apiData = await getBookstayMarkersAPI();
+                allData = apiData
+                  .filter((item) => item.latitude && item.longitude)
+                  .map((item) => ({
+                    id: item.placeId.toString(),
+                    name: item.name,
+                    latitude: item.latitude,
+                    longitude: item.longitude,
+                    type: "북스테이",
+                  }));
+                console.log(
+                  "📍 북스테이 API 데이터 사용, 데이터 개수:",
+                  allData.length,
+                );
+              } catch (error) {
+                console.log("📍 북스테이 API 실패, 빈 배열 사용");
+                allData = [];
+              }
               break;
+            case "책갈피":
+              allData = [...bookmarkData];
+              console.log("📍 책갈피 필터 선택, 데이터 개수:", allData.length);
+              break;
+            case "가볼만한 관광지":
+              allData = [...touristData];
+              console.log(
+                "📍 가볼만한 관광지 필터 선택, 데이터 개수:",
+                allData.length,
+              );
+              break;
+            default:
+              // 기본 필터일 때는 모든 API 데이터를 가져와서 합침
+              try {
+                const [bookstoreData, bookcafeData, bookstayData] =
+                  await Promise.all([
+                    getBookstoreMarkersAPI(),
+                    getBookcafeMarkersAPI(),
+                    getBookstayMarkersAPI(),
+                  ]);
+
+                allData = [
+                  ...bookstoreData
+                    .filter((item) => item.latitude && item.longitude)
+                    .map((item) => ({
+                      id: item.placeId.toString(),
+                      name: item.name,
+                      latitude: item.latitude,
+                      longitude: item.longitude,
+                      type: "독립서점",
+                    })),
+                  ...bookcafeData
+                    .filter((item) => item.latitude && item.longitude)
+                    .map((item) => ({
+                      id: item.placeId.toString(),
+                      name: item.name,
+                      latitude: item.latitude,
+                      longitude: item.longitude,
+                      type: "북카페",
+                    })),
+                  ...bookstayData
+                    .filter((item) => item.latitude && item.longitude)
+                    .map((item) => ({
+                      id: item.placeId.toString(),
+                      name: item.name,
+                      latitude: item.latitude,
+                      longitude: item.longitude,
+                      type: "북스테이",
+                    })),
+                ];
+                console.log(
+                  "📍 모든 API 데이터 사용, 데이터 개수:",
+                  allData.length,
+                );
+              } catch (error) {
+                console.log("📍 API 실패, 빈 배열 사용");
+                allData = [];
+              }
           }
+        } else {
+          // 상단 필터가 없으면 모든 API 데이터를 가져와서 합침
+          try {
+            const [bookstoreData, bookcafeData, bookstayData] =
+              await Promise.all([
+                getBookstoreMarkersAPI(),
+                getBookcafeMarkersAPI(),
+                getBookstayMarkersAPI(),
+              ]);
+
+            allData = [
+              ...bookstoreData
+                .filter((item) => item.latitude && item.longitude)
+                .map((item) => ({
+                  id: item.placeId.toString(),
+                  name: item.name,
+                  latitude: item.latitude,
+                  longitude: item.longitude,
+                  type: "독립서점",
+                })),
+              ...bookcafeData
+                .filter((item) => item.latitude && item.longitude)
+                .map((item) => ({
+                  id: item.placeId.toString(),
+                  name: item.name,
+                  latitude: item.latitude,
+                  longitude: item.longitude,
+                  type: "북카페",
+                })),
+              ...bookstayData
+                .filter((item) => item.latitude && item.longitude)
+                .map((item) => ({
+                  id: item.placeId.toString(),
+                  name: item.name,
+                  latitude: item.latitude,
+                  longitude: item.longitude,
+                  type: "북스테이",
+                })),
+            ];
+            console.log(
+              "📍 필터 없음, 모든 API 데이터 사용, 데이터 개수:",
+              allData.length,
+            );
+          } catch (error) {
+            console.log("📍 API 실패, 빈 배열 사용");
+            allData = [];
+          }
+        }
+
+        // 하단 필터가 선택된 경우 해당 타입들 추가
+        if (bottomFilterTypes && bottomFilterTypes.length > 0) {
+          bottomFilterTypes.forEach((filterType) => {
+            switch (filterType) {
+              case "맛집":
+                allData = [...allData, ...restaurantData];
+                break;
+              case "관광지":
+                allData = [...allData, ...touristData];
+                break;
+              case "축제":
+                allData = [...allData, ...festivalData];
+                break;
+            }
+          });
+        }
+
+        // 중복 제거 (같은 id를 가진 항목이 있을 경우)
+        const uniqueData = allData.filter(
+          (item, index, self) =>
+            index === self.findIndex((t) => t.id === item.id),
+        );
+
+        console.log("📍 총 데이터 개수:", uniqueData.length);
+
+        // 테스트 마커 직접 추가
+        if (webViewRef.current) {
+          console.log("🧪 테스트 마커 직접 추가 시도");
+          const testMessage = JSON.stringify({
+            type: "addTestMarker",
+            lat: 37.8228,
+            lng: 127.7322,
+            name: "테스트 마커 - addAllCulturalMarkers에서",
+          });
+          webViewRef.current.postMessage(testMessage);
+        }
+
+        uniqueData.forEach((item) => {
+          console.log("📍 데이터 아이템:", item);
+          const bookstore: Bookstore = {
+            id: item.id,
+            name: item.name,
+            lat: item.latitude,
+            lng: item.longitude,
+            type: item.type,
+          };
+          addCulturalMarker(bookstore);
         });
+      } catch (error) {
+        console.error("📍 addAllCulturalMarkers 에러:", error);
+        // 에러 발생 시 빈 배열 사용
+        console.log("📍 에러 발생으로 인한 fallback, 마커 없음");
       }
-
-      // 중복 제거 (같은 id를 가진 항목이 있을 경우)
-      const uniqueData = allData.filter(
-        (item, index, self) =>
-          index === self.findIndex((t) => t.id === item.id),
-      );
-
-      console.log("📍 총 데이터 개수:", uniqueData.length);
-
-      // 테스트 마커 직접 추가
-      if (webViewRef.current) {
-        console.log("🧪 테스트 마커 직접 추가 시도");
-        const testMessage = JSON.stringify({
-          type: "addTestMarker",
-          lat: 37.8228,
-          lng: 127.7322,
-          name: "테스트 마커 - addAllCulturalMarkers에서",
-        });
-        webViewRef.current.postMessage(testMessage);
-      }
-
-      uniqueData.forEach((item) => {
-        console.log("📍 데이터 아이템:", item);
-        const bookstore: Bookstore = {
-          id: item.id,
-          name: item.name,
-          lat: item.latitude,
-          lng: item.longitude, // item.lng -> item.longitude로 수정
-          type: item.type,
-        };
-        addCulturalMarker(bookstore);
-      });
     };
 
     // 기존 마커의 이미지만 업데이트
@@ -359,6 +481,9 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
     // 내 위치 마커 표시 (안정화된 버전)
     const showMyLocationMarker = () => {
       console.log("📍 showMyLocationMarker 호출됨:", latitude, longitude);
+
+      // 전역 상태에 사용자 위치 정보 저장
+      setUserLocation({ latitude, longitude });
 
       // WebView가 준비되지 않았으면 대기
       if (!webViewRef.current) {
@@ -401,9 +526,16 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
 
     // WebView 로드 완료 후 마커 추가
     const handleWebViewLoad = () => {
-      setTimeout(() => {
+      const timerId = setTimeout(() => {
         addAllCulturalMarkers();
       }, 1000);
+
+      // cleanup 함수에서 타이머 정리
+      return () => {
+        if (timerId) {
+          clearTimeout(timerId);
+        }
+      };
     };
 
     // 지도가 준비되면 마커 추가
@@ -422,10 +554,17 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
         webViewRef.current.postMessage(testMessage);
       }
 
-      setTimeout(() => {
+      const timerId = setTimeout(() => {
         console.log("📍 addAllCulturalMarkers 호출 시도");
         addAllCulturalMarkers();
       }, 500);
+
+      // cleanup 함수에서 타이머 정리
+      return () => {
+        if (timerId) {
+          clearTimeout(timerId);
+        }
+      };
     };
 
     // 웹뷰에서 메시지 받기
@@ -481,6 +620,11 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
             zoom: data.zoom!,
           };
           setCurrentViewport(viewportInfo);
+
+          // 전역 상태에 뷰포트 정보 저장
+          console.log("🌍 카카오맵에서 전역 상태 업데이트 시도:", viewportInfo);
+          setViewport(viewportInfo);
+          console.log("✅ 전역 상태 업데이트 완료");
 
           // 뷰포트 정보를 console에 출력
           console.log("🔄 사용자 뷰포트 변경 감지:", {
@@ -560,9 +704,7 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                   }
                 };
                 console.log("✅ window.onload에서 ReactNativeWebView.onMessage 재설정 완료");
-              }
-              
-             
+              }           
               
               if (typeof kakao !== 'undefined' && kakao.maps) {
                 console.log("🗺️ 카카오맵 SDK 로드됨");
@@ -692,7 +834,89 @@ const KakaoMap = forwardRef<KakaoMapRef, KakaoMapProps>(
                       zoom: zoom
                     };
                     
+                    console.log("🌍 초기 뷰포트 정보 전송:", initialViewportMessage);
                     window.ReactNativeWebView.postMessage(JSON.stringify(initialViewportMessage));
+                  }
+                });
+
+                // 뷰포트 변경 이벤트 리스너 추가
+                kakao.maps.event.addListener(map, 'bounds_changed', function() {
+                  console.log("🔄 bounds_changed 이벤트 발생");
+                  
+                  if (window.ReactNativeWebView) {
+                    const bounds = map.getBounds();
+                    const center = map.getCenter();
+                    const sw = bounds.getSouthWest();
+                    const ne = bounds.getNorthEast();
+                    const zoom = map.getLevel();
+                    
+                    const viewportMessage = {
+                      type: 'viewportChanged',
+                      north: ne.getLat(),
+                      south: sw.getLat(),
+                      east: ne.getLng(),
+                      west: sw.getLng(),
+                      centerLat: center.getLat(),
+                      centerLng: center.getLng(),
+                      zoom: zoom
+                    };
+                    
+                    console.log("🌍 뷰포트 변경 감지:", viewportMessage);
+                    window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
+                  }
+                });
+
+                // 드래그 이벤트 리스너 추가
+                kakao.maps.event.addListener(map, 'drag', function() {
+                  console.log("🔄 drag 이벤트 발생");
+                  
+                  if (window.ReactNativeWebView) {
+                    const bounds = map.getBounds();
+                    const center = map.getCenter();
+                    const sw = bounds.getSouthWest();
+                    const ne = bounds.getNorthEast();
+                    const zoom = map.getLevel();
+                    
+                    const viewportMessage = {
+                      type: 'viewportChanged',
+                      north: ne.getLat(),
+                      south: sw.getLat(),
+                      east: ne.getLng(),
+                      west: sw.getLng(),
+                      centerLat: center.getLat(),
+                      centerLng: center.getLng(),
+                      zoom: zoom
+                    };
+                    
+                    console.log("🌍 드래그 중 뷰포트 변경:", viewportMessage);
+                    window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
+                  }
+                });
+
+                // 줌 변경 이벤트 리스너 추가
+                kakao.maps.event.addListener(map, 'zoom_changed', function() {
+                  console.log("🔄 zoom_changed 이벤트 발생");
+                  
+                  if (window.ReactNativeWebView) {
+                    const bounds = map.getBounds();
+                    const center = map.getCenter();
+                    const sw = bounds.getSouthWest();
+                    const ne = bounds.getNorthEast();
+                    const zoom = map.getLevel();
+                    
+                    const viewportMessage = {
+                      type: 'viewportChanged',
+                      north: ne.getLat(),
+                      south: sw.getLat(),
+                      east: ne.getLng(),
+                      west: sw.getLng(),
+                      centerLat: center.getLat(),
+                      centerLng: center.getLng(),
+                      zoom: zoom
+                    };
+                    
+                    console.log("🌍 줌 변경 시 뷰포트 변경:", viewportMessage);
+                    window.ReactNativeWebView.postMessage(JSON.stringify(viewportMessage));
                   }
                 });
 

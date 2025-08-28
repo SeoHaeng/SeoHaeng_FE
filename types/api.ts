@@ -1,15 +1,146 @@
 import { API_BASE_URL } from "../config/api";
 import { getAuthHeadersAsync, handleTokenError } from "./auth";
-import {
-  BookChallengeCommentListResponse,
-  BookChallengeDetailResponse,
-  LoginRequest,
-  LoginResponse,
-  ProfileUpdateRequest,
-  ProfileUpdateResponse,
-  UserByIdResponse,
-  UserInfoResponse,
-} from "./globalState";
+
+// 로그인 API 관련 타입
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    accessToken: string;
+    refreshToken: string;
+    userId: number;
+  };
+}
+
+// 사용자 정보 조회 API 응답 타입
+export interface UserInfoResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    userId: number;
+    userName: string;
+    nickName: string;
+    profileImageUrl: string | null;
+    loginType: string;
+  };
+}
+
+// 아이디로 회원정보 조회 API 응답 타입
+export interface UserByIdResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    userId: number;
+    nickName: string;
+    profileImageUrl: string;
+  };
+}
+
+// 프로필 수정 API 요청 타입
+export interface ProfileUpdateRequest {
+  username: string;
+  nickname: string;
+  password1: string;
+  password2: string;
+}
+
+// 프로필 수정 API 응답 타입
+export interface ProfileUpdateResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result?: any;
+}
+
+// 북챌린지 인증 상세 개별조회 API 응답 타입
+export interface BookChallengeDetailResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    createdAt: string;
+    creatorId: number;
+    bookStoreName: string;
+    bookChallengeProofId: number;
+    presentMessage: string;
+    proofContent: string;
+    likes: number;
+    likedByMe: boolean;
+    receivedBookTitle: string;
+    receivedBookAuthor: string;
+    receivedBookImage: string;
+    receivedBookPubDate: string;
+    givenBookTitle: string;
+    givenBookAuthor: string;
+    givenBookImage: string;
+    givenBookPubDate: string;
+    proofImageUrls: string[];
+  };
+}
+
+// 북챌린지 댓글 목록 조회 API 응답 타입
+export interface BookChallengeCommentListResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    listSize: number;
+    totalPage: number;
+    totalElements: number;
+    isFirst: boolean;
+    isLast: boolean;
+    getBookChallengeCommentList: BookChallengeComment[];
+  };
+}
+
+// 북챌린지 댓글 타입
+export interface BookChallengeComment {
+  createdAt: string;
+  userId: number;
+  nickname: string;
+  userProfileImageUrl: string | null;
+  comment: string;
+}
+
+// 장소 검색 API 응답 타입
+export interface PlaceSearchResponse {
+  placeId: number;
+  name: string;
+  placeType: string;
+  address: string;
+}
+
+// 독립서점 마커 조회 API 응답 타입
+export interface BookstoreMarkerResponse {
+  placeId: number;
+  name: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+// 북스테이 마커 조회 API 응답 타입
+export interface BookstayMarkerResponse {
+  placeId: number;
+  name: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+// 북카페 마커 조회 API 응답 타입
+export interface BookcafeMarkerResponse {
+  placeId: number;
+  name: string;
+  latitude: number | null;
+  longitude: number | null;
+}
 
 // 리뷰 작성 API 요청 타입
 export interface CreateReviewRequest {
@@ -82,6 +213,133 @@ export const loginAPI = async (
     return data;
   } catch (error) {
     console.error("로그인 API 에러:", error);
+    throw error;
+  }
+};
+
+// 독립서점 마커 조회 API
+export const getBookstoreMarkersAPI = async (): Promise<
+  BookstoreMarkerResponse[]
+> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(`${API_BASE_URL}/places/markers/bookstores`, {
+      method: "GET",
+      headers: {
+        ...headers,
+        accept: "*/*",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: BookstoreMarkerResponse[] = await response.json();
+    console.log("독립서점 마커 조회 API 성공:", data);
+    return data;
+  } catch (error) {
+    console.error("독립서점 마커 조회 API 에러:", error);
+    throw error;
+  }
+};
+
+// 북스테이 마커 조회 API
+export const getBookstayMarkersAPI = async (): Promise<
+  BookstayMarkerResponse[]
+> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(`${API_BASE_URL}/places/markers/bookstays`, {
+      method: "GET",
+      headers: {
+        ...headers,
+        accept: "*/*",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: BookstayMarkerResponse[] = await response.json();
+    console.log("북스테이 마커 조회 API 성공:", data);
+    return data;
+  } catch (error) {
+    console.error("북스테이 마커 조회 API 에러:", error);
+    throw error;
+  }
+};
+
+// 북카페 마커 조회 API
+export const getBookcafeMarkersAPI = async (): Promise<
+  BookcafeMarkerResponse[]
+> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(`${API_BASE_URL}/places/markers/bookcafes`, {
+      method: "GET",
+      headers: {
+        ...headers,
+        accept: "*/*",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: BookcafeMarkerResponse[] = await response.json();
+    console.log("북카페 마커 조회 API 성공:", data);
+    return data;
+  } catch (error) {
+    console.error("북카페 마커 조회 API 에러:", error);
+    throw error;
+  }
+};
+
+// 장소 검색 API
+export const searchPlacesAPI = async (
+  keyword: string,
+  minLat: number,
+  minLng: number,
+  maxLat: number,
+  maxLng: number,
+): Promise<PlaceSearchResponse[]> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const params = new URLSearchParams({
+      keyword: keyword,
+      minLat: minLat.toString(),
+      minLng: minLng.toString(),
+      maxLat: maxLat.toString(),
+      maxLng: maxLng.toString(),
+    });
+
+    const response = await fetch(
+      `${API_BASE_URL}/places/search?${params.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          ...headers,
+          accept: "*/*",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: PlaceSearchResponse[] = await response.json();
+    console.log("장소 검색 API 성공:", data);
+    return data;
+  } catch (error) {
+    console.error("장소 검색 API 에러:", error);
     throw error;
   }
 };

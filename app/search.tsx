@@ -1,5 +1,8 @@
 import BackIcon from "@/components/icons/BackIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
+import SearchIcon from "@/components/icons/SearchIcon";
+import { PlaceSearchResponse, searchPlacesAPI } from "@/types/api";
+import { useGlobalState } from "@/types/globalState";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -13,12 +16,14 @@ import {
   View,
 } from "react-native";
 
-export default function SearchScreen() {
+const SearchScreen = () => {
   const params = useLocalSearchParams();
+  const { viewport, userLocation } = useGlobalState();
   const [searchText, setSearchText] = useState("");
-  const [recentSearches] = useState(["행복 서점", "강릉 책방", "강릉 책방"]);
   const [fromScreen, setFromScreen] = useState<string>("");
   const [dayIndex, setDayIndex] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<PlaceSearchResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // 파라미터에서 화면 정보 가져오기
   useEffect(() => {
@@ -31,25 +36,6 @@ export default function SearchScreen() {
       console.log("📅 선택된 날짜 인덱스:", params.dayIndex);
     }
   }, [params.from, params.dayIndex]);
-
-  const [searchSuggestions] = useState([
-    { text: "강릉", type: "search" },
-    { text: "강릉시", type: "search" },
-    { text: "강릉서점", type: "search" },
-    { text: "강릉독립서점", type: "search" },
-    {
-      text: "이스트쓰네",
-      type: "search",
-      tag: "독립서점",
-      address: "강릉시 강동면 현화로 973 1층",
-    },
-    {
-      text: "이스트쓰네",
-      type: "search",
-      tag: "독립서점",
-      address: "강릉시 강동면 현화로 973 1층",
-    },
-  ]);
 
   const handleBack = () => {
     if (fromScreen === "itinerary") {
@@ -66,13 +52,52 @@ export default function SearchScreen() {
 
   const handleClearSearch = () => {
     setSearchText("");
+    setSearchResults([]);
   };
 
-  const handleSearch = (text: string) => {
+  const handleSearch = async (text: string) => {
     setSearchText(text);
+
+    if (text.trim().length > 0) {
+      setIsLoading(true);
+      try {
+        // 전역 상태의 뷰포트 정보가 있으면 사용, 없으면 기본값 사용
+        console.log("🔍 검색 시 전역 상태 확인:", { viewport, userLocation });
+
+        if (viewport) {
+          const results = await searchPlacesAPI(
+            text.trim(),
+            viewport.south, // minLat
+            viewport.west, // minLng
+            viewport.north, // maxLat
+            viewport.east, // maxLng
+          );
+          setSearchResults(results);
+          console.log("🌍 뷰포트 기반 검색:", viewport);
+        } else {
+          // 뷰포트 정보가 없으면 기본값 사용 (강릉 지역)
+          const results = await searchPlacesAPI(
+            text.trim(),
+            37.0, // minLat
+            127.42, // minLng
+            38.62, // maxLat
+            129.56, // maxLng
+          );
+          setSearchResults(results);
+          console.log("📍 기본 좌표 기반 검색 - 뷰포트 정보 없음");
+        }
+      } catch (error) {
+        console.error("검색 API 에러:", error);
+        setSearchResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setSearchResults([]);
+    }
   };
 
-  const handleSelectLocation = (location: any) => {
+  const handleSelectLocation = (location: PlaceSearchResponse) => {
     console.log("Selected location:", location);
 
     if (fromScreen === "itinerary") {
@@ -88,11 +113,6 @@ export default function SearchScreen() {
         params: { selectedLocation: JSON.stringify(location) },
       });
     }
-  };
-
-  const handleRemoveRecent = (index: number) => {
-    // Remove recent search logic
-    console.log("Remove recent search at index:", index);
   };
 
   return (
@@ -128,70 +148,79 @@ export default function SearchScreen() {
 
       <ScrollView style={styles.content}>
         {searchText.length === 0 ? (
-          /* 최근 검색어 */
-          <View style={styles.recentSection}>
-            <Text style={styles.sectionTitle}>최근 검색어</Text>
-            <View style={styles.recentContainer}>
-              {recentSearches.map((search, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.recentItem}
-                  onPress={() => handleSearch(search)}
-                >
-                  <Text style={styles.recentText}>{search}</Text>
-                  <TouchableOpacity
-                    onPress={() => handleRemoveRecent(index)}
-                    style={styles.removeButton}
-                  >
-                    <Text style={styles.removeIcon}>×</Text>
-                  </TouchableOpacity>
-                </TouchableOpacity>
-              ))}
-            </View>
+          /* 검색 안내 메시지 */
+          <View style={styles.guideSection}>
+            <Text style={styles.guideTitle}>장소를 검색해보세요</Text>
+            <Text style={styles.guideText}>
+              찾고 싶은 장소의 이름이나 키워드를 입력하면{"\n"}
+              해당 지역의 장소를 찾을 수 있습니다.
+            </Text>
+
+            {/* 뷰포트 정보 표시 */}
+            {viewport && (
+              <View style={styles.viewportInfo}>
+                <Text style={styles.viewportText}>
+                  🌍 현재 지도 영역: {viewport.center.lat.toFixed(4)},{" "}
+                  {viewport.center.lng.toFixed(4)}
+                </Text>
+                <Text style={styles.viewportText}>
+                  📏 줌 레벨: {viewport.zoom}
+                </Text>
+              </View>
+            )}
+
+            {/* 사용자 위치 정보 표시 */}
+            {userLocation && (
+              <View style={styles.userLocationInfo}>
+                <Text style={styles.userLocationText}>
+                  📍 내 위치: {userLocation.latitude.toFixed(4)},{" "}
+                  {userLocation.longitude.toFixed(4)}
+                </Text>
+              </View>
+            )}
           </View>
         ) : (
           /* 검색 결과 */
           <View style={styles.suggestionsSection}>
-            {searchSuggestions.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.suggestionItem}
-                onPress={() => handleSelectLocation(item)}
-              >
-                <View style={styles.suggestionContent}>
-                  {item.type === "location" ? (
-                    <PlaceIcon style={styles.suggestionIcon} />
-                  ) : (
-                    <Image
-                      source={require("@/assets/images/Search.png")}
-                      style={styles.suggestionIcon}
-                    />
-                  )}
-                  <View style={styles.suggestionTextContainer}>
-                    <View style={styles.nameAndTagContainer}>
-                      <Text style={styles.suggestionText}>{item.text}</Text>
-                      {item.tag && (
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <Text style={styles.loadingText}>검색 중...</Text>
+              </View>
+            ) : searchResults.length > 0 ? (
+              searchResults.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.suggestionItem}
+                  onPress={() => handleSelectLocation(item)}
+                >
+                  <View style={styles.suggestionContent}>
+                    <SearchIcon style={styles.suggestionIcon} />
+                    <View style={styles.suggestionTextContainer}>
+                      <View style={styles.nameAndTagContainer}>
+                        <Text style={styles.suggestionText}>{item.name}</Text>
                         <View style={styles.tagContainer}>
-                          <Text style={styles.tagText}>{item.tag}</Text>
+                          <Text style={styles.tagText}>{item.placeType}</Text>
                         </View>
-                      )}
-                    </View>
-                    {item.address && (
+                      </View>
                       <View style={styles.addressContainer}>
                         <PlaceIcon style={styles.addressIcon} />
                         <Text style={styles.addressText}>{item.address}</Text>
                       </View>
-                    )}
+                    </View>
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))}
+                </TouchableOpacity>
+              ))
+            ) : (
+              <View style={styles.noResultsContainer}>
+                <Text style={styles.noResultsText}>검색 결과가 없습니다.</Text>
+              </View>
+            )}
           </View>
         )}
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -241,41 +270,26 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
-  recentSection: {
-    marginTop: 20,
+  guideSection: {
+    marginTop: 60,
+    alignItems: "center",
+    paddingHorizontal: 40,
   },
-  sectionTitle: {
-    fontSize: 16,
+  guideTitle: {
+    fontSize: 18,
     fontFamily: "SUIT-600",
     color: "#262423",
-    marginBottom: 15,
+    marginBottom: 12,
+    textAlign: "center",
   },
-  recentContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
+  guideText: {
+    fontSize: 12,
+    fontFamily: "SUIT-400",
+    color: "#9D9896",
+    textAlign: "center",
+    lineHeight: 20,
   },
-  recentItem: {
-    backgroundColor: "#F5F5F5",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  recentText: {
-    fontSize: 14,
-    fontFamily: "SUIT-500",
-    color: "#666666",
-    marginRight: 8,
-  },
-  removeButton: {
-    padding: 2,
-  },
-  removeIcon: {
-    fontSize: 14,
-    color: "#999999",
-  },
+
   suggestionsSection: {
     marginTop: 10,
   },
@@ -291,7 +305,7 @@ const styles = StyleSheet.create({
   suggestionIcon: {
     width: 16,
     height: 16,
-    marginRight: 12,
+    marginRight: 18,
     tintColor: "#666666",
   },
   suggestionTextContainer: {
@@ -299,7 +313,8 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   suggestionText: {
-    fontSize: 16,
+    maxWidth: "75%",
+    fontSize: 15,
     fontFamily: "SUIT-400",
     color: "#262423",
   },
@@ -307,7 +322,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F0F0F0",
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 10,
+    borderRadius: 5,
     marginLeft: 8,
   },
   tagText: {
@@ -328,7 +343,7 @@ const styles = StyleSheet.create({
   addressIcon: {
     width: 12,
     height: 12,
-    marginRight: 4,
+    marginRight: 6,
     tintColor: "#999999",
   },
   addressText: {
@@ -348,4 +363,49 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#666666",
   },
+  loadingContainer: {
+    paddingVertical: 20,
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#999999",
+  },
+  noResultsContainer: {
+    paddingVertical: 20,
+    alignItems: "center",
+  },
+  noResultsText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#999999",
+  },
+  viewportInfo: {
+    marginTop: 15,
+    padding: 12,
+    backgroundColor: "#F8F8F8",
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  viewportText: {
+    fontSize: 12,
+    fontFamily: "SUIT-400",
+    color: "#666666",
+    marginBottom: 4,
+  },
+  userLocationInfo: {
+    marginTop: 10,
+    padding: 12,
+    backgroundColor: "#E3F2FD",
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  userLocationText: {
+    fontSize: 12,
+    fontFamily: "SUIT-500",
+    color: "#1976D2",
+  },
 });
+
+export default SearchScreen;

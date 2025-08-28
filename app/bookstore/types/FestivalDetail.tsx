@@ -34,6 +34,24 @@ export default function FestivalDetail({ placeDetail }: FestivalDetailProps) {
         </>
       )}
 
+      {placeDetail?.tel && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <StoreInfoIcon />
+            <Text style={styles.tabTitle}>연락처</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              if (placeDetail.tel) {
+                Linking.openURL(`tel:${placeDetail.tel}`);
+              }
+            }}
+          >
+            <Text style={styles.phoneLink}>{placeDetail.tel}</Text>
+          </TouchableOpacity>
+        </>
+      )}
+
       {placeDetail?.placeDetail?.startDate &&
         placeDetail?.placeDetail?.endDate && (
           <>
@@ -95,7 +113,7 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#262423",
     lineHeight: 20,
-    marginBottom: 40,
+    marginBottom: 25,
   },
   infoText: {
     fontSize: 14,
@@ -111,10 +129,17 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     marginBottom: 40,
   },
+  phoneLink: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#3871E0",
+    textDecorationLine: "underline",
+    marginBottom: 40,
+  },
   tabTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 13,
+    marginBottom: 12,
     gap: 7,
   },
 });

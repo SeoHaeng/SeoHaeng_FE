@@ -35,6 +35,24 @@ export default function RestaurantDetail({
         </>
       )}
 
+      {placeDetail?.tel && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <StoreInfoIcon />
+            <Text style={styles.tabTitle}>연락처</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              if (placeDetail.tel) {
+                Linking.openURL(`tel:${placeDetail.tel}`);
+              }
+            }}
+          >
+            <Text style={styles.phoneLink}>{placeDetail.tel}</Text>
+          </TouchableOpacity>
+        </>
+      )}
+
       <View style={styles.tabTitleContainer}>
         <WebsiteIcon />
         <Text style={styles.tabTitle}>공식 웹사이트</Text>
@@ -52,12 +70,6 @@ export default function RestaurantDetail({
         음식점입니다. 가족과 친구들과 함께 즐길 수 있는 따뜻한 분위기를
         자랑합니다.
       </Text>
-
-      <View style={styles.tabTitleContainer}>
-        <StoreInfoIcon />
-        <Text style={styles.tabTitle}>음식점 정보</Text>
-      </View>
-      <Text style={styles.infoText}>033-123-4567</Text>
     </View>
   );
 }
@@ -76,7 +88,7 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#262423",
     lineHeight: 20,
-    marginBottom: 40,
+    marginBottom: 25,
   },
   infoText: {
     fontSize: 14,
@@ -91,10 +103,17 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     marginBottom: 40,
   },
+  phoneLink: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#3871E0",
+    textDecorationLine: "underline",
+    marginBottom: 40,
+  },
   tabTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 13,
+    marginBottom: 12,
     gap: 7,
   },
 });

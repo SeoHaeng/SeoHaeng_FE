@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { Text, TextInput } from "react-native";
 import { AuthProvider, useAuth } from "../components/AuthProvider";
+import { GlobalStateProvider } from "../types/globalState";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -107,8 +108,10 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <RootLayoutNav />
-    </AuthProvider>
+    <GlobalStateProvider>
+      <AuthProvider>
+        <RootLayoutNav />
+      </AuthProvider>
+    </GlobalStateProvider>
   );
 }

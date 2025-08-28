@@ -382,7 +382,7 @@ export default function BookmarkDetail() {
               <TouchableOpacity style={styles.statItem} onPress={toggleScrap}>
                 <ScrapIcon
                   isActive={bookmarkDetail.scraped}
-                  color={bookmarkDetail.scraped ? "#56AC70" : "#716C69"}
+                  color={bookmarkDetail.scraped ? "#56AC70" : "#C5BFBB"}
                 />
                 <Text style={styles.statNumber}>{bookmarkDetail.scraps}</Text>
               </TouchableOpacity>
@@ -390,7 +390,7 @@ export default function BookmarkDetail() {
               <TouchableOpacity style={styles.statItem} onPress={toggleLike}>
                 <FilledHeartIcon
                   isActive={bookmarkDetail.liked}
-                  color={bookmarkDetail.liked ? "#E55E5E" : "#716C69"}
+                  color={bookmarkDetail.liked ? "#E55E5E" : "#C5BFBB"}
                 />
                 <Text style={styles.statNumber}>{bookmarkDetail.likes}</Text>
               </TouchableOpacity>

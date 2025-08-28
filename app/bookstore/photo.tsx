@@ -1,19 +1,35 @@
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
-export default function PhotoTab() {
+interface PhotoTabProps {
+  placeImageUrls?: string[];
+}
+
+export default function PhotoTab({ placeImageUrls }: PhotoTabProps) {
   return (
     <View style={styles.tabContent}>
-      <Text style={styles.tabTitle}>서점 사진</Text>
+      <Text style={styles.tabTitle}>장소 사진</Text>
       <View style={styles.photoGrid}>
-        <Image
-          source={require("@/assets/images/서점.png")}
-          style={styles.photoItem}
-        />
-        <Image
-          source={require("@/assets/images/독립서점.png")}
-          style={styles.photoItem}
-        />
+        {placeImageUrls && placeImageUrls.length > 0 ? (
+          placeImageUrls.map((imageUrl, index) => (
+            <Image
+              key={index}
+              source={{ uri: imageUrl }}
+              style={styles.photoItem}
+            />
+          ))
+        ) : (
+          <>
+            <Image
+              source={require("@/assets/images/서점.png")}
+              style={styles.photoItem}
+            />
+            <Image
+              source={require("@/assets/images/독립서점.png")}
+              style={styles.photoItem}
+            />
+          </>
+        )}
       </View>
     </View>
   );

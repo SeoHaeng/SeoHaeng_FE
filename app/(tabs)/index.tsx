@@ -56,7 +56,7 @@ export default function Index() {
 
     const interval = setInterval(() => {
       const currentUserInfo = getUserInfo();
-      console.log("주기적 체크 - currentUserInfo:", currentUserInfo);
+      //console.log("주기적 체크 - currentUserInfo:", currentUserInfo);
       if (currentUserInfo !== userInfo) {
         console.log("사용자 정보 변경 감지:", currentUserInfo);
         setLocalUserInfo(currentUserInfo);

@@ -25,10 +25,16 @@ interface FestivalCardProps {
   image: any;
   title: string;
   dates: string;
+  onPress: () => void;
 }
 
-const FestivalCard: React.FC<FestivalCardProps> = ({ image, title, dates }) => (
-  <TouchableOpacity style={styles.festivalCard}>
+const FestivalCard: React.FC<FestivalCardProps> = ({
+  image,
+  title,
+  dates,
+  onPress,
+}) => (
+  <TouchableOpacity style={styles.festivalCard} onPress={onPress}>
     <View style={styles.festivalCardImageContainer}>
       <Image source={image} style={styles.festivalCardImage} />
       <LinearGradient
@@ -224,6 +230,16 @@ export default function Preference() {
                 image={{ uri: item.imageUrl }}
                 title={item.festivalName}
                 dates={`${item.startDate.slice(5, 7)}.${item.startDate.slice(8, 10)}-${item.endDate.slice(5, 7)}.${item.endDate.slice(8, 10)}`}
+                onPress={() => {
+                  // 축제 상세 페이지로 이동
+                  router.push({
+                    pathname: `/bookstore/[id]`,
+                    params: {
+                      id: item.placeId.toString(),
+                      from: "preference",
+                    },
+                  });
+                }}
               />
             ))}
           </ScrollView>

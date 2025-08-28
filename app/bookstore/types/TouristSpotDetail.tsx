@@ -1,14 +1,18 @@
+import BabyIcon from "@/components/icons/BabyIcon";
 import BusinessHoursIcon from "@/components/icons/BusinessHoursIcon";
+import CreditIcon from "@/components/icons/CreditIcon";
+import ParkingIcon from "@/components/icons/ParkingIcon";
+import PetIcon from "@/components/icons/PetIcon";
 import StoreInfoIcon from "@/components/icons/StoreInfoIcon";
 import StoreIntroIcon from "@/components/icons/StoreIntroIcon";
 import WebsiteIcon from "@/components/icons/WebsiteIcon";
 import React from "react";
 import {
-    Linking,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 interface TouristSpotDetailProps {
@@ -19,40 +23,108 @@ export default function TouristSpotDetail({
   placeDetail,
 }: TouristSpotDetailProps) {
   const handleWebsitePress = () => {
-    // 관광지 웹사이트 URL로 변경
-    Linking.openURL("https://www.example.com");
+    if (placeDetail?.websiteUrl) {
+      Linking.openURL(placeDetail.websiteUrl);
+    }
   };
 
   return (
     <View style={styles.tabContent}>
-      <View style={styles.tabTitleContainer}>
-        <BusinessHoursIcon />
-        <Text style={styles.tabTitle}>운영 시간</Text>
-      </View>
-      <Text style={styles.description}>09:00 - 18:00</Text>
+      {placeDetail?.usetime && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <BusinessHoursIcon />
+            <Text style={styles.tabTitle}>영업 시간</Text>
+          </View>
+          <Text style={styles.description}>{placeDetail.usetime}</Text>
+        </>
+      )}
 
-      <View style={styles.tabTitleContainer}>
-        <WebsiteIcon />
-        <Text style={styles.tabTitle}>공식 웹사이트</Text>
-      </View>
-      <TouchableOpacity onPress={handleWebsitePress}>
-        <Text style={styles.websiteLink}>https://www.example.com</Text>
-      </TouchableOpacity>
+      {placeDetail?.websiteUrl && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <WebsiteIcon />
+            <Text style={styles.tabTitle}>공식 웹사이트</Text>
+          </View>
+          <TouchableOpacity onPress={handleWebsitePress}>
+            <Text style={styles.websiteLink}>{placeDetail.websiteUrl}</Text>
+          </TouchableOpacity>
+        </>
+      )}
 
-      <View style={styles.tabTitleContainer}>
-        <StoreIntroIcon />
-        <Text style={styles.tabTitle}>관광지 소개</Text>
-      </View>
-      <Text style={styles.description}>
-        아름다운 자연과 문화를 체험할 수 있는 관광지입니다. 다양한 볼거리와
-        즐길거리를 제공하며, 방문객들에게 잊을 수 없는 추억을 선사합니다.
-      </Text>
+      {placeDetail?.placeDetail?.overview && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <StoreIntroIcon />
+            <Text style={styles.tabTitle}>관광지 소개</Text>
+          </View>
+          <Text style={styles.description}>
+            {placeDetail.placeDetail.overview}
+          </Text>
+        </>
+      )}
 
-      <View style={styles.tabTitleContainer}>
-        <StoreInfoIcon />
-        <Text style={styles.tabTitle}>관광지 정보</Text>
-      </View>
-      <Text style={styles.infoText}>033-123-4567</Text>
+      {placeDetail?.tel && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <StoreInfoIcon />
+            <Text style={styles.tabTitle}>연락처</Text>
+          </View>
+          <Text style={styles.infoText}>{placeDetail.tel}</Text>
+        </>
+      )}
+
+      {/* 주차 정보 */}
+      {placeDetail?.placeDetail?.parkingAvailable && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <ParkingIcon />
+            <Text style={styles.tabTitle}>주차</Text>
+          </View>
+          <Text style={styles.infoText}>
+            {placeDetail.placeDetail.parkingAvailable}
+          </Text>
+        </>
+      )}
+
+      {/* 반려동물 동반 */}
+      {placeDetail?.placeDetail?.petsAllowed && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <PetIcon />
+            <Text style={styles.tabTitle}>반려동물 동반</Text>
+          </View>
+          <Text style={styles.infoText}>
+            {placeDetail.placeDetail.petsAllowed}
+          </Text>
+        </>
+      )}
+
+      {/* 유모차 이용 */}
+      {placeDetail?.placeDetail?.babyCarriageAllowed && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <BabyIcon />
+            <Text style={styles.tabTitle}>유모차 이용</Text>
+          </View>
+          <Text style={styles.infoText}>
+            {placeDetail.placeDetail.babyCarriageAllowed}
+          </Text>
+        </>
+      )}
+
+      {/* 신용카드 결제 */}
+      {placeDetail?.placeDetail?.creditCardAccepted && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <CreditIcon />
+            <Text style={styles.tabTitle}>신용카드 결제</Text>
+          </View>
+          <Text style={styles.infoText}>
+            {placeDetail.placeDetail.creditCardAccepted}
+          </Text>
+        </>
+      )}
     </View>
   );
 }
@@ -74,10 +146,10 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   infoText: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
-    marginBottom: 4,
+    marginBottom: 40,
   },
   websiteLink: {
     fontSize: 14,

@@ -1,5 +1,4 @@
 // app/bookstore/[id].tsx
-import StatusBadge from "@/components/bookStore/statusBadge";
 import BookstoreBadge from "@/components/BookstoreBadge";
 import BackIcon from "@/components/icons/BackIcon";
 import FilledHeartIcon from "@/components/icons/FilledHeartIcon";
@@ -12,11 +11,13 @@ import {
   ReviewListResponse,
   togglePlaceBookmarkAPI,
 } from "@/types/api";
+
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Alert,
   Image,
+  Linking,
   ScrollView,
   Share,
   StyleSheet,
@@ -45,6 +46,7 @@ export default function PlaceDetail() {
     ReviewListResponse["result"] | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const router = useRouter();
 
   // 장소 상세 정보 조회
@@ -214,6 +216,12 @@ export default function PlaceDetail() {
               } else if (fromScreen === "likedPlaces") {
                 // 좋아요한 장소에서 온 경우
                 router.push("/(tabs)/memory/likedPlaces");
+              } else if (fromScreen === "home") {
+                // 홈화면에서 온 경우
+                router.push("/(tabs)");
+              } else if (fromScreen === "preference") {
+                // 취향 길목에서 온 경우
+                router.push("/(tabs)/preference");
               } else {
                 // 기본 뒤로가기
                 router.back();
@@ -223,16 +231,51 @@ export default function PlaceDetail() {
           >
             <BackIcon />
           </TouchableOpacity>
+          {fromScreen && (
+            <View style={styles.fromIndicator}>
+              <Text style={styles.fromText}>
+                {fromScreen === "home"
+                  ? "홈"
+                  : fromScreen === "preference"
+                    ? "취향 길목"
+                    : fromScreen === "milestone"
+                      ? "이정표"
+                      : fromScreen === "challenge"
+                        ? "챌린지"
+                        : fromScreen === "likedPlaces"
+                          ? "좋아요한 장소"
+                          : ""}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* 메인 이미지 */}
         <View style={styles.imageContainer}>
           {placeDetail?.placeImageUrls &&
           placeDetail.placeImageUrls.length > 0 ? (
-            <Image
-              source={{ uri: placeDetail.placeImageUrls[0] }}
-              style={styles.mainImage}
-            />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              pagingEnabled
+              style={styles.imageScrollView}
+              onMomentumScrollEnd={(event) => {
+                const newIndex = Math.round(
+                  event.nativeEvent.contentOffset.x / 400,
+                );
+                setCurrentImageIndex(newIndex);
+              }}
+            >
+              {placeDetail.placeImageUrls.map((imageUrl, index) => (
+                <View key={index} style={styles.imageSlide}>
+                  <Image
+                    source={{ uri: imageUrl }}
+                    style={styles.mainImage}
+                    resizeMode="cover"
+                  />
+                </View>
+              ))}
+            </ScrollView>
           ) : (
             <Image
               source={require("@/assets/images/서점.png")}
@@ -243,7 +286,7 @@ export default function PlaceDetail() {
             placeDetail.placeImageUrls.length > 1 && (
               <View style={styles.imageOverlay}>
                 <Text style={styles.imageCounter}>
-                  1/{placeDetail.placeImageUrls.length}
+                  {currentImageIndex + 1}/{placeDetail.placeImageUrls.length}
                 </Text>
               </View>
             )}
@@ -285,17 +328,23 @@ export default function PlaceDetail() {
               </Text>
             </View>
           </View>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+          <View
+            style={{ flexDirection: "row", gap: 3, alignItems: "flex-start" }}
+          >
             <PlaceIcon width={11} height={15} />
             <Text style={styles.storeLocation}>{placeDetail?.address}</Text>
           </View>
           {placeDetail?.tel && (
-            <View
+            <TouchableOpacity
               style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
+              onPress={() => {
+                if (placeDetail.tel) {
+                  Linking.openURL(`tel:${placeDetail.tel}`);
+                }
+              }}
             >
-              <StatusBadge isOpen={true} />
               <Text style={styles.storeStatus}>{placeDetail.tel}</Text>
-            </View>
+            </TouchableOpacity>
           )}
         </View>
 
@@ -352,11 +401,27 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 10,
     paddingVertical: 0,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   backButton: {
     width: 44,
     height: 44,
     padding: 10,
+  },
+  fromIndicator: {
+    backgroundColor: "#F8F4F2",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: "#E8E3E0",
+  },
+  fromText: {
+    fontSize: 12,
+    fontFamily: "SUIT-500",
+    color: "#716C69",
   },
   headerTitle: {
     fontSize: 16,
@@ -369,10 +434,17 @@ const styles = StyleSheet.create({
     position: "relative",
     height: 300,
   },
+  imageScrollView: {
+    height: 300,
+  },
+  imageSlide: {
+    width: 400, // 화면 너비에 맞게 조정
+    height: 300,
+  },
   mainImage: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover",
+    resizeMode: "contain",
   },
   imageOverlay: {
     position: "absolute",
@@ -458,9 +530,10 @@ const styles = StyleSheet.create({
     color: "#9D9896",
   },
   storeLocation: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#262423",
+    marginLeft: 2,
   },
   storeStatus: {
     fontSize: 12,

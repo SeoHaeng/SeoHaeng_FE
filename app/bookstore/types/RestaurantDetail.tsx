@@ -4,18 +4,20 @@ import StoreIntroIcon from "@/components/icons/StoreIntroIcon";
 import WebsiteIcon from "@/components/icons/WebsiteIcon";
 import React from "react";
 import {
-    Linking,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 interface RestaurantDetailProps {
   placeDetail: any;
 }
 
-export default function RestaurantDetail({ placeDetail }: RestaurantDetailProps) {
+export default function RestaurantDetail({
+  placeDetail,
+}: RestaurantDetailProps) {
   const handleWebsitePress = () => {
     // 음식점 웹사이트 URL로 변경
     Linking.openURL("https://www.example.com");
@@ -23,32 +25,34 @@ export default function RestaurantDetail({ placeDetail }: RestaurantDetailProps)
 
   return (
     <View style={styles.tabContent}>
-      <View style={styles.tabTitleContainer}>
-        <BusinessHoursIcon />
-        <Text style={styles.tabTitle}>영업 시간</Text>
-      </View>
-      <Text style={styles.description}>11:00 - 22:00</Text>
-      
+      {placeDetail?.usetime && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <BusinessHoursIcon />
+            <Text style={styles.tabTitle}>영업 시간</Text>
+          </View>
+          <Text style={styles.description}>{placeDetail.usetime}</Text>
+        </>
+      )}
+
       <View style={styles.tabTitleContainer}>
         <WebsiteIcon />
         <Text style={styles.tabTitle}>공식 웹사이트</Text>
       </View>
       <TouchableOpacity onPress={handleWebsitePress}>
-        <Text style={styles.websiteLink}>
-          https://www.example.com
-        </Text>
+        <Text style={styles.websiteLink}>https://www.example.com</Text>
       </TouchableOpacity>
-      
+
       <View style={styles.tabTitleContainer}>
         <StoreIntroIcon />
         <Text style={styles.tabTitle}>음식점 소개</Text>
       </View>
       <Text style={styles.description}>
-        신선한 재료와 정성스러운 손맛으로 만드는 맛있는 요리를 
-        제공하는 음식점입니다. 가족과 친구들과 함께 즐길 수 있는 
-        따뜻한 분위기를 자랑합니다.
+        신선한 재료와 정성스러운 손맛으로 만드는 맛있는 요리를 제공하는
+        음식점입니다. 가족과 친구들과 함께 즐길 수 있는 따뜻한 분위기를
+        자랑합니다.
       </Text>
-      
+
       <View style={styles.tabTitleContainer}>
         <StoreInfoIcon />
         <Text style={styles.tabTitle}>음식점 정보</Text>

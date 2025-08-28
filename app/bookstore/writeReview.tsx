@@ -5,10 +5,10 @@ import CalendarIcon from "@/components/icons/CalendarIcon";
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import StarIcon from "@/components/icons/StarIcon";
-import { createReviewAPI } from "@/types/api";
+import { createReviewAPI, getPlaceDetailAPI } from "@/types/api";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -31,6 +31,26 @@ export default function WriteReview() {
   const [selectedDate, setSelectedDate] = useState("");
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [placeInfo, setPlaceInfo] = useState<any>(null);
+
+  // 장소 정보 조회
+  useEffect(() => {
+    const fetchPlaceInfo = async () => {
+      const placeId = Number(params.placeId || params.id);
+      if (placeId) {
+        try {
+          const response = await getPlaceDetailAPI(placeId);
+          if (response.isSuccess) {
+            setPlaceInfo(response.result);
+          }
+        } catch (error) {
+          console.error("장소 정보 조회 실패:", error);
+        }
+      }
+    };
+
+    fetchPlaceInfo();
+  }, [params.placeId, params.id]);
 
   const pickImage = async () => {
     if (selectedImages.length >= 10) {
@@ -142,16 +162,26 @@ export default function WriteReview() {
 
           {/* 서점 정보 */}
           <View style={styles.bookstoreInfo}>
-            <View style={styles.bookstoreImage} />
+            {placeInfo?.placeImageUrls &&
+            placeInfo.placeImageUrls.length > 0 ? (
+              <Image
+                source={{ uri: placeInfo.placeImageUrls[0] }}
+                style={styles.bookstoreImage}
+              />
+            ) : (
+              <View style={styles.bookstoreImage} />
+            )}
             <View style={styles.bookstoreDetails}>
               <View style={styles.bookstoreHeader}>
-                <Text style={styles.bookstoreName}>이스트씨네</Text>
-                <BookstoreBadge />
+                <Text style={styles.bookstoreName}>
+                  {placeInfo?.name || "장소명"}
+                </Text>
+                <BookstoreBadge placeType={placeInfo?.placeType} />
               </View>
               <View style={styles.locationContainer}>
                 <PlaceIcon width={11} height={15} />
                 <Text style={styles.locationText}>
-                  강원 강릉시 강동면 현화로 973 1층
+                  {placeInfo?.address || "주소 정보 없음"}
                 </Text>
               </View>
             </View>
@@ -379,6 +409,7 @@ const styles = StyleSheet.create({
   },
   ratingSection: {
     padding: 20,
+    paddingBottom: 10,
     alignItems: "center",
   },
   starsContainer: {
@@ -419,12 +450,13 @@ const styles = StyleSheet.create({
   },
   imageSection: {
     padding: 20,
+    paddingBottom: 10,
   },
   sectionTitle: {
     fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#000000",
-    marginBottom: 15,
+    marginBottom: 12,
   },
   imageScrollContainer: {
     // Add any specific styles for the ScrollView if needed
@@ -497,7 +529,7 @@ const styles = StyleSheet.create({
   },
   dateSection: {
     padding: 20,
-    marginBottom: 10,
+    paddingBottom: 10,
   },
   dateInput: {
     flexDirection: "row",
@@ -541,7 +573,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 10,
     right: 10,
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },

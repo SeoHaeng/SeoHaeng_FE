@@ -101,7 +101,7 @@ export default function DatePickerModal({
 
           {/* 달력 */}
           <Calendar
-            current="2025-06-13"
+            current={new Date().toISOString().split("T")[0]}
             onDayPress={handleDateSelect}
             markedDates={{
               [selectedDate]: {

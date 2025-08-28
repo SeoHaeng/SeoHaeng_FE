@@ -155,29 +155,6 @@ const SearchScreen = () => {
               찾고 싶은 장소의 이름이나 키워드를 입력하면{"\n"}
               해당 지역의 장소를 찾을 수 있습니다.
             </Text>
-
-            {/* 뷰포트 정보 표시 */}
-            {viewport && (
-              <View style={styles.viewportInfo}>
-                <Text style={styles.viewportText}>
-                  🌍 현재 지도 영역: {viewport.center.lat.toFixed(4)},{" "}
-                  {viewport.center.lng.toFixed(4)}
-                </Text>
-                <Text style={styles.viewportText}>
-                  📏 줌 레벨: {viewport.zoom}
-                </Text>
-              </View>
-            )}
-
-            {/* 사용자 위치 정보 표시 */}
-            {userLocation && (
-              <View style={styles.userLocationInfo}>
-                <Text style={styles.userLocationText}>
-                  📍 내 위치: {userLocation.latitude.toFixed(4)},{" "}
-                  {userLocation.longitude.toFixed(4)}
-                </Text>
-              </View>
-            )}
           </View>
         ) : (
           /* 검색 결과 */
@@ -199,7 +176,15 @@ const SearchScreen = () => {
                       <View style={styles.nameAndTagContainer}>
                         <Text style={styles.suggestionText}>{item.name}</Text>
                         <View style={styles.tagContainer}>
-                          <Text style={styles.tagText}>{item.placeType}</Text>
+                          <Text style={styles.tagText}>
+                            {item.placeType === "TOURIST_SPOT"
+                              ? "관광지"
+                              : item.placeType === "RESTAURANT"
+                                ? "음식점"
+                                : item.placeType === "FESTIVAL"
+                                  ? "축제"
+                                  : item.placeType}
+                          </Text>
                         </View>
                       </View>
                       <View style={styles.addressContainer}>

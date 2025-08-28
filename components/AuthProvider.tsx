@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const refreshAuthState = async () => {
     try {
       const restoredState = await restoreAuthState();
-      
+
       // 토큰 유효성 검증 강화
       const isValidToken =
         restoredState.accessToken &&

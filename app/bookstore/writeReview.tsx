@@ -5,8 +5,9 @@ import CalendarIcon from "@/components/icons/CalendarIcon";
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import StarIcon from "@/components/icons/StarIcon";
+import { createReviewAPI } from "@/types/api";
 import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
@@ -23,11 +24,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WriteReview() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const pickImage = async () => {
     if (selectedImages.length >= 10) {
@@ -77,6 +80,41 @@ export default function WriteReview() {
     const dayOfWeek = ["일", "월", "화", "수", "목", "금", "토"][date.getDay()];
 
     return `${year}.${month}.${day}(${dayOfWeek})`;
+  };
+
+  const handleSubmitReview = async () => {
+    if (!rating || !selectedDate || reviewText.length < 10) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const placeId = Number(params.placeId || params.id);
+      if (!placeId) {
+        alert("장소 정보를 찾을 수 없습니다.");
+        return;
+      }
+
+      const request = {
+        rating,
+        visitedDate: selectedDate,
+        content: reviewText,
+      };
+
+      const response = await createReviewAPI(placeId, request, selectedImages);
+
+      if (response.isSuccess) {
+        alert("리뷰가 성공적으로 작성되었습니다!");
+        router.back();
+      } else {
+        alert(`리뷰 작성 실패: ${response.message}`);
+      }
+    } catch (error) {
+      console.error("리뷰 작성 에러:", error);
+      alert("리뷰 작성 중 오류가 발생했습니다.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -225,9 +263,15 @@ export default function WriteReview() {
                 ? styles.completeButtonActive
                 : styles.completeButtonDisabled,
             ]}
-            disabled={!(rating > 0 && selectedDate && reviewText.length >= 10)}
+            disabled={
+              !(rating > 0 && selectedDate && reviewText.length >= 10) ||
+              isSubmitting
+            }
+            onPress={handleSubmitReview}
           >
-            <Text style={[styles.completeButtonText]}>작성 완료</Text>
+            <Text style={[styles.completeButtonText]}>
+              {isSubmitting ? "작성 중..." : "작성 완료"}
+            </Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -467,7 +511,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEE9E6",
   },
   datePlaceholder: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -488,7 +532,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DBD6D3",
     borderRadius: 8,
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#000000",
     textAlignVertical: "top",

@@ -1,7 +1,8 @@
 import ReviewMoreArrowIcon from "@/components/icons/ReviewMoreArrowIcon";
 import StarIcon from "@/components/icons/StarIcon";
+import { getReviewListAPI, getUserByIdAPI } from "@/types/api";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -11,38 +12,106 @@ import {
   View,
 } from "react-native";
 
-export default function ReviewTab() {
+interface ReviewTabProps {
+  reviewData: {
+    listSize: number;
+    totalPage: number;
+    totalElements: number;
+    isFirst: boolean;
+    isLast: boolean;
+    totalReviewRating: number;
+    getReviewList: {
+      createdAt: string;
+      creatorId: number;
+      rating: number;
+      reviewContent: string;
+      reviewImageList: string[];
+      placeId: number;
+      reviewId: number;
+    }[];
+  } | null;
+  placeId?: number;
+}
+
+export default function ReviewTab({ reviewData, placeId }: ReviewTabProps) {
   const router = useRouter();
-  const reviews = [
-    {
-      id: 1,
-      username: "유딘딘",
-      date: "2025.05.13 토",
-      rating: 5,
-      text: "너무너무 좋았어요!!!\n다음에 또 올게욤~ 그때까지 망하지 말아주세요 ㅎㅎ",
-      images: [require("@/assets/images/인기챌린지 사진.png")],
-    },
-    {
-      id: 2,
-      username: "독서광",
-      date: "2025.05.12 금",
-      rating: 4,
-      text: "분위기가 정말 좋아요! 책도 많고 커피도 맛있어요.\n다음에 친구들과 함께 올 예정입니다.",
-      images: [
-        require("@/assets/images/인기챌린지 사진.png"),
-        require("@/assets/images/북챌린지 사진.png"),
-        require("@/assets/images/인기챌린지 책.png"),
-      ],
-    },
-    {
-      id: 3,
-      username: "책벌레123",
-      date: "2025.05.10 수",
-      rating: 5,
-      text: "북챌린지 이벤트도 진행하고 있어서 더욱 특별한 경험이었어요.\n정말 추천합니다!",
-      images: [require("@/assets/images/북챌린지 사진.png")],
-    },
-  ];
+  const [userInfoMap, setUserInfoMap] = useState<{ [key: number]: any }>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [allReviews, setAllReviews] = useState<any[]>([]);
+
+  // 사용자 정보 조회
+  useEffect(() => {
+    const fetchUserInfos = async () => {
+      if (!reviewData?.getReviewList) return;
+
+      const uniqueUserIds = [
+        ...new Set(reviewData.getReviewList.map((review) => review.creatorId)),
+      ];
+
+      for (const userId of uniqueUserIds) {
+        if (!userInfoMap[userId]) {
+          try {
+            const userResponse = await getUserByIdAPI(userId);
+            if (userResponse.isSuccess) {
+              setUserInfoMap((prev) => ({
+                ...prev,
+                [userId]: userResponse.result,
+              }));
+            }
+          } catch (error) {
+            console.error(`사용자 ${userId} 정보 조회 실패:`, error);
+          }
+        }
+      }
+    };
+
+    fetchUserInfos();
+  }, [reviewData?.getReviewList]);
+
+  // 초기 리뷰 데이터 설정
+  useEffect(() => {
+    if (reviewData?.getReviewList) {
+      setAllReviews(reviewData.getReviewList);
+      setHasMore(!reviewData.isLast);
+    }
+  }, [reviewData]);
+
+  // 무한 스크롤 처리
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMore || !placeId) return;
+
+    setIsLoadingMore(true);
+    try {
+      const nextPage = currentPage + 1;
+      const response = await getReviewListAPI(placeId, nextPage, 10);
+
+      if (response.isSuccess && response.result.getReviewList.length > 0) {
+        setAllReviews((prev) => [...prev, ...response.result.getReviewList]);
+        setCurrentPage(nextPage);
+        setHasMore(!response.result.isLast);
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error("추가 리뷰 로드 실패:", error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const handleScroll = (event: any) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const paddingToBottom = 20;
+
+    if (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    ) {
+      handleLoadMore();
+    }
+  };
 
   const renderStars = (rating: number) => {
     return (
@@ -59,13 +128,22 @@ export default function ReviewTab() {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      onScroll={handleScroll}
+      scrollEventThrottle={16}
+    >
       {/* 리뷰 요약 */}
       <View style={styles.reviewSummary}>
-        <Text style={styles.reviewCount}>리뷰 212</Text>
+        <Text style={styles.reviewCount}>
+          리뷰 {reviewData?.totalElements || 0}
+        </Text>
         <View style={styles.ratingContainer}>
           <StarIcon size={15} style={styles.star} />
-          <Text style={styles.ratingText}>4.2</Text>
+          <Text style={styles.ratingText}>
+            {reviewData?.totalReviewRating?.toFixed(1) || "0.0"}
+          </Text>
         </View>
       </View>
 
@@ -79,35 +157,60 @@ export default function ReviewTab() {
       </TouchableOpacity>
 
       {/* 개별 리뷰들 */}
-      {reviews.map((review) => (
-        <View key={review.id} style={styles.reviewItem}>
+      {allReviews.map((review) => (
+        <View key={review.reviewId} style={styles.reviewItem}>
           {/* 사용자 정보 */}
           <View style={styles.reviewHeader}>
             <View style={styles.userInfo}>
-              <View style={styles.userAvatar} />
-              <Text style={styles.username}>{review.username}</Text>
-              <Text style={styles.reviewDate}>{review.date}</Text>
+              {userInfoMap[review.creatorId]?.profileImageUrl ? (
+                <Image
+                  source={{
+                    uri: userInfoMap[review.creatorId].profileImageUrl,
+                  }}
+                  style={styles.userAvatar}
+                />
+              ) : (
+                <View style={styles.userAvatar} />
+              )}
+              <Text style={styles.username}>
+                {userInfoMap[review.creatorId]?.nickName ||
+                  `사용자 ${review.creatorId}`}
+              </Text>
+              <Text style={styles.reviewDate}>
+                {new Date(review.createdAt)
+                  .toLocaleDateString("ko-KR", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  })
+                  .replace(/\. /g, ".")
+                  .replace(/\.$/, "") +
+                  " " +
+                  new Date(review.createdAt).toLocaleDateString("ko-KR", {
+                    weekday: "short",
+                  })}
+              </Text>
             </View>
             <View style={styles.reviewMeta}>{renderStars(review.rating)}</View>
           </View>
 
           {/* 리뷰 텍스트 */}
-          <Text style={styles.reviewText}>{review.text}</Text>
+          <Text style={styles.reviewText}>{review.reviewContent}</Text>
 
           {/* 리뷰 이미지들 */}
-          {review.images.length > 0 && (
+          {review.reviewImageList && review.reviewImageList.length > 0 && (
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               style={styles.imagesContainer}
             >
-              {review.images.map((image, index) => (
+              {review.reviewImageList.map((imageUrl: string, index: number) => (
                 <Image
                   key={index}
-                  source={image}
+                  source={{ uri: imageUrl }}
                   style={[
                     styles.reviewImage,
-                    review.images.length === 1
+                    review.reviewImageList.length === 1
                       ? styles.singleImage
                       : styles.multipleImage,
                   ]}
@@ -118,6 +221,20 @@ export default function ReviewTab() {
           )}
         </View>
       ))}
+
+      {/* 무한 스크롤 로딩 인디케이터 */}
+      {isLoadingMore && (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>리뷰를 불러오는 중...</Text>
+        </View>
+      )}
+
+      {/* 더 이상 로드할 리뷰가 없음 */}
+      {!hasMore && allReviews.length > 0 && (
+        <View style={styles.noMoreContainer}>
+          <Text style={styles.noMoreText}>모든 리뷰를 불러왔습니다</Text>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -229,5 +346,23 @@ const styles = StyleSheet.create({
   multipleImage: {
     width: 150,
     height: 150,
+  },
+  loadingContainer: {
+    paddingVertical: 20,
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#9D9896",
+  },
+  noMoreContainer: {
+    paddingVertical: 20,
+    alignItems: "center",
+  },
+  noMoreText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#9D9896",
   },
 });

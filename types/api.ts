@@ -11,6 +11,45 @@ import {
   UserInfoResponse,
 } from "./globalState";
 
+// 리뷰 작성 API 요청 타입
+export interface CreateReviewRequest {
+  rating: number;
+  visitedDate: string;
+  content: string;
+}
+
+// 리뷰 작성 API 응답 타입
+export interface CreateReviewResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result?: any;
+}
+
+// 리뷰 조회 API 응답 타입
+export interface ReviewListResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    listSize: number;
+    totalPage: number;
+    totalElements: number;
+    isFirst: boolean;
+    isLast: boolean;
+    totalReviewRating: number;
+    getReviewList: {
+      createdAt: string;
+      creatorId: number;
+      rating: number;
+      reviewContent: string;
+      reviewImageList: string[];
+      placeId: number;
+      reviewId: number;
+    }[];
+  };
+}
+
 export const loginAPI = async (
   credentials: LoginRequest,
 ): Promise<LoginResponse> => {
@@ -43,6 +82,84 @@ export const loginAPI = async (
     return data;
   } catch (error) {
     console.error("로그인 API 에러:", error);
+    throw error;
+  }
+};
+
+// 리뷰 작성 API
+export const createReviewAPI = async (
+  placeId: number,
+  request: CreateReviewRequest,
+  images: string[] = [],
+): Promise<CreateReviewResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const formData = new FormData();
+
+    // request 데이터를 JSON으로 변환하여 추가
+    formData.append("request", JSON.stringify(request));
+
+    // 이미지들을 FormData에 추가
+    images.forEach((imageUri, index) => {
+      const imageName = `image_${index}.jpg`;
+      const imageFile = {
+        uri: imageUri,
+        type: "image/jpeg",
+        name: imageName,
+      } as any;
+
+      formData.append("images", imageFile);
+    });
+
+    const response = await fetch(`${API_BASE_URL}/reviews/${placeId}`, {
+      method: "POST",
+      headers: {
+        ...headers,
+        "Content-Type": "multipart/form-data",
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: CreateReviewResponse = await response.json();
+    return data;
+  } catch (error) {
+    console.error("리뷰 작성 API 에러:", error);
+    throw error;
+  }
+};
+
+// 리뷰 조회 API
+export const getReviewListAPI = async (
+  placeId: number,
+  page: number = 1,
+  size: number = 10,
+): Promise<ReviewListResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/reviews/${placeId}?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: ReviewListResponse = await response.json();
+    return data;
+  } catch (error) {
+    console.error("리뷰 조회 API 에러:", error);
     throw error;
   }
 };
@@ -760,6 +877,66 @@ export const getBookChallengeListAPI = async (
     throw error;
   }
 };
+// 장소 상세 조회 API
+export const getPlaceDetailAPI = async (
+  placeId: number,
+): Promise<PlaceDetailResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(`${API_BASE_URL}/places/${placeId}/details`, {
+      method: "GET",
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("장소 상세 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 장소 찜하기 토글 API
+export const togglePlaceBookmarkAPI = async (
+  placeId: number,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result?: {
+    isBookmarked: boolean;
+  };
+}> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/places/${placeId}/book-marks`,
+      {
+        method: "POST",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("장소 찜하기 토글 API 호출 실패:", error);
+    throw error;
+  }
+};
+
 // 북챌린지 서점 조회 API
 export const getBookChallengesAPI = async (
   page: number = 1,
@@ -1313,6 +1490,7 @@ export interface BookChallenge {
 // 북챌린지 장소 타입
 export interface BookChallengePlace {
   id: number;
+  placeId?: number; // 실제 API 응답에 placeId가 있다면 추가
   name: string;
   placeType: "BOOK_CAFE" | "SPACE_BOOKMARK" | "BOOK_STAY";
   address: string;
@@ -1730,3 +1908,90 @@ export const getReadingSpotDetailAPI = async (
     throw error;
   }
 };
+
+// 장소 상세 조회 응답 타입
+export type PlaceDetailResponse = {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    placeId: number;
+    placeType: string;
+    name: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    websiteUrl?: string;
+    tel?: string;
+    reviewCount: number;
+    rating: number;
+    isBookmarked: boolean;
+    placeDetail:
+      | BookstorePlaceDetail
+      | TouristSpotPlaceDetail
+      | RestaurantPlaceDetail
+      | FestivalPlaceDetail;
+    placeImageUrls: string[];
+  };
+};
+
+// 독립서점 상세 정보
+export interface BookstorePlaceDetail {
+  bookCafe: boolean;
+  bookStay: boolean;
+  bookChallengeStatus: boolean;
+  salonAll: boolean;
+  readingClub: boolean;
+  bookTalk: boolean;
+  lecture: boolean;
+  originalContent: boolean;
+  bookWellage: boolean;
+  convenienceAll: boolean;
+  spaceRental: boolean;
+  parking: boolean;
+  petFriendly: boolean;
+  bookStorage: boolean;
+  creatorSupport: boolean;
+  bookOrder: boolean;
+  bookDelivery: boolean;
+  collectionAll: boolean;
+  indiePublication: boolean;
+  usedBooks: boolean;
+  goods: boolean;
+  artBook: boolean;
+  illustrationBook: boolean;
+  giftShop: boolean;
+  souvenirs: boolean;
+  tasteAll: boolean;
+  pub: boolean;
+  cafe: boolean;
+  snack: boolean;
+}
+
+// 관광지 상세 정보
+export interface TouristSpotPlaceDetail {
+  overview: string;
+  parkingAvailable: string;
+  petsAllowed: string;
+  babyCarriageAllowed: string;
+  creditCardAccepted: string;
+}
+
+// 음식점 상세 정보
+export interface RestaurantPlaceDetail {
+  firstmenu: string;
+  treatmenu: string;
+  kidsfacility: string;
+  isSmokingAllowed: string;
+  isTakeoutAvailable: string;
+  hasParking: string;
+  isReservable: string;
+}
+
+// 축제 상세 정보
+export interface FestivalPlaceDetail {
+  overview: string;
+  programs: string;
+  startDate: string;
+  endDate: string;
+}

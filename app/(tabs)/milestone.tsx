@@ -34,7 +34,7 @@ import {
 function Milestone() {
   const params = useLocalSearchParams();
   const [currentLocation, setCurrentLocation] = useState({
-    latitude: 37.8228, // 강원도 춘천시
+    latitude: 37.8228, // 기본값: 강원도 춘천시 (위치 권한이 없을 때 사용)
     longitude: 127.7322,
   });
   const [selectedFilter, setSelectedFilter] = useState("가볼만한 관광지");
@@ -54,7 +54,7 @@ function Milestone() {
   const [isFilterActive, setIsFilterActive] = useState(false);
   const [activeFilterText, setActiveFilterText] = useState("");
   const [isLocationSelected, setIsLocationSelected] = useState(false);
-  const [filterType, setFilterType] = useState<string | undefined>(undefined); // 필터 타입 상태 추가
+  const [filterType, setFilterType] = useState<string>("가볼만한 관광지"); // 기본 필터 타입 설정
   const [activeMarkerId, setActiveMarkerId] = useState<string | null>(null); // 활성화된 마커 ID
   const [isWebViewReady, setIsWebViewReady] = useState(false); // WebView 준비 상태
   const webViewRef = useRef<KakaoMapRef>(null);
@@ -67,6 +67,48 @@ function Milestone() {
       setIsWebViewReady(true);
     }, 2000); // 2초 후 준비 상태 설정
   };
+
+  // 컴포넌트 마운트 시 현재 위치 가져오기
+  useEffect(() => {
+    const initializeCurrentLocation = async () => {
+      try {
+        console.log("📍 컴포넌트 마운트 - 현재 위치 초기화 시작");
+        const { status } = await Location.requestForegroundPermissionsAsync();
+
+        if (status === "granted") {
+          const location = await Location.getCurrentPositionAsync({});
+          const newLocation = {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          };
+
+          console.log("📍 현재 위치 가져오기 성공:", newLocation);
+          setCurrentLocation(newLocation);
+
+          // 주소 정보 가져오기
+          const addressResponse = await Location.reverseGeocodeAsync({
+            latitude: newLocation.latitude,
+            longitude: newLocation.longitude,
+          });
+
+          if (addressResponse.length > 0) {
+            const address = addressResponse[0];
+            const district =
+              address.district || address.subregion || "알 수 없는 지역";
+            setCurrentAddress(district);
+            console.log("📍 현재 주소:", district);
+          }
+        } else {
+          console.log("⚠️ 위치 권한이 거부됨, 기본 위치(춘천시) 사용");
+        }
+      } catch (error) {
+        console.error("❌ 현재 위치 초기화 실패:", error);
+        console.log("⚠️ 기본 위치(춘천시) 사용");
+      }
+    };
+
+    initializeCurrentLocation();
+  }, []);
 
   // URL 파라미터에서 선택된 위치 정보 처리
   useEffect(() => {
@@ -357,7 +399,7 @@ function Milestone() {
               if (isFilterActive) {
                 setIsFilterActive(false);
                 setActiveFilterText("");
-                setFilterType(undefined); // 필터 타입 초기화 (모든 마커 표시)
+                setFilterType("가볼만한 관광지"); // 필터 타입 초기화 (기본값으로 복원)
               } else if (activeMarkerId) {
                 setActiveMarkerId(null); // 선택된 마커 해제
               }

@@ -24,19 +24,20 @@ export default function KakaoLoginWebView({
   const [isLoading, setIsLoading] = useState(true);
 
   // 카카오 OAuth URL
-  const kakaoOAuthUrl = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=2f457f4c7c6bc61411a671b4304b50c0&redirect_uri=http://localhost:3000/auth/kakao/callback&state=sGZAsXVZ5DriH5KWds7U8MNHIo%3D";
+  const kakaoOAuthUrl =
+    "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=2f457f4c7c6bc61411a671b4304b50c0&redirect_uri=http://localhost:3000/auth/kakao/callback&state=sGZAsXVZ5DriH5KWds7U8MNHIo%3D";
 
   // WebView에서 URL 변경 감지
   const handleNavigationStateChange = (navState: any) => {
     const { url } = navState;
-    
+
     // redirect_uri로 리다이렉트되는지 확인
     if (url.includes("localhost:3000/auth/kakao/callback")) {
       // URL에서 인가 코드 추출
       const urlParams = new URL(url);
       const code = urlParams.searchParams.get("code");
       const state = urlParams.searchParams.get("state");
-      
+
       if (code) {
         console.log("✅ 카카오 인가 코드 받음:", code);
         onCodeReceived(code);
@@ -72,10 +73,12 @@ export default function KakaoLoginWebView({
           {isLoading && (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#FEE500" />
-              <Text style={styles.loadingText}>카카오 로그인 페이지를 불러오는 중...</Text>
+              <Text style={styles.loadingText}>
+                카카오 로그인 페이지를 불러오는 중...
+              </Text>
             </View>
           )}
-          
+
           <WebView
             ref={webViewRef}
             source={{ uri: kakaoOAuthUrl }}

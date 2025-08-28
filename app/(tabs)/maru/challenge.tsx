@@ -280,12 +280,10 @@ export default function Challenge() {
               name={store.name}
               location={extractCityFromAddress(store.address)}
               imageUrl={(store as any).imageUrl} // API 응답에 imageUrl이 있다면 사용
-              onPress={() =>
-                router.push({
-                  pathname: "/bookstore/[id]",
-                  params: { id: store.id },
-                })
-              }
+              onPress={() => {
+                const targetId = (store as any).placeId || store.id;
+                router.navigate(`/bookstore/${targetId}?from=challenge`);
+              }}
             />
           ))}
         </ScrollView>

@@ -464,7 +464,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   storeName: {
-    fontSize: 20,
+    maxWidth: "80%",
+    fontSize: 18,
     fontFamily: "SUIT-700",
     color: "#000000",
   },

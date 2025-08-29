@@ -7,9 +7,11 @@ import { getUserInfo } from "@/types/globalState";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
+  Alert,
   Animated,
   Dimensions,
   Image,
+  Linking,
   Modal,
   StyleSheet,
   Text,
@@ -165,6 +167,26 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
     setShowDeleteUserModal(false);
   };
 
+  const handleFeedbackAndReport = async () => {
+    const url =
+      "https://docs.google.com/forms/d/e/1FAIpQLSe-fkoR9ZvO5lp9Sd9to2TyuFgFurjP8YQ2tSOgN1hdlFbDeQ/viewform";
+
+    try {
+      // URL이 열릴 수 있는지 확인
+      const supported = await Linking.canOpenURL(url);
+
+      if (supported) {
+        // 구글폼 링크 열기
+        await Linking.openURL(url);
+      } else {
+        Alert.alert("오류", "링크를 열 수 없습니다.");
+      }
+    } catch (error) {
+      console.error("링크 열기 실패:", error);
+      Alert.alert("오류", "링크를 열 수 없습니다.");
+    }
+  };
+
   if (!visible) return null;
 
   return (
@@ -252,11 +274,14 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                 <Text style={styles.arrowIcon}>›</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.menuItem}>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={handleFeedbackAndReport}
+              >
                 <View style={styles.menuItemIcon}>
-                  <Text style={styles.menuItemIconText}>💡</Text>
+                  <Text style={styles.menuItemIconText}>❌</Text>
                 </View>
-                <Text style={styles.menuItemText}>앱 개선 요청</Text>
+                <Text style={styles.menuItemText}>의견 및 신고</Text>
                 <Text style={styles.arrowIcon}>›</Text>
               </TouchableOpacity>
             </View>

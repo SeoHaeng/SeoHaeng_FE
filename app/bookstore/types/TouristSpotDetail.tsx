@@ -3,16 +3,16 @@ import BusinessHoursIcon from "@/components/icons/BusinessHoursIcon";
 import CreditIcon from "@/components/icons/CreditIcon";
 import ParkingIcon from "@/components/icons/ParkingIcon";
 import PetIcon from "@/components/icons/PetIcon";
-import StoreInfoIcon from "@/components/icons/StoreInfoIcon";
+import PhoneIcon from "@/components/icons/PhoneIcon";
 import StoreIntroIcon from "@/components/icons/StoreIntroIcon";
 import WebsiteIcon from "@/components/icons/WebsiteIcon";
 import React from "react";
 import {
-  Linking,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Linking,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 interface TouristSpotDetailProps {
@@ -43,7 +43,7 @@ export default function TouristSpotDetail({
       {placeDetail?.tel && (
         <>
           <View style={styles.tabTitleContainer}>
-            <StoreInfoIcon />
+            <PhoneIcon />
             <Text style={styles.tabTitle}>연락처</Text>
           </View>
           <TouchableOpacity

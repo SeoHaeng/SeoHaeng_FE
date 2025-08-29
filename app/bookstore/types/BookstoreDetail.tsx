@@ -1,10 +1,17 @@
+import BookChallengeIcon from "@/components/icons/BookChallengeIcon";
+import BookMoimIcon from "@/components/icons/BookMoimIcon";
+import BookStayIcon from "@/components/icons/BookStayIcon";
 import BusinessHoursIcon from "@/components/icons/BusinessHoursIcon";
+import ParkingIcon from "@/components/icons/ParkingIcon";
+import PetIcon from "@/components/icons/PetIcon";
 import PhoneIcon from "@/components/icons/PhoneIcon";
+import SpaceShareIcon from "@/components/icons/SpaceShareIcon";
 import StoreIntroIcon from "@/components/icons/StoreIntroIcon";
 import WebsiteIcon from "@/components/icons/WebsiteIcon";
 import React from "react";
 import {
   Linking,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -64,20 +71,64 @@ export default function BookstoreDetail({ placeDetail }: BookstoreDetailProps) {
         <StoreIntroIcon />
         <Text style={styles.tabTitle}>매장 소개</Text>
       </View>
-      <Text style={styles.description}>
-        {placeDetail?.placeDetail?.bookStay
-          ? "북스테이 운영"
-          : "북스테이 미운영"}
-        {placeDetail?.placeDetail?.readingClub ? ", 독서모임 운영" : ""}
-        {placeDetail?.placeDetail?.lecture ? ", 강연 프로그램 운영" : ""}
-        {placeDetail?.placeDetail?.indiePublication
-          ? ", 인디 퍼블리싱 지원"
-          : ""}
-        {placeDetail?.placeDetail?.usedBooks ? ", 중고책 판매" : ""}
-        {placeDetail?.placeDetail?.cafe ? ", 카페 운영" : ""}
-        {placeDetail?.placeDetail?.parking ? ", 주차 가능" : ""}
-        {placeDetail?.placeDetail?.petFriendly ? ", 반려동물 동반 가능" : ""}
-      </Text>
+      <Text style={styles.description}>{placeDetail.placeDetail.overview}</Text>
+
+      {/* 서비스 상태 카드 섹션 */}
+      <View style={styles.tabTitleContainer}>
+        <BookStayIcon />
+        <Text style={styles.tabTitle}>매장 정보</Text>
+      </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <View style={styles.serviceCardsContainer}>
+          {placeDetail.placeDetail.bookChallengeStatus && (
+            <View style={styles.serviceCard}>
+              <BookChallengeIcon />
+
+              <Text style={styles.serviceText}>북챌린지</Text>
+            </View>
+          )}
+
+          {placeDetail.placeDetail.readingClub && (
+            <View style={styles.serviceCard}>
+              <BookMoimIcon />
+
+              <Text style={styles.serviceText}>독서모임</Text>
+            </View>
+          )}
+
+          {placeDetail.placeDetail.petFriendly && (
+            <View style={styles.serviceCard}>
+              <PetIcon />
+
+              <Text style={styles.serviceText}>반려동물</Text>
+            </View>
+          )}
+
+          {placeDetail.placeDetail.parking && (
+            <View style={styles.serviceCard}>
+              <ParkingIcon />
+
+              <Text style={styles.serviceText}>주차</Text>
+            </View>
+          )}
+
+          {placeDetail.placeDetail.spaceRental && (
+            <View style={styles.serviceCard}>
+              <SpaceShareIcon />
+
+              <Text style={styles.serviceText}>공간대여</Text>
+            </View>
+          )}
+
+          {placeDetail.placeDetail.reservation && (
+            <View style={styles.serviceCard}>
+              <PhoneIcon />
+
+              <Text style={styles.serviceText}>예약</Text>
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -121,7 +172,32 @@ const styles = StyleSheet.create({
   tabTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 10,
     gap: 7,
+  },
+  serviceCardsContainer: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  serviceCard: {
+    width: 80,
+    height: 80,
+    backgroundColor: "#F5F5F5",
+    borderRadius: 8,
+    padding: 15,
+    paddingVertical: 16,
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  serviceIcon: {
+    width: 20,
+    height: 20,
+  },
+  serviceText: {
+    fontSize: 12,
+    fontFamily: "SUIT-500",
+    color: "#262423",
+    textAlign: "center",
   },
 });

@@ -2195,35 +2195,15 @@ export type PlaceDetailResponse = {
 
 // 독립서점 상세 정보
 export interface BookstorePlaceDetail {
+  overview: string;
   bookCafe: boolean;
   bookStay: boolean;
   bookChallengeStatus: boolean;
-  salonAll: boolean;
-  readingClub: boolean;
-  bookTalk: boolean;
-  lecture: boolean;
-  originalContent: boolean;
-  bookWellage: boolean;
-  convenienceAll: boolean;
-  spaceRental: boolean;
   parking: boolean;
   petFriendly: boolean;
-  bookStorage: boolean;
-  creatorSupport: boolean;
-  bookOrder: boolean;
-  bookDelivery: boolean;
-  collectionAll: boolean;
-  indiePublication: boolean;
-  usedBooks: boolean;
-  goods: boolean;
-  artBook: boolean;
-  illustrationBook: boolean;
-  giftShop: boolean;
-  souvenirs: boolean;
-  tasteAll: boolean;
-  pub: boolean;
-  cafe: boolean;
-  snack: boolean;
+  spaceRental: boolean;
+  reservation: boolean;
+  readingClub: boolean;
 }
 
 // 관광지 상세 정보

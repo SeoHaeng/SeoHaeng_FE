@@ -1,4 +1,4 @@
-import StoreInfoIcon from "@/components/icons/StoreInfoIcon";
+import PhoneIcon from "@/components/icons/PhoneIcon";
 import StoreIntroIcon from "@/components/icons/StoreIntroIcon";
 import WebsiteIcon from "@/components/icons/WebsiteIcon";
 import {
@@ -154,7 +154,7 @@ export default function DetailTab({ placeDetail }: DetailTabProps) {
       )}
       {placeDetail?.tel && (
         <View style={styles.tabTitleContainer}>
-          <StoreInfoIcon />
+          <PhoneIcon />
           <Text style={styles.tabTitle}>연락처</Text>
         </View>
       )}

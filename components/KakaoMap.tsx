@@ -99,20 +99,6 @@ const KakaoMap = ({
       WebView준비상태: isWebViewReady,
     });
 
-    // 각 마커 배열의 상세 정보 로깅
-    if (independentBookstoreMarkers.length > 0) {
-      console.log(
-        "📚 독립서점 마커 상세:",
-        independentBookstoreMarkers.slice(0, 3),
-      );
-    }
-    if (bookStayMarkers.length > 0) {
-      console.log("🏨 북스테이 마커 상세:", bookStayMarkers.slice(0, 3));
-    }
-    if (bookCafeMarkers.length > 0) {
-      console.log("☕ 북카페 마커 상세:", bookCafeMarkers.slice(0, 3));
-    }
-
     // WebView가 준비되고 마커가 있을 때만 전송
     if (
       isWebViewReady &&
@@ -322,8 +308,103 @@ const KakaoMap = ({
                 }
                 
                 console.log('🗺️ WebView: moveToLocation 처리 완료');
+              } else if (data.type === 'updateMarkers' && map) {
+                console.log('🗺️ WebView: 마커 업데이트 메시지 수신됨');
+                
+                // 기존 마커들 제거
+                if (window.existingMarkers) {
+                  window.existingMarkers.forEach(function(marker) {
+                    marker.setMap(null);
+                  });
+                }
+                
+                // 새로운 마커 배열 생성
+                window.existingMarkers = [];
+                
+                // 독립서점 마커 추가
+                if (data.independentBookstoreMarkers && data.independentBookstoreMarkers.length > 0) {
+                  console.log('📚 독립서점 마커 추가:', data.independentBookstoreMarkers.length, '개');
+                  data.independentBookstoreMarkers.forEach(function(bookstore) {
+                    if (bookstore.latitude && bookstore.longitude) {
+                      var marker = new kakao.maps.Marker({
+                        position: new kakao.maps.LatLng(bookstore.latitude, bookstore.longitude),
+                        map: map,
+                        title: bookstore.name
+                      });
+                      
+                      // 마커 클릭 이벤트
+                      kakao.maps.event.addListener(marker, 'click', function() {
+                        if (window.ReactNativeWebView) {
+                          window.ReactNativeWebView.postMessage(JSON.stringify({
+                            type: 'markerClicked',
+                            markerType: '독립서점',
+                            data: bookstore
+                          }));
+                        }
+                      });
+                      
+                      window.existingMarkers.push(marker);
+                    }
+                  });
+                }
+                
+                // 북스테이 마커 추가
+                if (data.bookStayMarkers && data.bookStayMarkers.length > 0) {
+                  console.log('🏨 북스테이 마커 추가:', data.bookStayMarkers.length, '개');
+                  data.bookStayMarkers.forEach(function(bookstay) {
+                    if (bookstay.latitude && bookstay.longitude) {
+                      var marker = new kakao.maps.Marker({
+                        position: new kakao.maps.LatLng(bookstay.latitude, bookstay.longitude),
+                        map: map,
+                        title: bookstay.name
+                      });
+                      
+                      // 마커 클릭 이벤트
+                      kakao.maps.event.addListener(marker, 'click', function() {
+                        if (window.ReactNativeWebView) {
+                          window.ReactNativeWebView.postMessage(JSON.stringify({
+                            type: 'markerClicked',
+                            markerType: '북스테이',
+                            data: bookstay
+                          }));
+                        }
+                      });
+                      
+                      window.existingMarkers.push(marker);
+                    }
+                  });
+                }
+                
+                // 북카페 마커 추가
+                if (data.bookCafeMarkers && data.bookCafeMarkers.length > 0) {
+                  console.log('☕ 북카페 마커 추가:', data.bookCafeMarkers.length, '개');
+                  data.bookCafeMarkers.forEach(function(bookcafe) {
+                    if (bookcafe.latitude && bookcafe.longitude) {
+                      var marker = new kakao.maps.Marker({
+                        position: new kakao.maps.LatLng(bookcafe.latitude, bookcafe.longitude),
+                        map: map,
+                        title: bookcafe.name
+                      });
+                      
+                      // 마커 클릭 이벤트
+                      kakao.maps.event.addListener(marker, 'click', function() {
+                        if (window.ReactNativeWebView) {
+                          window.ReactNativeWebView.postMessage(JSON.stringify({
+                            type: 'markerClicked',
+                            markerType: '북카페',
+                            data: bookcafe
+                          }));
+                        }
+                      });
+                      
+                      window.existingMarkers.push(marker);
+                    }
+                  });
+                }
+                
+                console.log('🗺️ WebView: 마커 업데이트 완료, 총', window.existingMarkers.length, '개');
               } else {
-                console.log('🗺️ WebView: moveToLocation 조건 미충족:', {
+                console.log('🗺️ WebView: 메시지 타입 미지원 또는 map 객체 없음:', {
                   messageType: data.type,
                   mapExists: !!map,
                   data: data

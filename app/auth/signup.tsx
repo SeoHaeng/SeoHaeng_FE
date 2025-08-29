@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import {
   Alert,
   Dimensions,
+  Linking,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -76,6 +77,26 @@ export default function SignUpScreen() {
     // 이전 화면으로 이동
     console.log("이전 화면으로 이동");
     router.back();
+  };
+
+  // 이용약관 보기 링크 처리
+  const handleTermsLink = async () => {
+    const url = "https://www.notion.so/_-25d1744decc8805a8c9cf9f1671584e5?source=copy_link";
+    
+    try {
+      // URL이 열릴 수 있는지 확인
+      const supported = await Linking.canOpenURL(url);
+      
+      if (supported) {
+        // Notion 링크 열기
+        await Linking.openURL(url);
+      } else {
+        Alert.alert("오류", "링크를 열 수 없습니다.");
+      }
+    } catch (error) {
+      console.error("링크 열기 실패:", error);
+      Alert.alert("오류", "링크를 열 수 없습니다.");
+    }
   };
 
   // API 연동을 위한 회원가입 함수
@@ -479,7 +500,7 @@ export default function SignUpScreen() {
                 {agreeTerms && <Text style={styles.checkmark}>✓</Text>}
               </TouchableOpacity>
               <Text style={styles.termsText}>이용약관에 동의합니다.</Text>
-              <TouchableOpacity style={styles.termsLink}>
+              <TouchableOpacity style={styles.termsLink} onPress={handleTermsLink}>
                 <Text style={styles.termsLinkText}>이용약관 보기 &gt;</Text>
               </TouchableOpacity>
             </View>

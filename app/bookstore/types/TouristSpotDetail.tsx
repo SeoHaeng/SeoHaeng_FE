@@ -8,11 +8,11 @@ import StoreIntroIcon from "@/components/icons/StoreIntroIcon";
 import WebsiteIcon from "@/components/icons/WebsiteIcon";
 import React from "react";
 import {
-    Linking,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 interface TouristSpotDetailProps {

@@ -37,13 +37,11 @@ export default function DetailTab({ placeDetail }: DetailTabProps) {
         <Text style={styles.serviceItem}>• 북챌린지</Text>
       )}
       {detail.readingClub && <Text style={styles.serviceItem}>• 독서모임</Text>}
-      {detail.lecture && <Text style={styles.serviceItem}>• 강연</Text>}
+
       {detail.parking && <Text style={styles.serviceItem}>• 주차</Text>}
       {detail.petFriendly && (
         <Text style={styles.serviceItem}>• 반려동물 동반</Text>
       )}
-      {detail.cafe && <Text style={styles.serviceItem}>• 카페</Text>}
-      {detail.snack && <Text style={styles.serviceItem}>• 간식</Text>}
     </View>
   );
 

@@ -26,6 +26,7 @@ export default function SignUpScreen() {
   const [nickname, setNickname] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(true); // 기본값을 true로 변경
   const [agreePrivacy, setAgreePrivacy] = useState(false);
+  const [agreeLocationService, setAgreeLocationService] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
@@ -71,7 +72,8 @@ export default function SignUpScreen() {
     password.trim() !== "" &&
     confirmPassword.trim() !== "" &&
     agreeTerms &&
-    agreePrivacy;
+    agreePrivacy &&
+    agreeLocationService;
 
   const handleBack = () => {
     // 이전 화면으로 이동
@@ -81,8 +83,47 @@ export default function SignUpScreen() {
 
   // 이용약관 보기 링크 처리
   const handleTermsLink = async () => {
-    const url =
-      "https://www.notion.so/_-25d1744decc8805a8c9cf9f1671584e5?source=copy_link";
+    const url = "https://www.notion.so/25d1744decc880798dabc486a20344f4";
+
+    try {
+      // URL이 열릴 수 있는지 확인
+      const supported = await Linking.canOpenURL(url);
+
+      if (supported) {
+        // Notion 링크 열기
+        await Linking.openURL(url);
+      } else {
+        Alert.alert("오류", "링크를 열 수 없습니다.");
+      }
+    } catch (error) {
+      console.error("링크 열기 실패:", error);
+      Alert.alert("오류", "링크를 열 수 없습니다.");
+    }
+  };
+
+  // 개인정보 수집 및 이용 보기 링크 처리
+  const handlePrivacyLink = async () => {
+    const url = "https://www.notion.so/25d1744decc88082824ec60209d2dcf5";
+
+    try {
+      // URL이 열릴 수 있는지 확인
+      const supported = await Linking.canOpenURL(url);
+
+      if (supported) {
+        // Notion 링크 열기
+        await Linking.openURL(url);
+      } else {
+        Alert.alert("오류", "링크를 열 수 없습니다.");
+      }
+    } catch (error) {
+      console.error("링크 열기 실패:", error);
+      Alert.alert("오류", "링크를 열 수 없습니다.");
+    }
+  };
+
+  // 위치 기반 서비스 이용약관 보기 링크 처리
+  const handleLocationServiceLink = async () => {
+    const url = "https://www.notion.so/25d1744decc880529587ea2423c0b015";
 
     try {
       // URL이 열릴 수 있는지 확인
@@ -146,6 +187,7 @@ export default function SignUpScreen() {
       nickname,
       agreeTerms,
       agreePrivacy,
+      agreeLocationService,
     });
 
     if (!isSignUpButtonActive) {
@@ -153,7 +195,7 @@ export default function SignUpScreen() {
     }
 
     // 약관 동의 확인
-    if (!agreeTerms || !agreePrivacy) {
+    if (!agreeTerms || !agreePrivacy || !agreeLocationService) {
       Alert.alert("알림", "모든 약관에 동의해주세요.");
       return;
     }
@@ -169,6 +211,7 @@ export default function SignUpScreen() {
         password2: confirmPassword,
         termsOfServiceAgreed: agreeTerms,
         privacyPolicyAgreed: agreePrivacy,
+        locationServiceAgreed: agreeLocationService,
       };
 
       const result = await signUpAPI(userData);
@@ -500,12 +543,12 @@ export default function SignUpScreen() {
               >
                 {agreeTerms && <Text style={styles.checkmark}>✓</Text>}
               </TouchableOpacity>
-              <Text style={styles.termsText}>이용약관에 동의합니다.</Text>
+              <Text style={styles.termsText}>(필수) 이용약관에 동의</Text>
               <TouchableOpacity
                 style={styles.termsLink}
                 onPress={handleTermsLink}
               >
-                <Text style={styles.termsLinkText}>이용약관 보기 &gt;</Text>
+                <Text style={styles.termsLinkText}>자세히 보기 &gt;</Text>
               </TouchableOpacity>
             </View>
 
@@ -516,7 +559,22 @@ export default function SignUpScreen() {
               >
                 {agreePrivacy && <Text style={styles.checkmark}>✓</Text>}
               </TouchableOpacity>
-              <Text style={styles.termsText}>개인정보 처리 방침</Text>
+              <Text style={styles.termsText}>(필수) 개인정보 수집 및 이용에 동의</Text>
+              <TouchableOpacity onPress={handlePrivacyLink}>
+                <Text style={styles.termsLinkText}>자세히 보기 &gt;</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.termsRow}>
+              <TouchableOpacity
+                style={styles.checkbox}
+                onPress={() => setAgreeLocationService(!agreeLocationService)}
+              >
+                {agreeLocationService && <Text style={styles.checkmark}>✓</Text>}
+              </TouchableOpacity>
+              <Text style={styles.termsText}>(필수) 위치 기반 서비스 이용약관에 동의</Text>
+              <TouchableOpacity onPress={handleLocationServiceLink}>
+                <Text style={styles.termsLinkText}>자세히 보기 &gt;</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -646,7 +704,7 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   validationText: {
-    fontSize: 12,
+    fontSize: 11,
     marginTop: 4,
     marginLeft: 4,
   },
@@ -724,7 +782,7 @@ const styles = StyleSheet.create({
     color: "#302E2D",
   },
   termsText: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#4D4947",
     flex: 1,
     fontFamily: "SUIT-600",
@@ -733,7 +791,7 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   termsLinkText: {
-    fontSize: 12,
+    fontSize: 11,
     color: "#4D4947",
     fontFamily: "SUIT-500",
     textDecorationLine: "underline",

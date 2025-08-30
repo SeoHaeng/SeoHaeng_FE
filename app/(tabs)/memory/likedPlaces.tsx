@@ -99,7 +99,11 @@ export default function LikedPlaces() {
     >
       <View style={styles.placeImageContainer}>
         <Image
-          source={require("@/assets/images/서점.png")}
+          source={
+            place.imageUrl
+              ? { uri: place.imageUrl }
+              : require("@/assets/images/서점.png")
+          }
           style={styles.placeImage}
         />
       </View>

@@ -2,6 +2,7 @@ import Constants from "expo-constants";
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
+import { createCulturalMarkerImages } from "./bookstoreMarkers";
 
 type KakaoMapProps = {
   latitude: number;
@@ -179,6 +180,22 @@ const KakaoMap = ({
           var map;
           var myLocationMarker;
           
+          // 마커 이미지 정의
+          var markerImages = {
+            독립서점: new kakao.maps.MarkerImage(
+              'data:image/svg+xml;charset=UTF-8,${encodeURIComponent(createCulturalMarkerImages().독립서점)}',
+              new kakao.maps.Size(48, 53)
+            ),
+            북카페: new kakao.maps.MarkerImage(
+              'data:image/svg+xml;charset=UTF-8,${encodeURIComponent(createCulturalMarkerImages().북카페)}',
+              new kakao.maps.Size(48, 53)
+            ),
+            북스테이: new kakao.maps.MarkerImage(
+              'data:image/svg+xml;charset=UTF-8,${encodeURIComponent(createCulturalMarkerImages().북스테이)}',
+              new kakao.maps.Size(48, 53)
+            )
+          };
+          
           window.onload = function() {
             console.log('Kakao Map API Loaded');
             if (typeof kakao !== 'undefined' && kakao.maps) {
@@ -329,7 +346,8 @@ const KakaoMap = ({
                       var marker = new kakao.maps.Marker({
                         position: new kakao.maps.LatLng(bookstore.latitude, bookstore.longitude),
                         map: map,
-                        title: bookstore.name
+                        title: bookstore.name,
+                        image: markerImages.독립서점
                       });
                       
                       // 마커 클릭 이벤트
@@ -356,7 +374,8 @@ const KakaoMap = ({
                       var marker = new kakao.maps.Marker({
                         position: new kakao.maps.LatLng(bookstay.latitude, bookstay.longitude),
                         map: map,
-                        title: bookstay.name
+                        title: bookstay.name,
+                        image: markerImages.북스테이
                       });
                       
                       // 마커 클릭 이벤트
@@ -383,7 +402,8 @@ const KakaoMap = ({
                       var marker = new kakao.maps.Marker({
                         position: new kakao.maps.LatLng(bookcafe.latitude, bookcafe.longitude),
                         map: map,
-                        title: bookcafe.name
+                        title: bookcafe.name,
+                        image: markerImages.북카페
                       });
                       
                       // 마커 클릭 이벤트

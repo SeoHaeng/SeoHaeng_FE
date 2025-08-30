@@ -2233,3 +2233,48 @@ export interface FestivalPlaceDetail {
   startDate: string;
   endDate: string;
 }
+
+// 찜한 장소 조회 API
+export const getLikedPlacesAPI = async (
+  currentLat: number,
+  currentLng: number,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    placeId: number;
+    name: string;
+    placeType: string;
+    bookmarked: boolean;
+    averageRating: number;
+    reviewCount: number;
+    distance: number;
+    address: string;
+    latitude: number;
+    longitude: number;
+  }[];
+}> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/places/book-marks?currentLat=${currentLat}&currentLng=${currentLng}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("찜한 장소 조회 API 호출 실패:", error);
+    throw error;
+  }
+};

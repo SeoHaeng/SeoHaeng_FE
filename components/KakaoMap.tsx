@@ -250,6 +250,17 @@ const KakaoMap = ({
                   updateViewport();
                 });
                 
+                // 지도 클릭 이벤트 리스너 등록
+                kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+                  // 마커가 클릭된 경우가 아닌 지도 자체가 클릭된 경우에만 처리
+                  if (window.ReactNativeWebView) {
+                    window.ReactNativeWebView.postMessage(JSON.stringify({
+                      type: 'mapClicked',
+                      lat: mouseEvent.latLng.getLat(),
+                      lng: mouseEvent.latLng.getLng()
+                    }));
+                  }
+                });
                
               });
               

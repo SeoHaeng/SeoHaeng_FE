@@ -401,6 +401,12 @@ function Milestone() {
             } else if (data.type === "markerClicked") {
               // 북스테이, 북카페, 독립서점 마커 클릭 시
               console.log("📍 마커 클릭됨:", data.markerType, data.data.name);
+
+              // activeMarkerId 설정 (마커 타입 + ID 조합)
+              const markerId = `${data.markerType}_${data.data.placeId || data.data.id || Date.now()}`;
+              setActiveMarkerId(markerId);
+              console.log("🎯 activeMarkerId 설정:", markerId);
+
               setClickedMarker({
                 name: data.data.name,
                 type: data.markerType,
@@ -410,6 +416,11 @@ function Milestone() {
                 latitude: data.data.latitude,
                 longitude: data.data.longitude,
               });
+            } else if (data.type === "mapClicked") {
+              // 지도 클릭 시 activeMarkerId와 clickedMarker 초기화
+              console.log("🗺️ 지도 클릭됨 - 마커 선택 해제");
+              setActiveMarkerId(null);
+              setClickedMarker(null);
             } else if (data.type === "testResponse") {
               // WebView 테스트 응답 메시지
               console.log("✅ WebView 테스트 응답 수신:", data.message);
@@ -455,78 +466,81 @@ function Milestone() {
         }}
       />
       {/* 상단 검색바 */}
-      <TouchableOpacity
-        style={[
-          styles.searchBar,
-          (isFilterActive || selectedMarker) && styles.searchBarWithBack,
-        ]}
-        onPress={() => {
-          if (!selectedMarker) {
-            router.push({
-              pathname: "/search",
-              params: { from: "milestone" },
-            });
-          }
-        }}
-      >
-        {(isFilterActive || selectedMarker) && (
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => {
-              if (isFilterActive) {
-                setIsFilterActive(false);
-                setActiveFilterText("");
-                setFilterType("가볼만한 관광지"); // 필터 타입 초기화 (기본값으로 복원)
-              } else if (activeMarkerId) {
-                setActiveMarkerId(null); // 선택된 마커 해제
-              }
-            }}
-          >
-            <BackIcon style={styles.backIcon} width={25} height={25} />
-          </TouchableOpacity>
-        )}
-        <TextInput
+      {!activeMarkerId && (
+        <TouchableOpacity
           style={[
-            styles.searchInput,
-            isFilterActive && styles.filterActiveSearchInput,
-            selectedLocation && styles.selectedLocationSearchInput,
-            selectedMarker && styles.selectedMarkerSearchInput,
+            styles.searchBar,
+            (isFilterActive || selectedMarker) && styles.searchBarWithBack,
           ]}
-          value={
-            isFilterActive
-              ? activeFilterText
-              : selectedMarker
-                ? selectedMarker.name
-                : selectedLocation
-                  ? selectedLocation.text || selectedLocation.name
-                  : ""
-          }
-          placeholder="서점, 책방, 공간 검색"
-          placeholderTextColor="#999999"
-          editable={false}
-        />
-        {selectedLocation ? (
-          <TouchableOpacity
-            style={styles.clearButton}
-            onPress={() => {
-              setSelectedLocation(null);
-              setIsLocationSelected(false); // 위치 선택 플래그 리셋
-              // 지도는 현재 위치에 그대로 유지 (getCurrentLocation 호출하지 않음)
-            }}
-          >
-            <Text style={styles.clearButtonText}>×</Text>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.searchButton}>
-            <SearchIcon style={styles.searchIcon} color="#999999" />
-          </View>
-        )}
-      </TouchableOpacity>
+          onPress={() => {
+            if (!selectedMarker) {
+              router.push({
+                pathname: "/search",
+                params: { from: "milestone" },
+              });
+            }
+          }}
+        >
+          {(isFilterActive || selectedMarker) && (
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => {
+                if (isFilterActive) {
+                  setIsFilterActive(false);
+                  setActiveFilterText("");
+                  setFilterType("가볼만한 관광지"); // 필터 타입 초기화 (기본값으로 복원)
+                }
+              }}
+            >
+              <BackIcon style={styles.backIcon} width={25} height={25} />
+            </TouchableOpacity>
+          )}
+          <TextInput
+            style={[
+              styles.searchInput,
+              isFilterActive && styles.filterActiveSearchInput,
+              selectedLocation && styles.selectedLocationSearchInput,
+              selectedMarker && styles.selectedMarkerSearchInput,
+            ]}
+            value={
+              isFilterActive
+                ? activeFilterText
+                : selectedMarker
+                  ? selectedMarker.name
+                  : selectedLocation
+                    ? selectedLocation.text || selectedLocation.name
+                    : ""
+            }
+            placeholder="서점, 책방, 공간 검색"
+            placeholderTextColor="#999999"
+            editable={false}
+          />
+          {selectedLocation ? (
+            <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => {
+                setSelectedLocation(null);
+                setIsLocationSelected(false); // 위치 선택 플래그 리셋
+                // 지도는 현재 위치에 그대로 유지 (getCurrentLocation 호출하지 않음)
+              }}
+            >
+              <Text style={styles.clearButtonText}>×</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.searchButton}>
+              <SearchIcon style={styles.searchIcon} color="#999999" />
+            </View>
+          )}
+        </TouchableOpacity>
+      )}
       {/* 필터 버튼들 */}
       <View
         style={[
           styles.filterContainer,
-          (isFilterActive || selectedLocation || selectedMarker) &&
+          (isFilterActive ||
+            selectedLocation ||
+            selectedMarker ||
+            activeMarkerId) &&
             styles.hiddenFilterContainer,
         ]}
       >
@@ -579,7 +593,8 @@ function Milestone() {
       <TouchableOpacity
         style={[
           styles.myLocationButton,
-          (isFilterActive || selectedLocation) && styles.hiddenElement,
+          (isFilterActive || selectedLocation || activeMarkerId) &&
+            styles.hiddenElement,
         ]}
         onPress={async () => {
           try {
@@ -640,7 +655,10 @@ function Milestone() {
       <TouchableOpacity
         style={[
           styles.zoomButton,
-          (isFilterActive || selectedLocation || selectedMarker) &&
+          (isFilterActive ||
+            selectedLocation ||
+            selectedMarker ||
+            activeMarkerId) &&
             styles.hiddenElement,
         ]}
         onPress={() => {
@@ -677,7 +695,10 @@ function Milestone() {
       <View
         style={[
           styles.bottomCard,
-          (isFilterActive || selectedLocation || selectedMarker) &&
+          (isFilterActive ||
+            selectedLocation ||
+            selectedMarker ||
+            activeMarkerId) &&
             styles.hiddenElement,
         ]}
       >

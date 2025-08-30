@@ -16,7 +16,9 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Alert,
+  Clipboard,
   Image,
+  Linking,
   ScrollView,
   Share,
   StyleSheet,
@@ -111,17 +113,18 @@ export default function PlaceDetail() {
     try {
       const response = await togglePlaceBookmarkAPI(placeDetail.placeId);
       if (response.isSuccess) {
-        setIsLiked(response.result?.isBookmarked || false);
+        const newBookmarkStatus = response.result?.isBookmarked ?? !isLiked;
+        setIsLiked(newBookmarkStatus);
         // placeDetail 상태도 업데이트
         setPlaceDetail((prev) =>
           prev
             ? {
                 ...prev,
-                isBookmarked: response.result?.isBookmarked || false,
+                bookmarked: newBookmarkStatus,
               }
             : null,
         );
-        console.log("찜하기 토글 성공:", response.result?.isBookmarked);
+        console.log("찜하기 토글 성공:", newBookmarkStatus);
       } else {
         console.error("찜하기 토글 실패:", response.message);
       }
@@ -145,6 +148,47 @@ export default function PlaceDetail() {
       });
     } catch (error) {
       Alert.alert("공유 실패", "공유할 수 없습니다.");
+    }
+  };
+
+  // 주소 복사 기능
+  const handleCopyAddress = async () => {
+    if (!placeDetail) return;
+
+    try {
+      await Clipboard.setString(placeDetail.address);
+      Alert.alert("복사 완료", "주소가 클립보드에 복사되었습니다.");
+    } catch (error) {
+      Alert.alert("복사 실패", "주소를 복사할 수 없습니다.");
+    }
+  };
+
+  // 카카오맵으로 이동 기능
+  const handleOpenKakaoMap = async () => {
+    if (!placeDetail) return;
+
+    try {
+      // 카카오맵 URL 스킴으로 주소 검색 (목적지 설정)
+      const kakaoMapUrl = `kakaomap://route?sp=현재위치&ep=${encodeURIComponent(
+        placeDetail.address,
+      )}&by=CAR`;
+
+      // 카카오맵 앱이 설치되어 있는지 확인
+      const canOpen = await Linking.canOpenURL(kakaoMapUrl);
+
+      if (canOpen) {
+        // 카카오맵 앱 열기
+        await Linking.openURL(kakaoMapUrl);
+      } else {
+        // 카카오맵 앱이 없으면 웹으로 열기 (목적지 설정)
+        const webUrl = `https://map.kakao.com/link/route/현재위치/${encodeURIComponent(
+          placeDetail.address,
+        )}`;
+        await Linking.openURL(webUrl);
+      }
+    } catch (error) {
+      console.error("카카오맵 열기 실패:", error);
+      Alert.alert("오류", "카카오맵을 열 수 없습니다.");
     }
   };
 
@@ -213,7 +257,7 @@ export default function PlaceDetail() {
                 // 챌린지에서 온 경우
                 router.push("/(tabs)/maru/challenge");
               } else if (fromScreen === "likedPlaces") {
-                // 좋아요한 장소에서 온 경우
+                // 찜한 장소에서 온 경우
                 router.push("/(tabs)/memory/likedPlaces");
               } else if (fromScreen === "home") {
                 // 홈화면에서 온 경우
@@ -242,7 +286,7 @@ export default function PlaceDetail() {
                       : fromScreen === "challenge"
                         ? "챌린지"
                         : fromScreen === "likedPlaces"
-                          ? "좋아요한 장소"
+                          ? "찜한 장소"
                           : ""}
               </Text>
             </View>
@@ -331,7 +375,9 @@ export default function PlaceDetail() {
             style={{ flexDirection: "row", gap: 3, alignItems: "flex-start" }}
           >
             <PlaceIcon width={11} height={15} />
-            <Text style={styles.storeLocation}>{placeDetail?.address}</Text>
+            <TouchableOpacity onPress={handleCopyAddress}>
+              <Text style={styles.storeLocation}>{placeDetail?.address}</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -464,7 +510,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   storeName: {
-    maxWidth: "80%",
+    maxWidth: "70%",
     fontSize: 18,
     fontFamily: "SUIT-700",
     color: "#000000",

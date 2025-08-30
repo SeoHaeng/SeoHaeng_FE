@@ -8,50 +8,76 @@ interface BookmarkTemplateMiniProps {
 export default function BookmarkTemplateMini({
   templateId,
 }: BookmarkTemplateMiniProps) {
-  const getBackgroundColor = (id: number): string => {
-    switch (id) {
+  // templateId에 따른 완전한 SVG 렌더링
+  const renderTemplate = () => {
+    switch (templateId) {
       case 1:
-        return "#FF5E29"; // 오렌지색
+        // 갈색 배경 + 5각별
+        return (
+          <Svg width={65} height={65} viewBox="0 0 65 65" fill="none">
+            <Rect width={65} height={65} rx="5" fill="#75615B" />
+            <Path
+              d="M38.0333 43.393L28.7082 58.5L29.9726 42.9158L11.9544 50.39L24.7568 38.4634L5 39.2584L20.6474 33.3746L5 21.448L22.2279 24.3104V6.5L28.7082 24.3104L38.0333 8.56728L34.7143 26.0596L48.307 12.3838L38.0333 29.081L53.9969 22.7202L38.0333 35.2828H57L38.0333 43.393Z"
+              fill="#604F4A"
+            />
+          </Svg>
+        );
+
       case 2:
-        return "#B9FF66"; // 연한 초록색
+        // 오렌지 배경 + 별
+        return (
+          <Svg width={65} height={65} viewBox="0 0 65 65" fill="none">
+            <Rect width={65} height={65} rx="5" fill="#FF5E29" />
+            <Path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M20.8779 32L13 27.4855L18.8065 17.5146L26.689 22.0213L26.6934 13H38.3066L38.311 22.0213L46.1934 17.5146L52 27.4855L44.122 32L52 36.5145L46.1934 46.4855L38.311 41.9787L38.3066 51H26.6934L26.689 41.9787L18.8065 46.4855L13 36.5145L20.8779 32Z"
+              fill="#D55227"
+            />
+          </Svg>
+        );
+
       case 3:
-        return "#75615B"; // 갈색
+        // 보라 배경 + 책
+        return (
+          <Svg width={65} height={65} viewBox="0 0 65 65" fill="none">
+            <Rect width={65} height={65} rx="5" fill="#8A73FF" />
+            <Path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M19 32L6 19V45L19 32ZM32 32L19 19V32V45L32 32ZM45 32L32 19V32V45L45 32ZM45 32V19L58 32L45 45V32Z"
+              fill="#715CE0"
+            />
+          </Svg>
+        );
+
       case 4:
-        return "#8A73FF"; // 보라색
+        // 핑크 배경 + 원들
+        return (
+          <Svg width={65} height={65} viewBox="0 0 65 65" fill="none">
+            <Rect width={65} height={65} rx="5" fill="#FF6161" />
+            <Path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M32.5024 12C36.4138 12 39.5845 15.194 39.5845 19.134C39.5845 23.0739 36.4138 26.2679 32.5024 26.2679C28.591 26.2679 25.4203 23.0739 25.4203 19.134C25.4203 15.194 28.591 12 32.5024 12ZM20.671 48.637C17.5066 46.3212 16.8052 41.8598 19.1042 38.6723C21.4032 35.4847 25.8321 34.7782 28.9964 37.0941C32.1608 39.4098 32.8622 43.8713 30.5633 47.0588C28.2642 50.2463 23.8353 50.9529 20.671 48.637ZM45.9235 38.6723C48.2226 41.8598 47.5212 46.3212 44.3568 48.637C41.1925 50.9529 36.7635 50.2463 34.4646 47.0588C32.1655 43.8713 32.867 39.4098 36.0313 37.0941C39.1957 34.7782 43.6246 35.4847 45.9235 38.6723ZM13.3485 25.9833C14.5572 22.2362 18.5526 20.1855 22.2725 21.403C25.9924 22.6206 28.0281 26.6453 26.8195 30.3923C25.6108 34.1394 21.6154 36.1901 17.8955 34.9726C14.1756 33.7551 12.1399 29.7305 13.3485 25.9833ZM42.7275 21.403C46.4475 20.1855 50.4428 22.2362 51.6515 25.9833C52.8601 29.7305 50.8244 33.7551 47.1045 34.9726C43.3845 36.1901 39.3893 34.1394 38.1806 30.3923C36.9719 26.6453 39.0077 22.6206 42.7275 21.403Z"
+              fill="#E44848"
+            />
+          </Svg>
+        );
+
       default:
-        return "#FF6B35"; // 기본 색상
+        // 기본값 (templateId = 1과 동일)
+        return (
+          <Svg width={65} height={65} viewBox="0 0 65 65" fill="none">
+            <Rect width={65} height={65} rx="5" fill="#75615B" />
+            <Path
+              d="M38.0333 43.393L28.7082 58.5L29.9726 42.9158L11.9544 50.39L24.7568 38.4634L5 39.2584L20.6474 33.3746L5 21.448L22.2279 24.3104V6.5L28.7082 24.3104L38.0333 8.56728L34.7143 26.0596L48.307 12.3838L38.0333 29.081L53.9969 22.7202L38.0333 35.2828H57L38.0333 43.393Z"
+              fill="#604F4A"
+            />
+          </Svg>
+        );
     }
   };
 
-  const getStarColor = (id: number): string => {
-    switch (id) {
-      case 1:
-        return "#D55227";
-      case 2:
-        return "#8BC34A";
-      case 3:
-        return "#604F4A";
-      case 4:
-        return "#6A5ACD";
-      case 5:
-        return "#E65100";
-      default:
-        return "#E65100";
-    }
-  };
-
-  return (
-    <Svg width={65} height={65} viewBox="0 0 65 65" fill="none">
-      <Rect
-        width={65}
-        height={65}
-        rx={5}
-        fill={getBackgroundColor(templateId)}
-      />
-      <Path
-        d="M39.3981 43.1835L30.2523 58L31.4923 42.7155L13.8207 50.046L26.3769 38.3487L7 39.1284L22.3465 33.3578L7 21.6606L23.8966 24.4679V7L30.2523 24.4679L39.3981 9.02752L36.1429 26.1835L49.4742 12.7706L39.3981 29.1467L55.0547 22.9083L39.3981 35.2293H58L39.3981 43.1835Z"
-        fill={getStarColor(templateId)}
-      />
-    </Svg>
-  );
+  return renderTemplate();
 }

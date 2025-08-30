@@ -16,6 +16,7 @@ import {
   getBookcafeMarkersAPI,
   getBookstayMarkersAPI,
   getBookstoreMarkersAPI,
+  getReadingSpotMarkersAPI,
 } from "@/types/api";
 import { useGlobalState } from "@/types/globalState";
 import * as Location from "expo-location";
@@ -66,12 +67,28 @@ function Milestone() {
   const [isWebViewReady, setIsWebViewReady] = useState(false); // WebView 준비 상태 플래그
   const [isLoadingLocation, setIsLoadingLocation] = useState(false); // 위치 로딩 상태
 
-  // 북카페, 북스테이, 독립서점 마커 데이터 상태
+  // 북카페, 북스테이, 독립서점, 공간책갈피 마커 데이터 상태
   const [independentBookstoreMarkers, setIndependentBookstoreMarkers] =
     useState<any[]>([]);
   const [bookStayMarkers, setBookStayMarkers] = useState<any[]>([]);
   const [bookCafeMarkers, setBookCafeMarkers] = useState<any[]>([]);
+  const [readingSpotMarkers, setReadingSpotMarkers] = useState<any[]>([]);
   const [isLoadingMarkers, setIsLoadingMarkers] = useState(false);
+
+  // 필터링된 마커 데이터 상태
+  const [
+    filteredIndependentBookstoreMarkers,
+    setFilteredIndependentBookstoreMarkers,
+  ] = useState<any[]>([]);
+  const [filteredBookStayMarkers, setFilteredBookStayMarkers] = useState<any[]>(
+    [],
+  );
+  const [filteredBookCafeMarkers, setFilteredBookCafeMarkers] = useState<any[]>(
+    [],
+  );
+  const [filteredReadingSpotMarkers, setFilteredReadingSpotMarkers] = useState<
+    any[]
+  >([]);
 
   // 클릭된 마커 정보 상태
   const [clickedMarker, setClickedMarker] = useState<{
@@ -82,6 +99,74 @@ function Milestone() {
     longitude: number;
     placeId?: number;
   } | null>(null);
+
+  // 필터 타입에 따라 마커 필터링하는 함수
+  const filterMarkersByType = (filterType: string) => {
+    console.log("🔍 마커 필터링 시작:", filterType);
+
+    switch (filterType) {
+      case "독립서점":
+        setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
+        setFilteredBookStayMarkers([]);
+        setFilteredBookCafeMarkers([]);
+        setFilteredReadingSpotMarkers([]);
+        console.log(
+          "🔍 독립서점 마커만 표시:",
+          independentBookstoreMarkers.length,
+          "개",
+        );
+        break;
+      case "북스테이":
+        setFilteredIndependentBookstoreMarkers([]);
+        setFilteredBookStayMarkers(bookStayMarkers);
+        setFilteredBookCafeMarkers([]);
+        setFilteredReadingSpotMarkers([]);
+        console.log("🔍 북스테이 마커만 표시:", bookStayMarkers.length, "개");
+        break;
+      case "북카페":
+        setFilteredIndependentBookstoreMarkers([]);
+        setFilteredBookStayMarkers([]);
+        setFilteredBookCafeMarkers(bookCafeMarkers);
+        setFilteredReadingSpotMarkers([]);
+        console.log("🔍 북카페 마커만 표시:", bookCafeMarkers.length, "개");
+        break;
+      case "책갈피":
+        setFilteredIndependentBookstoreMarkers([]);
+        setFilteredBookStayMarkers([]);
+        setFilteredBookCafeMarkers([]);
+        setFilteredReadingSpotMarkers(readingSpotMarkers);
+        console.log("🔍 책갈피 마커만 표시:", readingSpotMarkers.length, "개");
+        break;
+      default:
+        // "가볼만한 관광지" 또는 기본값 - 모든 마커 표시
+        setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
+        setFilteredBookStayMarkers(bookStayMarkers);
+        setFilteredBookCafeMarkers(bookCafeMarkers);
+        setFilteredReadingSpotMarkers(readingSpotMarkers);
+        console.log("🔍 모든 마커 표시:", {
+          독립서점: independentBookstoreMarkers.length,
+          북스테이: bookStayMarkers.length,
+          북카페: bookCafeMarkers.length,
+          책갈피: readingSpotMarkers.length,
+        });
+        break;
+    }
+  };
+
+  // 모든 마커를 표시하는 함수 (초기 로딩 시 사용)
+  const showAllMarkers = () => {
+    console.log("🌟 모든 마커 표시 시작");
+    setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
+    setFilteredBookStayMarkers(bookStayMarkers);
+    setFilteredBookCafeMarkers(bookCafeMarkers);
+    setFilteredReadingSpotMarkers(readingSpotMarkers);
+    console.log("🌟 모든 마커 표시 완료:", {
+      독립서점: independentBookstoreMarkers.length,
+      북스테이: bookStayMarkers.length,
+      북카페: bookCafeMarkers.length,
+      책갈피: readingSpotMarkers.length,
+    });
+  };
 
   // 북카페, 북스테이, 독립서점 마커 데이터 가져오기
   const fetchBookstoreMarkers = async () => {
@@ -133,13 +218,34 @@ function Milestone() {
       console.log("☕ 북카페 마커 데이터:", filteredBookCafeMarkers);
       console.log("☕ 북카페 첫 번째 마커:", filteredBookCafeMarkers[0]);
 
+      // 공간책갈피 마커 가져오기
+      const readingSpotResponse = await getReadingSpotMarkersAPI();
+      console.log("📚 공간책갈피 API 응답:", readingSpotResponse);
+      console.log("📚 공간책갈피 API 응답 길이:", readingSpotResponse?.length);
+
+      const filteredReadingSpotMarkers = (readingSpotResponse || []).filter(
+        (marker: any) => marker.latitude && marker.longitude,
+      );
+      setReadingSpotMarkers(filteredReadingSpotMarkers);
+      console.log(
+        "📚 공간책갈피 마커:",
+        filteredReadingSpotMarkers.length,
+        "개",
+      );
+      console.log("📚 공간책갈피 마커 데이터:", filteredReadingSpotMarkers);
+      console.log("📚 공간책갈피 첫 번째 마커:", filteredReadingSpotMarkers[0]);
+
       console.log("📚 모든 마커 데이터 가져오기 완료");
       console.log(
         "📚 총 마커 개수:",
         filteredIndependentMarkers.length +
           filteredBookStayMarkers.length +
-          filteredBookCafeMarkers.length,
+          filteredBookCafeMarkers.length +
+          filteredReadingSpotMarkers.length,
       );
+
+      // 초기에는 모든 마커 표시
+      showAllMarkers();
     } catch (error) {
       console.error("❌ 마커 데이터 가져오기 실패:", error);
     } finally {
@@ -376,10 +482,11 @@ function Milestone() {
         latitude={currentLocation.latitude || 37.5665} // 기본값: 서울시청
         longitude={currentLocation.longitude || 126.978}
         moveToLocation={moveToLocation}
-        // 북카페, 북스테이, 독립서점 마커 데이터 전달
-        independentBookstoreMarkers={independentBookstoreMarkers}
-        bookStayMarkers={bookStayMarkers}
-        bookCafeMarkers={bookCafeMarkers}
+        // 북카페, 북스테이, 독립서점, 공간책갈피 마커 데이터 전달 (필터링된 데이터)
+        independentBookstoreMarkers={filteredIndependentBookstoreMarkers}
+        bookStayMarkers={filteredBookStayMarkers}
+        bookCafeMarkers={filteredBookCafeMarkers}
+        readingSpotMarkers={filteredReadingSpotMarkers}
         filterType={filterType}
         onMessage={(event) => {
           try {
@@ -422,6 +529,17 @@ function Milestone() {
 
               console.log("📍 clickedMarker 상태 설정:", clickedMarkerData);
               setClickedMarker(clickedMarkerData);
+            } else if (data.type === "readingSpotClicked") {
+              // 공간책갈피 마커 클릭 시 바로 상세페이지로 이동
+              console.log("📚 공간책갈피 마커 클릭됨:", data.data.name);
+
+              router.push({
+                pathname: "/bookmark/[id]",
+                params: {
+                  id: data.data.placeId.toString(),
+                  from: "milestone",
+                },
+              });
             } else if (data.type === "mapClicked") {
               // 지도 클릭 시 activeMarkerId와 clickedMarker 초기화
               console.log("🗺️ 지도 클릭됨 - 마커 선택 해제");
@@ -495,6 +613,7 @@ function Milestone() {
                   setIsFilterActive(false);
                   setActiveFilterText("");
                   setFilterType("가볼만한 관광지"); // 필터 타입 초기화 (기본값으로 복원)
+                  showAllMarkers(); // 모든 마커 표시
                 }
               }}
             >
@@ -556,6 +675,7 @@ function Milestone() {
             setIsFilterActive(true);
             setActiveFilterText("북스테이");
             setFilterType("북스테이"); // 필터 타입 설정
+            filterMarkersByType("북스테이"); // 마커 필터링 적용
           }}
         >
           <BookStayIcon style={styles.filterIcon} color="#716C69" />
@@ -567,6 +687,7 @@ function Milestone() {
             setIsFilterActive(true);
             setActiveFilterText("독립서점");
             setFilterType("독립서점"); // 필터 타입 설정
+            filterMarkersByType("독립서점"); // 마커 필터링 적용
           }}
         >
           <IndependentBookstoreIcon style={styles.filterIcon} color="#716C69" />
@@ -577,7 +698,8 @@ function Milestone() {
           onPress={() => {
             setIsFilterActive(true);
             setActiveFilterText("공간책갈피");
-            setFilterType("책갈피"); // 필터 타입 설정 (mockData의 type과 일치)
+            setFilterType("책갈피"); // 필터 타입 설정
+            filterMarkersByType("책갈피"); // 마커 필터링 적용 (mockData의 type과 일치)
           }}
         >
           <SpaceBookmarkIcon style={styles.filterIcon} color="#716C69" />
@@ -589,6 +711,7 @@ function Milestone() {
             setIsFilterActive(true);
             setActiveFilterText("북카페");
             setFilterType("북카페"); // 필터 타입 설정
+            filterMarkersByType("북카페"); // 마커 필터링 적용
           }}
         >
           <BookCafeIcon style={styles.filterIcon} color="#716C69" />

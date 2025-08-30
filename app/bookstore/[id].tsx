@@ -5,6 +5,8 @@ import FilledHeartIcon from "@/components/icons/FilledHeartIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import StarIcon from "@/components/icons/StarIcon";
 import {
+  BookChallengeEvent,
+  getBookChallengeEventAPI,
   getPlaceDetailAPI,
   getReviewListAPI,
   PlaceDetailResponse,
@@ -46,6 +48,8 @@ export default function PlaceDetail() {
   const [reviewData, setReviewData] = useState<
     ReviewListResponse["result"] | null
   >(null);
+  const [bookChallengeEvent, setBookChallengeEvent] =
+    useState<BookChallengeEvent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const router = useRouter();
@@ -97,6 +101,42 @@ export default function PlaceDetail() {
 
     fetchReviewData();
   }, [params.placeId, params.id]);
+
+  // 북챌린지 이벤트 데이터 조회
+  useEffect(() => {
+    const fetchBookChallengeEvent = async () => {
+      try {
+        const placeId = params.placeId || params.id;
+        if (placeId && placeDetail?.placeType === "BOOKSTORE") {
+          // BOOKSTORE 타입이고 bookChallengeStatus가 true인 경우에만 API 호출
+          const placeDetailData = placeDetail.placeDetail as any;
+          if (placeDetailData?.bookChallengeStatus === true) {
+            console.log("📚 북챌린지 이벤트 API 호출 시작:", placeId);
+            const response = await getBookChallengeEventAPI(Number(placeId));
+            if (response.isSuccess) {
+              setBookChallengeEvent(response.result);
+              console.log("📚 북챌린지 이벤트 조회 성공:", response.result);
+            } else {
+              console.error("📚 북챌린지 이벤트 조회 실패:", response.message);
+            }
+          } else {
+            console.log(
+              "📚 북챌린지 이벤트 없음 - bookChallengeStatus가 false",
+            );
+            setBookChallengeEvent(null);
+          }
+        }
+      } catch (error) {
+        console.error("📚 북챌린지 이벤트 조회 에러:", error);
+        setBookChallengeEvent(null);
+      }
+    };
+
+    // placeDetail이 로드된 후에 북챌린지 이벤트 조회
+    if (placeDetail) {
+      fetchBookChallengeEvent();
+    }
+  }, [placeDetail, params.placeId, params.id]);
 
   // 파라미터에서 출발 화면 정보 가져오기
   useEffect(() => {
@@ -221,7 +261,7 @@ export default function PlaceDetail() {
       case "사진":
         return <PhotoTab placeImageUrls={placeDetail?.placeImageUrls} />;
       case "이벤트":
-        return <EventTab />;
+        return <EventTab bookChallengeEvent={bookChallengeEvent} />;
       default:
         return renderTypeDetail();
     }

@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   placeType: {
-    fontSize: 12,
+    fontSize: 11,
     color: "#716C69",
     fontFamily: "SUIT-500",
   },

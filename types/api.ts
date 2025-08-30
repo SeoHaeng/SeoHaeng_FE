@@ -2374,6 +2374,7 @@ export const getLikedPlacesAPI = async (
     address: string;
     latitude: number;
     longitude: number;
+    imageUrl: string;
   }[];
 }> => {
   try {
@@ -2448,4 +2449,5 @@ export interface PlaceInfo {
   address: string;
   latitude: number;
   longitude: number;
+  imageUrl: string;
 }

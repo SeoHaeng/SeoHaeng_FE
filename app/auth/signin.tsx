@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   validationText: {
-    fontSize: 12,
+    fontSize: 11,
     marginTop: 4,
     marginLeft: 4,
   },

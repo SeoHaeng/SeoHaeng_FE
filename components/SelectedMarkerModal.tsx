@@ -333,15 +333,13 @@ const SelectedMarkerModal = ({ marker, onClose }: SelectedMarkerModalProps) => {
         <View style={styles.modalContent}>
           <View style={styles.modalImagePlaceholder}>
             {placeDetail?.placeImageUrls &&
-            placeDetail.placeImageUrls.length > 0 ? (
-              <Image
-                source={{ uri: placeDetail.placeImageUrls[0] }}
-                style={styles.modalImage}
-                resizeMode="cover"
-              />
-            ) : (
-              <Text style={styles.modalImageText}>📚</Text>
-            )}
+              placeDetail.placeImageUrls.length > 0 && (
+                <Image
+                  source={{ uri: placeDetail.placeImageUrls[0] }}
+                  style={styles.modalImage}
+                  resizeMode="cover"
+                />
+              )}
           </View>
 
           <View style={styles.modalInfo}>

@@ -305,12 +305,24 @@ function Milestone() {
     fetchBookstoreMarkers();
   }, []);
 
-  // 필터 변경 시 마커 데이터 다시 가져오기
+  // 마커 데이터가 로드된 후 자동으로 모든 마커 표시
   useEffect(() => {
-    // 필터 타입과 관계없이 항상 마커 데이터 가져오기
-    console.log("🔄 마커 데이터 새로고침 (필터 타입 무시)");
-    fetchBookstoreMarkers();
-  }, []); // 빈 의존성 배열로 컴포넌트 마운트 시에만 실행
+    // 모든 마커 데이터가 로드되었는지 확인
+    if (
+      independentBookstoreMarkers.length > 0 ||
+      bookStayMarkers.length > 0 ||
+      bookCafeMarkers.length > 0 ||
+      readingSpotMarkers.length > 0
+    ) {
+      console.log("🔄 마커 데이터 로드 완료 - 모든 마커 표시 시작");
+      showAllMarkers();
+    }
+  }, [
+    independentBookstoreMarkers,
+    bookStayMarkers,
+    bookCafeMarkers,
+    readingSpotMarkers,
+  ]);
 
   // moveToLocation이 변경될 때 지도 이동 후 상태 리셋
   useEffect(() => {

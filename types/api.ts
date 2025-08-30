@@ -2112,8 +2112,8 @@ export const getReadingSpotCommentListAPI = async (
   }
 };
 
-// 북마크 상세 조회 API
-export const getReadingSpotDetailAPI = async (
+// 북마크 상세 조회 API (기존 함수 - 북마크용)
+export const getBookmarkDetailAPI = async (
   readingSpotId: number,
 ): Promise<{
   isSuccess: boolean;
@@ -2144,7 +2144,7 @@ export const getReadingSpotDetailAPI = async (
     scraped: boolean;
   };
 }> => {
-  console.log("getReadingSpotDetailAPI 시작:", readingSpotId);
+  console.log("getBookmarkDetailAPI 시작:", readingSpotId);
   console.log("API URL:", `${API_BASE_URL}/reading-spot/${readingSpotId}`);
   try {
     const headers = await getAuthHeadersAsync();
@@ -2162,12 +2162,133 @@ export const getReadingSpotDetailAPI = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("getReadingSpotDetailAPI 에러:", error);
+    console.error("getBookmarkDetailAPI 에러:", error);
     throw error;
   }
 };
 
 // 장소 상세 조회 응답 타입
+// 공간책갈피 마커 조회 API
+export const getReadingSpotMarkersAPI = async (): Promise<
+  ReadingSpotMarker[]
+> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/places/markers/readingspots`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data: ReadingSpotMarker[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("공간책갈피 마커 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 공간책갈피 상세 조회 API
+export const getReadingSpotDetailAPI = async (
+  placeId: number,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: ReadingSpotDetail;
+}> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(`${API_BASE_URL}/places/${placeId}/details`, {
+      method: "GET",
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("공간책갈피 상세 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 공간책갈피 마커 타입
+export interface ReadingSpotMarker {
+  placeId: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+
+// 북챌린지 서점 이벤트 조회 API
+export const getBookChallengeEventAPI = async (
+  placeId: number,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: BookChallengeEvent;
+}> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/places/${placeId}/book-challenge-events`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("북챌린지 서점 이벤트 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 북챌린지 서점 이벤트 타입
+export interface BookChallengeEvent {
+  eventDescription: string;
+  rewardDescription: string;
+  ownerMessage: string;
+  rewardImageUrls: string[];
+}
+
+// 공간책갈피 상세 정보 타입
+export interface ReadingSpotDetail {
+  placeId: number;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  overview: string;
+  placeImageUrls: string[];
+  isBookmarked: boolean;
+  rating: number;
+  reviewCount: number;
+}
+
 export type PlaceDetailResponse = {
   isSuccess: boolean;
   code: string;

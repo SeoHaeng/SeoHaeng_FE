@@ -5,8 +5,8 @@ import ScrapIcon from "@/components/icons/ScrapIcon";
 import ChallengeComment from "@/components/maruChallenge/detail/comment";
 import {
   createReadingSpotCommentAPI,
+  getBookmarkDetailAPI,
   getReadingSpotCommentListAPI,
-  getReadingSpotDetailAPI,
   getUserByIdAPI,
   toggleReadingSpotLikeAPI,
   toggleReadingSpotScrapAPI,
@@ -72,7 +72,7 @@ export default function BookmarkDetail() {
 
       try {
         setIsLoading(true);
-        const response = await getReadingSpotDetailAPI(Number(id));
+        const response = await getBookmarkDetailAPI(Number(id));
         if (response.isSuccess) {
           console.log("북마크 상세 조회 성공:", response.result);
           console.log("좋아요 상태:", response.result.liked);

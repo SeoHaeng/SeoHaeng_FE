@@ -222,13 +222,13 @@ const SelectedMarkerModal = ({ marker, onClose }: SelectedMarkerModalProps) => {
         result: response.result,
       });
 
-      if (response.isSuccess && response.result) {
+      if (response.isSuccess && response.result?.isBookmarked !== undefined) {
         // placeDetail 상태 업데이트
         setPlaceDetail((prev) =>
           prev
             ? {
                 ...prev,
-                isBookmarked: response.result.isBookmarked,
+                isBookmarked: response.result!.isBookmarked,
               }
             : null,
         );

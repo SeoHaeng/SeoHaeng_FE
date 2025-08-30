@@ -12,6 +12,7 @@ type KakaoMapProps = {
   independentBookstoreMarkers?: any[];
   bookStayMarkers?: any[];
   bookCafeMarkers?: any[];
+  readingSpotMarkers?: any[];
   filterType?: string;
 };
 
@@ -23,6 +24,7 @@ const KakaoMap = ({
   independentBookstoreMarkers = [],
   bookStayMarkers = [],
   bookCafeMarkers = [],
+  readingSpotMarkers = [],
   filterType = "",
 }: KakaoMapProps) => {
   const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
@@ -96,6 +98,7 @@ const KakaoMap = ({
       독립서점: independentBookstoreMarkers.length,
       북스테이: bookStayMarkers.length,
       북카페: bookCafeMarkers.length,
+      공간책갈피: readingSpotMarkers.length,
       필터타입: filterType,
       WebView준비상태: isWebViewReady,
     });
@@ -106,7 +109,8 @@ const KakaoMap = ({
       webViewRef.current &&
       (independentBookstoreMarkers.length > 0 ||
         bookStayMarkers.length > 0 ||
-        bookCafeMarkers.length > 0)
+        bookCafeMarkers.length > 0 ||
+        readingSpotMarkers.length > 0)
     ) {
       console.log("🗺️ WebView로 마커 데이터 전송 시작");
 
@@ -116,6 +120,7 @@ const KakaoMap = ({
         independentBookstoreMarkers,
         bookStayMarkers,
         bookCafeMarkers,
+        readingSpotMarkers,
         filterType: "ALL", // 필터 타입을 "ALL"로 설정하여 모든 마커 표시
       });
 
@@ -124,6 +129,7 @@ const KakaoMap = ({
         독립서점_개수: independentBookstoreMarkers.length,
         북스테이_개수: bookStayMarkers.length,
         북카페_개수: bookCafeMarkers.length,
+        공간책갈피_개수: readingSpotMarkers.length,
         필터타입: "ALL (모든 마커 표시)",
       });
 
@@ -142,6 +148,7 @@ const KakaoMap = ({
         독립서점: independentBookstoreMarkers.length,
         북스테이: bookStayMarkers.length,
         북카페: bookCafeMarkers.length,
+        공간책갈피: readingSpotMarkers.length,
         필터타입: "ALL",
       });
     } else {
@@ -152,12 +159,14 @@ const KakaoMap = ({
         독립서점: independentBookstoreMarkers.length,
         북스테이: bookStayMarkers.length,
         북카페: bookCafeMarkers.length,
+        공간책갈피: readingSpotMarkers.length,
       });
     }
   }, [
     independentBookstoreMarkers,
     bookStayMarkers,
     bookCafeMarkers,
+    readingSpotMarkers,
     isWebViewReady, // WebView 준비 상태 의존성 추가
     // filterType 의존성 제거 - 필터 타입 변경 시 마커 재전송하지 않음
   ]);
@@ -193,6 +202,10 @@ const KakaoMap = ({
             ),
             북스테이: new kakao.maps.MarkerImage(
               'data:image/svg+xml;charset=UTF-8,${encodeURIComponent(createCulturalMarkerImages().북스테이)}',
+              new kakao.maps.Size(48, 53)
+            ),
+            책갈피: new kakao.maps.MarkerImage(
+              'data:image/svg+xml;charset=UTF-8,${encodeURIComponent(createCulturalMarkerImages().책갈피)}',
               new kakao.maps.Size(48, 53)
             )
           };
@@ -479,6 +492,35 @@ const KakaoMap = ({
                             type: 'markerClicked',
                             markerType: '북카페',
                             data: bookcafe
+                          }));
+                        }
+                      });
+                      
+                      window.existingMarkers.push(marker);
+                    }
+                  });
+                }
+                
+                // 공간책갈피 마커 추가
+                if (data.readingSpotMarkers && data.readingSpotMarkers.length > 0) {
+                  console.log('📚 공간책갈피 마커 추가:', data.readingSpotMarkers.length, '개');
+                  data.readingSpotMarkers.forEach(function(readingSpot) {
+                    if (readingSpot.latitude && readingSpot.longitude) {
+                      var marker = new kakao.maps.Marker({
+                        position: new kakao.maps.LatLng(readingSpot.latitude, readingSpot.longitude),
+                        map: map,
+                        title: readingSpot.name,
+                        image: markerImages.책갈피
+                      });
+                      
+                      // 마커 클릭 이벤트 - 바로 공간책갈피 상세페이지로 이동
+                      kakao.maps.event.addListener(marker, 'click', function() {
+                        // React Native로 공간책갈피 마커 클릭 메시지 전송
+                        if (window.ReactNativeWebView) {
+                          window.ReactNativeWebView.postMessage(JSON.stringify({
+                            type: 'readingSpotClicked',
+                            markerType: '공간책갈피',
+                            data: readingSpot
                           }));
                         }
                       });

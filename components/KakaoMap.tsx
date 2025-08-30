@@ -179,6 +179,7 @@ const KakaoMap = ({
         <script>
           var map;
           var myLocationMarker;
+          var currentInfoWindow = null; // 현재 열린 InfoWindow
           
           // 마커 이미지 정의
           var markerImages = {
@@ -252,6 +253,12 @@ const KakaoMap = ({
                 
                 // 지도 클릭 이벤트 리스너 등록
                 kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+                  // InfoWindow 닫기
+                  if (currentInfoWindow) {
+                    currentInfoWindow.close();
+                    currentInfoWindow = null;
+                  }
+                  
                   // 마커가 클릭된 경우가 아닌 지도 자체가 클릭된 경우에만 처리
                   if (window.ReactNativeWebView) {
                     window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -363,6 +370,22 @@ const KakaoMap = ({
                       
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
+                        // 기존 InfoWindow 닫기
+                        if (currentInfoWindow) {
+                          currentInfoWindow.close();
+                        }
+                        
+                        // 새로운 InfoWindow 생성 및 표시
+                        var infowindow = new kakao.maps.InfoWindow({
+                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + bookstore.name + '</div>',
+                          removable: false,
+                          zIndex: 1000
+                        });
+                        
+                        infowindow.open(map, marker);
+                        currentInfoWindow = infowindow;
+                        
+                        // React Native로 마커 클릭 메시지 전송
                         if (window.ReactNativeWebView) {
                           window.ReactNativeWebView.postMessage(JSON.stringify({
                             type: 'markerClicked',
@@ -391,6 +414,22 @@ const KakaoMap = ({
                       
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
+                        // 기존 InfoWindow 닫기
+                        if (currentInfoWindow) {
+                          currentInfoWindow.close();
+                        }
+                        
+                        // 새로운 InfoWindow 생성 및 표시
+                        var infowindow = new kakao.maps.InfoWindow({
+                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + bookstay.name + '</div>',
+                          removable: false,
+                          zIndex: 1000
+                        });
+                        
+                        infowindow.open(map, marker);
+                        currentInfoWindow = infowindow;
+                        
+                        // React Native로 마커 클릭 메시지 전송
                         if (window.ReactNativeWebView) {
                           window.ReactNativeWebView.postMessage(JSON.stringify({
                             type: 'markerClicked',
@@ -419,6 +458,22 @@ const KakaoMap = ({
                       
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
+                        // 기존 InfoWindow 닫기
+                        if (currentInfoWindow) {
+                          currentInfoWindow.close();
+                        }
+                        
+                        // 새로운 InfoWindow 생성 및 표시
+                        var infowindow = new kakao.maps.InfoWindow({
+                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + bookcafe.name + '</div>',
+                          removable: false,
+                          zIndex: 1000
+                        });
+                        
+                        infowindow.open(map, marker);
+                        currentInfoWindow = infowindow;
+                        
+                        // React Native로 마커 클릭 메시지 전송
                         if (window.ReactNativeWebView) {
                           window.ReactNativeWebView.postMessage(JSON.stringify({
                             type: 'markerClicked',

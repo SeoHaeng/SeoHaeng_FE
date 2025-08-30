@@ -2278,3 +2278,53 @@ export const getLikedPlacesAPI = async (
     throw error;
   }
 };
+
+// 장소 상세 정보 조회 API (새로운 엔드포인트)
+export const getPlaceInfoAPI = async (
+  placeId: number,
+  currentLat: number,
+  currentLng: number,
+  userId: number,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: PlaceInfo;
+}> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/places/${placeId}/info?currentLat=${currentLat}&currentLng=${currentLng}&userId=${userId}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("장소 상세 정보 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 장소 상세 정보 응답 타입
+export interface PlaceInfo {
+  placeId: number;
+  name: string;
+  placeType: string;
+  bookmarked: boolean;
+  averageRating: number;
+  reviewCount: number;
+  distance: number;
+  address: string;
+  latitude: number;
+  longitude: number;
+}

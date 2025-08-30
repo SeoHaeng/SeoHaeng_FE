@@ -80,6 +80,7 @@ function Milestone() {
     address?: string;
     latitude: number;
     longitude: number;
+    placeId?: number;
   } | null>(null);
 
   // 북카페, 북스테이, 독립서점 마커 데이터 가져오기
@@ -401,13 +402,14 @@ function Milestone() {
             } else if (data.type === "markerClicked") {
               // 북스테이, 북카페, 독립서점 마커 클릭 시
               console.log("📍 마커 클릭됨:", data.markerType, data.data.name);
+              console.log("📍 마커 클릭 데이터 전체:", data.data);
 
               // activeMarkerId 설정 (마커 타입 + ID 조합)
               const markerId = `${data.markerType}_${data.data.placeId || data.data.id || Date.now()}`;
               setActiveMarkerId(markerId);
               console.log("🎯 activeMarkerId 설정:", markerId);
 
-              setClickedMarker({
+              const clickedMarkerData = {
                 name: data.data.name,
                 type: data.markerType,
                 address:
@@ -415,7 +417,11 @@ function Milestone() {
                   `위도 ${data.data.latitude.toFixed(4)}, 경도 ${data.data.longitude.toFixed(4)}`,
                 latitude: data.data.latitude,
                 longitude: data.data.longitude,
-              });
+                placeId: data.data.placeId || data.data.id,
+              };
+
+              console.log("📍 clickedMarker 상태 설정:", clickedMarkerData);
+              setClickedMarker(clickedMarkerData);
             } else if (data.type === "mapClicked") {
               // 지도 클릭 시 activeMarkerId와 clickedMarker 초기화
               console.log("🗺️ 지도 클릭됨 - 마커 선택 해제");
@@ -674,22 +680,23 @@ function Milestone() {
       >
         <PlusIcon />
       </TouchableOpacity>
-      {/* 클릭된 마커 정보 표시 */}
-      {clickedMarker && (
-        <View style={styles.clickedMarkerInfo}>
-          <View style={styles.markerInfoHeader}>
-            <Text style={styles.markerTypeText}>{clickedMarker.type}</Text>
-            <TouchableOpacity
-              style={styles.closeMarkerInfoButton}
-              onPress={() => setClickedMarker(null)}
-            >
-              <Text style={styles.closeMarkerInfoButtonText}>×</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.markerNameText}>{clickedMarker.name}</Text>
-          <Text style={styles.markerAddressText}>{clickedMarker.address}</Text>
-        </View>
-      )}
+      {/* InfoWindow는 카카오맵에서 자동으로 처리됨 */}
+
+      {/* 선택된 마커 모달 */}
+      <SelectedMarkerModal
+        marker={
+          clickedMarker
+            ? {
+                id: `${clickedMarker.type}_${Date.now()}`,
+                name: clickedMarker.name,
+                lat: clickedMarker.latitude,
+                lng: clickedMarker.longitude,
+                placeId: clickedMarker.placeId,
+              }
+            : null
+        }
+        onClose={() => setClickedMarker(null)}
+      />
 
       {/* 하단 카드 */}
       <View
@@ -1113,53 +1120,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#262423",
-  },
-  clickedMarkerInfo: {
-    position: "absolute",
-    top: 100, // 상단 검색바 아래에 위치
-    left: 20,
-    right: 20,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 10,
-    padding: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-    zIndex: 1,
-  },
-  markerInfoHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  markerTypeText: {
-    fontSize: 14,
-    fontFamily: "SUIT-600",
-    color: "#262423",
-  },
-  closeMarkerInfoButton: {
-    padding: 5,
-  },
-  closeMarkerInfoButtonText: {
-    fontSize: 18,
-    color: "#999999",
-  },
-  markerNameText: {
-    fontSize: 16,
-    fontFamily: "SUIT-700",
-    color: "#000000",
-    marginBottom: 3,
-  },
-  markerAddressText: {
-    fontSize: 13,
-    fontFamily: "SUIT-400",
-    color: "#716C69",
   },
 });
 export default Milestone;

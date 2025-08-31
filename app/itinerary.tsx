@@ -279,7 +279,18 @@ export default function Itinerary() {
             }));
 
           // 한국어 날짜 번호
-          const koreanNumbers = ["첫째", "둘째", "셋째", "넷째", "다섯째"];
+          const koreanNumbers = [
+            "첫째",
+            "둘째",
+            "셋째",
+            "넷째",
+            "다섯째",
+            "여섯째",
+            "일곱째",
+            "여덟째",
+            "아홉째",
+            "열째",
+          ];
           const dayNumber =
             index < koreanNumbers.length
               ? `${koreanNumbers[index]}날`

@@ -1,8 +1,14 @@
+import DeleteTravelConfirmModal from "@/components/DeleteTravelConfirmModal";
 import BackIcon from "@/components/icons/BackIcon";
+import ThreeDotesIcon from "@/components/icons/ThreeDotsIcon";
 import TravelDetailMap, {
   TravelDetailMapRef,
 } from "@/components/TravelDetailMap";
-import { getPlaceDetailAPI, getTravelCourseDetailAPI } from "@/types/api";
+import {
+  deleteTravelCourseAPI,
+  getPlaceDetailAPI,
+  getTravelCourseDetailAPI,
+} from "@/types/api";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -53,6 +59,9 @@ export default function TravelDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState(0);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [isDeleteConfirmModalVisible, setIsDeleteConfirmModalVisible] =
+    useState(false);
   const mapRef = useRef<TravelDetailMapRef>(null);
 
   // 여행 상세 정보 조회
@@ -184,6 +193,60 @@ export default function TravelDetail() {
     });
   };
 
+  // 삭제 모달 표시/숨김 핸들러
+  const handleThreeDotsPress = () => {
+    setIsDeleteModalVisible(true);
+  };
+
+  // 다른 화면 터치 시 모달 닫기
+  const handleScreenPress = () => {
+    if (isDeleteModalVisible) {
+      setIsDeleteModalVisible(false);
+    }
+  };
+
+  // 삭제 확인 모달 표시 핸들러
+  const handleDeleteConfirm = () => {
+    setIsDeleteModalVisible(false);
+    setIsDeleteConfirmModalVisible(true);
+  };
+
+  // 여행 일정 삭제 핸들러
+  const handleDeleteTravel = async () => {
+    try {
+      console.log("🗑️ 여행 일정 삭제 시작:", travelCourseId);
+
+      // 삭제 API 호출
+      const result = await deleteTravelCourseAPI(parseInt(travelCourseId));
+
+      if (result.isSuccess) {
+        console.log("✅ 여행 일정 삭제 성공");
+        // 삭제 후 목록 화면으로 이동
+        router.push("/(tabs)/preference");
+      } else {
+        console.error("❌ 여행 일정 삭제 실패:", result.message);
+        // 에러 처리 (필요시 alert 표시)
+      }
+    } catch (error) {
+      console.error("❌ 여행 일정 삭제 중 오류:", error);
+      // 에러 처리 (필요시 alert 표시)
+    } finally {
+      // 모달들 닫기
+      setIsDeleteModalVisible(false);
+      setIsDeleteConfirmModalVisible(false);
+    }
+  };
+
+  // 삭제 확인 모달 닫기
+  const handleCloseDeleteConfirmModal = () => {
+    setIsDeleteConfirmModalVisible(false);
+  };
+
+  // 삭제 모달 닫기
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalVisible(false);
+  };
+
   // 일정 카드 렌더링 함수
   const renderDayCard = (daySchedule: any, dayIndex: number) => {
     return (
@@ -267,199 +330,236 @@ export default function TravelDetail() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <BackIcon />
-          </TouchableOpacity>
-        </View>
+      <TouchableOpacity
+        style={styles.container}
+        onPress={handleScreenPress}
+        activeOpacity={1}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <TouchableOpacity onPress={() => router.back()}>
+              <BackIcon />
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.headerContent}>
-          <Text style={styles.dateRange}>{getDateRange()}</Text>
-        </View>
-
-        <View style={styles.titleSection}>
-          <Text style={styles.tripTitle}>{travelDetail.courseTitle}</Text>
-        </View>
-
-        <View style={styles.regionsContainer}>
-          {travelDetail.travelRegions.map((region, regionIndex) => (
-            <View
-              key={`region-${region}-${regionIndex}`}
-              style={styles.regionTag}
+          <View style={styles.headerContent}>
+            <Text style={styles.dateRange}>{getDateRange()}</Text>
+            <TouchableOpacity
+              onPress={handleThreeDotsPress}
+              style={styles.threeDotsButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Text style={styles.regionText}>{region}</Text>
+              <ThreeDotesIcon />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.titleSection}>
+            <Text style={styles.tripTitle}>{travelDetail.courseTitle}</Text>
+          </View>
+
+          <View style={styles.regionsContainer}>
+            {travelDetail.travelRegions.map((region, regionIndex) => (
+              <View
+                key={`region-${region}-${regionIndex}`}
+                style={styles.regionTag}
+              >
+                <Text style={styles.regionText}>{region}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Map Section */}
+        <View style={styles.mapContainer}>
+          <View style={styles.mapDayTag}>
+            <View style={styles.mapDayContent}>
+              <Text style={styles.mapDayNumber}>
+                {(() => {
+                  const koreanNumbers = [
+                    "첫째",
+                    "둘째",
+                    "셋째",
+                    "넷째",
+                    "다섯째",
+                    "여섯째",
+                    "일곱째",
+                    "여덟째",
+                    "아홉째",
+                    "열째",
+                  ];
+                  const dayIndex = selectedDay;
+                  return dayIndex < koreanNumbers.length
+                    ? `${koreanNumbers[dayIndex]}날`
+                    : `${dayIndex + 1}번째 날`;
+                })()}
+              </Text>
+              <Text style={styles.mapDayDate}>
+                {travelDetail.schedules[selectedDay]
+                  ? formatDate(travelDetail.schedules[selectedDay].date)
+                  : formatDate(travelDetail.startDate)}
+              </Text>
             </View>
-          ))}
-        </View>
-      </View>
-
-      {/* Map Section */}
-      <View style={styles.mapContainer}>
-        <View style={styles.mapDayTag}>
-          <View style={styles.mapDayContent}>
-            <Text style={styles.mapDayNumber}>
-              {(() => {
-                const koreanNumbers = [
-                  "첫째",
-                  "둘째",
-                  "셋째",
-                  "넷째",
-                  "다섯째",
-                ];
-                const dayIndex = selectedDay;
-                return dayIndex < koreanNumbers.length
-                  ? `${koreanNumbers[dayIndex]}날`
-                  : `${dayIndex + 1}번째 날`;
-              })()}
-            </Text>
-            <Text style={styles.mapDayDate}>
-              {travelDetail.schedules[selectedDay]
-                ? formatDate(travelDetail.schedules[selectedDay].date)
-                : formatDate(travelDetail.startDate)}
-            </Text>
           </View>
-        </View>
-        <View style={styles.map}>
-          <TravelDetailMap
-            latitude={37.8228} // 강원도 춘천시
-            longitude={127.7322}
-            regions={travelDetail.travelRegions}
-            selectedDaySpots={
-              travelDetail.schedules[selectedDay]?.schedules.map(
-                (schedule, spotIndex) => {
-                  const placeInfo = placeInfos[schedule.placeId];
-                  return {
-                    id: `spot_${schedule.placeId}_${spotIndex}`,
-                    name: placeInfo
-                      ? placeInfo.name
-                      : `장소 ID: ${schedule.placeId}`,
-                    placeId: schedule.placeId,
-                    latitude: placeInfo?.latitude || 37.8228, // 실제 위도 사용
-                    longitude: placeInfo?.longitude || 127.7322, // 실제 경도 사용
-                    placeType: placeInfo ? placeInfo.placeType : "장소",
-                  };
-                },
-              ) || []
-            }
-            ref={mapRef}
-            onMessage={(event) => {
-              try {
-                const data = JSON.parse(event.nativeEvent.data);
-                console.log("🗺️ TravelDetailMap 메시지 수신:", data);
-
-                if (data.type === "mapReady") {
-                  console.log("🗺️ TravelDetailMap 준비 완료:", data.message);
-                }
-              } catch (error) {
-                console.log("TravelDetailMap 메시지 파싱 오류:", error);
+          <View style={styles.map}>
+            <TravelDetailMap
+              latitude={37.8228} // 강원도 춘천시
+              longitude={127.7322}
+              regions={travelDetail.travelRegions}
+              selectedDaySpots={
+                travelDetail.schedules[selectedDay]?.schedules.map(
+                  (schedule, spotIndex) => {
+                    const placeInfo = placeInfos[schedule.placeId];
+                    return {
+                      id: `spot_${schedule.placeId}_${spotIndex}`,
+                      name: placeInfo
+                        ? placeInfo.name
+                        : `장소 ID: ${schedule.placeId}`,
+                      placeId: schedule.placeId,
+                      latitude: placeInfo?.latitude || 37.8228, // 실제 위도 사용
+                      longitude: placeInfo?.longitude || 127.7322, // 실제 경도 사용
+                      placeType: placeInfo ? placeInfo.placeType : "장소",
+                    };
+                  },
+                ) || []
               }
-            }}
-          />
-        </View>
-      </View>
+              ref={mapRef}
+              onMessage={(event) => {
+                try {
+                  const data = JSON.parse(event.nativeEvent.data);
+                  console.log("🗺️ TravelDetailMap 메시지 수신:", data);
 
-      {/* Day Timeline and Cards Container */}
-      <View style={styles.timelineAndCardsContainer}>
-        {/* Day Timeline */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.timelineContainer}
-          scrollEnabled={false}
-          ref={(ref) => {
-            if (ref) {
-              // 타임라인 스크롤뷰 참조 저장
-              (global as any).timelineScrollRef = ref;
-            }
-          }}
-        >
-          <View style={styles.timeline}>
-            {travelDetail.schedules &&
-              travelDetail.schedules.map((daySchedule, dayIndex) => (
-                <TouchableOpacity
-                  key={`timeline-${daySchedule.date}-${dayIndex}`}
-                  style={styles.timelineItem}
-                  onPress={() => setSelectedDay(dayIndex)}
-                >
-                  <View style={styles.timelineTextContainer}>
-                    <Text style={styles.timelineDate}>
-                      {daySchedule.day}일차
-                    </Text>
-                    <Text style={styles.timelineDateSmall}>
-                      {formatDate(daySchedule.date)}
-                    </Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.timelineDot,
-                      dayIndex === selectedDay
-                        ? styles.activeTimelineDot
-                        : styles.inactiveTimelineDot,
-                    ]}
-                  />
-
-                  {dayIndex < travelDetail.schedules.length - 1 && (
-                    <View
-                      style={[
-                        styles.timelineConnector,
-                        {
-                          width:
-                            (travelDetail.schedules.length - dayIndex - 1) *
-                            350,
-                        },
-                      ]}
-                    />
-                  )}
-                </TouchableOpacity>
-              ))}
+                  if (data.type === "mapReady") {
+                    console.log("🗺️ TravelDetailMap 준비 완료:", data.message);
+                  }
+                } catch (error) {
+                  console.log("TravelDetailMap 메시지 파싱 오류:", error);
+                }
+              }}
+            />
           </View>
-        </ScrollView>
+        </View>
 
-        {/* Day Cards */}
-        {travelDetail.schedules && travelDetail.schedules.length > 0 ? (
+        {/* Day Timeline and Cards Container */}
+        <View style={styles.timelineAndCardsContainer}>
+          {/* Day Timeline */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.dayCardsContainer}
-            onScroll={(event) => {
-              const contentOffset = event.nativeEvent.contentOffset.x;
-              const cardWidth = 246; // 카드 너비 + 마진
-              const newSelectedDay = Math.round(contentOffset / cardWidth);
-              if (
-                newSelectedDay >= 0 &&
-                newSelectedDay < travelDetail.schedules.length &&
-                newSelectedDay !== selectedDay
-              ) {
-                setSelectedDay(newSelectedDay);
-              }
-
-              // 타임라인도 함께 스크롤
-              if ((global as any).timelineScrollRef) {
-                (global as any).timelineScrollRef.scrollTo({
-                  x: contentOffset,
-                  animated: false,
-                });
+            contentContainerStyle={styles.timelineContainer}
+            scrollEnabled={false}
+            ref={(ref) => {
+              if (ref) {
+                // 타임라인 스크롤뷰 참조 저장
+                (global as any).timelineScrollRef = ref;
               }
             }}
-            scrollEventThrottle={16}
-            decelerationRate="fast"
-            snapToInterval={246}
-            snapToAlignment="start"
           >
-            {travelDetail.schedules.map((daySchedule, dayIndex) => (
-              <View key={`day-${daySchedule.date}-${dayIndex}`}>
-                {renderDayCard(daySchedule, dayIndex)}
-              </View>
-            ))}
+            <View style={styles.timeline}>
+              {travelDetail.schedules &&
+                travelDetail.schedules.map((daySchedule, dayIndex) => (
+                  <TouchableOpacity
+                    key={`timeline-${daySchedule.date}-${dayIndex}`}
+                    style={styles.timelineItem}
+                    onPress={() => setSelectedDay(dayIndex)}
+                  >
+                    <View style={styles.timelineTextContainer}>
+                      <Text style={styles.timelineDate}>
+                        {daySchedule.day}일차
+                      </Text>
+                      <Text style={styles.timelineDateSmall}>
+                        {formatDate(daySchedule.date)}
+                      </Text>
+                    </View>
+                    <View
+                      style={[
+                        styles.timelineDot,
+                        dayIndex === selectedDay
+                          ? styles.activeTimelineDot
+                          : styles.inactiveTimelineDot,
+                      ]}
+                    />
+
+                    {dayIndex < travelDetail.schedules.length - 1 && (
+                      <View
+                        style={[
+                          styles.timelineConnector,
+                          {
+                            width:
+                              (travelDetail.schedules.length - dayIndex - 1) *
+                              350,
+                          },
+                        ]}
+                      />
+                    )}
+                  </TouchableOpacity>
+                ))}
+            </View>
           </ScrollView>
-        ) : (
-          <View style={styles.emptyDaysContainer}>
-            <Text style={styles.emptyDaysText}>여행 일정이 없습니다</Text>
+
+          {/* Day Cards */}
+          {travelDetail.schedules && travelDetail.schedules.length > 0 ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.dayCardsContainer}
+              onScroll={(event) => {
+                const contentOffset = event.nativeEvent.contentOffset.x;
+                const cardWidth = 246; // 카드 너비 + 마진
+                const newSelectedDay = Math.round(contentOffset / cardWidth);
+                if (
+                  newSelectedDay >= 0 &&
+                  newSelectedDay < travelDetail.schedules.length &&
+                  newSelectedDay !== selectedDay
+                ) {
+                  setSelectedDay(newSelectedDay);
+                }
+
+                // 타임라인도 함께 스크롤
+                if ((global as any).timelineScrollRef) {
+                  (global as any).timelineScrollRef.scrollTo({
+                    x: contentOffset,
+                    animated: false,
+                  });
+                }
+              }}
+              scrollEventThrottle={16}
+              decelerationRate="fast"
+              snapToInterval={246}
+              snapToAlignment="start"
+            >
+              {travelDetail.schedules.map((daySchedule, dayIndex) => (
+                <View key={`day-${daySchedule.date}-${dayIndex}`}>
+                  {renderDayCard(daySchedule, dayIndex)}
+                </View>
+              ))}
+            </ScrollView>
+          ) : (
+            <View style={styles.emptyDaysContainer}>
+              <Text style={styles.emptyDaysText}>여행 일정이 없습니다</Text>
+            </View>
+          )}
+        </View>
+
+        {/* 삭제 드롭다운 */}
+        {isDeleteModalVisible && (
+          <View style={styles.dropdownContainer}>
+            <TouchableOpacity
+              style={styles.deleteDropdownButton}
+              onPress={handleDeleteConfirm}
+            >
+              <Text style={styles.deleteDropdownButtonText}>삭제</Text>
+            </TouchableOpacity>
           </View>
         )}
-      </View>
+
+        {/* 삭제 확인 모달 */}
+        <DeleteTravelConfirmModal
+          isVisible={isDeleteConfirmModalVisible}
+          onConfirm={handleDeleteTravel}
+          onCancel={handleCloseDeleteConfirmModal}
+        />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -742,5 +842,95 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontFamily: "SUIT-600",
+  },
+  // 삭제 모달 스타일
+  modalOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  deleteModal: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    padding: 20,
+    width: 200,
+    alignItems: "center",
+  },
+  deleteButton: {
+    backgroundColor: "#FF4444",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    marginBottom: 10,
+    width: "100%",
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontFamily: "SUIT-600",
+  },
+  cancelButton: {
+    backgroundColor: "#C5BFBB",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    width: "100%",
+    alignItems: "center",
+  },
+  cancelButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontFamily: "SUIT-600",
+  },
+
+  // ThreeDots 버튼 스타일
+  threeDotsButton: {
+    padding: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  // 드롭다운 스타일
+  dropdownContainer: {
+    position: "absolute",
+    top: 120,
+    right: 20,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    zIndex: 1000,
+  },
+  deleteDropdownButton: {
+    backgroundColor: "#F8F4F2",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    minWidth: 80,
+    alignItems: "center",
+  },
+  deleteDropdownButtonText: {
+    color: "#262423",
+    fontSize: 13,
+    fontFamily: "SUIT-600",
+  },
+  deleteConfirmModal: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    padding: 20,
+    width: 280,
+    alignItems: "center",
   },
 });

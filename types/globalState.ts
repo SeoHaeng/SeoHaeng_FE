@@ -23,8 +23,20 @@ export interface UserLocation {
 interface GlobalState {
   viewport: ViewportInfo | null;
   userLocation: UserLocation | null;
+  travelScheduleList: TravelScheduleItem[];
+  selectedRegions: string[]; // 선택된 지역들
   setViewport: (viewport: ViewportInfo) => void;
   setUserLocation: (location: UserLocation) => void;
+  addTravelSchedule: (item: TravelScheduleItem) => void;
+  updateTravelSchedule: (
+    day: string,
+    placeId: number,
+    newPlaceId: number,
+  ) => void;
+  removeTravelSchedule: (day: string, placeId: number) => void;
+  clearTravelSchedule: () => void;
+  setSelectedRegions: (regions: string[]) => void; // 지역 설정
+  clearSelectedRegions: () => void; // 지역 초기화
   clearViewport: () => void;
   clearUserLocation: () => void;
 }
@@ -40,6 +52,10 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({
   const [userLocation, setUserLocationState] = useState<UserLocation | null>(
     null,
   );
+  const [travelScheduleList, setTravelScheduleList] = useState<
+    TravelScheduleItem[]
+  >([]);
+  const [selectedRegions, setSelectedRegionsState] = useState<string[]>([]);
 
   //console.log("🌍 GlobalStateProvider 초기화됨");
   //console.log("📍 초기 상태:", { viewport, userLocation });
@@ -52,6 +68,54 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({
   const setUserLocation = (newLocation: UserLocation) => {
     console.log("📍 전역 사용자 위치 업데이트:", newLocation);
     setUserLocationState(newLocation);
+  };
+
+  // 여행 스케줄 추가
+  const addTravelSchedule = (item: TravelScheduleItem) => {
+    console.log("📅 여행 스케줄 추가:", item);
+    setTravelScheduleList((prev) => [...prev, item]);
+  };
+
+  // 여행 스케줄 업데이트
+  const updateTravelSchedule = (
+    day: string,
+    placeId: number,
+    newPlaceId: number,
+  ) => {
+    console.log("📅 여행 스케줄 업데이트:", { day, placeId, newPlaceId });
+    setTravelScheduleList((prev) =>
+      prev.map((item) =>
+        item.day === day && item.placeId === placeId
+          ? { ...item, placeId: newPlaceId }
+          : item,
+      ),
+    );
+  };
+
+  // 여행 스케줄 제거
+  const removeTravelSchedule = (day: string, placeId: number) => {
+    console.log("📅 여행 스케줄 제거:", { day, placeId });
+    setTravelScheduleList((prev) =>
+      prev.filter((item) => !(item.day === day && item.placeId === placeId)),
+    );
+  };
+
+  // 여행 스케줄 전체 초기화
+  const clearTravelSchedule = () => {
+    console.log("🗑️ 여행 스케줄 전체 초기화");
+    setTravelScheduleList([]);
+  };
+
+  // 선택된 지역 설정
+  const setSelectedRegions = (regions: string[]) => {
+    console.log("🌍 선택된 지역 설정:", regions);
+    setSelectedRegionsState(regions);
+  };
+
+  // 선택된 지역 초기화
+  const clearSelectedRegions = () => {
+    console.log("🌍 선택된 지역 초기화");
+    setSelectedRegionsState([]);
   };
 
   const clearViewport = () => {
@@ -67,8 +131,16 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({
   const value: GlobalState = {
     viewport,
     userLocation,
+    travelScheduleList,
+    selectedRegions,
     setViewport,
     setUserLocation,
+    addTravelSchedule,
+    updateTravelSchedule,
+    removeTravelSchedule,
+    clearTravelSchedule,
+    setSelectedRegions,
+    clearSelectedRegions,
     clearViewport,
     clearUserLocation,
   };
@@ -92,6 +164,14 @@ export interface BookData {
   author: string;
   cover: { uri: string };
   pubDate?: string; // 출판일 (YYYYMMDD 형식)
+}
+
+// 여행 스케줄 아이템 타입
+export interface TravelScheduleItem {
+  day: string; // 날짜 (YYYY-MM-DD 형식)
+  placeId: number; // 갈 시설의 ID
+  name?: string; // 장소 이름
+  placeType?: string; // 장소 타입
 }
 
 // 사용자 정보 타입

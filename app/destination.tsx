@@ -1,9 +1,11 @@
 import CommonButton from "@/components/CommonButton";
 import BackIcon from "@/components/icons/BackIcon";
+import { useGlobalState } from "@/types/globalState";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   FlatList,
+  Image,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -14,32 +16,125 @@ import {
 interface Destination {
   id: string;
   name: string;
+  imageUrl: string;
 }
 
 const destinations: Destination[] = [
-  { id: "1", name: "강릉" },
-  { id: "2", name: "양구" },
-  { id: "3", name: "태백" },
-  { id: "4", name: "평창" },
-  { id: "5", name: "횡성" },
-  { id: "6", name: "원주" },
-  { id: "7", name: "춘천" },
-  { id: "8", name: "양양" },
-  { id: "9", name: "속초" },
-  { id: "10", name: "영월" },
-  { id: "11", name: "정선" },
-  { id: "12", name: "철원" },
-  { id: "13", name: "화천" },
-  { id: "14", name: "인제" },
-  { id: "15", name: "고성" },
-  { id: "16", name: "동해" },
-  { id: "17", name: "삼척" },
+  {
+    id: "1",
+    name: "강릉",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Gangneung.png",
+  },
+  {
+    id: "2",
+    name: "속초",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Sokcho.png",
+  },
+  {
+    id: "3",
+    name: "춘천",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Chuncheon.png",
+  },
+  {
+    id: "4",
+    name: "원주",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Wonju.png",
+  },
+  {
+    id: "5",
+    name: "동해",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Donghae.png",
+  },
+  {
+    id: "6",
+    name: "태백",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Taebaek.png",
+  },
+  {
+    id: "7",
+    name: "삼척",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Samcheok.png",
+  },
+  {
+    id: "8",
+    name: "홍천",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Hongcheon.png",
+  },
+  {
+    id: "9",
+    name: "횡성",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Hoengseong.png",
+  },
+  {
+    id: "10",
+    name: "영월",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Yeongwol.png",
+  },
+  {
+    id: "11",
+    name: "평창",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Pyeongchang.png",
+  },
+  {
+    id: "12",
+    name: "정선",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Jeongseon.png",
+  },
+  {
+    id: "13",
+    name: "철원",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Cheorwon.png",
+  },
+  {
+    id: "14",
+    name: "화천",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Hwacheon.png",
+  },
+  {
+    id: "15",
+    name: "양구",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Yanggu.png",
+  },
+  {
+    id: "16",
+    name: "인제",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Inje.png",
+  },
+  {
+    id: "17",
+    name: "고성",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Goseong.png",
+  },
+  {
+    id: "18",
+    name: "양양",
+    imageUrl:
+      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Yangyang.png",
+  },
 ];
 
 export default function Destination() {
   const [selectedDestinations, setSelectedDestinations] = useState<string[]>(
     [],
   );
+  const { travelScheduleList, setSelectedRegions } = useGlobalState();
 
   const toggleDestination = (id: string) => {
     setSelectedDestinations((prev) =>
@@ -53,11 +148,46 @@ export default function Destination() {
       (id) => destinations.find((d) => d.id === id)?.name || "",
     );
 
+    // 전역 상태에 선택된 지역 저장
+    setSelectedRegions(selectedDestinationNames);
+
+    // 전역 상태에서 날짜 정보 가져오기
+    if (!travelScheduleList || !Array.isArray(travelScheduleList)) {
+      console.log(
+        "⚠️ travelScheduleList가 undefined이거나 배열이 아닙니다:",
+        travelScheduleList,
+      );
+      return;
+    }
+
+    const travelDates = travelScheduleList
+      .filter((item) => item && item.day) // 유효한 날짜만 필터링
+      .map((item) => item.day)
+      .sort(); // 날짜 순으로 정렬
+
+    let dateRange = "";
+    if (travelDates.length > 0) {
+      const startDate = travelDates[0];
+      const endDate = travelDates[travelDates.length - 1];
+
+      // YYYY-MM-DD 형식을 MM.DD 형식으로 변환
+      const formatDate = (dateStr: string) => {
+        const date = new Date(dateStr);
+        return `${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
+      };
+
+      dateRange = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+    }
+
+    console.log("🌍 선택된 지역:", selectedDestinationNames);
+    console.log("📅 여행 날짜:", dateRange);
+    console.log("📊 전역 스케줄 상태:", travelScheduleList);
+
     router.push({
       pathname: "/itinerary",
       params: {
         regions: selectedDestinationNames.join(","),
-        dateRange: "2025.06.13 - 06.16", // 실제로는 선택된 날짜를 사용해야 함
+        dateRange: dateRange || "날짜 미정",
       },
     });
   };
@@ -73,7 +203,11 @@ export default function Destination() {
         ]}
         onPress={() => toggleDestination(item.id)}
       >
-        <View style={styles.destinationImage} />
+        <Image
+          source={{ uri: item.imageUrl }}
+          style={styles.destinationImage}
+          resizeMode="cover"
+        />
         <Text
           style={[
             styles.destinationName,
@@ -92,7 +226,11 @@ export default function Destination() {
         <TouchableOpacity onPress={() => router.push("/plan")}>
           <BackIcon />
         </TouchableOpacity>
-        <Text style={styles.headerSubtitle}>2025.06.13 - 06.16</Text>
+        <Text style={styles.headerSubtitle}>
+          {travelScheduleList.length > 0
+            ? `${travelScheduleList[0]?.day?.slice(5, 7)}.${travelScheduleList[0]?.day?.slice(8, 10)} - ${travelScheduleList[travelScheduleList.length - 1]?.day?.slice(5, 7)}.${travelScheduleList[travelScheduleList.length - 1]?.day?.slice(8, 10)}`
+            : "날짜 미정"}
+        </Text>
         <Text style={styles.headerTitle}>어디로{"\n"}여행을 떠날까요?</Text>
       </View>
 
@@ -190,7 +328,6 @@ const styles = StyleSheet.create({
     height: 58,
     borderRadius: 30,
     marginRight: 25,
-    borderWidth: 1,
   },
   destinationName: {
     fontSize: 16,

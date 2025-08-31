@@ -20,7 +20,11 @@ const TravelCard: React.FC<TravelCardProps> = ({
   icon,
   onPress,
 }) => (
-  <TouchableOpacity style={styles.travelCard} onPress={onPress}>
+  <TouchableOpacity
+    style={styles.travelCard}
+    onPress={onPress}
+    activeOpacity={0.7}
+  >
     <Image source={image} style={styles.travelCardImage} />
     <View style={styles.travelCardContent}>
       <View style={styles.titleRow}>
@@ -115,11 +119,11 @@ const styles = StyleSheet.create({
   travelCardTag: {
     backgroundColor: "#C5BFBB",
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 5,
+    paddingVertical: 6,
+    borderRadius: 6,
   },
   travelCardTagText: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#EEE9E6",
   },

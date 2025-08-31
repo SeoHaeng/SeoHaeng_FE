@@ -1,4 +1,5 @@
 import BackIcon from "@/components/icons/BackIcon";
+import { useGlobalState } from "@/types/globalState";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -14,6 +15,13 @@ export default function Plan() {
   const params = useLocalSearchParams();
   const fromHome = params.from === "home";
   const fromPreference = params.from === "preference";
+  const {
+    addTravelSchedule,
+    clearTravelSchedule,
+    clearSelectedRegions,
+    clearViewport,
+    clearUserLocation,
+  } = useGlobalState();
 
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
@@ -179,6 +187,44 @@ export default function Plan() {
 
   const handleComplete = () => {
     if (selectedStartDate && selectedEndDate) {
+      // 🗑️ 기존 여행 정보 완전 초기화
+      console.log("🧹 새로운 여행 시작 - 기존 정보 초기화");
+
+      // 여행 관련 정보 초기화
+      clearTravelSchedule(); // 여행 일정 초기화
+      clearSelectedRegions(); // 선택된 지역 초기화
+
+      // 지도 관련 정보 초기화 (선택사항)
+      clearViewport(); // 지도 뷰포트 초기화
+      clearUserLocation(); // 사용자 위치 초기화
+
+      // 선택된 날짜 범위를 전역으로 저장
+      const startDate = new Date(selectedStartDate);
+      const endDate = new Date(selectedEndDate);
+
+      // 날짜 범위 내의 모든 날짜를 전역 상태에 저장
+      const currentDate = new Date(startDate);
+      let dayCount = 1;
+
+      while (currentDate <= endDate) {
+        const dateString = currentDate.toISOString().slice(0, 10);
+
+        // 각 날짜를 전역 상태에 저장 (빈 스케줄로)
+        addTravelSchedule({
+          day: dateString,
+          placeId: 0, // 아직 장소가 선택되지 않음
+        });
+
+        currentDate.setDate(currentDate.getDate() + 1);
+        dayCount++;
+      }
+
+      console.log("📅 여행 일정 전역 저장 완료:", {
+        startDate: startDate.toISOString().slice(0, 10),
+        endDate: endDate.toISOString().slice(0, 10),
+        totalDays: dayCount - 1,
+      });
+
       // Navigate to destination selection screen
       router.push("/destination");
     }

@@ -8,6 +8,13 @@ type ItineraryMapProps = {
   longitude: number;
   regions: string[];
   onMessage?: (event: any) => void;
+  selectedDaySpots?: Array<{
+    id: string;
+    name: string;
+    latitude?: number;
+    longitude?: number;
+    placeType?: string;
+  }>;
 };
 
 export interface ItineraryMapRef {
@@ -44,9 +51,20 @@ const regionCoordinates = {
 };
 
 const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
-  ({ latitude, longitude, regions, onMessage }, ref) => {
+  ({ latitude, longitude, regions, onMessage, selectedDaySpots = [] }, ref) => {
     const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
     const webViewRef = React.useRef<WebView>(null);
+
+    // selectedDaySpots가 변경될 때마다 지도에 마커 업데이트
+    React.useEffect(() => {
+      if (webViewRef.current && selectedDaySpots.length > 0) {
+        const message = JSON.stringify({
+          type: "updateSpots",
+          spots: selectedDaySpots,
+        });
+        webViewRef.current.postMessage(message);
+      }
+    }, [selectedDaySpots]);
 
     // HTML 내용
     const htmlContent = useMemo(() => {
@@ -221,11 +239,63 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
                 const data = JSON.parse(event.data);
                 console.log("📨 ItineraryMap 메시지 수신:", data);
                 
-                // 필요한 메시지 처리 로직 추가
+                if (data.type === 'updateSpots') {
+                  updateSpotsOnMap(data.spots);
+                }
               } catch (error) {
                 console.error("❌ 메시지 처리 오류:", error);
               }
             });
+
+            // 장소 마커들을 지도에 표시하는 함수
+            function updateSpotsOnMap(spots) {
+              // 기존 마커들 제거
+              if (window.spotMarkers) {
+                window.spotMarkers.forEach(marker => marker.setMap(null));
+              }
+              window.spotMarkers = [];
+
+              // 새로운 마커들 추가
+              spots.forEach((spot, index) => {
+                if (spot.latitude && spot.longitude) {
+                  const position = new kakao.maps.LatLng(spot.latitude, spot.longitude);
+                  
+                  // 마커 이미지 생성 (장소 타입에 따라 다른 색상)
+                  let markerColor = '#FF6B6B'; // 기본 빨간색
+                  if (spot.placeType === 'BOOKSTORE') markerColor = '#4ECDC4'; // 독립서점
+                  else if (spot.placeType === 'BOOKCAFE') markerColor = '#45B7D1'; // 북카페
+                  else if (spot.placeType === 'BOOKSTAY') markerColor = '#96CEB4'; // 북스테이
+                  else if (spot.placeType === 'TOURIST_SPOT') markerColor = '#FFEAA7'; // 관광명소
+                  else if (spot.placeType === 'RESTAURANT') markerColor = '#DDA0DD'; // 식당/카페
+                  
+                  const markerImage = new kakao.maps.MarkerImage(
+                    'data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="' + markerColor + '"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>',
+                    new kakao.maps.Size(32, 32)
+                  );
+                  
+                  const marker = new kakao.maps.Marker({
+                    position: position,
+                    map: map,
+                    title: spot.name,
+                    image: markerImage
+                  });
+                  
+                  // 마커 클릭 시 InfoWindow 표시
+                  const infowindow = new kakao.maps.InfoWindow({
+                    content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;">' + spot.name + '</div>',
+                    removable: false
+                  });
+                  
+                  kakao.maps.event.addListener(marker, 'click', function() {
+                    infowindow.open(map, marker);
+                  });
+                  
+                  window.spotMarkers.push(marker);
+                }
+              });
+              
+              console.log('📍 장소 마커 업데이트 완료:', spots.length, '개');
+            }
           </script>
         </body>
       </html>

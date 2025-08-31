@@ -1,7 +1,11 @@
 import BackIcon from "@/components/icons/BackIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
-import { PlaceSearchResponse, searchPlacesAPI } from "@/types/api";
+import {
+  getPlaceDetailAPI,
+  PlaceSearchResponse,
+  searchPlacesAPI,
+} from "@/types/api";
 import { useGlobalState } from "@/types/globalState";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -97,7 +101,7 @@ const SearchScreen = () => {
     }
   };
 
-  const handleSelectLocation = (location: PlaceSearchResponse) => {
+  const handleSelectLocation = async (location: PlaceSearchResponse) => {
     console.log("Selected location:", location);
 
     if (fromScreen === "itinerary") {
@@ -106,12 +110,45 @@ const SearchScreen = () => {
       // TODO: 선택된 장소를 일정에 추가하는 로직
       router.back(); // 일정짜기 화면으로 돌아가기
     } else {
-      // 이정표에서 온 경우 - 기존 로직
+      // 이정표에서 온 경우 - 장소 상세 조회로 좌표 가져오기
       console.log("🗺️ 이정표에서 장소 선택됨");
-      router.push({
-        pathname: "/(tabs)/milestone",
-        params: { selectedLocation: JSON.stringify(location) },
-      });
+
+      try {
+        // 장소 상세 조회 API로 좌표 정보 가져오기
+        const placeDetail = await getPlaceDetailAPI(location.placeId);
+
+        if (placeDetail.isSuccess && placeDetail.result) {
+          const locationWithCoordinates = {
+            placeId: placeDetail.result.placeId,
+            name: placeDetail.result.name,
+            placeType: placeDetail.result.placeType,
+            address: placeDetail.result.address,
+            latitude: placeDetail.result.latitude,
+            longitude: placeDetail.result.longitude,
+          };
+
+          console.log("📍 장소 상세 조회로 좌표 가져옴:", {
+            latitude: placeDetail.result.latitude,
+            longitude: placeDetail.result.longitude,
+          });
+
+          router.push({
+            pathname: "/(tabs)/milestone",
+            params: {
+              selectedLocation: JSON.stringify(locationWithCoordinates),
+              activeMarkerId: location.placeId?.toString() || "",
+            },
+          });
+        } else {
+          console.error("❌ 장소 상세 조회 실패:", placeDetail.message);
+          // 실패 시 기본값으로 이동
+          router.push("/(tabs)/milestone");
+        }
+      } catch (error) {
+        console.error("❌ 장소 상세 조회 API 에러:", error);
+        // 에러 시 기본값으로 이동
+        router.push("/(tabs)/milestone");
+      }
     }
   };
 

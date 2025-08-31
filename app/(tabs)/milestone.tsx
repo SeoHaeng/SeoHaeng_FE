@@ -33,13 +33,13 @@ import {
 
 function Milestone() {
   const params = useLocalSearchParams();
-  const { setViewport, setUserLocation } = useGlobalState();
+  const { setViewport, setUserLocation, userLocation } = useGlobalState();
   const [currentLocation, setCurrentLocation] = useState<{
-    latitude: number | null;
-    longitude: number | null;
+    latitude: number;
+    longitude: number;
   }>({
-    latitude: null,
-    longitude: null,
+    latitude: 37.5665, // 서울시청 기본값
+    longitude: 126.978,
   });
   const [selectedFilter, setSelectedFilter] = useState("가볼만한 관광지");
   const [selectedBottomFilter, setSelectedBottomFilter] =
@@ -48,11 +48,10 @@ function Milestone() {
     [],
   ); // 다중 선택을 위한 배열 상태 추가
   const [selectedLocation, setSelectedLocation] = useState<{
+    latitude: number;
+    longitude: number;
     name: string;
-    text: string;
-    type: string;
-    distance?: string;
-    address?: string;
+    placeId?: number;
   } | null>(null);
   const [currentAddress, setCurrentAddress] = useState("현재 위치");
   const [isFilterActive, setIsFilterActive] = useState(false);
@@ -63,6 +62,13 @@ function Milestone() {
   const [moveToLocation, setMoveToLocation] = useState<{
     latitude: number;
     longitude: number;
+  } | null>(null);
+
+  // 검색에서 선택된 장소로 이동하기 위한 별도 상태
+  const [searchSelectedLocation, setSearchSelectedLocation] = useState<{
+    latitude: number;
+    longitude: number;
+    name?: string;
   } | null>(null);
   const [isWebViewReady, setIsWebViewReady] = useState(false); // WebView 준비 상태 플래그
   const [isLoadingLocation, setIsLoadingLocation] = useState(false); // 위치 로딩 상태
@@ -178,50 +184,46 @@ function Milestone() {
 
       // 독립서점 마커 가져오기
       const independentBookstoreResponse = await getBookstoreMarkersAPI();
-      console.log("📚 독립서점 API 응답:", independentBookstoreResponse);
-      console.log(
-        "📚 독립서점 API 응답 길이:",
-        independentBookstoreResponse?.length,
-      );
+      //console.log("📚 독립서점 API 응답:", independentBookstoreResponse);
 
       const filteredIndependentMarkers = (
         independentBookstoreResponse || []
       ).filter((marker: any) => marker.latitude && marker.longitude);
       setIndependentBookstoreMarkers(filteredIndependentMarkers);
-      console.log("📚 독립서점 마커:", filteredIndependentMarkers.length, "개");
-      console.log("📚 독립서점 마커 데이터:", filteredIndependentMarkers);
-      console.log("📚 독립서점 첫 번째 마커:", filteredIndependentMarkers[0]);
+      //console.log("📚 독립서점 마커:", filteredIndependentMarkers.length, "개");
+      //console.log("📚 독립서점 마커 데이터:", filteredIndependentMarkers);
+      //console.log("📚 독립서점 첫 번째 마커:", filteredIndependentMarkers[0]);
 
       // 북스테이 마커 가져오기
       const bookStayResponse = await getBookstayMarkersAPI();
-      console.log("🏨 북스테이 API 응답:", bookStayResponse);
-      console.log("🏨 북스테이 API 응답 길이:", bookStayResponse?.length);
+      //console.log("🏨 북스테이 API 응답:", bookStayResponse);
+      //console.log("🏨 북스테이 API 응답 길이:", bookStayResponse?.length);
 
       const filteredBookStayMarkers = (bookStayResponse || []).filter(
         (marker: any) => marker.latitude && marker.longitude,
       );
       setBookStayMarkers(filteredBookStayMarkers);
-      console.log("🏨 북스테이 마커:", filteredBookStayMarkers.length, "개");
-      console.log("🏨 북스테이 마커 데이터:", filteredBookStayMarkers);
-      console.log("🏨 북스테이 첫 번째 마커:", filteredBookStayMarkers[0]);
+      //console.log("🏨 북스테이 마커:", filteredBookStayMarkers.length, "개");
+      //console.log("🏨 북스테이 마커 데이터:", filteredBookStayMarkers);
+      //console.log("🏨 북스테이 첫 번째 마커:", filteredBookStayMarkers[0]);
 
       // 북카페 마커 가져오기
       const bookCafeResponse = await getBookcafeMarkersAPI();
-      console.log("☕ 북카페 API 응답:", bookCafeResponse);
-      console.log("☕ 북카페 API 응답 길이:", bookCafeResponse?.length);
+      //console.log("☕ 북카페 API 응답:", bookCafeResponse);
+      //console.log("☕ 북카페 API 응답 길이:", bookCafeResponse?.length);
 
       const filteredBookCafeMarkers = (bookCafeResponse || []).filter(
         (marker: any) => marker.latitude && marker.longitude,
       );
       setBookCafeMarkers(filteredBookCafeMarkers);
-      console.log("☕ 북카페 마커:", filteredBookCafeMarkers.length, "개");
-      console.log("☕ 북카페 마커 데이터:", filteredBookCafeMarkers);
-      console.log("☕ 북카페 첫 번째 마커:", filteredBookCafeMarkers[0]);
+      //console.log("☕ 북카페 마커:", filteredBookCafeMarkers.length, "개");
+      //console.log("☕ 북카페 마커 데이터:", filteredBookCafeMarkers);
+      //console.log("☕ 북카페 첫 번째 마커:", filteredBookCafeMarkers[0]);
 
       // 공간책갈피 마커 가져오기
       const readingSpotResponse = await getReadingSpotMarkersAPI();
-      console.log("📚 공간책갈피 API 응답:", readingSpotResponse);
-      console.log("📚 공간책갈피 API 응답 길이:", readingSpotResponse?.length);
+      //console.log("📚 공간책갈피 API 응답:", readingSpotResponse);
+      //console.log("📚 공간책갈피 API 응답 길이:", readingSpotResponse?.length);
 
       const filteredReadingSpotMarkers = (readingSpotResponse || []).filter(
         (marker: any) => marker.latitude && marker.longitude,
@@ -232,10 +234,10 @@ function Milestone() {
         filteredReadingSpotMarkers.length,
         "개",
       );
-      console.log("📚 공간책갈피 마커 데이터:", filteredReadingSpotMarkers);
-      console.log("📚 공간책갈피 첫 번째 마커:", filteredReadingSpotMarkers[0]);
+      //console.log("📚 공간책갈피 마커 데이터:", filteredReadingSpotMarkers);
+      //console.log("📚 공간책갈피 첫 번째 마커:", filteredReadingSpotMarkers[0]);
 
-      console.log("📚 모든 마커 데이터 가져오기 완료");
+      //console.log("📚 모든 마커 데이터 가져오기 완료");
       console.log(
         "📚 총 마커 개수:",
         filteredIndependentMarkers.length +
@@ -258,6 +260,15 @@ function Milestone() {
     const initializeCurrentLocation = async () => {
       try {
         console.log("📍 컴포넌트 마운트 - 현재 위치 초기화 시작");
+
+        // 검색에서 선택된 장소가 있으면 현재 위치 초기화하지 않음
+        if (params.selectedLocation) {
+          console.log(
+            "🔍 검색에서 선택된 장소가 있어서 현재 위치 초기화 건너뜀",
+          );
+          return;
+        }
+
         const { status } = await Location.requestForegroundPermissionsAsync();
 
         if (status === "granted") {
@@ -291,6 +302,7 @@ function Milestone() {
         } else {
           console.log("⚠️ 위치 권한이 거부됨, 기본 위치(서울시청) 사용");
           setCurrentAddress("위치 권한 필요");
+          // 기본 위치는 이미 currentLocation 초기값으로 설정되어 있음
         }
       } catch (error) {
         console.error("❌ 현재 위치 초기화 실패:", error);
@@ -326,7 +338,9 @@ function Milestone() {
 
   // moveToLocation이 변경될 때 지도 이동 후 상태 리셋
   useEffect(() => {
+    console.log("🔄 moveToLocation 상태 변경 감지:", moveToLocation);
     if (moveToLocation) {
+      console.log("🗺️ 지도 이동 요청:", moveToLocation);
       // 자동 리셋 타이머 제거 - WebView에서 지도 이동 완료 후 수동으로 리셋
       // const timer = setTimeout(() => {
       //   setMoveToLocation(null);
@@ -340,18 +354,59 @@ function Milestone() {
     if (params.selectedLocation) {
       try {
         const location = JSON.parse(params.selectedLocation as string);
-        setSelectedLocation(location);
+        console.log("🔍 검색에서 선택된 위치 정보:", location);
 
-        // 주소가 있는 경우 좌표로 변환하여 지도 이동
-        if (location.address) {
-          console.log("선택된 위치 정보:", location);
-          moveToAddress(location.address, location);
+        // 좌표가 있는지 확인
+        if (location.latitude && location.longitude) {
+          console.log("📍 검색에서 선택된 좌표:", {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            name: location.name,
+          });
+
+          // selectedLocation 설정 (빨간색 마커용)
+          const selectedLocationData = {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            name: location.name,
+            placeId: location.placeId, // placeId 추가
+          };
+          console.log("🔍 selectedLocation 설정:", selectedLocationData);
+          setSelectedLocation(selectedLocationData);
+
+          // currentLocation을 검색된 장소로 업데이트 (지도 중심 이동용)
+          // 내 위치 마커는 userLocation을 사용하므로 이동하지 않음
+          const newLocation = {
+            latitude: location.latitude,
+            longitude: location.longitude,
+          };
+          setCurrentLocation(newLocation);
+
+          // activeMarkerId가 있으면 마커 활성화
+          if (params.activeMarkerId) {
+            console.log("🎯 검색에서 선택된 마커 ID:", params.activeMarkerId);
+            setActiveMarkerId(params.activeMarkerId as string);
+          }
+
+          // 지도 이동을 위해 searchSelectedLocation 상태 업데이트 (장소 이름 포함)
+          setSearchSelectedLocation({
+            latitude: newLocation.latitude,
+            longitude: newLocation.longitude,
+            name: location.name,
+          });
+          console.log("🔍 검색 선택 장소로 지도 이동 요청:", {
+            latitude: newLocation.latitude,
+            longitude: newLocation.longitude,
+            name: location.name,
+          });
+        } else {
+          console.log("⚠️ 선택된 위치에 좌표 정보가 없음:", location);
         }
       } catch (error) {
-        console.error("Error parsing selected location:", error);
+        console.error("❌ 선택된 위치 파싱 오류:", error);
       }
     }
-  }, [params.selectedLocation]);
+  }, [params.selectedLocation, params.activeMarkerId]);
 
   // 주소를 좌표로 변환하여 지도 이동
   const moveToAddress = async (address: string, locationData: any) => {
@@ -374,9 +429,9 @@ function Milestone() {
       }
 
       console.log("최종 좌표:", newLocation);
-      setCurrentLocation(newLocation);
+      // 지도 중심점만 이동 (파란색 마커는 내 위치에 유지)
+      setSearchSelectedLocation(newLocation);
       setIsLocationSelected(true); // 위치가 선택되었음을 표시
-      setUserLocation(newLocation); // 전역 상태에 선택된 위치 저장
 
       // 지도 이동을 위해 카카오맵 컴포넌트 props 업데이트
       console.log("📍 선택된 위치로 지도 이동 요청:", newLocation);
@@ -397,27 +452,85 @@ function Milestone() {
   const selectedMarker = useMemo(() => {
     if (!activeMarkerId) return null;
 
-    // 실제 API 데이터에서 해당 ID 찾기
+    console.log("🔍 selectedMarker 계산 시작:", {
+      activeMarkerId,
+      selectedLocation,
+      clickedMarker,
+    });
+
+    // 빨간색 마커인 경우 selectedLocation 또는 clickedMarker 정보 사용
+    if (activeMarkerId.startsWith("selected_location_")) {
+      if (selectedLocation) {
+        const result = {
+          id: activeMarkerId,
+          name: selectedLocation.name,
+          lat: selectedLocation.latitude,
+          lng: selectedLocation.longitude,
+          placeId: selectedLocation.placeId,
+        };
+        console.log(
+          "🔍 빨간색 마커 selectedMarker 계산 결과 (selectedLocation 사용):",
+          result,
+        );
+        return result;
+      } else if (clickedMarker && clickedMarker.type === "검색된장소") {
+        // selectedLocation이 없으면 clickedMarker 정보 사용
+        const result = {
+          id: activeMarkerId,
+          name: clickedMarker.name,
+          lat: clickedMarker.latitude,
+          lng: clickedMarker.longitude,
+          placeId: clickedMarker.placeId,
+        };
+        console.log(
+          "🔍 빨간색 마커 selectedMarker 계산 결과 (clickedMarker 사용):",
+          result,
+        );
+        return result;
+      }
+      console.log(
+        "🔍 빨간색 마커이지만 selectedLocation과 clickedMarker 모두 없음",
+      );
+      return null;
+    }
+
+    // 실제 API 데이터에서 해당 ID 찾기 (모든 마커 타입 포함)
     const allData = [
       ...independentBookstoreMarkers,
       ...bookCafeMarkers,
       ...bookStayMarkers,
+      ...readingSpotMarkers,
     ];
 
-    const markerData = allData.find((item) => item.id === activeMarkerId);
-    if (!markerData) return null;
+    // placeId 또는 id로 매칭 시도
+    const markerData = allData.find(
+      (item) =>
+        item.placeId?.toString() === activeMarkerId ||
+        item.id?.toString() === activeMarkerId,
+    );
 
-    return {
-      id: markerData.id,
+    if (!markerData) {
+      console.log("🔍 API 마커 데이터를 찾을 수 없음");
+      return null;
+    }
+
+    const result = {
+      id: markerData.placeId?.toString() || markerData.id?.toString() || "",
       name: markerData.name,
       lat: markerData.latitude,
       lng: markerData.longitude,
+      placeId: markerData.placeId,
     };
+    console.log("🔍 API 마커 selectedMarker 계산 결과:", result);
+    return result;
   }, [
     activeMarkerId,
+    selectedLocation,
+    clickedMarker,
     independentBookstoreMarkers,
     bookCafeMarkers,
     bookStayMarkers,
+    readingSpotMarkers,
   ]);
 
   // activeMarkerId 변경 시 로그 출력 및 인포박스 업데이트
@@ -491,9 +604,12 @@ function Milestone() {
     <View style={styles.container}>
       {/* 카카오맵 컴포넌트 */}
       <KakaoMap
-        latitude={currentLocation.latitude || 37.5665} // 기본값: 서울시청
-        longitude={currentLocation.longitude || 126.978}
+        latitude={currentLocation.latitude}
+        longitude={currentLocation.longitude}
+        userLocation={userLocation || currentLocation} // 내 위치 마커용 별도 좌표
         moveToLocation={moveToLocation}
+        searchSelectedLocation={searchSelectedLocation}
+        selectedLocation={selectedLocation}
         // 북카페, 북스테이, 독립서점, 공간책갈피 마커 데이터 전달 (필터링된 데이터)
         independentBookstoreMarkers={filteredIndependentBookstoreMarkers}
         bookStayMarkers={filteredBookStayMarkers}
@@ -523,8 +639,11 @@ function Milestone() {
               console.log("📍 마커 클릭됨:", data.markerType, data.data.name);
               console.log("📍 마커 클릭 데이터 전체:", data.data);
 
-              // activeMarkerId 설정 (마커 타입 + ID 조합)
-              const markerId = `${data.markerType}_${data.data.placeId || data.data.id || Date.now()}`;
+              // activeMarkerId 설정 (placeId 또는 id 직접 사용)
+              const markerId =
+                data.data.placeId?.toString() ||
+                data.data.id?.toString() ||
+                Date.now().toString();
               setActiveMarkerId(markerId);
               console.log("🎯 activeMarkerId 설정:", markerId);
 
@@ -541,6 +660,61 @@ function Milestone() {
 
               console.log("📍 clickedMarker 상태 설정:", clickedMarkerData);
               setClickedMarker(clickedMarkerData);
+
+              // 일반 마커 클릭 시 selectedLocation 초기화 (검색된 장소 선택 해제)
+              // 이렇게 하면 새로운 마커 선택 시 검색바가 올바르게 업데이트됨
+              setSelectedLocation(null);
+              setSearchSelectedLocation(null);
+              console.log(
+                "📍 마커 클릭됨 - selectedLocation 초기화 및 마커 정보 검색바에 표시:",
+                {
+                  latitude: data.data.latitude,
+                  longitude: data.data.longitude,
+                  name: data.data.name,
+                },
+              );
+            } else if (data.type === "selectedLocationMarkerClicked") {
+              // 빨간색 마커 클릭 시 (검색에서 선택된 장소)
+              console.log("🔴 빨간색 마커 클릭됨:", data.name);
+
+              // activeMarkerId 설정 (빨간색 마커용 고유 ID)
+              const markerId = `selected_location_${data.placeId || Date.now()}`;
+              setActiveMarkerId(markerId);
+              console.log("🎯 빨간색 마커 activeMarkerId 설정:", markerId);
+
+              // selectedLocation 정보를 사용하여 clickedMarker 설정
+              if (selectedLocation) {
+                const clickedMarkerData = {
+                  name: selectedLocation.name,
+                  type: "검색된장소",
+                  address: `위도 ${selectedLocation.latitude.toFixed(4)}, 경도 ${selectedLocation.longitude.toFixed(4)}`,
+                  latitude: selectedLocation.latitude,
+                  longitude: selectedLocation.longitude,
+                  placeId: selectedLocation.placeId, // selectedLocation의 placeId 사용
+                };
+
+                console.log(
+                  "📍 빨간색 마커 clickedMarker 상태 설정 (selectedLocation 사용):",
+                  clickedMarkerData,
+                );
+                setClickedMarker(clickedMarkerData);
+              } else {
+                // selectedLocation이 없는 경우 기본 정보 사용
+                const clickedMarkerData = {
+                  name: data.name,
+                  type: "검색된장소",
+                  address: `위도 ${data.latitude.toFixed(4)}, 경도 ${data.longitude.toFixed(4)}`,
+                  latitude: data.latitude,
+                  longitude: data.longitude,
+                  placeId: data.placeId,
+                };
+
+                console.log(
+                  "📍 빨간색 마커 clickedMarker 상태 설정 (기본 정보 사용):",
+                  clickedMarkerData,
+                );
+                setClickedMarker(clickedMarkerData);
+              }
             } else if (data.type === "readingSpotClicked") {
               // 공간책갈피 마커 클릭 시 바로 상세페이지로 이동
               console.log("📚 공간책갈피 마커 클릭됨:", data.data.name);
@@ -557,6 +731,8 @@ function Milestone() {
               console.log("🗺️ 지도 클릭됨 - 마커 선택 해제");
               setActiveMarkerId(null);
               setClickedMarker(null);
+              setSelectedLocation(null); // 선택된 장소 정보도 초기화
+              setSearchSelectedLocation(null); // 검색 선택 장소도 초기화
             } else if (data.type === "testResponse") {
               // WebView 테스트 응답 메시지
               console.log("✅ WebView 테스트 응답 수신:", data.message);
@@ -566,6 +742,10 @@ function Milestone() {
             } else if (data.type === "mapReady") {
               console.log("🗺️ 지도 준비됨 - WebView 준비 상태 설정");
               setIsWebViewReady(true);
+            } else if (data.type === "searchSelectedLocationComplete") {
+              // 검색 선택 장소로 지도 이동이 완료되었으므로 searchSelectedLocation 상태 리셋
+              setSearchSelectedLocation(null);
+              console.log("🔍 검색 선택 장소로 지도 이동 완료");
             } else if (data.type === "moveToLocationComplete") {
               // 지도 이동이 완료되었으므로 moveToLocation 상태 리셋
               setMoveToLocation(null);
@@ -602,74 +782,72 @@ function Milestone() {
         }}
       />
       {/* 상단 검색바 */}
-      {!activeMarkerId && (
-        <TouchableOpacity
+      <TouchableOpacity
+        style={[
+          styles.searchBar,
+          (isFilterActive || selectedMarker) && styles.searchBarWithBack,
+        ]}
+        onPress={() => {
+          if (!selectedMarker) {
+            router.push({
+              pathname: "/search",
+              params: { from: "milestone" },
+            });
+          }
+        }}
+      >
+        {(isFilterActive || selectedMarker) && (
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              if (isFilterActive) {
+                setIsFilterActive(false);
+                setActiveFilterText("");
+                setFilterType("가볼만한 관광지"); // 필터 타입 초기화 (기본값으로 복원)
+                showAllMarkers(); // 모든 마커 표시
+              }
+            }}
+          >
+            <BackIcon style={styles.backIcon} width={25} height={25} />
+          </TouchableOpacity>
+        )}
+        <TextInput
           style={[
-            styles.searchBar,
-            (isFilterActive || selectedMarker) && styles.searchBarWithBack,
+            styles.searchInput,
+            isFilterActive && styles.filterActiveSearchInput,
+            selectedLocation && styles.selectedLocationSearchInput,
+            selectedMarker && styles.selectedMarkerSearchInput,
           ]}
-          onPress={() => {
-            if (!selectedMarker) {
-              router.push({
-                pathname: "/search",
-                params: { from: "milestone" },
-              });
-            }
-          }}
-        >
-          {(isFilterActive || selectedMarker) && (
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => {
-                if (isFilterActive) {
-                  setIsFilterActive(false);
-                  setActiveFilterText("");
-                  setFilterType("가볼만한 관광지"); // 필터 타입 초기화 (기본값으로 복원)
-                  showAllMarkers(); // 모든 마커 표시
-                }
-              }}
-            >
-              <BackIcon style={styles.backIcon} width={25} height={25} />
-            </TouchableOpacity>
-          )}
-          <TextInput
-            style={[
-              styles.searchInput,
-              isFilterActive && styles.filterActiveSearchInput,
-              selectedLocation && styles.selectedLocationSearchInput,
-              selectedMarker && styles.selectedMarkerSearchInput,
-            ]}
-            value={
-              isFilterActive
-                ? activeFilterText
-                : selectedMarker
-                  ? selectedMarker.name
-                  : selectedLocation
-                    ? selectedLocation.text || selectedLocation.name
-                    : ""
-            }
-            placeholder="서점, 책방, 공간 검색"
-            placeholderTextColor="#999999"
-            editable={false}
-          />
-          {selectedLocation ? (
-            <TouchableOpacity
-              style={styles.clearButton}
-              onPress={() => {
-                setSelectedLocation(null);
-                setIsLocationSelected(false); // 위치 선택 플래그 리셋
-                // 지도는 현재 위치에 그대로 유지 (getCurrentLocation 호출하지 않음)
-              }}
-            >
-              <Text style={styles.clearButtonText}>×</Text>
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.searchButton}>
-              <SearchIcon style={styles.searchIcon} color="#999999" />
-            </View>
-          )}
-        </TouchableOpacity>
-      )}
+          value={
+            isFilterActive
+              ? activeFilterText
+              : activeMarkerId && selectedMarker
+                ? selectedMarker.name
+                : selectedLocation
+                  ? selectedLocation.name
+                  : ""
+          }
+          placeholder="서점, 책방, 공간 검색"
+          placeholderTextColor="#999999"
+          editable={false}
+        />
+        {selectedLocation ? (
+          <TouchableOpacity
+            style={styles.clearButton}
+            onPress={() => {
+              setSelectedLocation(null);
+              setIsLocationSelected(false); // 위치 선택 플래그 리셋
+              setActiveMarkerId(null);
+            }}
+          >
+            <Text style={styles.clearButtonText}>×</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.searchButton}>
+            <SearchIcon style={styles.searchIcon} color="#999999" />
+          </View>
+        )}
+      </TouchableOpacity>
       {/* 필터 버튼들 */}
       <View
         style={[
@@ -754,13 +932,13 @@ function Milestone() {
               longitude: location.coords.longitude,
             };
 
-            // 지도 이동 상태 설정
-            setMoveToLocation(newLocation);
-
-            // 다른 상태들 업데이트
+            // 내 위치 상태 업데이트
             setCurrentLocation(newLocation);
             setIsLocationSelected(false);
             setUserLocation(newLocation);
+
+            // 내 위치로 지도 이동
+            setMoveToLocation(newLocation);
 
             // 로딩 상태 해제 및 성공 메시지 표시
             setIsLoadingLocation(false);
@@ -817,7 +995,7 @@ function Milestone() {
       </TouchableOpacity>
       {/* InfoWindow는 카카오맵에서 자동으로 처리됨 */}
 
-      {/* 선택된 마커 모달 */}
+      {/* 선택된 마커 모달 - clickedMarker와 selectedLocation 모두 처리 */}
       <SelectedMarkerModal
         marker={
           clickedMarker
@@ -827,10 +1005,31 @@ function Milestone() {
                 lat: clickedMarker.latitude,
                 lng: clickedMarker.longitude,
                 placeId: clickedMarker.placeId,
+                // 빨간색 마커인 경우 selectedLocation의 정보를 우선 사용
+                ...(clickedMarker.type === "검색된장소" && selectedLocation
+                  ? {
+                      name: selectedLocation.name,
+                      lat: selectedLocation.latitude,
+                      lng: selectedLocation.longitude,
+                      placeId: selectedLocation.placeId,
+                    }
+                  : {}),
               }
-            : null
+            : selectedLocation
+              ? {
+                  id: `selected_${Date.now()}`,
+                  name: selectedLocation.name,
+                  lat: selectedLocation.latitude,
+                  lng: selectedLocation.longitude,
+                  placeId: selectedLocation.placeId,
+                }
+              : null
         }
-        onClose={() => setClickedMarker(null)}
+        onClose={() => {
+          setClickedMarker(null);
+          setSelectedLocation(null);
+          setActiveMarkerId(null);
+        }}
       />
 
       {/* 하단 카드 */}
@@ -963,11 +1162,7 @@ function Milestone() {
           </TouchableOpacity>
         </View>
       </View>
-      {/* 선택된 마커 모달 */}
-      <SelectedMarkerModal
-        marker={selectedMarker}
-        onClose={() => setActiveMarkerId(null)}
-      />
+      {/* 두 번째 모달 제거 - 첫 번째 모달에서 모든 경우를 처리 */}
     </View>
   );
 }

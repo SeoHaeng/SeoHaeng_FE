@@ -2608,3 +2608,47 @@ export const createTravelCourseAPI = async (
     throw error;
   }
 };
+
+// 여행 일정 삭제 API 응답 타입
+export interface DeleteTravelCourseResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result?: any;
+}
+
+// 여행 일정 삭제 API
+export const deleteTravelCourseAPI = async (
+  travelCourseId: number,
+): Promise<DeleteTravelCourseResponse> => {
+  try {
+    console.log("🗑️ 여행 일정 삭제 API 호출:", travelCourseId);
+
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/travel-courses/${travelCourseId}`,
+      {
+        method: "DELETE",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log("✅ 여행 일정 삭제 성공:", result);
+
+    if (result.isSuccess) {
+      return result;
+    } else {
+      throw new Error(result.message || "여행 일정 삭제 실패");
+    }
+  } catch (error) {
+    console.error("❌ 여행 일정 삭제 API 오류:", error);
+    throw error;
+  }
+};

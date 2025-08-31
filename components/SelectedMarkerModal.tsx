@@ -1,6 +1,7 @@
 import {
   getPlaceDetailAPI,
   getPlaceInfoAPI,
+  PlaceInfo,
   togglePlaceBookmarkAPI,
 } from "@/types/api";
 import { useGlobalState } from "@/types/globalState";
@@ -29,18 +30,7 @@ interface SelectedMarkerModalProps {
   onClose: () => void;
 }
 
-interface PlaceInfo {
-  placeId: number;
-  name: string;
-  placeType: string;
-  bookmarked: boolean;
-  averageRating: number;
-  reviewCount: number;
-  distance: number;
-  address: string;
-  latitude: number;
-  longitude: number;
-}
+// PlaceInfo는 types/api.ts에서 가져옴
 
 interface PlaceDetail {
   placeId: number;
@@ -222,20 +212,36 @@ const SelectedMarkerModal = ({ marker, onClose }: SelectedMarkerModalProps) => {
         result: response.result,
       });
 
-      if (response.isSuccess && response.result?.isBookmarked !== undefined) {
+      if (response.isSuccess && response.result?.bookmarked !== undefined) {
+        const newBookmarked = response.result.bookmarked;
+
         // placeDetail 상태 업데이트
         setPlaceDetail((prev) =>
           prev
             ? {
                 ...prev,
-                isBookmarked: response.result!.isBookmarked,
+                isBookmarked: newBookmarked,
+              }
+            : null,
+        );
+
+        // placeInfo 상태도 함께 업데이트 (있는 경우)
+        setPlaceInfo((prev) =>
+          prev
+            ? {
+                ...prev,
+                bookmarked: newBookmarked,
               }
             : null,
         );
 
         console.log("📍 찜하기 상태 업데이트 완료:", {
-          newBookmarked: response.result.isBookmarked,
+          newBookmarked: newBookmarked,
+          placeDetailUpdated: true,
+          placeInfoUpdated: true,
         });
+      } else {
+        console.warn("📍 찜하기 토글 응답이 올바르지 않음:", response);
       }
     } catch (error) {
       console.error("📍 찜하기 토글 실패:", error);
@@ -283,130 +289,138 @@ const SelectedMarkerModal = ({ marker, onClose }: SelectedMarkerModalProps) => {
   if (!marker) return null;
 
   return (
-    <TouchableOpacity
-      onPress={() => {
-        if (placeDetail?.placeId) {
-          console.log("📍 모달 클릭: 상세 페이지로 이동", {
-            placeId: placeDetail.placeId,
-            placeType: placeDetail.placeType,
-            name: placeDetail.name,
-          });
-
-          router.push({
-            pathname: "/bookstore/[id]",
-            params: {
-              id: placeDetail.placeId.toString(),
-              from: "milestone",
-              placeType: placeDetail.placeType,
-              name: placeDetail.name,
-            },
-          });
-        } else if (marker?.placeId) {
-          console.log("📍 모달 클릭: marker.placeId로 상세 페이지 이동", {
-            placeId: marker.placeId,
-            name: marker.name,
-          });
-
-          router.push({
-            pathname: "/bookstore/[id]",
-            params: {
-              id: marker.placeId.toString(),
-              from: "milestone",
-              name: marker.name,
-            },
-          });
-        } else {
-          console.warn("📍 모달 클릭: placeId가 없어서 이동할 수 없음");
-        }
-      }}
-      activeOpacity={0.9}
+    <Animated.View
+      style={[
+        styles.selectedMarkerModal,
+        {
+          transform: [{ translateY: slideAnim }],
+        },
+      ]}
     >
-      <Animated.View
-        style={[
-          styles.selectedMarkerModal,
-          {
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
-      >
-        <View style={styles.modalHeader} />
-        <View style={styles.modalContent}>
-          <View style={styles.modalImagePlaceholder}>
-            {placeDetail?.placeImageUrls &&
-              placeDetail.placeImageUrls.length > 0 && (
-                <Image
-                  source={{ uri: placeDetail.placeImageUrls[0] }}
-                  style={styles.modalImage}
-                  resizeMode="cover"
-                />
-              )}
-          </View>
-
-          <View style={styles.modalInfo}>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <View style={styles.nameTypeContainer}>
-                <Text style={styles.modalName}>
-                  {placeDetail?.name || marker.name}
-                </Text>
-                <Text style={styles.modalType}>
-                  {placeDetail?.placeType === "BOOKSTORE"
-                    ? "독립서점"
-                    : placeDetail?.placeType === "BOOKCAFE"
-                      ? "북카페"
-                      : placeDetail?.placeType === "BOOKSTAY"
-                        ? "북스테이"
-                        : placeDetail?.placeType === "TOURIST_SPOT"
-                          ? "관광지"
-                          : placeDetail?.placeType === "RESTAURANT"
-                            ? "음식점"
-                            : placeDetail?.placeType === "FESTIVAL"
-                              ? "축제"
-                              : "장소"}
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={styles.modalBookmarkButton}
-                onPress={handleBookmarkToggle}
-                activeOpacity={0.7}
-              >
-                <ScrapIcon
-                  color={placeDetail?.isBookmarked ? "#FF6B6B" : "#9D9896"}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.modalRating}>
-              <StarIcon />
-              <Text style={styles.modalRatingText}>
-                <Text style={styles.ratingScore}>
-                  {placeDetail?.rating ? placeDetail.rating.toFixed(1) : "0.0"}
-                </Text>
-                <Text style={styles.reviewCount}>
-                  {placeDetail?.reviewCount
-                    ? ` (${placeDetail.reviewCount})`
-                    : " (0)"}
-                </Text>
-              </Text>
-              <Text style={styles.modalDistance}>
-                {placeDetail?.latitude && placeDetail?.longitude
-                  ? `${calculateDistance(marker.lat, marker.lng, placeDetail.latitude, placeDetail.longitude).toFixed(1)} km`
-                  : "거리 계산 중..."}
-              </Text>
-            </View>
-            <View style={styles.addressStatusContainer}>
-              <View style={styles.modalAddress}>
-                <PlaceIcon />
-                <Text style={styles.modalAddressText}>
-                  {placeDetail?.address || "주소 정보 없음"}
-                </Text>
-              </View>
-            </View>
-          </View>
+      <View style={styles.modalHeader} />
+      <View style={styles.modalContent}>
+        <View style={styles.modalImagePlaceholder}>
+          {placeDetail?.placeImageUrls &&
+            placeDetail.placeImageUrls.length > 0 && (
+              <Image
+                source={{ uri: placeDetail.placeImageUrls[0] }}
+                style={styles.modalImage}
+                resizeMode="cover"
+              />
+            )}
         </View>
-      </Animated.View>
-    </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.modalInfo}
+          onPress={() => {
+            if (placeDetail?.placeId) {
+              console.log("📍 modalInfo 터치: 상세 페이지로 이동", {
+                placeId: placeDetail.placeId,
+                placeType: placeDetail.placeType,
+                name: placeDetail.name,
+              });
+
+              router.push({
+                pathname: "/bookstore/[id]",
+                params: {
+                  id: placeDetail.placeId.toString(),
+                  from: "milestone",
+                  placeType: placeDetail.placeType,
+                  name: placeDetail.name,
+                },
+              });
+            } else if (marker?.placeId) {
+              console.log(
+                "📍 modalInfo 터치: marker.placeId로 상세 페이지 이동",
+                {
+                  placeId: marker.placeId,
+                  name: marker.name,
+                },
+              );
+
+              router.push({
+                pathname: "/bookstore/[id]",
+                params: {
+                  id: marker.placeId.toString(),
+                  from: "milestone",
+                  name: marker.name,
+                },
+              });
+            } else {
+              console.warn(
+                "📍 modalInfo 터치: placeId가 없어서 이동할 수 없음",
+              );
+            }
+          }}
+          activeOpacity={0.9}
+        >
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <View style={styles.nameTypeContainer}>
+              <Text style={styles.modalName}>
+                {placeDetail?.name || marker.name}
+              </Text>
+              <Text style={styles.modalType}>
+                {placeDetail?.placeType === "BOOKSTORE"
+                  ? "독립서점"
+                  : placeDetail?.placeType === "BOOKCAFE"
+                    ? "북카페"
+                    : placeDetail?.placeType === "BOOKSTAY"
+                      ? "북스테이"
+                      : placeDetail?.placeType === "TOURIST_SPOT"
+                        ? "관광지"
+                        : placeDetail?.placeType === "RESTAURANT"
+                          ? "음식점"
+                          : placeDetail?.placeType === "FESTIVAL"
+                            ? "축제"
+                            : "장소"}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.modalBookmarkButton}
+              onPress={(event) => {
+                // 이벤트 전파를 막아서 상위 TouchableOpacity의 onPress가 실행되지 않도록 함
+                event?.stopPropagation?.();
+                handleBookmarkToggle();
+              }}
+              activeOpacity={0.7}
+            >
+              <ScrapIcon
+                color={placeDetail?.isBookmarked ? "#FF6B6B" : "#9D9896"}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.modalRating}>
+            <StarIcon />
+            <Text style={styles.modalRatingText}>
+              <Text style={styles.ratingScore}>
+                {placeDetail?.rating ? placeDetail.rating.toFixed(1) : "0.0"}
+              </Text>
+              <Text style={styles.reviewCount}>
+                {placeDetail?.reviewCount
+                  ? ` (${placeDetail.reviewCount})`
+                  : " (0)"}
+              </Text>
+            </Text>
+            <Text style={styles.modalDistance}>
+              {placeDetail?.latitude && placeDetail?.longitude
+                ? `${calculateDistance(marker.lat, marker.lng, placeDetail.latitude, placeDetail.longitude).toFixed(1)} km`
+                : "거리 계산 중..."}
+            </Text>
+          </View>
+          <View style={styles.addressStatusContainer}>
+            <View style={styles.modalAddress}>
+              <PlaceIcon />
+              <Text style={styles.modalAddressText}>
+                {placeDetail?.address || "주소 정보 없음"}
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </Animated.View>
   );
 };
 
@@ -475,6 +489,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "SUIT-700",
     color: "#000000",
+    maxWidth: "75%",
   },
   modalType: {
     fontSize: 11,

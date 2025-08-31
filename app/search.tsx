@@ -22,7 +22,7 @@ import {
 
 const SearchScreen = () => {
   const params = useLocalSearchParams();
-  const { viewport, userLocation } = useGlobalState();
+  const { viewport, userLocation, addTravelSchedule } = useGlobalState();
   const [searchText, setSearchText] = useState("");
   const [fromScreen, setFromScreen] = useState<string>("");
   const [dayIndex, setDayIndex] = useState<string>("");
@@ -107,8 +107,81 @@ const SearchScreen = () => {
     if (fromScreen === "itinerary") {
       // 일정짜기에서 온 경우 - 일정에 추가
       console.log("📅 일정짜기에서 장소 선택됨 - 날짜:", dayIndex);
-      // TODO: 선택된 장소를 일정에 추가하는 로직
-      router.back(); // 일정짜기 화면으로 돌아가기
+
+      try {
+        // 장소 상세 조회 API로 좌표 정보 가져오기
+        const placeDetail = await getPlaceDetailAPI(location.placeId);
+
+        if (placeDetail.isSuccess && placeDetail.result) {
+          const locationWithCoordinates = {
+            placeId: placeDetail.result.placeId,
+            name: placeDetail.result.name,
+            placeType: placeDetail.result.placeType,
+            address: placeDetail.result.address,
+            latitude: placeDetail.result.latitude,
+            longitude: placeDetail.result.longitude,
+          };
+
+          console.log("📍 장소 상세 조회로 좌표 가져옴:", {
+            latitude: placeDetail.result.latitude,
+            longitude: placeDetail.result.longitude,
+          });
+
+          // 전역 상태에 장소 정보 저장 (날짜를 YYYY-MM-DD 형태로 변환)
+          const selectedDate = params.selectedDate as string;
+
+          if (selectedDate) {
+            // "10.06" 형태를 "2025-10-06" 형태로 변환
+            let formattedDate = selectedDate;
+
+            if (selectedDate.includes(".") && !selectedDate.includes("-")) {
+              // "10.06" 형태인 경우 "2025-10-06"으로 변환
+              const currentYear = new Date().getFullYear();
+              const [month, day] = selectedDate.split(".");
+              formattedDate = `${currentYear}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+            }
+
+            addTravelSchedule({
+              day: formattedDate, // ✅ YYYY-MM-DD 형태 (예: "2025-10-06")
+              placeId: locationWithCoordinates.placeId,
+              name: locationWithCoordinates.name,
+              placeType: locationWithCoordinates.placeType,
+            });
+
+            console.log("✅ 전역 상태에 장소 추가 (전달받은 날짜):", {
+              dayIndex: dayIndex,
+              selectedDate: selectedDate,
+              placeName: locationWithCoordinates.name,
+              placeType: locationWithCoordinates.placeType,
+            });
+          } else {
+            console.error("❌ 전달받은 날짜가 없음");
+          }
+
+          console.log("✅ 전역 상태에 장소 추가:", {
+            dayIndex: dayIndex,
+            placeName: locationWithCoordinates.name,
+            placeType: locationWithCoordinates.placeType,
+          });
+
+          // 일정짜기 화면으로 돌아가면서 선택된 장소 정보 전달
+          router.push({
+            pathname: "/itinerary",
+            params: {
+              selectedLocation: JSON.stringify(locationWithCoordinates),
+              selectedDayIndex: dayIndex,
+            },
+          });
+        } else {
+          console.error("❌ 장소 상세 조회 실패:", placeDetail.message);
+          // 실패 시 일정짜기 화면으로 돌아가기
+          router.back();
+        }
+      } catch (error) {
+        console.error("❌ 장소 상세 조회 API 에러:", error);
+        // 에러 시 일정짜기 화면으로 돌아가기
+        router.back();
+      }
     } else {
       // 이정표에서 온 경우 - 장소 상세 조회로 좌표 가져오기
       console.log("🗺️ 이정표에서 장소 선택됨");

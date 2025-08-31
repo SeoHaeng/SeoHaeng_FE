@@ -152,7 +152,10 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
         setShowDeleteUserModal(false);
         onClose();
 
-        // 로그인 화면으로 이동
+        // 인증 상태 초기화
+        await refreshAuthState();
+
+        // 웰컴스크린으로 이동
         router.replace("/auth");
       } else {
         console.error("회원탈퇴 실패");

@@ -342,21 +342,17 @@ export default function Index() {
       month: "2-digit",
       day: "2-digit",
     });
-    const formattedEndDate = endDate.toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
+    const formattedEndDate = `${String(endDate.getMonth() + 1).padStart(2, "0")}.${String(endDate.getDate()).padStart(2, "0")}`;
 
     return {
-      id: course.id,
+      id: course.travelCourseId, // API 응답에 맞게 수정
       image: course.imageUrl
         ? { uri: course.imageUrl }
         : require("@/assets/images/마루 목업.png"),
       title: course.title,
       dates: `${formattedStartDate} - ${formattedEndDate}`,
-      duration: `${course.duration}박 ${course.duration + 1}일`,
-      tags: course.regions,
+      duration: course.duration || "1박 2일", // API 응답에 맞게 수정
+      tags: course.travelRegions || [], // API 응답에 맞게 수정
     };
   };
 
@@ -436,9 +432,20 @@ export default function Index() {
               style={styles.cardsScrollView}
               contentContainerStyle={styles.cardsContainer}
             >
-              {myTravelCourses.map((course) => (
-                <TravelCard key={course.id} {...formatTravelData(course)} />
-              ))}
+              {myTravelCourses &&
+                Array.isArray(myTravelCourses) &&
+                myTravelCourses.map((course) => (
+                  <TravelCard
+                    key={course.travelCourseId}
+                    {...formatTravelData(course)}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/travel/[id]",
+                        params: { id: course.travelCourseId.toString() },
+                      });
+                    }}
+                  />
+                ))}
             </ScrollView>
           ) : (
             /* 여행 일정이 없는 경우 빈 상태 화면 */
@@ -475,44 +482,46 @@ export default function Index() {
           <View style={styles.recommendationCard}>
             {/* 나머지 추천 장소 리스트 */}
             <View style={styles.recommendationList}>
-              {todayRecommendations.map((item, index) => (
-                <TouchableOpacity
-                  key={item.placeId}
-                  style={styles.recommendationItem}
-                  onPress={() => {
-                    // 장소 상세 페이지로 이동
-                    router.push({
-                      pathname: `/bookstore/[id]`,
-                      params: {
-                        id: item.placeId.toString(),
-                        from: "home",
-                      },
-                    });
-                  }}
-                >
-                  <View style={styles.recommendationImageContainer}>
-                    <Image
-                      source={{ uri: item.imageUrl }}
-                      style={styles.recommendationImage}
-                      resizeMode="cover"
-                    />
-                  </View>
-                  <View style={styles.recommendationItemContent}>
-                    <Text style={styles.recommendationItemTitle}>
-                      {item.name}
-                    </Text>
-                    <Text
-                      style={styles.recommendationItemDescription}
-                      numberOfLines={2}
-                    >
-                      {item.overview}
-                    </Text>
-                  </View>
-                  <View style={styles.arrowContainer}>
-                    <Text style={styles.arrowIcon}>&gt;</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
+              {todayRecommendations &&
+                Array.isArray(todayRecommendations) &&
+                todayRecommendations.map((item, index) => (
+                  <TouchableOpacity
+                    key={item.placeId}
+                    style={styles.recommendationItem}
+                    onPress={() => {
+                      // 장소 상세 페이지로 이동
+                      router.push({
+                        pathname: `/bookstore/[id]`,
+                        params: {
+                          id: item.placeId.toString(),
+                          from: "home",
+                        },
+                      });
+                    }}
+                  >
+                    <View style={styles.recommendationImageContainer}>
+                      <Image
+                        source={{ uri: item.imageUrl }}
+                        style={styles.recommendationImage}
+                        resizeMode="cover"
+                      />
+                    </View>
+                    <View style={styles.recommendationItemContent}>
+                      <Text style={styles.recommendationItemTitle}>
+                        {item.name}
+                      </Text>
+                      <Text
+                        style={styles.recommendationItemDescription}
+                        numberOfLines={2}
+                      >
+                        {item.overview}
+                      </Text>
+                    </View>
+                    <View style={styles.arrowContainer}>
+                      <Text style={styles.arrowIcon}>&gt;</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
             </View>
 
             {/* 로딩 중이거나 데이터가 없는 경우 */}
@@ -576,72 +585,77 @@ export default function Index() {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.horizontalScrollContainer}
             >
-              {bookmarkData.readingSpotList.map((spot, index) => {
-                console.log("템플릿 렌더링:", {
-                  templateId: spot.templateId,
-                  title: spot.title,
-                });
-                return (
-                  <TouchableOpacity
-                    key={spot.readingSpotId}
-                    style={styles.mainCardContainer}
-                    onPress={() => {
-                      // 북마크 상세 페이지로 이동
-                      router.push({
-                        pathname: `/bookmark/[id]`,
-                        params: {
-                          id: spot.readingSpotId.toString(),
-                          from: "index",
-                        },
-                      });
-                    }}
-                  >
-                    <BookmarkTemplate
-                      width={360}
-                      height={360}
-                      templateId={spot.templateId}
-                    />
-                    <View style={styles.mainCard}>
-                      <Image
-                        source={{ uri: spot.readingSpotImages[0] }}
-                        style={styles.cardImage}
-                        resizeMode="cover"
+              {bookmarkData &&
+                bookmarkData.readingSpotList &&
+                Array.isArray(bookmarkData.readingSpotList) &&
+                bookmarkData.readingSpotList.map((spot, index) => {
+                  console.log("템플릿 렌더링:", {
+                    templateId: spot.templateId,
+                    title: spot.title,
+                  });
+                  return (
+                    <TouchableOpacity
+                      key={spot.readingSpotId}
+                      style={styles.mainCardContainer}
+                      onPress={() => {
+                        // 북마크 상세 페이지로 이동
+                        router.push({
+                          pathname: `/bookmark/[id]`,
+                          params: {
+                            id: spot.readingSpotId.toString(),
+                            from: "index",
+                          },
+                        });
+                      }}
+                    >
+                      <BookmarkTemplate
+                        width={360}
+                        height={360}
+                        templateId={spot.templateId}
                       />
+                      <View style={styles.mainCard}>
+                        <Image
+                          source={{ uri: spot.readingSpotImages[0] }}
+                          style={styles.cardImage}
+                          resizeMode="cover"
+                        />
 
-                      {/* 카드 내용 */}
-                      <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>
-                          {spot.title.length > 13
-                            ? `${spot.title.slice(0, 13)}...`
-                            : spot.title}
-                        </Text>
-                        <View style={styles.cardBottomRow}>
-                          <Text style={styles.cardAddress}>
-                            {spot.address.length > 18
-                              ? `${spot.address.slice(0, 18)}...`
-                              : spot.address}
+                        {/* 카드 내용 */}
+                        <View style={styles.cardContent}>
+                          <Text style={styles.cardTitle}>
+                            {spot.title.length > 13
+                              ? `${spot.title.slice(0, 13)}...`
+                              : spot.title}
                           </Text>
-                          <TouchableOpacity
-                            style={styles.scrapButton}
-                            onPress={() => handleScrapPress(spot.readingSpotId)}
-                          >
-                            <ScrapIcon
-                              width={24}
-                              height={24}
-                              isActive={scrapedItems.has(spot.readingSpotId)}
-                              color={
-                                scrapedItems.has(spot.readingSpotId)
-                                  ? "#262423"
-                                  : "#716C69"
+                          <View style={styles.cardBottomRow}>
+                            <Text style={styles.cardAddress}>
+                              {spot.address.length > 18
+                                ? `${spot.address.slice(0, 18)}...`
+                                : spot.address}
+                            </Text>
+                            <TouchableOpacity
+                              style={styles.scrapButton}
+                              onPress={() =>
+                                handleScrapPress(spot.readingSpotId)
                               }
-                            />
-                          </TouchableOpacity>
+                            >
+                              <ScrapIcon
+                                width={24}
+                                height={24}
+                                isActive={scrapedItems.has(spot.readingSpotId)}
+                                color={
+                                  scrapedItems.has(spot.readingSpotId)
+                                    ? "#262423"
+                                    : "#716C69"
+                                }
+                              />
+                            </TouchableOpacity>
+                          </View>
                         </View>
                       </View>
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
+                    </TouchableOpacity>
+                  );
+                })}
             </ScrollView>
           </View>
         </View>

@@ -336,7 +336,7 @@ export const searchPlacesAPI = async (
     }
 
     const data: PlaceSearchResponse[] = await response.json();
-    console.log("장소 검색 API 성공:", data);
+    // console.log("장소 검색 API 성공:", data);
     return data;
   } catch (error) {
     console.error("장소 검색 API 에러:", error);
@@ -1168,7 +1168,7 @@ export const togglePlaceBookmarkAPI = async (
   code: string;
   message: string;
   result?: {
-    isBookmarked: boolean;
+    bookmarked: boolean;
   };
 }> => {
   try {
@@ -1330,6 +1330,57 @@ export const reissueTokenAPI = async (
     return data;
   } catch (error) {
     console.error("토큰 재발급 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 여행 상세 조회 API 응답 타입
+export interface TravelCourseDetailResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    travelCourseId: number;
+    memberId: number;
+    courseTitle: string;
+    startDate: string;
+    endDate: string;
+    travelRegions: string[];
+    schedules: {
+      day: number;
+      date: string;
+      schedules: {
+        orderInday: number;
+        placeId: number;
+      }[];
+    }[];
+  };
+}
+
+// 여행 상세 조회 API
+export const getTravelCourseDetailAPI = async (
+  travelCourseId: number,
+): Promise<TravelCourseDetailResponse> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `http://15.164.250.185:8081/api/v1/travel-courses/${travelCourseId}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("여행 상세 조회 API 호출 실패:", error);
     throw error;
   }
 };
@@ -1575,13 +1626,14 @@ export interface MyTravelCoursesResponse {
 
 // 여행 일정 타입
 export interface TravelCourse {
-  id: number;
+  travelCourseId: number;
   title: string;
   startDate: string;
   endDate: string;
-  duration: number;
-  regions: string[];
+  duration: string; // API 응답에 맞게 문자열로 변경
+  travelRegions: string[]; // API 응답에 맞게 필드명 변경
   imageUrl?: string;
+  memberId?: number; // API 응답에 맞게 추가
 }
 
 // 북챌린지 서점 조회 API 응답 타입
@@ -1798,6 +1850,48 @@ export interface TokenReissueResponse {
     userId: number;
   };
 }
+
+// 약관 동의 API
+export const postUserAgreementAPI = async (agreementData: {
+  termsOfServiceAgreed: boolean;
+  privacyPolicyAgreed: boolean;
+  locationServiceAgreed: boolean;
+}): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result?: {
+    agreementId: number;
+    userId: number;
+    termsOfServiceAgreed: boolean;
+    privacyPolicyAgreed: boolean;
+    locationServiceAgreed: boolean;
+  };
+}> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(`${API_BASE_URL}/users/auth/agreement`, {
+      method: "POST",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(agreementData),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("약관 동의 API 호출 실패:", error);
+    throw error;
+  }
+};
 
 // 회원탈퇴 API
 export const deleteUserAPI = async (): Promise<{
@@ -2451,3 +2545,66 @@ export interface PlaceInfo {
   longitude: number;
   imageUrl: string;
 }
+
+// 여행 일정 생성 API 요청 타입
+export interface CreateTravelCourseRequest {
+  startDate: string;
+  endDate: string;
+  travelCourseTitle: string;
+  regionIdList: number[];
+  travelCourseScheduleList: {
+    day: string;
+    orderInday: number;
+    placeId: number;
+  }[];
+}
+
+// 여행 일정 생성 API 응답 타입
+export interface CreateTravelCourseResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result?: {
+    travelCourseId: number;
+    title: string;
+    startDate: string;
+    endDate: string;
+  };
+}
+
+// 여행 일정 생성 API
+export const createTravelCourseAPI = async (
+  requestData: CreateTravelCourseRequest,
+): Promise<CreateTravelCourseResponse> => {
+  try {
+    console.log("🚀 여행 일정 생성 API 호출:", requestData);
+
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(`${API_BASE_URL}/travel-courses`, {
+      method: "POST",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log("✅ 여행 일정 생성 성공:", result);
+
+    if (result.isSuccess) {
+      return result;
+    } else {
+      throw new Error(result.message || "여행 일정 생성 실패");
+    }
+  } catch (error) {
+    console.error("❌ 여행 일정 생성 API 오류:", error);
+    throw error;
+  }
+};

@@ -180,35 +180,42 @@ export default function Preference() {
             style={styles.cardsScrollView}
             contentContainerStyle={styles.cardsContainer}
           >
-            {travelRecommendations.map((item) => {
-              const startDate = new Date(item.startDate);
-              const endDate = new Date(item.endDate);
-              const formattedStartDate = startDate.toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-              });
-              const formattedEndDate = endDate.toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-              });
+            {travelRecommendations &&
+              Array.isArray(travelRecommendations) &&
+              travelRecommendations.map((item) => {
+                const startDate = new Date(item.startDate);
+                const endDate = new Date(item.endDate);
+                const formattedStartDate = startDate.toLocaleDateString(
+                  "ko-KR",
+                  {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  },
+                );
+                const formattedEndDate = `${String(endDate.getMonth() + 1).padStart(2, "0")}.${String(endDate.getDate()).padStart(2, "0")}`;
 
-              return (
-                <TravelCard
-                  key={item.id}
-                  image={
-                    item.imageUrl
-                      ? { uri: item.imageUrl }
-                      : require("@/assets/images/마루 목업.png")
-                  }
-                  title={item.title}
-                  dates={`${formattedStartDate} - ${formattedEndDate}`}
-                  duration={`${item.duration}박 ${item.duration + 1}일`}
-                  tags={item.regions}
-                />
-              );
-            })}
+                return (
+                  <TravelCard
+                    key={item.travelCourseId}
+                    image={
+                      item.imageUrl
+                        ? { uri: item.imageUrl }
+                        : require("@/assets/images/마루 목업.png")
+                    }
+                    title={item.title}
+                    dates={`${formattedStartDate} - ${formattedEndDate}`}
+                    duration={item.duration || ""}
+                    tags={item.travelRegions || []}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/travel/[id]",
+                        params: { id: item.travelCourseId.toString() },
+                      });
+                    }}
+                  />
+                );
+              })}
           </ScrollView>
         </View>
 
@@ -224,24 +231,26 @@ export default function Preference() {
             style={styles.cardsScrollView}
             contentContainerStyle={styles.cardsContainer}
           >
-            {festivals.map((item) => (
-              <FestivalCard
-                key={item.placeId}
-                image={{ uri: item.imageUrl }}
-                title={item.festivalName}
-                dates={`${item.startDate.slice(5, 7)}.${item.startDate.slice(8, 10)}-${item.endDate.slice(5, 7)}.${item.endDate.slice(8, 10)}`}
-                onPress={() => {
-                  // 축제 상세 페이지로 이동
-                  router.push({
-                    pathname: `/bookstore/[id]`,
-                    params: {
-                      id: item.placeId.toString(),
-                      from: "preference",
-                    },
-                  });
-                }}
-              />
-            ))}
+            {festivals &&
+              Array.isArray(festivals) &&
+              festivals.map((item) => (
+                <FestivalCard
+                  key={item.placeId}
+                  image={{ uri: item.imageUrl }}
+                  title={item.festivalName}
+                  dates={`${item.startDate.slice(5, 7)}.${item.startDate.slice(8, 10)}-${item.endDate.slice(5, 7)}.${item.endDate.slice(8, 10)}`}
+                  onPress={() => {
+                    // 축제 상세 페이지로 이동
+                    router.push({
+                      pathname: `/bookstore/[id]`,
+                      params: {
+                        id: item.placeId.toString(),
+                        from: "preference",
+                      },
+                    });
+                  }}
+                />
+              ))}
           </ScrollView>
         </View>
       </ScrollView>

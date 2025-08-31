@@ -559,7 +559,9 @@ export default function SignUpScreen() {
               >
                 {agreePrivacy && <Text style={styles.checkmark}>✓</Text>}
               </TouchableOpacity>
-              <Text style={styles.termsText}>(필수) 개인정보 수집 및 이용에 동의</Text>
+              <Text style={styles.termsText}>
+                (필수) 개인정보 수집 및 이용에 동의
+              </Text>
               <TouchableOpacity onPress={handlePrivacyLink}>
                 <Text style={styles.termsLinkText}>자세히 보기 &gt;</Text>
               </TouchableOpacity>
@@ -569,9 +571,13 @@ export default function SignUpScreen() {
                 style={styles.checkbox}
                 onPress={() => setAgreeLocationService(!agreeLocationService)}
               >
-                {agreeLocationService && <Text style={styles.checkmark}>✓</Text>}
+                {agreeLocationService && (
+                  <Text style={styles.checkmark}>✓</Text>
+                )}
               </TouchableOpacity>
-              <Text style={styles.termsText}>(필수) 위치 기반 서비스 이용약관에 동의</Text>
+              <Text style={styles.termsText}>
+                (필수) 위치 기반 서비스 이용약관에 동의
+              </Text>
               <TouchableOpacity onPress={handleLocationServiceLink}>
                 <Text style={styles.termsLinkText}>자세히 보기 &gt;</Text>
               </TouchableOpacity>

@@ -112,7 +112,7 @@ export default function SignInScreen() {
         // 신규 사용자인 경우 약관 동의 화면으로 이동
         if (response.result.isNewUser) {
           console.log("🔄 신규 사용자 - 약관 동의 화면으로 이동");
-          router.push("/auth/signup");
+          router.push("/auth/AgreementScreen");
         } else {
           console.log("🔄 기존 사용자 - 홈 화면으로 이동");
           // 인증 상태 새로고침 후 홈 화면으로 이동

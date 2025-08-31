@@ -212,8 +212,12 @@ const SelectedMarkerModal = ({ marker, onClose }: SelectedMarkerModalProps) => {
         result: response.result,
       });
 
-      if (response.isSuccess && response.result?.bookmarked !== undefined) {
-        const newBookmarked = response.result.bookmarked;
+      if (
+        response.isSuccess &&
+        response.result &&
+        "bookmarked" in response.result
+      ) {
+        const newBookmarked = (response.result as any).bookmarked;
 
         // placeDetail 상태 업데이트
         setPlaceDetail((prev) =>

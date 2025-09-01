@@ -2290,6 +2290,99 @@ export const getReadingSpotMarkersAPI = async (): Promise<
   }
 };
 
+// 관광지 마커 조회 API
+export const getTouristSpotMarkersAPI = async (
+  minLat: number,
+  minLng: number,
+  maxLat: number,
+  maxLng: number,
+): Promise<TouristSpotMarker[]> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/places/markers/touristspots?minLat=${minLat}&minLng=${minLng}&maxLat=${maxLat}&maxLng=${maxLng}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data: TouristSpotMarker[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("관광지 마커 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 맛집 마커 조회 API
+export const getRestaurantMarkersAPI = async (
+  minLat: number,
+  minLng: number,
+  maxLat: number,
+  maxLng: number,
+): Promise<RestaurantMarker[]> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/places/markers/restaurants?minLat=${minLat}&minLng=${minLng}&maxLat=${maxLat}&maxLng=${maxLng}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data: RestaurantMarker[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("맛집 마커 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
+// 축제 마커 조회 API
+export const getFestivalMarkersAPI = async (
+  minLat: number,
+  minLng: number,
+  maxLat: number,
+  maxLng: number,
+): Promise<FestivalMarker[]> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/places/markers/festivals?minLat=${minLat}&minLng=${minLng}&maxLat=${maxLat}&maxLng=${maxLng}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data: FestivalMarker[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("축제 마커 조회 API 호출 실패:", error);
+    throw error;
+  }
+};
+
 // 공간책갈피 상세 조회 API
 export const getReadingSpotDetailAPI = async (
   placeId: number,
@@ -2322,6 +2415,30 @@ export const getReadingSpotDetailAPI = async (
 
 // 공간책갈피 마커 타입
 export interface ReadingSpotMarker {
+  placeId: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+
+// 관광지 마커 타입
+export interface TouristSpotMarker {
+  placeId: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+
+// 맛집 마커 타입
+export interface RestaurantMarker {
+  placeId: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+
+// 축제 마커 타입
+export interface FestivalMarker {
   placeId: number;
   name: string;
   latitude: number;

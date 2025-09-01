@@ -2,7 +2,10 @@ import Constants from "expo-constants";
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
-import { createCulturalMarkerImages } from "./bookstoreMarkers";
+import {
+  createCulturalMarkerImages,
+  createTouristMarkerImages,
+} from "./bookstoreMarkers";
 
 type KakaoMapProps = {
   latitude: number;
@@ -25,7 +28,11 @@ type KakaoMapProps = {
   bookStayMarkers?: any[];
   bookCafeMarkers?: any[];
   readingSpotMarkers?: any[];
+  touristSpotMarkers?: any[];
+  restaurantMarkers?: any[];
+  festivalMarkers?: any[];
   filterType?: string;
+  activeMarkerId?: string | null; // 활성화된 마커 ID 추가
 };
 
 const KakaoMap = ({
@@ -40,11 +47,21 @@ const KakaoMap = ({
   bookStayMarkers = [],
   bookCafeMarkers = [],
   readingSpotMarkers = [],
+  touristSpotMarkers = [],
+  restaurantMarkers = [],
+  festivalMarkers = [],
   filterType = "",
+  activeMarkerId = null, // 활성화된 마커 ID 추가
 }: KakaoMapProps) => {
   const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
   const webViewRef = useRef<WebView>(null);
   const [isWebViewReady, setIsWebViewReady] = useState(false);
+
+  console.log("🎯 KakaoMap 컴포넌트 렌더링:", {
+    activeMarkerId,
+    isWebViewReady,
+    webViewRef: !!webViewRef.current,
+  });
 
   // WebView가 준비되었는지 확인
   const handleWebViewLoad = () => {
@@ -152,6 +169,39 @@ const KakaoMap = ({
     }
   }, [selectedLocation, isWebViewReady]);
 
+  // activeMarkerId가 변경될 때 WebView에 마커 활성화 메시지 전송
+  useEffect(() => {
+    console.log("🎯 KakaoMap: activeMarkerId useEffect 실행:", {
+      activeMarkerId,
+      webViewRef: !!webViewRef.current,
+      isWebViewReady,
+    });
+
+    if (activeMarkerId && webViewRef.current && isWebViewReady) {
+      console.log("🎯 KakaoMap: activeMarkerId 변경 감지:", activeMarkerId);
+
+      const message = JSON.stringify({
+        type: "activateMarker",
+        markerId: activeMarkerId,
+      });
+
+      console.log("🎯 KakaoMap: 마커 활성화 메시지 전송:", message);
+
+      try {
+        webViewRef.current.postMessage(message);
+        console.log("🎯 KakaoMap: 마커 활성화 메시지 전송 성공");
+      } catch (error) {
+        console.error("🎯 KakaoMap: 마커 활성화 메시지 전송 실패:", error);
+      }
+    } else {
+      console.log("🎯 KakaoMap: activeMarkerId 메시지 전송 조건 불충족:", {
+        activeMarkerId: !!activeMarkerId,
+        webViewRef: !!webViewRef.current,
+        isWebViewReady,
+      });
+    }
+  }, [activeMarkerId, isWebViewReady]);
+
   // searchSelectedLocation이 변경될 때 WebView에 검색 선택 장소 이동 메시지 전송
   useEffect(() => {
     if (searchSelectedLocation && webViewRef.current && isWebViewReady) {
@@ -226,7 +276,10 @@ const KakaoMap = ({
       (independentBookstoreMarkers.length > 0 ||
         bookStayMarkers.length > 0 ||
         bookCafeMarkers.length > 0 ||
-        readingSpotMarkers.length > 0)
+        readingSpotMarkers.length > 0 ||
+        touristSpotMarkers.length > 0 ||
+        restaurantMarkers.length > 0 ||
+        festivalMarkers.length > 0)
     ) {
       // console.log("🗺️ WebView로 마커 데이터 전송 시작");
 
@@ -237,6 +290,9 @@ const KakaoMap = ({
         bookStayMarkers,
         bookCafeMarkers,
         readingSpotMarkers,
+        touristSpotMarkers,
+        restaurantMarkers,
+        festivalMarkers,
         filterType: "ALL", // 필터 타입을 "ALL"로 설정하여 모든 마커 표시
       });
 
@@ -283,6 +339,9 @@ const KakaoMap = ({
     bookStayMarkers,
     bookCafeMarkers,
     readingSpotMarkers,
+    touristSpotMarkers,
+    restaurantMarkers,
+    festivalMarkers,
     isWebViewReady, // WebView 준비 상태 의존성 추가
     // filterType 의존성 제거 - 필터 타입 변경 시 마커 재전송하지 않음
   ]);
@@ -323,6 +382,18 @@ const KakaoMap = ({
             ),
             책갈피: new kakao.maps.MarkerImage(
               'data:image/svg+xml;charset=UTF-8,${encodeURIComponent(createCulturalMarkerImages().책갈피)}',
+              new kakao.maps.Size(48, 53)
+            ),
+            관광지: new kakao.maps.MarkerImage(
+              'data:image/svg+xml;charset=UTF-8,${encodeURIComponent(createTouristMarkerImages().관광지)}',
+              new kakao.maps.Size(48, 53)
+            ),
+            맛집: new kakao.maps.MarkerImage(
+              'data:image/svg+xml;charset=UTF-8,${encodeURIComponent(createTouristMarkerImages().맛집)}',
+              new kakao.maps.Size(48, 53)
+            ),
+            축제: new kakao.maps.MarkerImage(
+              'data:image/svg+xml;charset=UTF-8,${encodeURIComponent(createTouristMarkerImages().축제)}',
               new kakao.maps.Size(48, 53)
             ),
             선택된장소: new kakao.maps.MarkerImage(
@@ -537,6 +608,101 @@ const KakaoMap = ({
               } else if (data.type === 'updateSelectedLocation' && map) {
                 // console.log('📍 선택된 장소 업데이트 메시지 수신:', data);
                 updateSelectedLocationMarker(data.latitude, data.longitude, data.name, data.placeId);
+              } else if (data.type === 'activateMarker' && map) {
+                console.log('🎯 WebView: activateMarker 메시지 수신:', data);
+                
+                // selected_location_ 접두사가 있는 경우 빨간색 마커 처리
+                if (data.markerId && data.markerId.startsWith('selected_location_')) {
+                  console.log('🎯 WebView: 빨간색 마커 활성화 요청');
+                  
+                  // 기존 InfoWindow 닫기
+                  if (currentInfoWindow) {
+                    currentInfoWindow.close();
+                    currentInfoWindow = null;
+                  }
+                  
+                  // selectedLocationMarker가 있으면 InfoWindow 표시
+                  if (selectedLocationMarker) {
+                    console.log('🎯 WebView: 빨간색 마커 찾음, InfoWindow 표시');
+                    
+                    var infowindow = new kakao.maps.InfoWindow({
+                      content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + selectedLocationMarker.getTitle() + '</div>',
+                      removable: false,
+                      zIndex: 1000
+                    });
+                    
+                    infowindow.open(map, selectedLocationMarker);
+                    currentInfoWindow = infowindow;
+                    
+                    console.log('🎯 WebView: 빨간색 마커 활성화 완료');
+                  } else {
+                    console.log('🎯 WebView: 빨간색 마커가 없음');
+                  }
+                  return;
+                }
+                
+                // 모든 마커를 순회하면서 해당 ID의 마커를 찾아 활성화
+                if (window.existingMarkers && window.existingMarkers.length > 0) {
+                  var targetMarker = null;
+                  
+                  // 기존 InfoWindow 닫기
+                  if (currentInfoWindow) {
+                    currentInfoWindow.close();
+                    currentInfoWindow = null;
+                  }
+                  
+                  console.log('🎯 WebView: 기존 마커 개수:', window.existingMarkers.length);
+                  console.log('🎯 WebView: 찾을 마커 ID:', data.markerId);
+                  console.log('🎯 WebView: 찾을 마커 ID 타입:', typeof data.markerId);
+                  
+                  // 마커 ID로 찾기 (placeId 또는 id로 매칭)
+                  for (var i = 0; i < window.existingMarkers.length; i++) {
+                    var marker = window.existingMarkers[i];
+                    console.log('🎯 WebView: 마커', i, '검사:', {
+                      title: marker.getTitle(),
+                      placeId: marker.placeId,
+                      markerId: marker.markerId,
+                      targetId: data.markerId,
+                      placeIdType: typeof marker.placeId,
+                      markerIdType: typeof marker.markerId
+                    });
+                    
+                    // 마커의 title에서 placeId를 추출하거나, 마커 객체의 속성에서 확인
+                    if (marker.markerId === data.markerId || marker.placeId === data.markerId || marker.placeId === parseInt(data.markerId)) {
+                      targetMarker = marker;
+                      console.log('🎯 WebView: 마커 매칭 성공!');
+                      break;
+                    }
+                  }
+                  
+                  if (targetMarker) {
+                    console.log('🎯 WebView: 대상 마커 찾음, InfoWindow 표시');
+                    
+                    // InfoWindow 생성 및 표시
+                    var infowindow = new kakao.maps.InfoWindow({
+                      content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + targetMarker.getTitle() + '</div>',
+                      removable: false,
+                      zIndex: 1000
+                    });
+                    
+                    infowindow.open(map, targetMarker);
+                    currentInfoWindow = infowindow;
+                    
+                    console.log('🎯 WebView: 마커 활성화 완료');
+                  } else {
+                    console.log('🎯 WebView: 대상 마커를 찾을 수 없음:', data.markerId);
+                    console.log('🎯 WebView: 모든 마커 정보:', window.existingMarkers.map(function(marker, index) {
+                      return {
+                        index: index,
+                        title: marker.getTitle(),
+                        placeId: marker.placeId,
+                        markerId: marker.markerId
+                      };
+                    }));
+                  }
+                } else {
+                  console.log('🎯 WebView: 기존 마커가 없음');
+                }
               } else if (data.type === 'updateMarkers' && map) {
                 // console.log('🗺️ WebView: 마커 업데이트 메시지 수신됨');
                 
@@ -561,6 +727,10 @@ const KakaoMap = ({
                         title: bookstore.name,
                         image: markerImages.독립서점
                       });
+                      
+                      // placeId를 마커 객체에 저장 (활성화 복원용)
+                      marker.placeId = bookstore.placeId;
+                      marker.markerId = bookstore.placeId ? bookstore.placeId.toString() : null;
                       
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
@@ -606,6 +776,10 @@ const KakaoMap = ({
                         image: markerImages.북스테이
                       });
                       
+                      // placeId를 마커 객체에 저장 (활성화 복원용)
+                      marker.placeId = bookstay.placeId;
+                      marker.markerId = bookstay.placeId ? bookstay.placeId.toString() : null;
+                      
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
                         // 기존 InfoWindow 닫기
@@ -649,6 +823,10 @@ const KakaoMap = ({
                         title: bookcafe.name,
                         image: markerImages.북카페
                       });
+                      
+                      // placeId를 마커 객체에 저장 (활성화 복원용)
+                      marker.placeId = bookcafe.placeId;
+                      marker.markerId = bookcafe.placeId ? bookcafe.placeId.toString() : null;
                       
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
@@ -694,6 +872,10 @@ const KakaoMap = ({
                         image: markerImages.책갈피
                       });
                       
+                      // placeId를 마커 객체에 저장 (활성화 복원용)
+                      marker.placeId = readingSpot.placeId;
+                      marker.markerId = readingSpot.placeId ? readingSpot.placeId.toString() : null;
+                      
                       // 마커 클릭 이벤트 - 바로 공간책갈피 상세페이지로 이동
                       kakao.maps.event.addListener(marker, 'click', function() {
                         // React Native로 공간책갈피 마커 클릭 메시지 전송
@@ -702,6 +884,150 @@ const KakaoMap = ({
                             type: 'readingSpotClicked',
                             markerType: '공간책갈피',
                             data: readingSpot
+                          }));
+                        }
+                      });
+                      
+                      window.existingMarkers.push(marker);
+                    }
+                  });
+                }
+                
+                // 관광지 마커 추가
+                if (data.touristSpotMarkers && data.touristSpotMarkers.length > 0) {
+                  // console.log('🏛️ 관광지 마커 추가:', data.touristSpotMarkers.length, '개');
+                  data.touristSpotMarkers.forEach(function(touristSpot) {
+                    if (touristSpot.latitude && touristSpot.longitude) {
+                      var marker = new kakao.maps.Marker({
+                        position: new kakao.maps.LatLng(touristSpot.latitude, touristSpot.longitude),
+                        map: map,
+                        title: touristSpot.name,
+                        image: markerImages.관광지
+                      });
+                      
+                      // placeId를 마커 객체에 저장 (활성화 복원용)
+                      marker.placeId = touristSpot.placeId;
+                      marker.markerId = touristSpot.placeId ? touristSpot.placeId.toString() : null;
+                      
+                      // 마커 클릭 이벤트
+                      kakao.maps.event.addListener(marker, 'click', function() {
+                        // 기존 InfoWindow 닫기
+                        if (currentInfoWindow) {
+                          currentInfoWindow.close();
+                        }
+                        
+                        // 새로운 InfoWindow 생성 및 표시
+                        var infowindow = new kakao.maps.InfoWindow({
+                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + touristSpot.name + '</div>',
+                          removable: false,
+                          zIndex: 1000
+                        });
+                        
+                        infowindow.open(map, marker);
+                        currentInfoWindow = infowindow;
+                        
+                        // React Native로 마커 클릭 메시지 전송
+                        if (window.ReactNativeWebView) {
+                          window.ReactNativeWebView.postMessage(JSON.stringify({
+                            type: 'markerClicked',
+                            markerType: '관광지',
+                            data: touristSpot
+                          }));
+                        }
+                      });
+                      
+                      window.existingMarkers.push(marker);
+                    }
+                  });
+                }
+                
+                // 맛집 마커 추가
+                if (data.restaurantMarkers && data.restaurantMarkers.length > 0) {
+                  // console.log('🍽️ 맛집 마커 추가:', data.restaurantMarkers.length, '개');
+                  data.restaurantMarkers.forEach(function(restaurant) {
+                    if (restaurant.latitude && restaurant.longitude) {
+                      var marker = new kakao.maps.Marker({
+                        position: new kakao.maps.LatLng(restaurant.latitude, restaurant.longitude),
+                        map: map,
+                        title: restaurant.name,
+                        image: markerImages.맛집
+                      });
+                      
+                      // placeId를 마커 객체에 저장 (활성화 복원용)
+                      marker.placeId = restaurant.placeId;
+                      marker.markerId = restaurant.placeId ? restaurant.placeId.toString() : null;
+                      
+                      // 마커 클릭 이벤트
+                      kakao.maps.event.addListener(marker, 'click', function() {
+                        // 기존 InfoWindow 닫기
+                        if (currentInfoWindow) {
+                          currentInfoWindow.close();
+                        }
+                        
+                        // 새로운 InfoWindow 생성 및 표시
+                        var infowindow = new kakao.maps.InfoWindow({
+                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + restaurant.name + '</div>',
+                          removable: false,
+                          zIndex: 1000
+                        });
+                        
+                        infowindow.open(map, marker);
+                        currentInfoWindow = infowindow;
+                        
+                        // React Native로 마커 클릭 메시지 전송
+                        if (window.ReactNativeWebView) {
+                          window.ReactNativeWebView.postMessage(JSON.stringify({
+                            type: 'markerClicked',
+                            markerType: '맛집',
+                            data: restaurant
+                          }));
+                        }
+                      });
+                      
+                      window.existingMarkers.push(marker);
+                    }
+                  });
+                }
+                
+                // 축제 마커 추가
+                if (data.festivalMarkers && data.festivalMarkers.length > 0) {
+                  // console.log('🎉 축제 마커 추가:', data.festivalMarkers.length, '개');
+                  data.festivalMarkers.forEach(function(festival) {
+                    if (festival.latitude && festival.longitude) {
+                      var marker = new kakao.maps.Marker({
+                        position: new kakao.maps.LatLng(festival.latitude, festival.longitude),
+                        map: map,
+                        title: festival.name,
+                        image: markerImages.축제
+                      });
+                      
+                      // placeId를 마커 객체에 저장 (활성화 복원용)
+                      marker.placeId = festival.placeId;
+                      marker.markerId = festival.placeId ? festival.placeId.toString() : null;
+                      
+                      // 마커 클릭 이벤트
+                      kakao.maps.event.addListener(marker, 'click', function() {
+                        // 기존 InfoWindow 닫기
+                        if (currentInfoWindow) {
+                          currentInfoWindow.close();
+                        }
+                        
+                        // 새로운 InfoWindow 생성 및 표시
+                        var infowindow = new kakao.maps.InfoWindow({
+                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + festival.name + '</div>',
+                          removable: false,
+                          zIndex: 1000
+                        });
+                        
+                        infowindow.open(map, marker);
+                        currentInfoWindow = infowindow;
+                        
+                        // React Native로 마커 클릭 메시지 전송
+                        if (window.ReactNativeWebView) {
+                          window.ReactNativeWebView.postMessage(JSON.stringify({
+                            type: 'markerClicked',
+                            markerType: '축제',
+                            data: festival
                           }));
                         }
                       });

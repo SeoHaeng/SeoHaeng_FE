@@ -97,7 +97,7 @@ const AgreementScreen = () => {
               <Text style={styles.checkmark}>✓</Text>
             )}
           </View>
-          <Text style={styles.agreementText}>(필수)이용약관에 동의</Text>
+          <Text style={styles.agreementText}>(필수) 이용약관에 동의</Text>
           <TouchableOpacity style={styles.detailLink}>
             <Text style={styles.detailLinkText}>자세히 보기 &gt;</Text>
           </TouchableOpacity>
@@ -118,7 +118,7 @@ const AgreementScreen = () => {
             )}
           </View>
           <Text style={styles.agreementText}>
-            (필수)개인정보 수집 및 이용에 동의
+            (필수) 개인정보 수집 및 이용에 동의
           </Text>
           <TouchableOpacity style={styles.detailLink}>
             <Text style={styles.detailLinkText}>자세히 보기 &gt;</Text>
@@ -140,7 +140,7 @@ const AgreementScreen = () => {
             )}
           </View>
           <Text style={styles.agreementText}>
-            (필수)위치 기반 서비스 이용약관 동의
+            (필수) 위치 기반 서비스 이용약관 동의
           </Text>
           <TouchableOpacity style={styles.detailLink}>
             <Text style={styles.detailLinkText}>자세히 보기 &gt;</Text>
@@ -166,7 +166,7 @@ const AgreementScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#4A4A4A",
+    backgroundColor: "#F8F4F2",
   },
   content: {
     flex: 1,
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   },
   agreementText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 12,
     color: "#000000",
     marginLeft: 12,
     fontFamily: "SUIT-400",
@@ -233,7 +233,8 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   detailLinkText: {
-    fontSize: 12,
+    fontSize: 11,
+    textDecorationLine: "underline",
     color: "#666666",
     fontFamily: "SUIT-400",
   },

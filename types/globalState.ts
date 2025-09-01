@@ -25,6 +25,7 @@ interface GlobalState {
   userLocation: UserLocation | null;
   travelScheduleList: TravelScheduleItem[];
   selectedRegions: string[]; // 선택된 지역들
+  activeMarkerId: string | null; // 활성화된 마커 ID
   setViewport: (viewport: ViewportInfo) => void;
   setUserLocation: (location: UserLocation) => void;
   addTravelSchedule: (item: TravelScheduleItem) => void;
@@ -37,6 +38,7 @@ interface GlobalState {
   clearTravelSchedule: () => void;
   setSelectedRegions: (regions: string[]) => void; // 지역 설정
   clearSelectedRegions: () => void; // 지역 초기화
+  setActiveMarkerId: (markerId: string | null) => void; // 활성화된 마커 ID 설정
   clearViewport: () => void;
   clearUserLocation: () => void;
 }
@@ -56,6 +58,9 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({
     TravelScheduleItem[]
   >([]);
   const [selectedRegions, setSelectedRegionsState] = useState<string[]>([]);
+  const [activeMarkerId, setActiveMarkerIdState] = useState<string | null>(
+    null,
+  );
 
   //console.log("🌍 GlobalStateProvider 초기화됨");
   //console.log("📍 초기 상태:", { viewport, userLocation });
@@ -118,6 +123,12 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({
     setSelectedRegionsState([]);
   };
 
+  // 활성화된 마커 ID 설정
+  const setActiveMarkerId = (markerId: string | null) => {
+    console.log("🎯 전역 활성화된 마커 ID 설정:", markerId);
+    setActiveMarkerIdState(markerId);
+  };
+
   const clearViewport = () => {
     console.log("🗑️ 전역 뷰포트 초기화");
     setViewportState(null);
@@ -133,6 +144,7 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({
     userLocation,
     travelScheduleList,
     selectedRegions,
+    activeMarkerId,
     setViewport,
     setUserLocation,
     addTravelSchedule,
@@ -141,6 +153,7 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({
     clearTravelSchedule,
     setSelectedRegions,
     clearSelectedRegions,
+    setActiveMarkerId,
     clearViewport,
     clearUserLocation,
   };

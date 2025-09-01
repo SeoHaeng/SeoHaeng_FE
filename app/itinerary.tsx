@@ -166,8 +166,8 @@ export default function Itinerary() {
                     name: placeDetail.result.name,
                     time: "시간 미정",
                     placeId: place.placeId,
-                    latitude: placeDetail.result.latitude,
-                    longitude: placeDetail.result.longitude,
+                    latitude: placeDetail.result.latitude || 0,
+                    longitude: placeDetail.result.longitude || 0,
                     placeType: placeDetail.result.placeType,
                   };
 
@@ -273,8 +273,8 @@ export default function Itinerary() {
               name: item.name || "이름 없음",
               time: "시간 미정",
               placeId: item.placeId,
-              latitude: 0,
-              longitude: 0,
+              latitude: item.latitude || 0,
+              longitude: item.longitude || 0,
               placeType: item.placeType || "장소",
             }));
 
@@ -370,8 +370,8 @@ export default function Itinerary() {
           name: selectedLocation.name,
           time: "시간 미정",
           placeId: selectedLocation.placeId,
-          latitude: selectedLocation.latitude,
-          longitude: selectedLocation.longitude,
+          latitude: selectedLocation.latitude || 0,
+          longitude: selectedLocation.longitude || 0,
           placeType: selectedLocation.placeType,
         };
 
@@ -687,6 +687,7 @@ export default function Itinerary() {
             placeId: item.placeId,
           };
         }),
+      isPublic: isPublic, // 토글 상태 추가
     };
 
     console.log("📤 === API 요청 데이터 ===");
@@ -698,6 +699,7 @@ export default function Itinerary() {
     console.log("선택된 지역:", selectedRegions);
     console.log("지역 ID 리스트:", regionIdList);
     console.log("일정 개수:", requestData.travelCourseScheduleList.length);
+    console.log("공개 여부:", isPublic ? "공개" : "비공개");
     console.log("=== API 요청 데이터 끝 ===");
 
     // 🚀 실제 API 호출
@@ -875,6 +877,42 @@ export default function Itinerary() {
 
         <View style={styles.headerContent}>
           <Text style={styles.dateRange}>{tripData.dateRange}</Text>
+
+          {/* 공개/비공개 토글 */}
+          <View style={styles.toggleContainer}>
+            <TouchableOpacity
+              style={[
+                styles.toggleButton,
+                !isPublic && styles.toggleButtonActive,
+              ]}
+              onPress={() => setIsPublic(false)}
+            >
+              <Text
+                style={[
+                  styles.toggleButtonText,
+                  !isPublic && styles.toggleButtonTextActive,
+                ]}
+              >
+                비공개
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.toggleButton,
+                isPublic && styles.toggleButtonActive,
+              ]}
+              onPress={() => setIsPublic(true)}
+            >
+              <Text
+                style={[
+                  styles.toggleButtonText,
+                  isPublic && styles.toggleButtonTextActive,
+                ]}
+              >
+                공개
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.titleSection}>
@@ -1123,8 +1161,8 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   toggleButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 18,
     backgroundColor: "transparent",
   },

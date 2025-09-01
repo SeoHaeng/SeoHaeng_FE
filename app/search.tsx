@@ -146,6 +146,8 @@ const SearchScreen = () => {
               placeId: locationWithCoordinates.placeId,
               name: locationWithCoordinates.name,
               placeType: locationWithCoordinates.placeType,
+              latitude: locationWithCoordinates.latitude,
+              longitude: locationWithCoordinates.longitude,
             });
 
             console.log("✅ 전역 상태에 장소 추가 (전달받은 날짜):", {

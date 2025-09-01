@@ -8,13 +8,13 @@ type ItineraryMapProps = {
   longitude: number;
   regions: string[];
   onMessage?: (event: any) => void;
-  selectedDaySpots?: Array<{
+  selectedDaySpots?: {
     id: string;
     name: string;
     latitude?: number;
     longitude?: number;
     placeType?: string;
-  }>;
+  }[];
 };
 
 export interface ItineraryMapRef {
@@ -57,12 +57,24 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
 
     // selectedDaySpots가 변경될 때마다 지도에 마커 업데이트
     React.useEffect(() => {
+      console.log(
+        "🔄 ItineraryMap useEffect - selectedDaySpots 변경:",
+        selectedDaySpots,
+      );
+      console.log("🔄 selectedDaySpots 길이:", selectedDaySpots.length);
+
       if (webViewRef.current && selectedDaySpots.length > 0) {
+        console.log("✅ WebView에 메시지 전송:", selectedDaySpots);
         const message = JSON.stringify({
           type: "updateSpots",
           spots: selectedDaySpots,
         });
         webViewRef.current.postMessage(message);
+      } else {
+        console.log("❌ WebView 메시지 전송 실패:", {
+          hasWebView: !!webViewRef.current,
+          spotsLength: selectedDaySpots.length,
+        });
       }
     }, [selectedDaySpots]);
 
@@ -249,6 +261,9 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
 
             // 장소 마커들을 지도에 표시하는 함수
             function updateSpotsOnMap(spots) {
+              console.log('🔍 updateSpotsOnMap 호출됨:', spots);
+              console.log('🔍 spots 배열 길이:', spots.length);
+              
               // 기존 마커들 제거
               if (window.spotMarkers) {
                 window.spotMarkers.forEach(marker => marker.setMap(null));
@@ -257,27 +272,24 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
 
               // 새로운 마커들 추가
               spots.forEach((spot, index) => {
+                console.log('🔍 장소 정보:', { index, spot });
+                
                 if (spot.latitude && spot.longitude) {
+                  console.log('✅ 유효한 좌표:', spot.latitude, spot.longitude);
+                  
                   const position = new kakao.maps.LatLng(spot.latitude, spot.longitude);
                   
-                  // 마커 이미지 생성 (장소 타입에 따라 다른 색상)
-                  let markerColor = '#FF6B6B'; // 기본 빨간색
-                  if (spot.placeType === 'BOOKSTORE') markerColor = '#4ECDC4'; // 독립서점
-                  else if (spot.placeType === 'BOOKCAFE') markerColor = '#45B7D1'; // 북카페
-                  else if (spot.placeType === 'BOOKSTAY') markerColor = '#96CEB4'; // 북스테이
-                  else if (spot.placeType === 'TOURIST_SPOT') markerColor = '#FFEAA7'; // 관광명소
-                  else if (spot.placeType === 'RESTAURANT') markerColor = '#DDA0DD'; // 식당/카페
-                  
-                  const markerImage = new kakao.maps.MarkerImage(
-                    'data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="' + markerColor + '"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>',
-                    new kakao.maps.Size(32, 32)
-                  );
+                  // 여행 장소 마커 스타일 - 일차별 순서 번호 표시 (완전 동적 생성)
+                  const markerNumber = index + 1;
+                  const svgContent = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#716C69"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="1"/><text x="12" y="16" text-anchor="middle" fill="white" font-size="11" font-weight="normal">' + markerNumber + '</text></svg>';
+                  const svgString = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svgContent);
+                  const travelSpotImage = new kakao.maps.MarkerImage(svgString, new kakao.maps.Size(32, 32));
                   
                   const marker = new kakao.maps.Marker({
                     position: position,
                     map: map,
                     title: spot.name,
-                    image: markerImage
+                    image: travelSpotImage
                   });
                   
                   // 마커 클릭 시 InfoWindow 표시
@@ -291,8 +303,69 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
                   });
                   
                   window.spotMarkers.push(marker);
+                  console.log('✅ 마커 생성 완료:', markerNumber, spot.name);
+                } else {
+                  console.log('❌ 유효하지 않은 좌표:', spot);
                 }
               });
+              
+              // 순차적 점선 연결 (1→2, 2→3, 3→4...)
+              if (spots.length > 1) {
+                for (let i = 0; i < spots.length - 1; i++) {
+                  const currentSpot = spots[i];
+                  const nextSpot = spots[i + 1];
+                  
+                  if (currentSpot.latitude && currentSpot.longitude && nextSpot.latitude && nextSpot.longitude) {
+                    const polyline = new kakao.maps.Polyline({
+                      path: [
+                        new kakao.maps.LatLng(currentSpot.latitude, currentSpot.longitude),
+                        new kakao.maps.LatLng(nextSpot.latitude, nextSpot.longitude)
+                      ],
+                      strokeWeight: 2,
+                      strokeColor: '#000000',
+                      strokeOpacity: 0.8,
+                      strokeStyle: 'dash'
+                    });
+                    
+                    polyline.setMap(map);
+                    console.log((i + 1) + '번 → ' + (i + 2) + '번 점선 연결 완료');
+                  }
+                }
+              }
+              
+              // 장소들의 중심점 계산 및 이동
+              if (spots.length > 0) {
+                let centerLat = 0;
+                let centerLng = 0;
+                let validSpots = 0;
+
+                spots.forEach((spot) => {
+                  if (spot.latitude && spot.longitude) {
+                    centerLat += spot.latitude;
+                    centerLng += spot.longitude;
+                    validSpots++;
+                  }
+                });
+
+                if (validSpots > 0) {
+                  centerLat = centerLat / validSpots;
+                  centerLng = centerLng / validSpots;
+
+                  map.setCenter(new kakao.maps.LatLng(centerLat, centerLng));
+                  console.log("📍 장소들의 중심점으로 지도 이동:", centerLat, centerLng);
+
+                  // 모든 마커가 보이도록 지도 범위 조정
+                  const bounds = new kakao.maps.LatLngBounds();
+                  spots.forEach(spot => {
+                    if (spot.latitude && spot.longitude) {
+                      bounds.extend(new kakao.maps.LatLng(spot.latitude, spot.longitude));
+                    }
+                  });
+                  
+                  map.setBounds(bounds);
+                  console.log("✅ 지도 범위 자동 조정 완료");
+                }
+              }
               
               console.log('📍 장소 마커 업데이트 완료:', spots.length, '개');
             }

@@ -2557,6 +2557,7 @@ export interface CreateTravelCourseRequest {
     orderInday: number;
     placeId: number;
   }[];
+  isPublic: boolean;
 }
 
 // 여행 일정 생성 API 응답 타입

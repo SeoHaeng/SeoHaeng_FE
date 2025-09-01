@@ -172,6 +172,8 @@ export interface TravelScheduleItem {
   placeId: number; // 갈 시설의 ID
   name?: string; // 장소 이름
   placeType?: string; // 장소 타입
+  latitude?: number; // 위도
+  longitude?: number; // 경도
 }
 
 // 사용자 정보 타입

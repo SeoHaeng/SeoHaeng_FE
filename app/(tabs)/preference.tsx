@@ -1,5 +1,4 @@
 import BackIcon from "@/components/icons/BackIcon";
-import CalendarIcon from "@/components/icons/CalendarIcon";
 import TravelCard from "@/components/TravelCard";
 import {
   Festival,
@@ -10,6 +9,7 @@ import {
   OtherUserTravelCourse,
   TravelCourse,
 } from "@/types/api";
+import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -178,7 +178,7 @@ export default function Preference() {
                     })
                   }
                 >
-                  <CalendarIcon />
+                  <Feather name="calendar" size={20} color="white" />
                   <Text style={styles.planButtonText}>일정 짜기</Text>
                 </TouchableOpacity>
               </View>

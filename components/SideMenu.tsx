@@ -4,6 +4,8 @@ import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
 import LogoutConfirmModal from "@/components/LogoutConfirmModal";
 import { deleteUser, removeToken } from "@/types/auth";
 import { getUserInfo } from "@/types/globalState";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
@@ -250,7 +252,18 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
             >
               <Text style={styles.editProfileText}>프로필 수정하기</Text>
             </TouchableOpacity>
-
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={handleFeedbackAndReport}
+            >
+              <MaterialIcons
+                name="report-gmailerrorred"
+                size={24}
+                color="black"
+              />
+              <Text style={styles.menuItemText}>의견 및 신고</Text>
+              <Text style={styles.arrowIcon}>›</Text>
+            </TouchableOpacity>
             {/* 구분선 */}
             <View style={styles.separator} />
 
@@ -259,9 +272,7 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                 style={styles.menuItem}
                 onPress={handleLogoutClick}
               >
-                <View style={styles.menuItemIcon}>
-                  <Text style={styles.menuItemIconText}>🚪</Text>
-                </View>
+                <MaterialIcons name="logout" size={22} color="black" />
                 <Text style={styles.menuItemText}>로그아웃</Text>
                 <Text style={styles.arrowIcon}>›</Text>
               </TouchableOpacity>
@@ -270,21 +281,12 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                 style={styles.menuItem}
                 onPress={handleDeleteUserClick}
               >
-                <View style={styles.menuItemIcon}>
-                  <Text style={styles.menuItemIconText}>❌</Text>
-                </View>
+                <MaterialCommunityIcons
+                  name="delete-outline"
+                  size={24}
+                  color="black"
+                />
                 <Text style={styles.menuItemText}>회원 탈퇴</Text>
-                <Text style={styles.arrowIcon}>›</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.menuItem}
-                onPress={handleFeedbackAndReport}
-              >
-                <View style={styles.menuItemIcon}>
-                  <Text style={styles.menuItemIconText}>❌</Text>
-                </View>
-                <Text style={styles.menuItemText}>의견 및 신고</Text>
                 <Text style={styles.arrowIcon}>›</Text>
               </TouchableOpacity>
             </View>
@@ -410,6 +412,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "SUIT-500",
     color: "#262423",
+    marginLeft: 10,
   },
   arrowIcon: {
     fontSize: 18,

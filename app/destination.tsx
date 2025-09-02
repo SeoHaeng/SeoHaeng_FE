@@ -16,117 +16,99 @@ import {
 interface Destination {
   id: string;
   name: string;
-  imageUrl: string;
+  imageUrl: any;
 }
 
 const destinations: Destination[] = [
   {
     id: "1",
     name: "강릉",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Gangneung.png",
+    imageUrl: require("@/assets/images/gangwondo/강릉.jpg"),
   },
   {
     id: "2",
     name: "속초",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Sokcho.png",
+    imageUrl: require("@/assets/images/gangwondo/속초.jpg"),
   },
   {
     id: "3",
     name: "춘천",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Chuncheon.png",
+    imageUrl: require("@/assets/images/gangwondo/춘천.jpg"),
   },
   {
     id: "4",
     name: "원주",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Wonju.png",
+    imageUrl: require("@/assets/images/gangwondo/원주.jpg"),
   },
   {
     id: "5",
     name: "동해",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Donghae.png",
+    imageUrl: require("@/assets/images/gangwondo/동해.jpg"),
   },
   {
     id: "6",
     name: "태백",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Taebaek.png",
+    imageUrl: require("@/assets/images/gangwondo/태백.jpg"),
   },
   {
     id: "7",
     name: "삼척",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Samcheok.png",
+    imageUrl: require("@/assets/images/gangwondo/삼척.jpg"),
   },
   {
     id: "8",
     name: "홍천",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Hongcheon.png",
+    imageUrl: require("@/assets/images/gangwondo/홍천.jpg"),
   },
   {
     id: "9",
     name: "횡성",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Hoengseong.png",
+    imageUrl: require("@/assets/images/gangwondo/횡성.jpg"),
   },
   {
     id: "10",
     name: "영월",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Yeongwol.png",
+    imageUrl: require("@/assets/images/gangwondo/영월.jpg"),
   },
   {
     id: "11",
     name: "평창",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Pyeongchang.png",
+    imageUrl: require("@/assets/images/gangwondo/평창.jpg"),
   },
   {
     id: "12",
     name: "정선",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Jeongseon.png",
+    imageUrl: require("@/assets/images/gangwondo/정선.jpg"),
   },
   {
     id: "13",
     name: "철원",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Cheorwon.png",
+    imageUrl: require("@/assets/images/gangwondo/철원.jpg"),
   },
   {
     id: "14",
     name: "화천",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Hwacheon.png",
+    imageUrl: require("@/assets/images/gangwondo/화천.jpg"),
   },
   {
     id: "15",
     name: "양구",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Yanggu.png",
+    imageUrl: require("@/assets/images/gangwondo/양구.jpg"),
   },
   {
     id: "16",
     name: "인제",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Inje.png",
+    imageUrl: require("@/assets/images/gangwondo/인제.jpg"),
   },
   {
     id: "17",
     name: "고성",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Goseong.png",
+    imageUrl: require("@/assets/images/gangwondo/고성.jpg"),
   },
   {
     id: "18",
     name: "양양",
-    imageUrl:
-      "https://seohaeng-bucket.s3.ap-northeast-2.amazonaws.com/gangwon/Yangyang.png",
+    imageUrl: require("@/assets/images/gangwondo/양양.jpg"),
   },
 ];
 
@@ -204,7 +186,7 @@ export default function Destination() {
         onPress={() => toggleDestination(item.id)}
       >
         <Image
-          source={{ uri: item.imageUrl }}
+          source={item.imageUrl}
           style={styles.destinationImage}
           resizeMode="cover"
         />

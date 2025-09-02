@@ -1,6 +1,5 @@
 import BookmarkTemplate from "@/components/icons/bookmarkTemplate/BookmarkTemplate";
 import HamburgerIcon from "@/components/icons/HamburgerIcon";
-import NotificationIcon from "@/components/icons/NotificationIcon";
 import ScrapIcon from "@/components/icons/ScrapIcon";
 import SideMenu from "@/components/SideMenu";
 import TravelCard from "@/components/TravelCard";
@@ -11,6 +10,7 @@ import {
   getTodayRecommendationsAPI,
   ReadingSpot,
   TodayRecommendation,
+  toggleReadingSpotScrapAPI,
   TravelCourse,
 } from "@/types/api";
 import { getUserInfo } from "@/types/globalState";
@@ -177,18 +177,31 @@ export default function Index() {
   const closeSideMenu = () => setSideMenuVisible(false);
 
   // 스크랩 처리 함수
-  const handleScrapPress = (readingSpotId: number) => {
+  const handleScrapPress = async (readingSpotId: number) => {
     console.log("스크랩 버튼 클릭:", readingSpotId);
-    setScrapedItems((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(readingSpotId)) {
-        newSet.delete(readingSpotId);
+
+    try {
+      const response = await toggleReadingSpotScrapAPI(readingSpotId);
+
+      if (response.isSuccess) {
+        console.log("스크랩 토글 성공:", response.result);
+
+        // UI 상태 업데이트
+        setScrapedItems((prev) => {
+          const newSet = new Set(prev);
+          if (newSet.has(readingSpotId)) {
+            newSet.delete(readingSpotId);
+          } else {
+            newSet.add(readingSpotId);
+          }
+          return newSet;
+        });
       } else {
-        newSet.add(readingSpotId);
+        console.error("스크랩 토글 실패:", response.message);
       }
-      return newSet;
-    });
-    // TODO: 스크랩 API 호출 로직 구현
+    } catch (error) {
+      console.error("스크랩 토글 API 호출 실패:", error);
+    }
   };
 
   // 카드 애니메이션 값들
@@ -367,9 +380,6 @@ export default function Index() {
         <View style={styles.header}>
           <Text style={styles.appTitle}>서행</Text>
           <View style={styles.headerIcons}>
-            <TouchableOpacity style={styles.iconButton}>
-              <NotificationIcon width={23} height={23} color="#9D9896" />
-            </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton} onPress={openSideMenu}>
               <HamburgerIcon width={20} height={17} color="#9D9896" />
             </TouchableOpacity>
@@ -419,9 +429,6 @@ export default function Index() {
         <View style={styles.bottomSection}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>나의 서행</Text>
-            <TouchableOpacity>
-              <Text style={styles.moreButton}>더보기 &gt;</Text>
-            </TouchableOpacity>
           </View>
 
           {/* 여행 일정이 있는 경우 */}

@@ -1168,7 +1168,7 @@ export const togglePlaceBookmarkAPI = async (
   code: string;
   message: string;
   result?: {
-    bookmarked: boolean;
+    isBookmarked: boolean;
   };
 }> => {
   try {
@@ -2786,7 +2786,12 @@ export interface OtherUserTravelCourse {
 export const getOtherUserTravelCoursesAPI = async (
   page: number = 1,
   size: number = 10,
-): Promise<ApiResponse<OtherUserTravelCourse[]>> => {
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: OtherUserTravelCourse[];
+}> => {
   try {
     console.log("👥 다른 유저 서행 목록 조회 API 호출:", { page, size });
 

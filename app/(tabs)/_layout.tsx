@@ -1,4 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
@@ -14,7 +17,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabelStyle: {
             fontFamily: "SUIT-500",
-            fontSize: 11,
+            fontSize: 10,
           },
         }}
       >
@@ -23,7 +26,7 @@ export default function TabsLayout() {
           options={{
             title: "홈",
             tabBarIcon: ({ color }) => (
-              <Ionicons name="home" size={24} color={color} />
+              <MaterialIcons name="home-filled" size={28} color={color} />
             ),
           }}
         />
@@ -32,7 +35,7 @@ export default function TabsLayout() {
           options={{
             title: "이정표",
             tabBarIcon: ({ color }) => (
-              <Ionicons name="flag" size={24} color={color} />
+              <FontAwesome6 name="location-dot" size={22} color={color} />
             ),
           }}
         />
@@ -41,7 +44,7 @@ export default function TabsLayout() {
           options={{
             title: "마루",
             tabBarIcon: ({ color }) => (
-              <Ionicons name="book" size={24} color={color} />
+              <Ionicons name="chatbox-ellipses" size={24} color={color} />
             ),
           }}
         />
@@ -50,7 +53,7 @@ export default function TabsLayout() {
           options={{
             title: "취향길목",
             tabBarIcon: ({ color }) => (
-              <Ionicons name="heart" size={24} color={color} />
+              <FontAwesome6 name="signs-post" size={22} color={color} />
             ),
           }}
         />
@@ -59,7 +62,11 @@ export default function TabsLayout() {
           options={{
             title: "기억마당",
             tabBarIcon: ({ color }) => (
-              <Ionicons name="images" size={24} color={color} />
+              <MaterialCommunityIcons
+                name="bookmark-multiple"
+                size={22}
+                color={color}
+              />
             ),
           }}
         />

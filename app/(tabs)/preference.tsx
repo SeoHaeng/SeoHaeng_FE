@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#000000",
     fontWeight: "bold",

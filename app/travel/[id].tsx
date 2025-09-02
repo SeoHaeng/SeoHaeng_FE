@@ -8,6 +8,7 @@ import {
   deleteTravelCourseAPI,
   getPlaceDetailAPI,
   getTravelCourseDetailAPI,
+  getUserInfoAPI,
 } from "@/types/api";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
@@ -62,7 +63,24 @@ export default function TravelDetail() {
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isDeleteConfirmModalVisible, setIsDeleteConfirmModalVisible] =
     useState(false);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const mapRef = useRef<TravelDetailMapRef>(null);
+
+  // 현재 사용자 정보 조회
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await getUserInfoAPI();
+        if (response.isSuccess) {
+          setCurrentUserId(response.result.userId);
+        }
+      } catch (error) {
+        console.error("현재 사용자 정보 조회 실패:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
 
   // 여행 상세 정보 조회
   useEffect(() => {
@@ -345,13 +363,17 @@ export default function TravelDetail() {
 
           <View style={styles.headerContent}>
             <Text style={styles.dateRange}>{getDateRange()}</Text>
-            <TouchableOpacity
-              onPress={handleThreeDotsPress}
-              style={styles.threeDotsButton}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <ThreeDotesIcon />
-            </TouchableOpacity>
+            {currentUserId &&
+              travelDetail &&
+              currentUserId === travelDetail.memberId && (
+                <TouchableOpacity
+                  onPress={handleThreeDotsPress}
+                  style={styles.threeDotsButton}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <ThreeDotesIcon />
+                </TouchableOpacity>
+              )}
           </View>
 
           <View style={styles.titleSection}>
@@ -636,13 +658,13 @@ const styles = StyleSheet.create({
   },
   mapDayNumber: {
     color: "#FFFFFF",
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: "SUIT-700",
     fontWeight: "bold",
   },
   mapDayDate: {
     color: "#9D9896",
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: "SUIT-500",
   },
   map: {

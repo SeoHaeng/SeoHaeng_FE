@@ -245,11 +245,6 @@ export default function ChallengeDetail() {
                   resizeMode="cover"
                 />
               ),
-            ) || (
-              <Image
-                source={require("@/assets/images/인기챌린지 책.png")}
-                style={styles.challengeImage}
-              />
             )}
           </ScrollView>
 

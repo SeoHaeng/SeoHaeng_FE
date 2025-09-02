@@ -2,22 +2,22 @@ import BackIcon from "@/components/icons/BackIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
 import {
-    getPlaceDetailAPI,
-    PlaceSearchResponse,
-    searchPlacesAPI,
+  getPlaceDetailAPI,
+  PlaceSearchResponse,
+  searchPlacesAPI,
 } from "@/types/api";
 import { useGlobalState } from "@/types/globalState";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const SearchScreen = () => {
@@ -282,10 +282,7 @@ const SearchScreen = () => {
         )}
         {searchText.length === 0 && (
           <TouchableOpacity style={styles.searchButton}>
-            <Image
-              source={require("@/assets/images/Search.png")}
-              style={styles.searchIcon}
-            />
+            <EvilIcons name="search" size={35} color="#9D9896" />
           </TouchableOpacity>
         )}
       </View>

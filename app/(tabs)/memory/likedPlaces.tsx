@@ -98,14 +98,11 @@ export default function LikedPlaces() {
       activeOpacity={0.8}
     >
       <View style={styles.placeImageContainer}>
-        <Image
-          source={
-            place.imageUrl
-              ? { uri: place.imageUrl }
-              : require("@/assets/images/서점.png")
-          }
-          style={styles.placeImage}
-        />
+        {place.imageUrl ? (
+          <Image source={{ uri: place.imageUrl }} style={styles.placeImage} />
+        ) : (
+          <View style={styles.placeImage} />
+        )}
       </View>
 
       <View style={styles.placeInfo}>
@@ -211,6 +208,7 @@ const styles = StyleSheet.create({
     width: 101,
     height: 101,
     borderRadius: 8,
+    backgroundColor: "#C5BFBB",
   },
   bookmarkIcon: {
     position: "absolute",

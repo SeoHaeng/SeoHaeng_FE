@@ -19,14 +19,14 @@ export default function ChallengeComment({
   return (
     <View style={styles.commentContainer}>
       <View style={styles.commentHeader}>
-        <Image
-          source={
-            userProfileImageUrl
-              ? { uri: userProfileImageUrl }
-              : require("@/assets/images/인기챌린지 사진.png")
-          }
-          style={styles.commentAvatar}
-        />
+        {userProfileImageUrl ? (
+          <Image
+            source={{ uri: userProfileImageUrl }}
+            style={styles.commentAvatar}
+          />
+        ) : (
+          <View style={styles.commentAvatar} />
+        )}
         <View style={styles.commentInfo}>
           <Text style={[styles.commentUsername, color && { color }]}>
             {userName}
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35,
     borderRadius: 50,
+    backgroundColor: "#C5BFBB",
   },
   commentInfo: {
     flexDirection: "column",

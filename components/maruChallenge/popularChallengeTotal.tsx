@@ -55,26 +55,26 @@ export default function PopularChallengeTotal({
                 {text.length > 40 ? `${text.slice(0, 40)}...` : text}
               </Text>
             </View>
-            <Image
-              source={
-                bookImageSource
-                  ? { uri: bookImageSource }
-                  : require("@/assets/images/인기챌린지 책.png")
-              }
-              style={styles.bookImage}
-            />
+            {bookImageSource ? (
+              <Image
+                source={{ uri: bookImageSource }}
+                style={styles.bookImage}
+              />
+            ) : (
+              <View style={styles.bookImage} />
+            )}
           </View>
 
           <View style={styles.bookInfoContainer}>
             <View style={styles.bookDetails}>
-              <Image
-                source={
-                  receivedBookImage
-                    ? { uri: receivedBookImage }
-                    : require("@/assets/images/물고기는 존재하지 않는다.png")
-                }
-                style={styles.receivedBookImage}
-              />
+              {receivedBookImage ? (
+                <Image
+                  source={{ uri: receivedBookImage }}
+                  style={styles.receivedBookImage}
+                />
+              ) : (
+                <View style={styles.receivedBookImage} />
+              )}
               <View style={styles.bookTextContainer}>
                 <Text style={styles.bookTitle}>{bookName}</Text>
                 <Text style={styles.bookAuthor}>{bookAuthor}</Text>
@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     width: 87,
     height: 87,
     borderRadius: 5,
+    backgroundColor: "#C5BFBB",
   },
   receivedBookImage: {
     width: 50,

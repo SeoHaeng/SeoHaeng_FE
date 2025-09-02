@@ -13,6 +13,7 @@ import {
   ReviewListResponse,
   togglePlaceBookmarkAPI,
 } from "@/types/api";
+import Entypo from "@expo/vector-icons/Entypo";
 
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -360,10 +361,7 @@ export default function PlaceDetail() {
               ))}
             </ScrollView>
           ) : (
-            <Image
-              source={require("@/assets/images/서점.png")}
-              style={styles.mainImage}
-            />
+            <View style={styles.mainImage} />
           )}
           {placeDetail?.placeImageUrls &&
             placeDetail.placeImageUrls.length > 1 && (
@@ -393,7 +391,7 @@ export default function PlaceDetail() {
                 style={styles.actionButton}
                 onPress={handleShare}
               >
-                <Image source={require("@/assets/images/Share.png")} />
+                <Entypo name="share" size={24} color="#C5BFBB" />
               </TouchableOpacity>
             </View>
           </View>
@@ -518,6 +516,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "contain",
+    backgroundColor: "#C5BFBB",
   },
   imageOverlay: {
     position: "absolute",

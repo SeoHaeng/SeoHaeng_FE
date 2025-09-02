@@ -12,6 +12,7 @@ import {
   setMarkerLocationData,
   setMarkerTemplateData,
 } from "@/types/globalState";
+import Entypo from "@expo/vector-icons/Entypo";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -178,7 +179,7 @@ export default function MarkerRegister() {
                 <BookmarkTemplateMini templateId={templateId} />
                 {selectedTemplate === templateId && (
                   <View style={styles.selectedIndicator}>
-                    <Text style={styles.selectedIndicatorText}>✓</Text>
+                    <Entypo name="check" size={13} color="white" />
                   </View>
                 )}
               </TouchableOpacity>
@@ -514,7 +515,7 @@ const styles = StyleSheet.create({
     right: -5,
     width: 20,
     height: 20,
-    backgroundColor: "#4A90E2",
+    backgroundColor: "#262423",
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",

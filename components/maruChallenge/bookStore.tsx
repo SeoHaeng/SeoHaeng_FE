@@ -16,14 +16,11 @@ export default function BookStoreItem({
 }: BookStoreItemProps) {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Image
-        source={
-          imageUrl
-            ? { uri: imageUrl }
-            : require("@/assets/images/북챌린지 사진.png")
-        }
-        style={styles.storeImage}
-      />
+      {imageUrl ? (
+        <Image source={{ uri: imageUrl }} style={styles.storeImage} />
+      ) : (
+        <View style={styles.storeImage} />
+      )}
       <Text style={styles.storeName}>
         {name.length > 6 ? `${name.slice(0, 6)}...` : name}
       </Text>
@@ -45,6 +42,7 @@ const styles = StyleSheet.create({
     width: 82,
     height: 82,
     borderRadius: 50,
+    backgroundColor: "#C5BFBB",
   },
   storeName: {
     fontFamily: "SUIT-700",

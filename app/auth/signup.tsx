@@ -1,3 +1,4 @@
+import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -538,10 +539,10 @@ export default function SignUpScreen() {
           <View style={styles.termsContainer}>
             <View style={styles.termsRow}>
               <TouchableOpacity
-                style={styles.checkbox}
+                style={[styles.checkbox, agreeTerms && styles.checkboxActive]}
                 onPress={() => setAgreeTerms(!agreeTerms)}
               >
-                {agreeTerms && <Text style={styles.checkmark}>✓</Text>}
+                {agreeTerms && <Entypo name="check" size={15} color="white" />}
               </TouchableOpacity>
               <Text style={styles.termsText}>(필수) 이용약관에 동의</Text>
               <TouchableOpacity
@@ -554,10 +555,12 @@ export default function SignUpScreen() {
 
             <View style={styles.termsRow}>
               <TouchableOpacity
-                style={styles.checkbox}
+                style={[styles.checkbox, agreePrivacy && styles.checkboxActive]}
                 onPress={() => setAgreePrivacy(!agreePrivacy)}
               >
-                {agreePrivacy && <Text style={styles.checkmark}>✓</Text>}
+                {agreePrivacy && (
+                  <Entypo name="check" size={15} color="white" />
+                )}
               </TouchableOpacity>
               <Text style={styles.termsText}>
                 (필수) 개인정보 수집 및 이용에 동의
@@ -568,11 +571,14 @@ export default function SignUpScreen() {
             </View>
             <View style={styles.termsRow}>
               <TouchableOpacity
-                style={styles.checkbox}
+                style={[
+                  styles.checkbox,
+                  agreeLocationService && styles.checkboxActive,
+                ]}
                 onPress={() => setAgreeLocationService(!agreeLocationService)}
               >
                 {agreeLocationService && (
-                  <Text style={styles.checkmark}>✓</Text>
+                  <Entypo name="check" size={15} color="white" />
                 )}
               </TouchableOpacity>
               <Text style={styles.termsText}>
@@ -782,6 +788,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 8,
+  },
+  checkboxActive: {
+    backgroundColor: "#4A4A4A",
+    borderColor: "#4A4A4A",
   },
   checkmark: {
     fontSize: 16,

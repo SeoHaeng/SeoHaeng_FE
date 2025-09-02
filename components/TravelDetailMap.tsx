@@ -130,18 +130,7 @@ const TravelDetailMap = forwardRef<TravelDetailMapRef, TravelDetailMapProps>(
                 map = new kakao.maps.Map(mapContainer, mapOption);
                 console.log("✅ 지도 객체 생성 완료");
                 
-                // 현재 위치 마커 (파란색)
-                const currentLocationMarker = new kakao.maps.Marker({
-                  position: new kakao.maps.LatLng(${latitude}, ${longitude}),
-                  map: map
-                });
-                
-                // 현재 위치 마커 스타일
-                const currentLocationImage = new kakao.maps.MarkerImage(
-                  'data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0066FF"><circle cx="12" cy="12" r="8" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="white"/></svg>',
-                  new kakao.maps.Size(24, 24)
-                );
-                currentLocationMarker.setImage(currentLocationImage);
+
                 
                 // 여행 장소 마커들 (빨간색) - 일차별로 번호 표시
                 const spots = ${JSON.stringify(spots)};

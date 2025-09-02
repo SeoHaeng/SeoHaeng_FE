@@ -6,6 +6,8 @@ import {
   getFestivalsAPI,
   getLastVisitAPI,
   getMyTravelCoursesAPI,
+  getOtherUserTravelCoursesAPI,
+  OtherUserTravelCourse,
   TravelCourse,
 } from "@/types/api";
 import { LinearGradient } from "expo-linear-gradient";
@@ -67,6 +69,11 @@ export default function Preference() {
     TravelCourse[]
   >([]);
   const [isLoadingTravelCourses, setIsLoadingTravelCourses] = useState(false);
+  const [otherUserTravels, setOtherUserTravels] = useState<
+    OtherUserTravelCourse[]
+  >([]);
+  const [isLoadingOtherUserTravels, setIsLoadingOtherUserTravels] =
+    useState(false);
   const [lastVisitDaysAgo, setLastVisitDaysAgo] = useState<number | null>(null);
 
   // 강원도 축제 조회
@@ -107,6 +114,25 @@ export default function Preference() {
     fetchTravelCourses();
   }, []);
 
+  // 다른 유저의 서행 조회
+  useEffect(() => {
+    const fetchOtherUserTravelCourses = async () => {
+      try {
+        setIsLoadingOtherUserTravels(true);
+        const response = await getOtherUserTravelCoursesAPI(1, 10);
+        if (response.isSuccess) {
+          setOtherUserTravels(response.result);
+        }
+      } catch (error) {
+        console.error("다른 유저 서행 조회 실패:", error);
+      } finally {
+        setIsLoadingOtherUserTravels(false);
+      }
+    };
+
+    fetchOtherUserTravelCourses();
+  }, []);
+
   // 마지막 강원도 방문 날짜 조회
   useEffect(() => {
     const fetchLastVisit = async () => {
@@ -134,7 +160,7 @@ export default function Preference() {
           <Text style={styles.headerTitle}>취향 길목</Text>
         </View>
 
-        {/* 여행 추천 섹션 */}
+        {/* 나의 여행 섹션 */}
         <View style={styles.firstSection}>
           <View style={styles.firstSectionHeader}>
             <View style={styles.sectionTitleContainer}>
@@ -183,6 +209,61 @@ export default function Preference() {
             {travelRecommendations &&
               Array.isArray(travelRecommendations) &&
               travelRecommendations.map((item) => {
+                const startDate = new Date(item.startDate);
+                const endDate = new Date(item.endDate);
+                const formattedStartDate = startDate.toLocaleDateString(
+                  "ko-KR",
+                  {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  },
+                );
+                const formattedEndDate = `${String(endDate.getMonth() + 1).padStart(2, "0")}.${String(endDate.getDate()).padStart(2, "0")}`;
+
+                return (
+                  <TravelCard
+                    key={item.travelCourseId}
+                    image={
+                      item.imageUrl
+                        ? { uri: item.imageUrl }
+                        : require("@/assets/images/마루 목업.png")
+                    }
+                    title={item.title}
+                    dates={`${formattedStartDate} - ${formattedEndDate}`}
+                    duration={item.duration || ""}
+                    tags={item.travelRegions || []}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/travel/[id]",
+                        params: { id: item.travelCourseId.toString() },
+                      });
+                    }}
+                  />
+                );
+              })}
+          </ScrollView>
+        </View>
+
+        {/* 다른 유저의 서행 섹션 */}
+        <View style={styles.firstSection}>
+          <View style={styles.firstSectionHeader}>
+            <View style={styles.sectionTitleContainer}>
+              <View style={styles.firstRow}>
+                <Text style={styles.headerTitle}>다른 유저의 서행</Text>
+              </View>
+            </View>
+          </View>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.cardsScrollView}
+            contentContainerStyle={styles.cardsContainer}
+          >
+            {otherUserTravels &&
+              Array.isArray(otherUserTravels) &&
+              otherUserTravels.map((item) => {
                 const startDate = new Date(item.startDate);
                 const endDate = new Date(item.endDate);
                 const formattedStartDate = startDate.toLocaleDateString(
@@ -271,7 +352,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: "SUIT-700",
     color: "#000000",
     fontWeight: "bold",

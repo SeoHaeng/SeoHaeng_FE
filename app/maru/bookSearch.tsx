@@ -176,40 +176,63 @@ export default function BookSearch() {
 
         {/* 검색 결과 */}
         <View style={styles.resultsContainer}>
-          {searchPerformed && (
+          {searchPerformed && !isLoading && (
             <Text style={styles.resultsCount}>총 {books.length}개</Text>
           )}
 
-          <View style={styles.booksGrid}>
-            {books.map((book, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.bookItem}
-                onPress={() => handleBookSelect(index)}
-              >
-                <View style={styles.bookCoverContainer}>
-                  <Image
-                    source={{ uri: book.bookImage }}
-                    style={styles.bookCover}
-                  />
-                  {selectedBook === index.toString() && (
-                    <>
-                      <View style={styles.overlay} />
-                      <View style={styles.checkmarkContainer}>
-                        <Text style={styles.checkmark}>✓</Text>
-                      </View>
-                    </>
-                  )}
-                </View>
-                <Text style={styles.bookTitle} numberOfLines={2}>
-                  {book.title}
-                </Text>
-                <Text style={styles.bookAuthor}>
-                  {formatAuthor(book.author)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          {/* 로딩 중일 때 */}
+          {isLoading && books.length === 0 && (
+            <View style={styles.initialLoadingContainer}>
+              <ActivityIndicator size="large" color="#302E2D" />
+              <Text style={styles.initialLoadingText}>
+                도서를 검색하는 중...
+              </Text>
+            </View>
+          )}
+
+          {/* 검색 결과가 있을 때 */}
+          {!isLoading && books.length > 0 && (
+            <View style={styles.booksGrid}>
+              {books.map((book, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.bookItem}
+                  onPress={() => handleBookSelect(index)}
+                >
+                  <View style={styles.bookCoverContainer}>
+                    <Image
+                      source={{ uri: book.bookImage }}
+                      style={styles.bookCover}
+                    />
+                    {selectedBook === index.toString() && (
+                      <>
+                        <View style={styles.overlay} />
+                        <View style={styles.checkmarkContainer}>
+                          <Text style={styles.checkmark}>✓</Text>
+                        </View>
+                      </>
+                    )}
+                  </View>
+                  <Text style={styles.bookTitle} numberOfLines={2}>
+                    {book.title}
+                  </Text>
+                  <Text style={styles.bookAuthor}>
+                    {formatAuthor(book.author)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {/* 검색 결과가 없을 때 */}
+          {searchPerformed && !isLoading && books.length === 0 && (
+            <View style={styles.noResultsContainer}>
+              <Text style={styles.noResultsText}>검색 결과가 없습니다</Text>
+              <Text style={styles.noResultsSubText}>
+                다른 검색어로 시도해보세요
+              </Text>
+            </View>
+          )}
 
           {/* 무한 스크롤 로딩 인디케이터 */}
           {isLoading && books.length > 0 && (
@@ -475,5 +498,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#302E2D",
+  },
+  initialLoadingContainer: {
+    alignItems: "center",
+    paddingVertical: 60,
+    gap: 15,
+  },
+  initialLoadingText: {
+    fontSize: 16,
+    fontFamily: "SUIT-500",
+    color: "#716C69",
+  },
+  noResultsContainer: {
+    alignItems: "center",
+    paddingVertical: 60,
+    gap: 10,
+  },
+  noResultsText: {
+    fontSize: 16,
+    fontFamily: "SUIT-600",
+    color: "#716C69",
+  },
+  noResultsSubText: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#9D9896",
   },
 });

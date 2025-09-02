@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     borderColor: "#302E2D",
   },
   subTabText: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#333333",
     fontFamily: "SUIT-600",
   },

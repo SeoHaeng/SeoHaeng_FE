@@ -477,15 +477,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   confirmButton: {
-    backgroundColor: "#4A90E2",
-    paddingHorizontal: 30,
+    backgroundColor: "#262423",
+    paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 25,
+    borderRadius: 10,
   },
   confirmButtonText: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 14,
+    fontFamily: "SUIT-600",
   },
   loadingText: {
     fontSize: 14,

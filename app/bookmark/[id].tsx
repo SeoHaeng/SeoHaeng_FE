@@ -246,19 +246,54 @@ export default function BookmarkDetail() {
         // 댓글 입력창 초기화
         setComment("");
 
-        // 댓글 목록 새로고침
-        const commentResponse = await getReadingSpotCommentListAPI(
-          Number(id),
-          1,
-          10,
-        );
-        if (commentResponse.isSuccess) {
-          setCommentList(commentResponse.result.comments);
-          setTotalComments(commentResponse.result.totalElements);
+        // 전체 북마크 상세 정보 새로고침
+        setIsLoading(true);
+        const bookmarkResponse = await getBookmarkDetailAPI(Number(id));
+        if (bookmarkResponse.isSuccess) {
+          setBookmarkDetail(bookmarkResponse.result);
+
+          // 댓글 목록 조회
+          const commentResponse = await getReadingSpotCommentListAPI(
+            Number(id),
+            1,
+            10,
+          );
+          if (commentResponse.isSuccess) {
+            // 각 댓글의 userId로 사용자 정보 가져오기
+            const commentWithUserInfo = await Promise.all(
+              commentResponse.result.comments.map(async (comment) => {
+                try {
+                  const userResponse = await getUserByIdAPI(comment.userId);
+                  if (userResponse.isSuccess) {
+                    return {
+                      ...comment,
+                      nickName: userResponse.result.nickName,
+                      profileImageUrl: userResponse.result.profileImageUrl,
+                    };
+                  }
+                } catch (error) {
+                  console.error(
+                    `사용자 ${comment.userId} 정보 조회 실패:`,
+                    error,
+                  );
+                }
+                return {
+                  ...comment,
+                  nickName: "사용자",
+                  profileImageUrl: "",
+                };
+              }),
+            );
+
+            setCommentList(commentWithUserInfo);
+            setTotalComments(commentResponse.result.totalElements);
+          }
         }
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("댓글 등록 실패:", error);
+      setIsLoading(false);
     }
   };
 

@@ -1170,7 +1170,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#262423",
   },
   toggleButtonText: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },

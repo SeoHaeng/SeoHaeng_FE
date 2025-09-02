@@ -1,12 +1,12 @@
 import BackIcon from "@/components/icons/BackIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
-import SearchIcon from "@/components/icons/SearchIcon";
 import {
   getPlaceDetailAPI,
   PlaceSearchResponse,
   searchPlacesAPI,
 } from "@/types/api";
 import { useGlobalState } from "@/types/globalState";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import Feather from "@expo/vector-icons/Feather";
 import { router, useLocalSearchParams } from "expo-router";
@@ -313,7 +313,7 @@ const SearchScreen = () => {
                   onPress={() => handleSelectLocation(item)}
                 >
                   <View style={styles.suggestionContent}>
-                    <SearchIcon style={styles.suggestionIcon} />
+                    <AntDesign name="search1" size={16} color="#666666" />
                     <View style={styles.suggestionTextContainer}>
                       <View style={styles.nameAndTagContainer}>
                         <Text style={styles.suggestionText}>{item.name}</Text>
@@ -384,15 +384,7 @@ const styles = StyleSheet.create({
   searchButton: {
     marginLeft: 10,
   },
-  searchIcon: {
-    width: 20,
-    height: 20,
-  },
-  clearButton: {
-    fontSize: 18,
-    color: "#999999",
-    marginLeft: 10,
-  },
+
   content: {
     flex: 1,
     paddingHorizontal: 20,
@@ -438,6 +430,7 @@ const styles = StyleSheet.create({
   suggestionTextContainer: {
     flex: 1,
     gap: 4,
+    marginLeft: 18,
   },
   suggestionText: {
     maxWidth: "75%",

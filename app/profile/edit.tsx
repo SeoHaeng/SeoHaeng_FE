@@ -1,13 +1,13 @@
 import BackIcon from "@/components/icons/BackIcon";
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
-import EyeIcon from "@/components/icons/EyeIcon";
 import {
   checkNicknameDuplicateAPI,
   checkUsernameDuplicateAPI,
   updateProfileAPI,
 } from "@/types/api";
 import { getUserInfo, setUserInfo } from "@/types/globalState";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -526,15 +526,15 @@ export default function ProfileEdit() {
                 placeholderTextColor="#9D9896"
                 secureTextEntry={!showPassword}
               />
-              <View style={styles.inputIcons}>
-                <TouchableOpacity
-                  style={styles.iconButton}
-                  onPress={() => setShowPassword(!showPassword)}
-                >
-                  <EyeIcon width={22} height={15} color="#9D9896" />
-                </TouchableOpacity>
-              </View>
+
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <AntDesign name="eye" size={22} color="#9D9896" />
+              </TouchableOpacity>
             </View>
+
             {password.length > 0 && (
               <Text
                 style={[
@@ -565,14 +565,13 @@ export default function ProfileEdit() {
                 placeholderTextColor="#9D9896"
                 secureTextEntry={!showConfirmPassword}
               />
-              <View style={styles.inputIcons}>
-                <TouchableOpacity
-                  style={styles.iconButton}
-                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  <EyeIcon width={22} height={15} color="#9D9896" />
-                </TouchableOpacity>
-              </View>
+
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                <AntDesign name="eye" size={22} color="#9D9896" />
+              </TouchableOpacity>
             </View>
             {confirmPassword.length > 0 && password !== confirmPassword && (
               <Text style={styles.validationTextError}>
@@ -715,7 +714,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   iconButton: {
-    padding: 2,
+    position: "absolute",
+    right: 16,
+    top: 10,
   },
   clearButton: {
     backgroundColor: "#4D4947",

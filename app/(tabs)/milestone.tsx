@@ -1,17 +1,15 @@
 // app/milestone.tsx
-import KakaoMap from "@/components/KakaoMap";
-import SelectedMarkerModal from "@/components/SelectedMarkerModal";
 import BackIcon from "@/components/icons/BackIcon";
 import BookCafeIcon from "@/components/icons/BookCafeIcon";
 import BookStayIcon from "@/components/icons/BookStayIcon";
 import HotPlaceIcon from "@/components/icons/HotPlaceIcon";
 import IndependentBookstoreIcon from "@/components/icons/IndependentBookstoreIcon";
 import MyLocationIcon from "@/components/icons/MyLocationIcon";
-import PlusIcon from "@/components/icons/PlusIcon";
 import RestaurantIcon from "@/components/icons/RestaurantIcon";
-import SearchIcon from "@/components/icons/SearchIcon";
 import SpaceBookmarkIcon from "@/components/icons/SpaceBookmarkIcon";
 import TouristSpotIcon from "@/components/icons/TouristSpotIcon";
+import KakaoMap from "@/components/KakaoMap";
+import SelectedMarkerModal from "@/components/SelectedMarkerModal";
 import {
   getBookcafeMarkersAPI,
   getBookstayMarkersAPI,
@@ -22,6 +20,8 @@ import {
   getTouristSpotMarkersAPI,
 } from "@/types/api";
 import { useGlobalState } from "@/types/globalState";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
 import * as Location from "expo-location";
 import { router, useLocalSearchParams } from "expo-router";
@@ -1081,7 +1081,7 @@ function Milestone() {
           </TouchableOpacity>
         ) : (
           <View style={styles.searchButton}>
-            <SearchIcon style={styles.searchIcon} color="#999999" />
+            <AntDesign name="search1" size={24} color="#999999" />
           </View>
         )}
       </TouchableOpacity>
@@ -1227,7 +1227,7 @@ function Milestone() {
           });
         }}
       >
-        <PlusIcon />
+        <Entypo name="plus" size={33} color="black" />
       </TouchableOpacity>
       {/* InfoWindow는 카카오맵에서 자동으로 처리됨 */}
 
@@ -1453,18 +1453,12 @@ const styles = StyleSheet.create({
   searchButton: {
     marginLeft: 10,
   },
-  searchIcon: {
-    width: 24,
-    height: 24,
-  },
+
   clearButton: {
     marginLeft: 10,
     padding: 5,
   },
-  clearButtonText: {
-    fontSize: 18,
-    color: "#999999",
-  },
+
   filterContainer: {
     position: "absolute",
     top: 90,

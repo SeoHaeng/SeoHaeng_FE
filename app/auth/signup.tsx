@@ -1,3 +1,4 @@
+import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -15,7 +16,6 @@ import {
   View,
 } from "react-native";
 import BackIcon from "../../components/icons/BackIcon";
-import EyeIcon from "../../components/icons/EyeIcon";
 import { checkNicknameAPI, checkUsernameAPI } from "../../types/api";
 
 const { width, height } = Dimensions.get("window");
@@ -479,7 +479,7 @@ export default function SignUpScreen() {
                 style={styles.eyeButton}
                 onPress={() => setShowPassword(!showPassword)}
               >
-                <EyeIcon width={20} height={14} color="#C5BFBB" />
+                <AntDesign name="eye" size={22} color="#C5BFBB" />
               </TouchableOpacity>
             </View>
             {password.length > 0 && (
@@ -516,7 +516,7 @@ export default function SignUpScreen() {
                 style={styles.eyeButton}
                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                <EyeIcon width={20} height={14} color="#C5BFBB" />
+                <AntDesign name="eye" size={22} color="#C5BFBB" />
               </TouchableOpacity>
             </View>
             {confirmPassword.length > 0 && (
@@ -713,7 +713,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 16,
     top: 14,
-    padding: 4,
   },
   validationText: {
     fontSize: 11,

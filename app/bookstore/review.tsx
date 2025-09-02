@@ -1,6 +1,6 @@
-import ReviewMoreArrowIcon from "@/components/icons/ReviewMoreArrowIcon";
 import StarIcon from "@/components/icons/StarIcon";
 import { getReviewListAPI, getUserByIdAPI } from "@/types/api";
+import Entypo from "@expo/vector-icons/Entypo";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -162,7 +162,8 @@ export default function ReviewTab({ reviewData, placeId }: ReviewTabProps) {
         }}
       >
         <Text style={styles.writeReviewText}>나도 후기 남기기</Text>
-        <ReviewMoreArrowIcon color="#4D4947" />
+
+        <Entypo name="chevron-small-right" size={20} color="#4D4947" />
       </TouchableOpacity>
 
       {/* 개별 리뷰들 */}

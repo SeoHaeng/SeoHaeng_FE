@@ -1,6 +1,5 @@
 import DeleteTravelConfirmModal from "@/components/DeleteTravelConfirmModal";
 import BackIcon from "@/components/icons/BackIcon";
-import ThreeDotesIcon from "@/components/icons/ThreeDotsIcon";
 import TravelDetailMap, {
   TravelDetailMapRef,
 } from "@/components/TravelDetailMap";
@@ -10,6 +9,7 @@ import {
   getTravelCourseDetailAPI,
   getUserInfoAPI,
 } from "@/types/api";
+import Feather from "@expo/vector-icons/Feather";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -371,7 +371,7 @@ export default function TravelDetail() {
                   style={styles.threeDotsButton}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
-                  <ThreeDotesIcon />
+                  <Feather name="more-horizontal" size={20} color="black" />
                 </TouchableOpacity>
               )}
           </View>

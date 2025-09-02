@@ -2,7 +2,6 @@ import BackIcon from "@/components/icons/BackIcon";
 import BookmarkTemplateMini from "@/components/icons/bookmarkTemplate/BookmarkTemplateMini";
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
-import SearchIcon from "@/components/icons/SearchIcon";
 import { createReadingSpotAPI } from "@/types/api";
 import {
   getMarkerBookData,
@@ -12,6 +11,7 @@ import {
   setMarkerLocationData,
   setMarkerTemplateData,
 } from "@/types/globalState";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
 import * as ImagePicker from "expo-image-picker";
@@ -206,7 +206,7 @@ export default function MarkerRegister() {
             >
               {bookTitle || "도서 검색해서 추가하기"}
             </Text>
-            <SearchIcon width={20} height={20} />
+            <AntDesign name="search1" size={20} color="#9D9896" />
           </View>
         </TouchableOpacity>
 
@@ -633,14 +633,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     padding: 0,
   },
-  removeImageText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontFamily: "SUIT-700",
-    textAlign: "center",
-    includeFontPadding: false,
-    textAlignVertical: "center",
-  },
+
   imageUploadButton: {
     alignItems: "center",
     justifyContent: "center",

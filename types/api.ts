@@ -2770,3 +2770,51 @@ export const deleteTravelCourseAPI = async (
     throw error;
   }
 };
+
+// 다른 유저의 서행 목록 조회 API
+export interface OtherUserTravelCourse {
+  title: string;
+  travelCourseId: number;
+  memberId: number;
+  imageUrl: string;
+  startDate: string;
+  endDate: string;
+  duration: string;
+  travelRegions: string[];
+}
+
+export const getOtherUserTravelCoursesAPI = async (
+  page: number = 1,
+  size: number = 10,
+): Promise<ApiResponse<OtherUserTravelCourse[]>> => {
+  try {
+    console.log("👥 다른 유저 서행 목록 조회 API 호출:", { page, size });
+
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(
+      `${API_BASE_URL}/travel-courses?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log("✅ 다른 유저 서행 목록 조회 성공:", result);
+
+    if (result.isSuccess) {
+      return result;
+    } else {
+      throw new Error(result.message || "다른 유저 서행 목록 조회 실패");
+    }
+  } catch (error) {
+    console.error("❌ 다른 유저 서행 목록 조회 API 오류:", error);
+    throw error;
+  }
+};

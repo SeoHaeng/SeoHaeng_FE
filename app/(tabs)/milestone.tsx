@@ -43,6 +43,10 @@ function Milestone() {
     viewport,
     activeMarkerId,
     setActiveMarkerId,
+    selectedLocation: globalSelectedLocation,
+    clickedMarker: globalClickedMarker,
+    setSelectedLocation: setGlobalSelectedLocation,
+    setClickedMarker: setGlobalClickedMarker,
   } = useGlobalState();
   const [currentLocation, setCurrentLocation] = useState<{
     latitude: number;
@@ -115,15 +119,15 @@ function Milestone() {
     [],
   );
 
-  // 클릭된 마커 정보 상태
-  const [clickedMarker, setClickedMarker] = useState<{
-    name: string;
-    type: string;
-    address?: string;
-    latitude: number;
-    longitude: number;
-    placeId?: number;
-  } | null>(null);
+  // 클릭된 마커 정보 상태 - 전역 상태 사용
+  // const [clickedMarker, setClickedMarker] = useState<{
+  //   name: string;
+  //   type: string;
+  //   address?: string;
+  //   latitude: number;
+  //   longitude: number;
+  //   placeId?: number;
+  // } | null>(null);
 
   // 필터 타입에 따라 마커 필터링하는 함수 (상단 필터용)
   const filterMarkersByType = (filterType: string) => {
@@ -601,7 +605,7 @@ function Milestone() {
               placeId: targetMarker.placeId,
             };
 
-            setClickedMarker(clickedMarkerData);
+            setGlobalClickedMarker(clickedMarkerData);
             console.log("🎯 clickedMarker 복원 완료:", clickedMarkerData);
           } else {
             console.log("🎯 마커 정보를 찾을 수 없음:", activeMarkerId);
@@ -635,6 +639,11 @@ function Milestone() {
 
   // URL 파라미터에서 선택된 위치 정보 처리
   useEffect(() => {
+    console.log("🔍 URL 파라미터 확인:", {
+      selectedLocation: params.selectedLocation,
+      activeMarkerId: params.activeMarkerId,
+    });
+
     if (params.selectedLocation) {
       try {
         const location = JSON.parse(params.selectedLocation as string);
@@ -670,6 +679,22 @@ function Milestone() {
           if (params.activeMarkerId) {
             console.log("🎯 검색에서 선택된 마커 ID:", params.activeMarkerId);
             setActiveMarkerId(params.activeMarkerId as string);
+
+            // 검색에서 선택된 마커의 경우 selectedLocation 정보를 사용하여 clickedMarker 설정
+            const clickedMarkerData = {
+              name: location.name,
+              type: "검색된장소",
+              address: `위도 ${location.latitude.toFixed(4)}, 경도 ${location.longitude.toFixed(4)}`,
+              latitude: location.latitude,
+              longitude: location.longitude,
+              placeId: location.placeId,
+            };
+
+            setGlobalClickedMarker(clickedMarkerData);
+            console.log(
+              "🎯 검색에서 선택된 마커 clickedMarker 설정:",
+              clickedMarkerData,
+            );
           }
 
           // 지도 이동을 위해 searchSelectedLocation 상태 업데이트 (장소 이름 포함)
@@ -705,33 +730,36 @@ function Milestone() {
 
     console.log("🔍 selectedMarker 계산 시작:", {
       activeMarkerId,
-      selectedLocation,
-      clickedMarker,
+      selectedLocation: globalSelectedLocation,
+      clickedMarker: globalClickedMarker,
     });
 
     // 빨간색 마커인 경우 selectedLocation 또는 clickedMarker 정보 사용
     if (activeMarkerId.startsWith("selected_location_")) {
-      if (selectedLocation) {
+      if (globalSelectedLocation) {
         const result = {
           id: activeMarkerId,
-          name: selectedLocation.name,
-          lat: selectedLocation.latitude,
-          lng: selectedLocation.longitude,
-          placeId: selectedLocation.placeId,
+          name: globalSelectedLocation.name,
+          lat: globalSelectedLocation.latitude,
+          lng: globalSelectedLocation.longitude,
+          placeId: globalSelectedLocation.placeId,
         };
         console.log(
           "🔍 빨간색 마커 selectedMarker 계산 결과 (selectedLocation 사용):",
           result,
         );
         return result;
-      } else if (clickedMarker && clickedMarker.type === "검색된장소") {
+      } else if (
+        globalClickedMarker &&
+        globalClickedMarker.type === "검색된장소"
+      ) {
         // selectedLocation이 없으면 clickedMarker 정보 사용
         const result = {
           id: activeMarkerId,
-          name: clickedMarker.name,
-          lat: clickedMarker.latitude,
-          lng: clickedMarker.longitude,
-          placeId: clickedMarker.placeId,
+          name: globalClickedMarker.name,
+          lat: globalClickedMarker.latitude,
+          lng: globalClickedMarker.longitude,
+          placeId: globalClickedMarker.placeId,
         };
         console.log(
           "🔍 빨간색 마커 selectedMarker 계산 결과 (clickedMarker 사용):",
@@ -779,8 +807,8 @@ function Milestone() {
     return result;
   }, [
     activeMarkerId,
-    selectedLocation,
-    clickedMarker,
+    globalSelectedLocation,
+    globalClickedMarker,
     independentBookstoreMarkers,
     bookCafeMarkers,
     bookStayMarkers,
@@ -814,7 +842,7 @@ function Milestone() {
         userLocation={userLocation || currentLocation} // 내 위치 마커용 별도 좌표
         moveToLocation={moveToLocation}
         searchSelectedLocation={searchSelectedLocation}
-        selectedLocation={selectedLocation}
+        selectedLocation={globalSelectedLocation}
         // 북카페, 북스테이, 독립서점, 공간책갈피 마커 데이터 전달 (필터링된 데이터)
         independentBookstoreMarkers={filteredIndependentBookstoreMarkers}
         bookStayMarkers={filteredBookStayMarkers}
@@ -868,7 +896,7 @@ function Milestone() {
               };
 
               console.log("📍 clickedMarker 상태 설정:", clickedMarkerData);
-              setClickedMarker(clickedMarkerData);
+              setGlobalClickedMarker(clickedMarkerData);
 
               // 일반 마커 클릭 시 selectedLocation 초기화 (검색된 장소 선택 해제)
               // 이렇게 하면 새로운 마커 선택 시 검색바가 올바르게 업데이트됨
@@ -892,21 +920,21 @@ function Milestone() {
               console.log("🎯 빨간색 마커 activeMarkerId 설정:", markerId);
 
               // selectedLocation 정보를 사용하여 clickedMarker 설정
-              if (selectedLocation) {
+              if (globalSelectedLocation) {
                 const clickedMarkerData = {
-                  name: selectedLocation.name,
+                  name: globalSelectedLocation.name,
                   type: "검색된장소",
-                  address: `위도 ${selectedLocation.latitude.toFixed(4)}, 경도 ${selectedLocation.longitude.toFixed(4)}`,
-                  latitude: selectedLocation.latitude,
-                  longitude: selectedLocation.longitude,
-                  placeId: selectedLocation.placeId, // selectedLocation의 placeId 사용
+                  address: `위도 ${globalSelectedLocation.latitude.toFixed(4)}, 경도 ${globalSelectedLocation.longitude.toFixed(4)}`,
+                  latitude: globalSelectedLocation.latitude,
+                  longitude: globalSelectedLocation.longitude,
+                  placeId: globalSelectedLocation.placeId, // selectedLocation의 placeId 사용
                 };
 
                 console.log(
                   "📍 빨간색 마커 clickedMarker 상태 설정 (selectedLocation 사용):",
                   clickedMarkerData,
                 );
-                setClickedMarker(clickedMarkerData);
+                setGlobalClickedMarker(clickedMarkerData);
               } else {
                 // selectedLocation이 없는 경우 기본 정보 사용
                 const clickedMarkerData = {
@@ -922,7 +950,7 @@ function Milestone() {
                   "📍 빨간색 마커 clickedMarker 상태 설정 (기본 정보 사용):",
                   clickedMarkerData,
                 );
-                setClickedMarker(clickedMarkerData);
+                setGlobalClickedMarker(clickedMarkerData);
               }
             } else if (data.type === "readingSpotClicked") {
               // 공간책갈피 마커 클릭 시 바로 상세페이지로 이동
@@ -939,8 +967,9 @@ function Milestone() {
               // 지도 클릭 시 activeMarkerId와 clickedMarker 초기화
               console.log("🗺️ 지도 클릭됨 - 마커 선택 해제");
               setActiveMarkerId(null);
-              setClickedMarker(null);
-              setSelectedLocation(null); // 선택된 장소 정보도 초기화
+              setGlobalClickedMarker(null);
+              setGlobalSelectedLocation(null); // 전역 선택된 장소 정보도 초기화
+              setSelectedLocation(null); // 로컬 선택된 장소 정보도 초기화
               setSearchSelectedLocation(null); // 검색 선택 장소도 초기화
             } else if (data.type === "testResponse") {
               // WebView 테스트 응답 메시지
@@ -1204,36 +1233,37 @@ function Milestone() {
       {/* 선택된 마커 모달 - clickedMarker와 selectedLocation 모두 처리 */}
       <SelectedMarkerModal
         marker={
-          clickedMarker
+          globalClickedMarker
             ? {
-                id: `${clickedMarker.type}_${Date.now()}`,
-                name: clickedMarker.name,
-                lat: clickedMarker.latitude,
-                lng: clickedMarker.longitude,
-                placeId: clickedMarker.placeId,
+                id: `${globalClickedMarker.type}_${Date.now()}`,
+                name: globalClickedMarker.name,
+                lat: globalClickedMarker.latitude,
+                lng: globalClickedMarker.longitude,
+                placeId: globalClickedMarker.placeId,
                 // 빨간색 마커인 경우 selectedLocation의 정보를 우선 사용
-                ...(clickedMarker.type === "검색된장소" && selectedLocation
+                ...(globalClickedMarker.type === "검색된장소" &&
+                globalSelectedLocation
                   ? {
-                      name: selectedLocation.name,
-                      lat: selectedLocation.latitude,
-                      lng: selectedLocation.longitude,
-                      placeId: selectedLocation.placeId,
+                      name: globalSelectedLocation.name,
+                      lat: globalSelectedLocation.latitude,
+                      lng: globalSelectedLocation.longitude,
+                      placeId: globalSelectedLocation.placeId,
                     }
                   : {}),
               }
-            : selectedLocation
+            : globalSelectedLocation
               ? {
                   id: `selected_${Date.now()}`,
-                  name: selectedLocation.name,
-                  lat: selectedLocation.latitude,
-                  lng: selectedLocation.longitude,
-                  placeId: selectedLocation.placeId,
+                  name: globalSelectedLocation.name,
+                  lat: globalSelectedLocation.latitude,
+                  lng: globalSelectedLocation.longitude,
+                  placeId: globalSelectedLocation.placeId,
                 }
               : null
         }
         onClose={() => {
-          setClickedMarker(null);
-          setSelectedLocation(null);
+          setGlobalClickedMarker(null);
+          setGlobalSelectedLocation(null);
           setActiveMarkerId(null);
         }}
       />

@@ -2,27 +2,34 @@ import BackIcon from "@/components/icons/BackIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
 import {
-  getPlaceDetailAPI,
-  PlaceSearchResponse,
-  searchPlacesAPI,
+    getPlaceDetailAPI,
+    PlaceSearchResponse,
+    searchPlacesAPI,
 } from "@/types/api";
 import { useGlobalState } from "@/types/globalState";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 const SearchScreen = () => {
   const params = useLocalSearchParams();
-  const { viewport, userLocation, addTravelSchedule } = useGlobalState();
+  const {
+    viewport,
+    userLocation,
+    addTravelSchedule,
+    setActiveMarkerId,
+    setSelectedLocation,
+    setClickedMarker,
+  } = useGlobalState();
   const [searchText, setSearchText] = useState("");
   const [fromScreen, setFromScreen] = useState<string>("");
   const [dayIndex, setDayIndex] = useState<string>("");
@@ -207,11 +214,36 @@ const SearchScreen = () => {
             longitude: placeDetail.result.longitude,
           });
 
+          // 전역 activeMarkerId 설정 (빨간색 마커용 고유 ID)
+          const markerId = `selected_location_${location.placeId}`;
+          setActiveMarkerId(markerId);
+          console.log("🎯 검색에서 선택된 마커 activeMarkerId 설정:", markerId);
+
+          // 전역 selectedLocation 설정
+          setSelectedLocation(locationWithCoordinates);
+          console.log(
+            "📍 전역 selectedLocation 설정:",
+            locationWithCoordinates,
+          );
+
+          // 전역 clickedMarker 설정
+          const clickedMarkerData = {
+            name: locationWithCoordinates.name,
+            type: "검색된장소",
+            address: `위도 ${locationWithCoordinates.latitude.toFixed(4)}, 경도 ${locationWithCoordinates.longitude.toFixed(4)}`,
+            latitude: locationWithCoordinates.latitude,
+            longitude: locationWithCoordinates.longitude,
+            placeId: locationWithCoordinates.placeId,
+          };
+          setClickedMarker(clickedMarkerData);
+          console.log("🎯 전역 clickedMarker 설정:", clickedMarkerData);
+
+          // 이정표 화면으로 이동
           router.push({
             pathname: "/(tabs)/milestone",
             params: {
               selectedLocation: JSON.stringify(locationWithCoordinates),
-              activeMarkerId: location.placeId?.toString() || "",
+              activeMarkerId: markerId, // 전역에서 설정한 ID 전달
             },
           });
         } else {

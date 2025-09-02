@@ -13,6 +13,7 @@ import {
   setMarkerTemplateData,
 } from "@/types/globalState";
 import Entypo from "@expo/vector-icons/Entypo";
+import Feather from "@expo/vector-icons/Feather";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -253,7 +254,7 @@ export default function MarkerRegister() {
                   style={styles.removeImageButton}
                   onPress={() => removeImage(index)}
                 >
-                  <Text style={styles.removeImageText}>×</Text>
+                  <Feather name="x" size={13} color="white" />
                 </TouchableOpacity>
               </View>
             ))}

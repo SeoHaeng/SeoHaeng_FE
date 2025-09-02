@@ -8,6 +8,7 @@ import {
 } from "@/types/api";
 import { useGlobalState } from "@/types/globalState";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
+import Feather from "@expo/vector-icons/Feather";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -277,7 +278,7 @@ const SearchScreen = () => {
         />
         {searchText.length > 0 && (
           <TouchableOpacity onPress={handleClearSearch}>
-            <Text style={styles.clearButton}>×</Text>
+            <Feather name="x" size={20} color="#999999" />
           </TouchableOpacity>
         )}
         {searchText.length === 0 && (

@@ -8,6 +8,7 @@ import {
   setMarkerBookData,
   setReceivedBookData,
 } from "@/types/globalState";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -143,7 +144,7 @@ export default function BookRegister() {
             {bookImage ? (
               <Image source={{ uri: bookImage }} style={styles.uploadedImage} />
             ) : (
-              <Text style={styles.plusText}>+</Text>
+              <AntDesign name="plus" size={30} color="#9D9896" />
             )}
           </TouchableOpacity>
           <BookUploadIcon width={180} height={60} />
@@ -253,9 +254,9 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   imageUploadContainer: {
-    width: 150,
-    height: 214,
-    borderWidth: 2,
+    width: 98,
+    height: 152,
+    borderWidth: 1.5,
     borderColor: "#DBD6D3",
     borderStyle: "dashed",
     borderRadius: 8,

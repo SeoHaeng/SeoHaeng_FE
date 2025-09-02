@@ -1,5 +1,4 @@
 import BookmarkTemplate from "@/components/icons/bookmarkTemplate/BookmarkTemplate";
-import HamburgerIcon from "@/components/icons/HamburgerIcon";
 import ScrapIcon from "@/components/icons/ScrapIcon";
 import SideMenu from "@/components/SideMenu";
 import TravelCard from "@/components/TravelCard";
@@ -14,6 +13,7 @@ import {
   TravelCourse,
 } from "@/types/api";
 import { getUserInfo } from "@/types/globalState";
+import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -353,7 +353,7 @@ export default function Index() {
           <Text style={styles.appTitle}>서행</Text>
           <View style={styles.headerIcons}>
             <TouchableOpacity style={styles.iconButton} onPress={openSideMenu}>
-              <HamburgerIcon width={20} height={17} color="#9D9896" />
+              <Feather name="menu" size={24} color="#9D9896" />
             </TouchableOpacity>
           </View>
         </View>

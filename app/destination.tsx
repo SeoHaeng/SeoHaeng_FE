@@ -345,9 +345,4 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#262423",
   },
-  tagRemove: {
-    fontSize: 14,
-    fontFamily: "SUIT-600",
-    color: "#9D9896",
-  },
 });

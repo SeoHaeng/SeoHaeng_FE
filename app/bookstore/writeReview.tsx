@@ -492,14 +492,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     padding: 0,
   },
-  removeImageText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontFamily: "SUIT-700",
-    textAlign: "center",
-    includeFontPadding: false,
-    textAlignVertical: "center",
-  },
+
   representativeText: {
     position: "absolute",
     bottom: -15,

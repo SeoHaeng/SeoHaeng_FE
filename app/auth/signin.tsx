@@ -1,4 +1,5 @@
 // import * as KakaoLogins from "@react-native-seoul/kakao-login";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -14,7 +15,6 @@ import {
 } from "react-native";
 import { useAuth } from "../../components/AuthProvider";
 import BackIcon from "../../components/icons/BackIcon";
-import EyeIcon from "../../components/icons/EyeIcon";
 import KakaoIcon from "../../components/icons/KakaoIcon";
 import KakaoLoginWebView from "../../components/KakaoLoginWebView";
 import { kakaoLoginWithCodeAPI, loginAPI } from "../../types/api";
@@ -232,7 +232,7 @@ export default function SignInScreen() {
               style={styles.eyeButton}
               onPress={() => setShowPassword(!showPassword)}
             >
-              <EyeIcon width={20} height={14} color="#C5BFBB" />
+              <AntDesign name="eye" size={22} color="#C5BFBB" />
             </TouchableOpacity>
           </View>
           {password.length > 0 && (
@@ -363,7 +363,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 16,
     top: 14,
-    padding: 4,
   },
   textInput: {
     backgroundColor: "#F0F0F0",

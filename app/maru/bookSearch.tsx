@@ -358,11 +358,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  clearButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontFamily: "SUIT-700",
-  },
+
   resultsContainer: {
     padding: 20,
     paddingTop: 10,

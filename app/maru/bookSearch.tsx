@@ -5,6 +5,7 @@ import {
   setMarkerBookData,
   setReceivedBookData,
 } from "@/types/globalState";
+import Entypo from "@expo/vector-icons/Entypo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -208,7 +209,7 @@ export default function BookSearch() {
                       <>
                         <View style={styles.overlay} />
                         <View style={styles.checkmarkContainer}>
-                          <Text style={styles.checkmark}>✓</Text>
+                          <Entypo name="check" size={18} color="black" />
                         </View>
                       </>
                     )}
@@ -406,7 +407,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: "50%",
     left: "50%",
-    backgroundColor: "#EEE9E6",
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     width: 24,
     height: 24,

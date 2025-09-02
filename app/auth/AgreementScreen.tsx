@@ -1,4 +1,6 @@
 import { postUserAgreementAPI } from "@/types/api";
+import Entypo from "@expo/vector-icons/Entypo";
+
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -75,7 +77,7 @@ const AgreementScreen = () => {
           onPress={toggleAllAgreements}
         >
           <View style={[styles.checkbox, allAgreed && styles.checkboxChecked]}>
-            {allAgreed && <Text style={styles.checkmark}>✓</Text>}
+            <Entypo name="check" size={15} color="white" />
           </View>
           <Text style={styles.allAgreeText}>모두 동의</Text>
         </TouchableOpacity>
@@ -94,7 +96,7 @@ const AgreementScreen = () => {
             ]}
           >
             {agreements.termsOfService && (
-              <Text style={styles.checkmark}>✓</Text>
+              <Entypo name="check" size={15} color="white" />
             )}
           </View>
           <Text style={styles.agreementText}>(필수) 이용약관에 동의</Text>
@@ -114,7 +116,7 @@ const AgreementScreen = () => {
             ]}
           >
             {agreements.privacyPolicy && (
-              <Text style={styles.checkmark}>✓</Text>
+              <Entypo name="check" size={15} color="white" />
             )}
           </View>
           <Text style={styles.agreementText}>
@@ -136,7 +138,7 @@ const AgreementScreen = () => {
             ]}
           >
             {agreements.locationService && (
-              <Text style={styles.checkmark}>✓</Text>
+              <Entypo name="check" size={15} color="white" />
             )}
           </View>
           <Text style={styles.agreementText}>

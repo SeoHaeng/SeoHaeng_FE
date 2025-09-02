@@ -53,14 +53,14 @@ export default function PopularChallenge({
 
           <View style={styles.bookInfoContainer}>
             <View style={styles.bookDetails}>
-              <Image
-                source={
-                  receivedBookImage
-                    ? { uri: receivedBookImage }
-                    : require("@/assets/images/물고기는 존재하지 않는다.png")
-                }
-                style={styles.receivedBookImage}
-              />
+              {receivedBookImage ? (
+                <Image
+                  source={{ uri: receivedBookImage }}
+                  style={styles.receivedBookImage}
+                />
+              ) : (
+                <View style={styles.receivedBookImage} />
+              )}
               <View style={styles.bookTextContainer}>
                 <Text style={styles.bookTitle}>{bookName}</Text>
                 <Text style={styles.bookAuthor}>{bookAuthor}</Text>

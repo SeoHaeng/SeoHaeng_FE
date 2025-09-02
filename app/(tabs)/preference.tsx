@@ -224,11 +224,7 @@ export default function Preference() {
                 return (
                   <TravelCard
                     key={item.travelCourseId}
-                    image={
-                      item.imageUrl
-                        ? { uri: item.imageUrl }
-                        : require("@/assets/images/마루 목업.png")
-                    }
+                    image={item.imageUrl ? { uri: item.imageUrl } : undefined}
                     title={item.title}
                     dates={`${formattedStartDate} - ${formattedEndDate}`}
                     duration={item.duration || ""}
@@ -279,11 +275,7 @@ export default function Preference() {
                 return (
                   <TravelCard
                     key={item.travelCourseId}
-                    image={
-                      item.imageUrl
-                        ? { uri: item.imageUrl }
-                        : require("@/assets/images/마루 목업.png")
-                    }
+                    image={item.imageUrl ? { uri: item.imageUrl } : undefined}
                     title={item.title}
                     dates={`${formattedStartDate} - ${formattedEndDate}`}
                     duration={item.duration || ""}

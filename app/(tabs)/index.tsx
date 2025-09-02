@@ -210,34 +210,6 @@ export default function Index() {
   const scale = useRef(new Animated.Value(1)).current;
   const rotate = useRef(new Animated.Value(0)).current;
 
-  // 공간 책갈피 카드 데이터
-  const spaceCards = [
-    {
-      id: 1,
-      title: "강릉 독립서점",
-      description: "책과 커피가 있는 아늑한 공간",
-      image: require("@/assets/images/독립서점.png"),
-    },
-    {
-      id: 2,
-      title: "춘천 책방",
-      description: "지역 작가들의 작품을 만날 수 있는 곳",
-      image: require("@/assets/images/서점.png"),
-    },
-    {
-      id: 3,
-      title: "양양 북카페",
-      description: "바다를 보며 책을 읽는 특별한 경험",
-      image: require("@/assets/images/마루 목업.png"),
-    },
-    {
-      id: 4,
-      title: "속초 문고",
-      description: "고전부터 신간까지 다양한 도서",
-      image: require("@/assets/images/북챌린지 사진.png"),
-    },
-  ];
-
   // 스와이프 제스처 핸들러
   const onGestureEvent = Animated.event(
     [{ nativeEvent: { translationX: translateX, translationY: translateY } }],
@@ -317,7 +289,9 @@ export default function Index() {
   };
 
   const nextCard = () => {
-    setCurrentCardIndex((prev) => (prev + 1) % spaceCards.length);
+    setCurrentCardIndex(
+      (prev) => (prev + 1) % bookmarkData.readingSpotList.length,
+    );
     resetCardPosition();
   };
 
@@ -359,9 +333,7 @@ export default function Index() {
 
     return {
       id: course.travelCourseId, // API 응답에 맞게 수정
-      image: course.imageUrl
-        ? { uri: course.imageUrl }
-        : require("@/assets/images/마루 목업.png"),
+      image: course.imageUrl ? { uri: course.imageUrl } : undefined,
       title: course.title,
       dates: `${formattedStartDate} - ${formattedEndDate}`,
       duration: course.duration || "1박 2일", // API 응답에 맞게 수정

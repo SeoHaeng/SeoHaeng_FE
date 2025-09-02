@@ -6,11 +6,11 @@ import {
   getBookChallengeListAPI,
   getUserByIdAPI,
 } from "@/types/api";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Image,
   Modal,
   ScrollView,
   StyleSheet,
@@ -191,37 +191,63 @@ export default function Popularity() {
             onPress={() => setShowSortModal(true)}
           >
             <Text
-              style={{ fontSize: 13, color: "#716C69", fontFamily: "SUIT-500" }}
+              style={{ fontSize: 12, color: "#716C69", fontFamily: "SUIT-500" }}
             >
               {sortType}
             </Text>
-            <Image source={require("@/assets/images/DropdownArrow.png")} />
+            <MaterialIcons
+              name="keyboard-arrow-down"
+              size={15}
+              color="#716C69"
+            />
           </TouchableOpacity>
         </View>
-        {challenges.map((challenge) => (
-          <PopularChallengeTotal
-            key={challenge.bookChallengeProofId}
-            userName={userInfoMap[challenge.creatorId]?.nickName || "사용자"}
-            profileImageUrl={userInfoMap[challenge.creatorId]?.profileImageUrl}
-            date={formatDateToDaysAgo(challenge.createdAt)}
-            text={challenge.proofContent}
-            bookImageSource={challenge.proofImageUrls[0]}
-            receivedBookImage={challenge.receivedBookImage}
-            bookName={challenge.receivedBookTitle}
-            bookAuthor={challenge.receivedBookAuthor}
-            year={
-              challenge.receivedBookPubDate?.split("-")[0] ||
-              challenge.receivedBookPubDate
-            }
-            likedByMe={challenge.likedByMe}
-            onPress={() =>
-              router.push({
-                pathname: "/popularity/[id]",
-                params: { id: challenge.bookChallengeProofId },
-              })
-            }
-          />
-        ))}
+        {/* 초기 로딩 상태 */}
+        {isLoading && challenges.length === 0 && (
+          <View style={styles.initialLoadingContainer}>
+            <ActivityIndicator size="large" color="#302E2D" />
+            <Text style={styles.initialLoadingText}>
+              챌린지 인증을 불러오는 중...
+            </Text>
+          </View>
+        )}
+
+        {/* 데이터가 있을 때만 렌더링 */}
+        {!isLoading &&
+          challenges.length > 0 &&
+          challenges.map((challenge) => (
+            <PopularChallengeTotal
+              key={challenge.bookChallengeProofId}
+              userName={userInfoMap[challenge.creatorId]?.nickName || "사용자"}
+              profileImageUrl={
+                userInfoMap[challenge.creatorId]?.profileImageUrl
+              }
+              date={formatDateToDaysAgo(challenge.createdAt)}
+              text={challenge.proofContent}
+              bookImageSource={challenge.proofImageUrls[0]}
+              receivedBookImage={challenge.receivedBookImage}
+              bookName={challenge.receivedBookTitle}
+              bookAuthor={challenge.receivedBookAuthor}
+              year={
+                challenge.receivedBookPubDate?.split("-")[0] ||
+                challenge.receivedBookPubDate
+              }
+              likedByMe={challenge.likedByMe}
+              onPress={() =>
+                router.push({
+                  pathname: "/popularity/[id]",
+                  params: { id: challenge.bookChallengeProofId },
+                })
+              }
+            />
+          ))}
+
+        {/* 데이터가 없을 때 */}
+        {!isLoading && challenges.length === 0 && (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>챌린지 인증이 없습니다.</Text>
+          </View>
+        )}
 
         {/* 로딩 인디케이터 */}
         {isLoading && challenges.length > 0 && (
@@ -387,6 +413,16 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
+  initialLoadingContainer: {
+    alignItems: "center",
+    paddingVertical: 60,
+    gap: 15,
+  },
+  initialLoadingText: {
+    fontSize: 16,
+    fontFamily: "SUIT-500",
+    color: "#716C69",
+  },
   noMoreContainer: {
     alignItems: "center",
     paddingVertical: 20,
@@ -396,5 +432,15 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-500",
     color: "#9D9896",
     fontStyle: "italic",
+  },
+  emptyContainer: {
+    alignItems: "center",
+    paddingVertical: 60,
+    gap: 10,
+  },
+  emptyText: {
+    fontSize: 16,
+    fontFamily: "SUIT-600",
+    color: "#716C69",
   },
 });

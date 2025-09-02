@@ -6,6 +6,7 @@ import {
   setReceivedBookData,
 } from "@/types/globalState";
 import Entypo from "@expo/vector-icons/Entypo";
+import Feather from "@expo/vector-icons/Feather";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -160,7 +161,7 @@ export default function BookSearch() {
                 style={styles.clearButton}
                 onPress={clearSearch}
               >
-                <Text style={styles.clearButtonText}>×</Text>
+                <Feather name="x" size={15} color="white" />
               </TouchableOpacity>
             )}
           </View>

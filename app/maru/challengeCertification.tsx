@@ -4,6 +4,7 @@ import PlaceIcon from "@/components/icons/PlaceIcon";
 import GiftBook from "@/components/maruChallenge/detail/giftBook";
 import { createBookChallengeProofAPI } from "@/types/api";
 import { getGiftBookData, getReceivedBookData } from "@/types/globalState";
+import Feather from "@expo/vector-icons/Feather";
 import * as ImagePicker from "expo-image-picker";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -234,7 +235,7 @@ export default function ChallengeCertification() {
                     style={styles.removeImageButton}
                     onPress={() => removeImage(index)}
                   >
-                    <Text style={styles.removeImageText}>×</Text>
+                    <Feather name="x" size={13} color="white" />
                   </TouchableOpacity>
                 </View>
               ))}

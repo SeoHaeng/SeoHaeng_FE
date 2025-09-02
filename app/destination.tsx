@@ -1,6 +1,7 @@
 import CommonButton from "@/components/CommonButton";
 import BackIcon from "@/components/icons/BackIcon";
 import { useGlobalState } from "@/types/globalState";
+import Feather from "@expo/vector-icons/Feather";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -236,7 +237,7 @@ export default function Destination() {
                 <View key={id} style={styles.tag}>
                   <Text style={styles.tagText}>{destination?.name}</Text>
                   <TouchableOpacity onPress={() => toggleDestination(id)}>
-                    <Text style={styles.tagRemove}>X</Text>
+                    <Feather name="x" size={18} color="#9D9896" />
                   </TouchableOpacity>
                 </View>
               );

@@ -22,6 +22,7 @@ import {
   getTouristSpotMarkersAPI,
 } from "@/types/api";
 import { useGlobalState } from "@/types/globalState";
+import Feather from "@expo/vector-icons/Feather";
 import * as Location from "expo-location";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -1076,7 +1077,7 @@ function Milestone() {
               setActiveMarkerId(null);
             }}
           >
-            <Text style={styles.clearButtonText}>×</Text>
+            <Feather name="x" size={20} color="#999999" />
           </TouchableOpacity>
         ) : (
           <View style={styles.searchButton}>

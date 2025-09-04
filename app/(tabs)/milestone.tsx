@@ -151,6 +151,14 @@ function Milestone() {
             independentBookstoreMarkers.length,
             "개",
           );
+          console.log(
+            "🔍 독립서점 마커 상세:",
+            independentBookstoreMarkers.map((m) => ({
+              name: m.name,
+              lat: m.latitude,
+              lng: m.longitude,
+            })),
+          );
           break;
         case "북스테이":
           setFilteredIndependentBookstoreMarkers([]);
@@ -162,6 +170,14 @@ function Milestone() {
           setFilteredRestaurantMarkers([]);
           setFilteredFestivalMarkers([]);
           console.log("🔍 북스테이 마커만 표시:", bookStayMarkers.length, "개");
+          console.log(
+            "🔍 북스테이 마커 상세:",
+            bookStayMarkers.map((m) => ({
+              name: m.name,
+              lat: m.latitude,
+              lng: m.longitude,
+            })),
+          );
           break;
         case "북카페":
           setFilteredIndependentBookstoreMarkers([]);
@@ -173,6 +189,14 @@ function Milestone() {
           setFilteredRestaurantMarkers([]);
           setFilteredFestivalMarkers([]);
           console.log("🔍 북카페 마커만 표시:", bookCafeMarkers.length, "개");
+          console.log(
+            "🔍 북카페 마커 상세:",
+            bookCafeMarkers.map((m) => ({
+              name: m.name,
+              lat: m.latitude,
+              lng: m.longitude,
+            })),
+          );
           break;
         case "책갈피":
           setFilteredIndependentBookstoreMarkers([]);
@@ -187,6 +211,14 @@ function Milestone() {
             "🔍 책갈피 마커만 표시:",
             readingSpotMarkers.length,
             "개",
+          );
+          console.log(
+            "🔍 책갈피 마커 상세:",
+            readingSpotMarkers.map((m) => ({
+              name: m.name,
+              lat: m.latitude,
+              lng: m.longitude,
+            })),
           );
           break;
         default:
@@ -264,6 +296,70 @@ function Milestone() {
         ? festivalMarkers.length
         : 0,
     });
+
+    // 필터링된 마커 상세 정보 로그 출력
+    console.log(
+      "🌟 필터링된 독립서점 마커:",
+      independentBookstoreMarkers.map((m) => ({
+        name: m.name,
+        lat: m.latitude,
+        lng: m.longitude,
+      })),
+    );
+    console.log(
+      "🌟 필터링된 북스테이 마커:",
+      bookStayMarkers.map((m) => ({
+        name: m.name,
+        lat: m.latitude,
+        lng: m.longitude,
+      })),
+    );
+    console.log(
+      "🌟 필터링된 북카페 마커:",
+      bookCafeMarkers.map((m) => ({
+        name: m.name,
+        lat: m.latitude,
+        lng: m.longitude,
+      })),
+    );
+    console.log(
+      "🌟 필터링된 공간책갈피 마커:",
+      readingSpotMarkers.map((m) => ({
+        name: m.name,
+        lat: m.latitude,
+        lng: m.longitude,
+      })),
+    );
+    console.log(
+      "🌟 필터링된 관광지 마커:",
+      selectedBottomFilters.includes("가볼만한 관광지")
+        ? touristSpotMarkers.map((m) => ({
+            name: m.name,
+            lat: m.latitude,
+            lng: m.longitude,
+          }))
+        : [],
+    );
+    console.log(
+      "🌟 필터링된 맛집 마커:",
+      selectedBottomFilters.includes("주변 맛집")
+        ? restaurantMarkers.map((m) => ({
+            name: m.name,
+            lat: m.latitude,
+            lng: m.longitude,
+          }))
+        : [],
+    );
+    console.log(
+      "🌟 필터링된 축제 마커:",
+      selectedBottomFilters.includes("뜨는 축제")
+        ? festivalMarkers.map((m) => ({
+            name: m.name,
+            lat: m.latitude,
+            lng: m.longitude,
+          }))
+        : [],
+    );
   }, [
     independentBookstoreMarkers,
     bookStayMarkers,
@@ -298,6 +394,12 @@ function Milestone() {
         }
 
         const { south, west, north, east } = viewport;
+        console.log("🔍 하단 필터 API 전송 좌표:", {
+          minLat: south,
+          minLng: west,
+          maxLat: north,
+          maxLng: east,
+        });
         const apiCalls = [];
         const apiNames = [];
 
@@ -397,7 +499,7 @@ function Milestone() {
     selectedBottomFilters,
   ]);
 
-  // 뷰포트 변경 시 관광지/맛집/축제 마커 뷰포트 기반 재조회 및 로그 출력 (하단 필터가 활성화된 경우만)
+  // 뷰포트 변경 시 모든 마커 뷰포트 기반 재조회
   useEffect(() => {
     if (!viewport || isInitialLoad.current) return; // 초기 로딩 중이면 건너뛰기
     const { south, west, north, east } = viewport;
@@ -411,9 +513,25 @@ function Milestone() {
           east,
           activeBottomFilters: selectedBottomFilters,
         });
+        console.log("🗺️ API 전송 좌표:", {
+          minLat: south,
+          minLng: west,
+          maxLat: north,
+          maxLng: east,
+        });
 
         const apiCalls = [];
         const apiNames = [];
+
+        // 상단 필터 마커들 (북스테이, 독립서점, 북카페, 책갈피) 뷰포트 기반 재조회
+        apiCalls.push(getBookstayMarkersAPI(south, west, north, east));
+        apiNames.push("북스테이");
+        apiCalls.push(getBookstoreMarkersAPI(south, west, north, east));
+        apiNames.push("독립서점");
+        apiCalls.push(getBookcafeMarkersAPI(south, west, north, east));
+        apiNames.push("북카페");
+        apiCalls.push(getReadingSpotMarkersAPI(south, west, north, east));
+        apiNames.push("책갈피");
 
         // 하단 필터가 활성화된 경우에만 해당 API 호출
         if (selectedBottomFilters.includes("가볼만한 관광지")) {
@@ -429,12 +547,7 @@ function Milestone() {
           apiNames.push("축제");
         }
 
-        if (apiCalls.length === 0) {
-          console.log("📊 활성화된 하단 필터가 없어서 마커 조회 건너뜀");
-          return;
-        }
-
-        // 활성화된 필터에 대해서만 API 병렬 호출
+        // 모든 API 병렬 호출
         const responses = await Promise.all(apiCalls);
 
         console.log(
@@ -445,6 +558,41 @@ function Milestone() {
         );
 
         let responseIndex = 0;
+
+        // 상단 필터 마커들 처리
+        const bookStayRes = responses[responseIndex++];
+        const nextBookStay = (bookStayRes || []).filter(
+          (m: any) => m.latitude && m.longitude,
+        );
+        setBookStayMarkers(nextBookStay);
+        console.log("🏨 북스테이 마커 (뷰포트):", nextBookStay.length, "개");
+
+        const bookstoreRes = responses[responseIndex++];
+        const nextBookstore = (bookstoreRes || []).filter(
+          (m: any) => m.latitude && m.longitude,
+        );
+        setIndependentBookstoreMarkers(nextBookstore);
+        console.log("📚 독립서점 마커 (뷰포트):", nextBookstore.length, "개");
+
+        const bookCafeRes = responses[responseIndex++];
+        const nextBookCafe = (bookCafeRes || []).filter(
+          (m: any) => m.latitude && m.longitude,
+        );
+        setBookCafeMarkers(nextBookCafe);
+        console.log("☕ 북카페 마커 (뷰포트):", nextBookCafe.length, "개");
+
+        const readingSpotRes = responses[responseIndex++];
+        const nextReadingSpot = (readingSpotRes || []).filter(
+          (m: any) => m.latitude && m.longitude,
+        );
+        setReadingSpotMarkers(nextReadingSpot);
+        console.log(
+          "📖 공간책갈피 마커 (뷰포트):",
+          nextReadingSpot.length,
+          "개",
+        );
+
+        // 하단 필터 마커들 처리
         if (selectedBottomFilters.includes("가볼만한 관광지")) {
           const tourRes = responses[responseIndex++];
           const nextTour = (tourRes || []).filter(
@@ -572,12 +720,21 @@ function Milestone() {
     try {
       console.log("📚 북카페, 북스테이, 독립서점 마커 데이터 가져오기 시작");
 
+      // 초기 로딩용 좌표 (전체 한국)
+      const initialCoords = {
+        minLat: 33.0,
+        minLng: 124.5,
+        maxLat: 38.6,
+        maxLng: 132.0,
+      };
+      console.log("📚 초기 로딩 API 전송 좌표:", initialCoords);
+
       // 독립서점 마커 가져오기 (뷰포트 기반으로 변경)
       const independentBookstoreResponse = await getBookstoreMarkersAPI(
-        33.0, // minLat
-        124.5, // minLng
-        38.6, // maxLat
-        132.0, // maxLng
+        initialCoords.minLat,
+        initialCoords.minLng,
+        initialCoords.maxLat,
+        initialCoords.maxLng,
       );
       //console.log("📚 독립서점 API 응답:", independentBookstoreResponse);
 
@@ -591,10 +748,10 @@ function Milestone() {
 
       // 북스테이 마커 가져오기 (뷰포트 기반으로 변경)
       const bookStayResponse = await getBookstayMarkersAPI(
-        33.0, // minLat
-        124.5, // minLng
-        38.6, // maxLat
-        132.0, // maxLng
+        initialCoords.minLat,
+        initialCoords.minLng,
+        initialCoords.maxLat,
+        initialCoords.maxLng,
       );
       //console.log("🏨 북스테이 API 응답:", bookStayResponse);
       //console.log("🏨 북스테이 API 응답 길이:", bookStayResponse?.length);
@@ -609,10 +766,10 @@ function Milestone() {
 
       // 북카페 마커 가져오기 (뷰포트 기반으로 변경)
       const bookCafeResponse = await getBookcafeMarkersAPI(
-        33.0, // minLat
-        124.5, // minLng
-        38.6, // maxLat
-        132.0, // maxLng
+        initialCoords.minLat,
+        initialCoords.minLng,
+        initialCoords.maxLat,
+        initialCoords.maxLng,
       );
       //console.log("☕ 북카페 API 응답:", bookCafeResponse);
       //console.log("☕ 북카페 API 응답 길이:", bookCafeResponse?.length);
@@ -627,10 +784,10 @@ function Milestone() {
 
       // 공간책갈피 마커 가져오기 (뷰포트 기반으로 변경)
       const readingSpotResponse = await getReadingSpotMarkersAPI(
-        33.0, // minLat
-        124.5, // minLng
-        38.6, // maxLat
-        132.0, // maxLng
+        initialCoords.minLat,
+        initialCoords.minLng,
+        initialCoords.maxLat,
+        initialCoords.maxLng,
       );
       //console.log("📚 공간책갈피 API 응답:", readingSpotResponse);
       //console.log("📚 공간책갈피 API 응답 길이:", readingSpotResponse?.length);
@@ -659,8 +816,41 @@ function Milestone() {
           filteredReadingSpotMarkers.length,
       );
 
-      // 초기에는 모든 마커 표시
-      showAllMarkers();
+      // 각 마커 타입별 상세 정보 로그 출력
+      console.log(
+        "📚 독립서점 마커 상세:",
+        filteredIndependentMarkers.map((m) => ({
+          name: m.name,
+          lat: m.latitude,
+          lng: m.longitude,
+        })),
+      );
+      console.log(
+        "🏨 북스테이 마커 상세:",
+        filteredBookStayMarkers.map((m) => ({
+          name: m.name,
+          lat: m.latitude,
+          lng: m.longitude,
+        })),
+      );
+      console.log(
+        "☕ 북카페 마커 상세:",
+        filteredBookCafeMarkers.map((m) => ({
+          name: m.name,
+          lat: m.latitude,
+          lng: m.longitude,
+        })),
+      );
+      console.log(
+        "📖 공간책갈피 마커 상세:",
+        filteredReadingSpotMarkers.map((m) => ({
+          name: m.name,
+          lat: m.latitude,
+          lng: m.longitude,
+        })),
+      );
+
+      // 마커 데이터 로드 완료 - useEffect에서 자동으로 표시됨
     } catch (error) {
       console.error("❌ 마커 데이터 가져오기 실패:", error);
     } finally {
@@ -682,6 +872,78 @@ function Milestone() {
           };
           console.log("🧭 전역 뷰포트 중심 복원:", center);
           setCurrentLocation(center);
+
+          // 뷰포트가 설정된 경우 즉시 마커 조회
+          console.log("🗺️ 뷰포트 기반 마커 즉시 조회 시작");
+          const { south, west, north, east } = viewport;
+
+          try {
+            const apiCalls = [];
+            const apiNames = [];
+
+            // 상단 필터 마커들 (북스테이, 독립서점, 북카페, 책갈피) 뷰포트 기반 조회
+            apiCalls.push(getBookstayMarkersAPI(south, west, north, east));
+            apiNames.push("북스테이");
+            apiCalls.push(getBookstoreMarkersAPI(south, west, north, east));
+            apiNames.push("독립서점");
+            apiCalls.push(getBookcafeMarkersAPI(south, west, north, east));
+            apiNames.push("북카페");
+            apiCalls.push(getReadingSpotMarkersAPI(south, west, north, east));
+            apiNames.push("책갈피");
+
+            const responses = await Promise.all(apiCalls);
+            let responseIndex = 0;
+
+            // 상단 필터 마커들 처리
+            const bookStayRes = responses[responseIndex++];
+            const nextBookStay = (bookStayRes || []).filter(
+              (m: any) => m.latitude && m.longitude,
+            );
+            setBookStayMarkers(nextBookStay);
+            console.log(
+              "🏨 북스테이 마커 (즉시 조회):",
+              nextBookStay.length,
+              "개",
+            );
+
+            const bookstoreRes = responses[responseIndex++];
+            const nextBookstore = (bookstoreRes || []).filter(
+              (m: any) => m.latitude && m.longitude,
+            );
+            setIndependentBookstoreMarkers(nextBookstore);
+            console.log(
+              "📚 독립서점 마커 (즉시 조회):",
+              nextBookstore.length,
+              "개",
+            );
+
+            const bookCafeRes = responses[responseIndex++];
+            const nextBookCafe = (bookCafeRes || []).filter(
+              (m: any) => m.latitude && m.longitude,
+            );
+            setBookCafeMarkers(nextBookCafe);
+            console.log(
+              "☕ 북카페 마커 (즉시 조회):",
+              nextBookCafe.length,
+              "개",
+            );
+
+            const readingSpotRes = responses[responseIndex++];
+            const nextReadingSpot = (readingSpotRes || []).filter(
+              (m: any) => m.latitude && m.longitude,
+            );
+            setReadingSpotMarkers(nextReadingSpot);
+            console.log(
+              "📖 공간책갈피 마커 (즉시 조회):",
+              nextReadingSpot.length,
+              "개",
+            );
+
+            console.log("🗺️ 뷰포트 기반 마커 즉시 조회 완료");
+          } catch (error) {
+            console.error("❌ 뷰포트 기반 마커 즉시 조회 실패:", error);
+          }
+
           // 전역 activeMarkerId가 있으면 복원
           if (activeMarkerId) {
             console.log("🎯 전역 activeMarkerId 복원:", activeMarkerId);
@@ -745,8 +1007,11 @@ function Milestone() {
 
     initializeCurrentLocation();
 
-    // 북카페, 북스테이, 독립서점 마커 데이터 가져오기
-    fetchBookstoreMarkers();
+    // 전역 뷰포트가 없는 경우에만 초기 마커 데이터 가져오기
+    if (!viewport || !viewport.center) {
+      // 북카페, 북스테이, 독립서점 마커 데이터 가져오기
+      fetchBookstoreMarkers();
+    }
   }, []);
 
   // 마커 데이터가 로드된 후 자동으로 모든 마커 표시

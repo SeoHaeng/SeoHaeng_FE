@@ -14,6 +14,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -75,6 +76,7 @@ export default function Preference() {
   const [isLoadingOtherUserTravels, setIsLoadingOtherUserTravels] =
     useState(false);
   const [lastVisitDaysAgo, setLastVisitDaysAgo] = useState<number | null>(null);
+  const [isLoadingLastVisit, setIsLoadingLastVisit] = useState(false);
 
   // 강원도 축제 조회
   useEffect(() => {
@@ -137,17 +139,41 @@ export default function Preference() {
   useEffect(() => {
     const fetchLastVisit = async () => {
       try {
+        setIsLoadingLastVisit(true);
         const response = await getLastVisitAPI();
         if (response.isSuccess) {
           setLastVisitDaysAgo(response.result.daysAgo);
         }
       } catch (error) {
         console.error("마지막 방문 날짜 조회 실패:", error);
+      } finally {
+        setIsLoadingLastVisit(false);
       }
     };
 
     fetchLastVisit();
   }, []);
+
+  // 전체 로딩 상태 확인
+  const isOverallLoading =
+    isLoadingFestivals ||
+    isLoadingTravelCourses ||
+    isLoadingOtherUserTravels ||
+    isLoadingLastVisit;
+
+  // 전체 로딩 중일 때 로딩 화면 표시
+  if (isOverallLoading) {
+    return (
+      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#302E2D" />
+          <Text style={styles.loadingText}>
+            취향 길목 데이터를 불러오는 중...
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
@@ -491,5 +517,17 @@ const styles = StyleSheet.create({
   },
   festivalCardContent: {
     gap: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#716C69",
+    fontFamily: "SUIT-500",
+    marginTop: 16,
   },
 });

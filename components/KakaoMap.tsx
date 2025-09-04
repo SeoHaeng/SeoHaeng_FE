@@ -89,8 +89,8 @@ const KakaoMap = ({
       if (onMessage) {
         onMessage(event);
       }
-    } catch (error) {
-      // console.error("🗺️ 메시지 처리 오류:", error);
+    } catch {
+      // console.error("🗺️ 메시지 처리 오류");
     }
   };
 
@@ -125,8 +125,8 @@ const KakaoMap = ({
           webViewRef.current?.postMessage(centerMessage);
           // console.log("🗺️ KakaoMap: 지도 중심점 강제 업데이트 메시지 전송");
         }, 50); // 50ms로 단축
-      } catch (error) {
-        // console.error("🗺️ KakaoMap: 강제 지도 이동 메시지 전송 실패:", error);
+      } catch {
+        // console.error("🗺️ KakaoMap: 강제 지도 이동 메시지 전송 실패");
       }
     } else {
       // console.log("🗺️ KakaoMap: moveToLocation 또는 webViewRef가 없음:", {
@@ -160,10 +160,9 @@ const KakaoMap = ({
       try {
         webViewRef.current.postMessage(message);
         // console.log("📍 KakaoMap: 선택된 장소 마커 업데이트 메시지 전송 성공");
-      } catch (error) {
+      } catch {
         // console.error(
-        //   "📍 KakaoMap: 선택된 장소 마커 업데이트 메시지 전송 실패:",
-        //   error,
+        //   "📍 KakaoMap: 선택된 장소 마커 업데이트 메시지 전송 실패"
         // );
       }
     }
@@ -249,10 +248,9 @@ const KakaoMap = ({
       try {
         webViewRef.current.postMessage(message);
         // console.log("🗺️ KakaoMap: 지도 중심점 업데이트 메시지 전송 성공");
-      } catch (error) {
+      } catch {
         // console.error(
-        //   "🗺️ KakaoMap: 지도 중심점 업데이트 메시지 전송 실패:",
-        //   error,
+        //   "🗺️ KakaoMap: 지도 중심점 업데이트 메시지 전송 실패"
         // );
       }
     }
@@ -312,8 +310,8 @@ const KakaoMap = ({
         } else {
           // console.error("🗺️ WebView ref is null");
         }
-      } catch (error) {
-        // console.error("🗺️ postMessage 실패:", error);
+      } catch {
+        // console.error("🗺️ postMessage 실패");
       }
 
       // console.log("🗺️ 마커 데이터 WebView 전송 완료:", {
@@ -407,6 +405,7 @@ const KakaoMap = ({
             if (typeof kakao !== 'undefined' && kakao.maps) {
               // console.log('Kakao Maps is available');
               var mapContainer = document.getElementById('map');
+              
               var mapOption = {
                 center: new kakao.maps.LatLng(${latitude}, ${longitude}),
                 level: 3

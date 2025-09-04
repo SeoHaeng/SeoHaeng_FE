@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
+  Linking,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -38,6 +39,54 @@ const AgreementScreen = () => {
       privacyPolicy: newValue,
       locationService: newValue,
     });
+  };
+
+  const handleTermsLink = async () => {
+    const url =
+      "https://dog-sweatpants-971.notion.site/25d1744decc880798dabc486a20344f4";
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert("오류", "링크를 열 수 없습니다.");
+      }
+    } catch (error) {
+      console.error("링크 열기 실패:", error);
+      Alert.alert("오류", "링크를 열 수 없습니다.");
+    }
+  };
+
+  const handlePrivacyLink = async () => {
+    const url =
+      "https://dog-sweatpants-971.notion.site/25d1744decc88082824ec60209d2dcf5";
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert("오류", "링크를 열 수 없습니다.");
+      }
+    } catch (error) {
+      console.error("링크 열기 실패:", error);
+      Alert.alert("오류", "링크를 열 수 없습니다.");
+    }
+  };
+
+  const handleLocationServiceLink = async () => {
+    const url =
+      "https://dog-sweatpants-971.notion.site/25d1744decc880529587ea2423c0b015?source=copy_link";
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert("오류", "링크를 열 수 없습니다.");
+      }
+    } catch (error) {
+      console.error("링크 열기 실패:", error);
+      Alert.alert("오류", "링크를 열 수 없습니다.");
+    }
   };
 
   const handleContinue = async () => {
@@ -100,7 +149,7 @@ const AgreementScreen = () => {
             )}
           </View>
           <Text style={styles.agreementText}>(필수) 이용약관에 동의</Text>
-          <TouchableOpacity style={styles.detailLink}>
+          <TouchableOpacity style={styles.detailLink} onPress={handleTermsLink}>
             <Text style={styles.detailLinkText}>자세히 보기 &gt;</Text>
           </TouchableOpacity>
         </TouchableOpacity>
@@ -122,7 +171,10 @@ const AgreementScreen = () => {
           <Text style={styles.agreementText}>
             (필수) 개인정보 수집 및 이용에 동의
           </Text>
-          <TouchableOpacity style={styles.detailLink}>
+          <TouchableOpacity
+            style={styles.detailLink}
+            onPress={handlePrivacyLink}
+          >
             <Text style={styles.detailLinkText}>자세히 보기 &gt;</Text>
           </TouchableOpacity>
         </TouchableOpacity>
@@ -144,7 +196,10 @@ const AgreementScreen = () => {
           <Text style={styles.agreementText}>
             (필수) 위치 기반 서비스 이용약관 동의
           </Text>
-          <TouchableOpacity style={styles.detailLink}>
+          <TouchableOpacity
+            style={styles.detailLink}
+            onPress={handleLocationServiceLink}
+          >
             <Text style={styles.detailLinkText}>자세히 보기 &gt;</Text>
           </TouchableOpacity>
         </TouchableOpacity>

@@ -5,12 +5,11 @@ export default {
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
-    scheme: "myapp",
+    scheme: "seohaeng",
     userInterfaceStyle: "automatic",
     splash: {
       image: "./assets/images/splash.png",
       resizeMode: "contain",
-      backgroundColor: "#ffffff",
     },
     assetBundlePatterns: ["**/*"],
     ios: {
@@ -27,7 +26,7 @@ export default {
       output: "static",
       favicon: "./assets/images/icon.png",
     },
-    plugins: ["expo-router"],
+    plugins: ["expo-router", "expo-web-browser"],
     experiments: {
       typedRoutes: true,
     },
@@ -38,7 +37,7 @@ export default {
       KAKAO_STATE: process.env.KAKAO_STATE,
       ANDROID_PACKAGE_NAME: process.env.ANDROID_PACKAGE_NAME,
       eas: {
-        projectId: process.env.EAS_PROJECT_ID,
+        projectId: "723ac499-62aa-4ede-8dd0-da0dcbf3b826",
       },
     },
   },

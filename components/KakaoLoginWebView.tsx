@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Modal,
   StyleSheet,
-  View,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
+  View,
 } from "react-native";
 import { WebView } from "react-native-webview";
 
@@ -72,7 +72,7 @@ export default function KakaoLoginWebView({
         <View style={styles.webViewContainer}>
           {isLoading && (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#FEE500" />
+              <ActivityIndicator size="large" color="#E60A34" />
               <Text style={styles.loadingText}>
                 카카오 로그인 페이지를 불러오는 중...
               </Text>

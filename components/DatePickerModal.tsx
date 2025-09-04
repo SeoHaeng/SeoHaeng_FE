@@ -1,5 +1,4 @@
 import BackIcon from "@/components/icons/BackIcon";
-import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
@@ -52,7 +51,6 @@ export default function DatePickerModal({
   onDateSelect,
 }: DatePickerModalProps) {
   const [selectedDate, setSelectedDate] = useState("");
-  const router = useRouter();
 
   const handleDateSelect = (date: any) => {
     setSelectedDate(date.dateString);

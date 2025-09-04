@@ -506,7 +506,7 @@ export default function Index() {
             {/* 로딩 중이거나 데이터가 없는 경우 */}
             {isLoadingRecommendations && (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="small" color="#302E2D" />
+                <ActivityIndicator size="small" color="#E60A34" />
                 <Text style={styles.loadingText}>
                   추천 장소를 불러오는 중...
                 </Text>

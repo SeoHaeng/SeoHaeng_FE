@@ -14,13 +14,13 @@ import {
   View,
 } from "react-native";
 
-interface Destination {
+interface DestinationItem {
   id: string;
   name: string;
   imageUrl: any;
 }
 
-const destinations: Destination[] = [
+const destinations: DestinationItem[] = [
   {
     id: "1",
     name: "강릉",
@@ -175,7 +175,7 @@ export default function Destination() {
     });
   };
 
-  const renderDestination = ({ item }: { item: Destination }) => {
+  const renderDestination = ({ item }: { item: DestinationItem }) => {
     const isSelected = selectedDestinations.includes(item.id);
 
     return (

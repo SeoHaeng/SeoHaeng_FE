@@ -185,7 +185,7 @@ export default function BookSearch() {
           {/* 로딩 중일 때 */}
           {isLoading && books.length === 0 && (
             <View style={styles.initialLoadingContainer}>
-              <ActivityIndicator size="large" color="#302E2D" />
+              <ActivityIndicator size="large" color="#E60A34" />
               <Text style={styles.initialLoadingText}>
                 도서를 검색하는 중...
               </Text>
@@ -239,7 +239,7 @@ export default function BookSearch() {
           {/* 무한 스크롤 로딩 인디케이터 */}
           {isLoading && books.length > 0 && (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="small" color="#302E2D" />
+              <ActivityIndicator size="small" color="#E60A34" />
               <Text style={styles.loadingText}>책을 불러오는 중...</Text>
             </View>
           )}

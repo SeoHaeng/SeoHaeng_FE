@@ -4,7 +4,6 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
-  Dimensions,
   Linking,
   SafeAreaView,
   ScrollView,
@@ -16,9 +15,8 @@ import {
   View,
 } from "react-native";
 import BackIcon from "../../components/icons/BackIcon";
+import { API_BASE_URL } from "../../config/api";
 import { checkNicknameAPI, checkUsernameAPI } from "../../types/api";
-
-const { width, height } = Dimensions.get("window");
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState("");
@@ -152,17 +150,14 @@ export default function SignUpScreen() {
     privacyPolicyAgreed: boolean;
   }) => {
     try {
-      const response = await fetch(
-        "http://15.164.250.185:8081/api/v1/users/auth/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            accept: "*/*",
-          },
-          body: JSON.stringify(userData),
+      const response = await fetch(`${API_BASE_URL}/users/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          accept: "*/*",
         },
-      );
+        body: JSON.stringify(userData),
+      });
 
       if (response.ok) {
         const result = await response.json();

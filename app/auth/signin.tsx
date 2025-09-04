@@ -4,7 +4,6 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Dimensions,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -20,12 +19,9 @@ import KakaoLoginWebView from "../../components/KakaoLoginWebView";
 import { kakaoLoginWithCodeAPI, loginAPI } from "../../types/api";
 import { saveToken } from "../../types/auth";
 
-const { width, height } = Dimensions.get("window");
-
 export default function SignInScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [autoLogin, setAutoLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -269,7 +265,7 @@ export default function SignInScreen() {
           disabled={!isLoginButtonActive || isLoading}
         >
           {isLoading ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color="#E60A34" />
           ) : (
             <Text
               style={[

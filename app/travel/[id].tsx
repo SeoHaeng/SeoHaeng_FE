@@ -320,7 +320,7 @@ export default function TravelDetail() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#262423" />
+          <ActivityIndicator size="large" color="#E60A34" />
           <Text style={styles.loadingText}>여행 정보를 불러오는 중...</Text>
         </View>
       </SafeAreaView>

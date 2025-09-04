@@ -441,7 +441,7 @@ export const getReviewListAPI = async (
 // 사용자 정보 조회 API
 export const getUserInfoAPI = async (): Promise<UserInfoResponse> => {
   console.log("getUserInfoAPI 시작");
-  console.log("API URL:", "http://15.164.250.185:8081/api/v1/users");
+  console.log("API URL:", `${API_BASE_URL}/users`);
 
   try {
     const headers = await getAuthHeadersAsync();
@@ -875,13 +875,10 @@ export const getFestivalsAPI = async (): Promise<FestivalResponse> => {
   try {
     const headers = await getAuthHeadersAsync();
 
-    const response = await fetch(
-      "http://15.164.250.185:8081/api/v1/places/festival",
-      {
-        method: "GET",
-        headers,
-      },
-    );
+    const response = await fetch(`${API_BASE_URL}/places/festival`, {
+      method: "GET",
+      headers,
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -906,7 +903,7 @@ export const getReadingSpotsAPI = async (
     const headers = await getAuthHeadersAsync();
 
     const response = await fetch(
-      `http://15.164.250.185:8081/api/v1/reading-spot?page=${page}&size=${size}&sort=${sort}`,
+      `${API_BASE_URL}/reading-spot?page=${page}&size=${size}&sort=${sort}`,
       {
         method: "GET",
         headers,
@@ -1053,7 +1050,7 @@ export const getStampsAPI = async (): Promise<StampsResponse> => {
   try {
     const headers = await getAuthHeadersAsync();
 
-    const response = await fetch("http://15.164.250.185:8081/api/v1/stamps", {
+    const response = await fetch(`${API_BASE_URL}/stamps`, {
       method: "GET",
       headers,
     });
@@ -1112,7 +1109,7 @@ export const getBookChallengeListAPI = async (
     const headers = await getAuthHeadersAsync();
 
     const response = await fetch(
-      `http://15.164.250.185:8081/api/v1/book-challenges?page=${page}&size=${size}&sort=${sort}`,
+      `${API_BASE_URL}/book-challenges?page=${page}&size=${size}&sort=${sort}`,
       {
         method: "GET",
         headers,
@@ -1200,7 +1197,7 @@ export const getBookChallengesAPI = async (
     const headers = await getAuthHeadersAsync();
 
     const response = await fetch(
-      `http://15.164.250.185:8081/api/v1/places/book-challenges?page=${page}&size=${size}`,
+      `${API_BASE_URL}/places/book-challenges?page=${page}&size=${size}`,
       {
         method: "GET",
         headers,
@@ -1225,13 +1222,10 @@ export const getLastVisitAPI = async (): Promise<LastVisitResponse> => {
   try {
     const headers = await getAuthHeadersAsync();
 
-    const response = await fetch(
-      "http://15.164.250.185:8081/api/v1/travel-courses/last-visit",
-      {
-        method: "GET",
-        headers,
-      },
-    );
+    const response = await fetch(`${API_BASE_URL}/travel-courses/last-visit`, {
+      method: "GET",
+      headers,
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -1247,7 +1241,7 @@ export const getLastVisitAPI = async (): Promise<LastVisitResponse> => {
           // 새 토큰으로 재시도
           const newHeaders = await getAuthHeadersAsync();
           const retryResponse = await fetch(
-            "http://15.164.250.185:8081/api/v1/travel-courses/last-visit",
+            `${API_BASE_URL}/travel-courses/last-visit`,
             {
               method: "GET",
               headers: newHeaders,
@@ -1279,13 +1273,10 @@ export const getTodayRecommendationsAPI =
     try {
       const headers = await getAuthHeadersAsync();
 
-      const response = await fetch(
-        "http://15.164.250.185:8081/api/v1/places/today",
-        {
-          method: "GET",
-          headers,
-        },
-      );
+      const response = await fetch(`${API_BASE_URL}/places/today`, {
+        method: "GET",
+        headers,
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -1306,16 +1297,13 @@ export const reissueTokenAPI = async (
   refreshToken: string,
 ): Promise<TokenReissueResponse> => {
   try {
-    const response = await fetch(
-      "http://15.164.250.185:8081/api/v1/users/reissue",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${refreshToken}`,
-          "Content-Type": "application/json",
-        },
+    const response = await fetch(`${API_BASE_URL}/users/reissue`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+        "Content-Type": "application/json",
       },
-    );
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -1361,7 +1349,7 @@ export const getTravelCourseDetailAPI = async (
     const headers = await getAuthHeadersAsync();
 
     const response = await fetch(
-      `http://15.164.250.185:8081/api/v1/travel-courses/${travelCourseId}`,
+      `${API_BASE_URL}/travel-courses/${travelCourseId}`,
       {
         method: "GET",
         headers,
@@ -1387,13 +1375,10 @@ export const getMyTravelCoursesAPI =
     try {
       const headers = await getAuthHeadersAsync();
 
-      const response = await fetch(
-        "http://15.164.250.185:8081/api/v1/travel-courses/mine",
-        {
-          method: "GET",
-          headers,
-        },
-      );
+      const response = await fetch(`${API_BASE_URL}/travel-courses/mine`, {
+        method: "GET",
+        headers,
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -1418,7 +1403,7 @@ export const searchBooksAPI = async (
     const headers = await getAuthHeadersAsync();
 
     const response = await fetch(
-      `http://15.164.250.185:8081/api/v1/common/books?query=${encodeURIComponent(query)}&sort=${sort}&page=${page}`,
+      `${API_BASE_URL}/common/books?query=${encodeURIComponent(query)}&sort=${sort}&page=${page}`,
       {
         method: "GET",
         headers,
@@ -1486,7 +1471,7 @@ export const updateProfileAPI = async (
 
     console.log("updateProfileAPI FormData:", formData);
 
-    const response = await fetch("http://15.164.250.185:8081/api/v1/users", {
+    const response = await fetch(`${API_BASE_URL}/users`, {
       method: "PATCH",
       headers: {
         ...headers,
@@ -1525,7 +1510,7 @@ export const checkUsernameAPI = async (
 
   try {
     const response = await fetch(
-      `http://15.164.250.185:8081/api/v1/users/auth/check-username?username=${encodeURIComponent(
+      `${API_BASE_URL}/users/auth/check-username?username=${encodeURIComponent(
         username,
       )}`,
       {
@@ -1566,7 +1551,7 @@ export const checkNicknameAPI = async (
 
   try {
     const response = await fetch(
-      `http://15.164.250.185:8081/api/v1/users/auth/check-nickname?nickname=${encodeURIComponent(
+      `${API_BASE_URL}/users/auth/check-nickname?nickname=${encodeURIComponent(
         nickname,
       )}`,
       {
@@ -1898,7 +1883,7 @@ export const deleteUserAPI = async (): Promise<{
   try {
     const headers = await getAuthHeadersAsync();
 
-    const response = await fetch("http://15.164.250.185:8081/api/v1/users", {
+    const response = await fetch(`${API_BASE_URL}/users`, {
       method: "DELETE",
       headers,
     });
@@ -2008,7 +1993,7 @@ export const kakaoLoginWithCodeAPI = async (
 }> => {
   try {
     const response = await fetch(
-      `http://15.164.250.185:8081/api/v1/users/auth/kakao?code=${code}`,
+      `${API_BASE_URL}/users/auth/kakao?code=${code}`,
       {
         method: "GET",
         headers: {

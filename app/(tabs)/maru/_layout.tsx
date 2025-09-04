@@ -1,4 +1,5 @@
 // app/maru/_layout.tsx
+import Foundation from "@expo/vector-icons/Foundation";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -9,40 +10,50 @@ function CustomHeader() {
 
   return (
     <View style={styles.header}>
-      <TouchableOpacity
-        style={styles.tab}
-        onPress={() => router.push("/maru/bookmark")}
-      >
-        <Text
-          style={[
-            styles.tabText,
-            (pathname === "/maru/bookmark" || pathname === "/maru") &&
-              styles.activeTabText,
-          ]}
+      <View style={styles.tabsContainer}>
+        <TouchableOpacity
+          style={styles.tab}
+          onPress={() => router.push("/maru/bookmark")}
         >
-          공간책갈피
-        </Text>
-        {(pathname === "/maru/bookmark" || pathname === "/maru") && (
-          <View style={styles.activeIndicator} />
-        )}
-      </TouchableOpacity>
+          <Text
+            style={[
+              styles.tabText,
+              (pathname === "/maru/bookmark" || pathname === "/maru") &&
+                styles.activeTabText,
+            ]}
+          >
+            공간책갈피
+          </Text>
+          {(pathname === "/maru/bookmark" || pathname === "/maru") && (
+            <View style={styles.activeIndicator} />
+          )}
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.tab}
-        onPress={() => router.push("/maru/challenge")}
-      >
-        <Text
-          style={[
-            styles.tabText,
-            pathname === "/maru/challenge" && styles.activeTabText,
-          ]}
+        <TouchableOpacity
+          style={styles.tab}
+          onPress={() => router.push("/maru/challenge")}
         >
-          북챌린지
-        </Text>
-        {pathname === "/maru/challenge" && (
-          <View style={styles.activeIndicator} />
-        )}
-      </TouchableOpacity>
+          <Text
+            style={[
+              styles.tabText,
+              pathname === "/maru/challenge" && styles.activeTabText,
+            ]}
+          >
+            북챌린지
+          </Text>
+          {pathname === "/maru/challenge" && (
+            <View style={styles.activeIndicator} />
+          )}
+        </TouchableOpacity>
+      </View>
+      {pathname === "/maru/challenge" && (
+        <TouchableOpacity
+          style={styles.infoButton}
+          onPress={() => router.push("/maru/challengeInfo")}
+        >
+          <Foundation name="info" size={32} color="#716C69" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -62,6 +73,7 @@ export default function MaruLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="bookmark" />
         <Stack.Screen name="challenge" />
+        <Stack.Screen name="challengeInfo" />
       </Stack>
     </View>
   );
@@ -71,9 +83,14 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: "#FFFFFF",
     paddingTop: 20,
     paddingHorizontal: 10,
+  },
+  tabsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   tab: {
     position: "relative",
@@ -97,5 +114,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#000000",
     alignSelf: "center",
     borderRadius: 5,
+  },
+  infoButton: {
+    marginRight: 5,
+    padding: 5,
   },
 });

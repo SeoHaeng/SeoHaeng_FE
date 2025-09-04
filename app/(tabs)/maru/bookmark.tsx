@@ -2,7 +2,14 @@ import BookmarkCard from "@/components/BookmarkCard";
 import { getReadingSpotsAPI, ReadingSpot } from "@/types/api";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function Bookmark() {
   const router = useRouter();
@@ -30,6 +37,28 @@ export default function Bookmark() {
 
     fetchBookmarks();
   }, [sortType]);
+
+  // 로딩 중일 때
+  if (isLoading && scrapList.length === 0) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#302E2D" />
+        <Text style={styles.loadingText}>공간 책갈피를 불러오는 중...</Text>
+      </View>
+    );
+  }
+
+  // 데이터가 없을 때
+  if (!isLoading && scrapList.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyTitle}>공간 책갈피</Text>
+        <Text style={styles.emptySubtext}>
+          아직 등록된 공간 책갈피가 없습니다.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -158,3 +187,35 @@ export default function Bookmark() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#716C69",
+    fontFamily: "SUIT-500",
+    marginTop: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontFamily: "SUIT-700",
+    color: "#333333",
+    marginBottom: 10,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#666666",
+  },
+});

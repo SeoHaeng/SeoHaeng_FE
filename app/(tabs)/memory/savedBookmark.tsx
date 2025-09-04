@@ -83,7 +83,7 @@ export default function SavedBookmark() {
     return (
       <View style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#302E2D" />
+          <ActivityIndicator size="large" color="#E60A34" />
           <Text style={styles.loadingText}>저장된 책갈피를 불러오는 중...</Text>
         </View>
       </View>
@@ -108,7 +108,7 @@ export default function SavedBookmark() {
     if (!isLoadingMore) return null;
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" color="#302E2D" />
+        <ActivityIndicator size="small" color="#E60A34" />
         <Text style={styles.footerText}>더 많은 책갈피를 불러오는 중...</Text>
       </View>
     );
@@ -195,7 +195,7 @@ export default function SavedBookmark() {
             disabled={isLoadingMore}
           >
             {isLoadingMore ? (
-              <ActivityIndicator size="small" color="#302E2D" />
+              <ActivityIndicator size="small" color="#E60A34" />
             ) : (
               <Text style={styles.loadMoreText}>더 보기</Text>
             )}

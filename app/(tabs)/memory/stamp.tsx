@@ -90,7 +90,7 @@ export default function StampView() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#262423" />
+        <ActivityIndicator size="large" color="#E60A34" />
         <Text style={styles.loadingText}>스탬프 데이터를 불러오는 중...</Text>
       </View>
     );

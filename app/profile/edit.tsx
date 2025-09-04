@@ -1,10 +1,11 @@
 import BackIcon from "@/components/icons/BackIcon";
 import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
+import { API_BASE_URL } from "@/config/api";
 import {
-  checkNicknameDuplicateAPI,
-  checkUsernameDuplicateAPI,
-  updateProfileAPI,
+    checkNicknameDuplicateAPI,
+    checkUsernameDuplicateAPI,
+    updateProfileAPI,
 } from "@/types/api";
 import { getUserInfo, setUserInfo } from "@/types/globalState";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -12,14 +13,14 @@ import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  Alert,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -98,7 +99,7 @@ export default function ProfileEdit() {
         console.log("📝 요청 닉네임:", nickname.trim());
         console.log(
           "🔗 API URL:",
-          `http://15.164.250.185:8081/api/v1/users/auth/check-nickname`,
+          `${API_BASE_URL}/users/auth/check-nickname`,
         );
 
         const response = await checkNicknameDuplicateAPI(nickname.trim());

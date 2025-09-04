@@ -166,7 +166,7 @@ export default function Preference() {
     return (
       <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#302E2D" />
+          <ActivityIndicator size="large" color="#E60A34" />
           <Text style={styles.loadingText}>
             취향 길목 데이터를 불러오는 중...
           </Text>

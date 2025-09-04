@@ -1,7 +1,7 @@
 import EditTripNameModal from "@/components/EditTripNameModal";
 import BackIcon from "@/components/icons/BackIcon";
 import ItineraryMap, { ItineraryMapRef } from "@/components/ItineraryMap";
-import { createTravelCourseAPI, getPlaceDetailAPI } from "@/types/api";
+import { createTravelCourseAPI } from "@/types/api";
 import { useGlobalState } from "@/types/globalState";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -105,102 +105,6 @@ export default function Itinerary() {
         return "행정기관";
       default:
         return placeType || "장소";
-    }
-  };
-
-  // 전역 상태의 장소 정보를 실제 API로 가져와서 업데이트하는 함수
-  const loadPlaceDetailsFromGlobalState = async () => {
-    try {
-      console.log("🚀 loadPlaceDetailsFromGlobalState 함수 시작");
-      console.log("📊 현재 travelScheduleList:", travelScheduleList);
-
-      // 전역 상태에서 실제 장소가 있는 항목들만 필터링
-      const realPlaces = travelScheduleList.filter(
-        (item) => item.placeId !== 0,
-      );
-
-      console.log("🎯 실제 장소가 있는 항목들:", realPlaces);
-
-      if (realPlaces.length === 0) {
-        console.log("⚠️ 실제 장소가 없음 - 함수 종료");
-        return;
-      }
-
-      console.log(
-        "🔍 전역 상태에서 장소 상세 정보 로드 시작:",
-        realPlaces.length,
-        "개",
-      );
-
-      // 각 장소의 상세 정보를 API로 가져오기
-      for (const place of realPlaces) {
-        try {
-          const placeDetail = await getPlaceDetailAPI(place.placeId);
-
-          if (placeDetail.isSuccess && placeDetail.result) {
-            // tripData의 해당 날짜에 장소 정보 업데이트
-            setTripData((prev) => {
-              const newDays = [...prev.days];
-
-              // 날짜를 MM.DD 형식으로 변환
-              const formatDate = (dateStr: string) => {
-                const date = new Date(dateStr);
-                return `${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
-              };
-
-              const targetDate = formatDate(place.day);
-              const dayIndex = newDays.findIndex(
-                (day) => day.date === targetDate,
-              );
-
-              if (dayIndex !== -1) {
-                // 해당 날짜에 장소가 이미 있는지 확인
-                const existingSpotIndex = newDays[dayIndex].spots.findIndex(
-                  (spot) => spot.placeId === place.placeId,
-                );
-
-                if (existingSpotIndex === -1) {
-                  // 새로운 장소 추가
-                  const newSpot = {
-                    id: generateUniqueId(place.placeId, place.day),
-                    name: placeDetail.result.name,
-                    time: "시간 미정",
-                    placeId: place.placeId,
-                    latitude: placeDetail.result.latitude || 0,
-                    longitude: placeDetail.result.longitude || 0,
-                    placeType: placeDetail.result.placeType,
-                  };
-
-                  newDays[dayIndex] = {
-                    ...newDays[dayIndex],
-                    spots: [...newDays[dayIndex].spots, newSpot],
-                  };
-
-                  console.log("✅ 장소 상세 정보 로드 완료:", {
-                    day: targetDate,
-                    placeName: placeDetail.result.name,
-                    placeId: place.placeId,
-                    placeType: placeDetail.result.placeType,
-                  });
-                }
-              }
-
-              return { ...prev, days: newDays };
-            });
-          }
-        } catch (error) {
-          console.error(
-            "❌ 장소 상세 정보 로드 실패 (placeId:",
-            place.placeId,
-            "):",
-            error,
-          );
-        }
-      }
-
-      console.log("🎯 전역 상태 장소 상세 정보 로드 완료");
-    } catch (error) {
-      console.error("❌ 전역 상태 장소 정보 로드 중 오류:", error);
     }
   };
 
@@ -785,8 +689,6 @@ export default function Itinerary() {
   };
 
   const renderDayCard = (day: DayPlan, dayIndex: number) => {
-    const isSelected = dayIndex === selectedDay;
-
     return (
       <View key={`daycard-${day.date}-${dayIndex}`} style={styles.dayCard}>
         {day.spots.length === 0 ? (
@@ -1272,6 +1174,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     flexDirection: "row",
     paddingRight: 100,
+    marginVertical: 10,
   },
   timeline: {
     flexDirection: "row",

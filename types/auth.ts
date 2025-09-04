@@ -26,6 +26,11 @@ export const saveToken = async (
       throw new Error("유효하지 않은 리프레시 토큰입니다.");
     }
 
+    // userId 유효성 검증
+    if (!userId || typeof userId !== "number") {
+      throw new Error("유효하지 않은 사용자 ID입니다.");
+    }
+
     // AsyncStorage에 저장
     await AsyncStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
     await AsyncStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
@@ -145,12 +150,23 @@ export const reissueToken = async (): Promise<boolean> => {
     const response = await reissueTokenAPI(refreshToken);
 
     if (response.isSuccess && response.result) {
+      // 응답 데이터 유효성 검증
+      const {
+        accessToken,
+        refreshToken: newRefreshToken,
+        userId,
+      } = response.result;
+
+      if (!accessToken || !newRefreshToken || !userId) {
+        console.error(
+          "토큰 재발급 응답 데이터가 유효하지 않습니다:",
+          response.result,
+        );
+        return false;
+      }
+
       // 새로운 토큰 저장
-      await saveToken(
-        response.result.accessToken,
-        response.result.refreshToken,
-        response.result.userId,
-      );
+      await saveToken(accessToken, newRefreshToken, userId);
       console.log("토큰 재발급 성공");
       return true;
     } else {

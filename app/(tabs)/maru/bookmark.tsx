@@ -42,7 +42,7 @@ export default function Bookmark() {
   if (isLoading && scrapList.length === 0) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#302E2D" />
+        <ActivityIndicator size="large" color="#E60A34" />
         <Text style={styles.loadingText}>공간 책갈피를 불러오는 중...</Text>
       </View>
     );

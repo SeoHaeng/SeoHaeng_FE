@@ -1101,7 +1101,18 @@ const KakaoMap = ({
                   });
                 }
                 
-                // console.log('🗺️ WebView: 마커 업데이트 완료, 총', window.existingMarkers.length, '개');
+                console.log('🗺️ WebView: 마커 업데이트 완료, 총', window.existingMarkers.length, '개');
+      
+      // 마커 상세 정보 로그 출력
+      if (window.existingMarkers && window.existingMarkers.length > 0) {
+        console.log('🗺️ WebView: 마커 상세 정보:', window.existingMarkers.map((marker, index) => ({
+          index: index,
+          title: marker.getTitle(),
+          position: marker.getPosition().toString(),
+          placeId: marker.placeId,
+          markerId: marker.markerId
+        })));
+      }
               } else {
                 // console.log('🗺️ WebView: 메시지 타입 미지원 또는 map 객체 없음:', {
                 //   messageType: data.type,

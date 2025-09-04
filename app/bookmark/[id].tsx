@@ -11,6 +11,7 @@ import {
   toggleReadingSpotLikeAPI,
   toggleReadingSpotScrapAPI,
 } from "@/types/api";
+import { useGlobalState } from "@/types/globalState";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -34,6 +35,7 @@ export default function BookmarkDetail() {
   const { id, from } = useLocalSearchParams();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { setViewport } = useGlobalState();
   const [fromScreen, setFromScreen] = useState<string>("");
   const [bookmarkDetail, setBookmarkDetail] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -407,7 +409,28 @@ export default function BookmarkDetail() {
 
           {/* 상호작용 및 메타데이터 */}
           <View style={styles.interactionSection}>
-            <TouchableOpacity style={styles.bookmarkLocation}>
+            <TouchableOpacity
+              style={styles.bookmarkLocation}
+              onPress={() => {
+                if (bookmarkDetail.latitude && bookmarkDetail.longitude) {
+                  // 전역 뷰포트에 책갈피 위치 저장
+                  setViewport({
+                    north: bookmarkDetail.latitude + 0.01,
+                    south: bookmarkDetail.latitude - 0.01,
+                    east: bookmarkDetail.longitude + 0.01,
+                    west: bookmarkDetail.longitude - 0.01,
+                    center: {
+                      lat: bookmarkDetail.latitude,
+                      lng: bookmarkDetail.longitude,
+                    },
+                    zoom: 3,
+                  });
+
+                  // 이정표 화면으로 이동
+                  router.push("/(tabs)/milestone");
+                }
+              }}
+            >
               <Text style={styles.bookmarkLocationText}>
                 이 책갈피 위치 &gt;
               </Text>

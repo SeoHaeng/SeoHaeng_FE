@@ -12,6 +12,7 @@ import {
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -193,17 +194,27 @@ export default function Challenge() {
     fetchChallenges();
   }, []);
 
+  // 전체 로딩 상태 확인
+  const isOverallLoading =
+    isLoadingChallengeStatus || isLoadingBookstores || isLoadingChallenges;
+
+  // 전체 로딩 중일 때 로딩 화면 표시
+  if (isOverallLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#262423" />
+        <Text style={styles.loadingText}>북챌린지 데이터를 불러오는 중...</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView
       style={styles.mainScroll}
       contentContainerStyle={styles.mainContainer}
       showsVerticalScrollIndicator={false}
     >
-      {isLoadingChallengeStatus ? (
-        <View style={styles.emptyBookContainer}>
-          <Text style={styles.emptyBookText}>북챌린지 상태 확인 중...</Text>
-        </View>
-      ) : hasInProgressChallenge ? (
+      {hasInProgressChallenge ? (
         <TouchableOpacity
           style={styles.emptyBookContainer}
           onPress={() =>
@@ -474,5 +485,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 20,
     height: 234,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#716C69",
+    marginTop: 16,
+    fontFamily: "SUIT-500",
   },
 });

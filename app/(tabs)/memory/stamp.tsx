@@ -1,6 +1,12 @@
 import { getStampsAPI } from "@/types/api";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import StampBoard from "./stampBoard";
 
 export default function StampView() {
@@ -80,6 +86,16 @@ export default function StampView() {
   const collectedCount = stamps.filter((stamp) => stamp.collected).length;
   const totalCount = stamps.length;
 
+  // 로딩 중일 때 로딩 화면 표시
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#262423" />
+        <Text style={styles.loadingText}>스탬프 데이터를 불러오는 중...</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
       {/* 진행률 */}
@@ -144,6 +160,18 @@ const styles = StyleSheet.create({
     color: "#716C69",
     lineHeight: 20,
     marginBottom: 25,
+    fontFamily: "SUIT-500",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 17,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#716C69",
+    marginTop: 16,
     fontFamily: "SUIT-500",
   },
 });

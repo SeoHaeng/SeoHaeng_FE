@@ -82,7 +82,8 @@ export default function SignUpScreen() {
 
   // 이용약관 보기 링크 처리
   const handleTermsLink = async () => {
-    const url = "https://www.notion.so/25d1744decc880798dabc486a20344f4";
+    const url =
+      "https://dog-sweatpants-971.notion.site/25d1744decc880798dabc486a20344f4";
 
     try {
       // URL이 열릴 수 있는지 확인
@@ -102,7 +103,8 @@ export default function SignUpScreen() {
 
   // 개인정보 수집 및 이용 보기 링크 처리
   const handlePrivacyLink = async () => {
-    const url = "https://www.notion.so/25d1744decc88082824ec60209d2dcf5";
+    const url =
+      "https://dog-sweatpants-971.notion.site/25d1744decc88082824ec60209d2dcf5";
 
     try {
       // URL이 열릴 수 있는지 확인
@@ -122,7 +124,8 @@ export default function SignUpScreen() {
 
   // 위치 기반 서비스 이용약관 보기 링크 처리
   const handleLocationServiceLink = async () => {
-    const url = "https://www.notion.so/25d1744decc880529587ea2423c0b015";
+    const url =
+      "https://dog-sweatpants-971.notion.site/25d1744decc880529587ea2423c0b015?source=copy_link";
 
     try {
       // URL이 열릴 수 있는지 확인

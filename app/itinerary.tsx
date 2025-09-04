@@ -65,46 +65,12 @@ export default function Itinerary() {
     switch (placeType.toUpperCase()) {
       case "BOOKSTORE":
         return "독립서점";
-      case "BOOKCAFE":
-        return "북카페";
-      case "BOOKSTAY":
-        return "북스테이";
       case "FESTIVAL":
         return "축제";
       case "TOURIST_SPOT":
         return "관광명소";
       case "RESTAURANT":
         return "식당/카페";
-      case "CAFE":
-        return "카페";
-      case "HOTEL":
-        return "숙박";
-      case "MUSEUM":
-        return "박물관";
-      case "PARK":
-        return "공원";
-      case "SHOPPING":
-        return "쇼핑";
-      case "CULTURE":
-        return "문화시설";
-      case "NATURE":
-        return "자연경관";
-      case "HISTORIC":
-        return "역사문화";
-      case "ENTERTAINMENT":
-        return "엔터테인먼트";
-      case "SPORTS":
-        return "스포츠";
-      case "TRANSPORT":
-        return "교통";
-      case "HEALTH":
-        return "건강/의료";
-      case "EDUCATION":
-        return "교육";
-      case "GOVERNMENT":
-        return "행정기관";
-      default:
-        return placeType || "장소";
     }
   };
 
@@ -677,7 +643,11 @@ export default function Itinerary() {
                   <View
                     style={[
                       styles.timelineConnector,
-                      { width: (tripData.days.length - dayIndex - 1) * 350 },
+                      {
+                        width:
+                          (tripData.days.length - dayIndex) * 226 +
+                          (tripData.days.length - dayIndex - 1) * 10,
+                      },
                     ]}
                   />
                 )}

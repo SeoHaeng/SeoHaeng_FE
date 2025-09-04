@@ -25,7 +25,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
 import * as Location from "expo-location";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   StyleSheet,
@@ -84,6 +84,7 @@ function Milestone() {
   } | null>(null);
 
   const [isLoadingLocation, setIsLoadingLocation] = useState(false); // 위치 로딩 상태
+  const isInitialLoad = useRef(true); // 초기 로딩 여부 추적
 
   // 북카페, 북스테이, 독립서점, 공간책갈피 마커 데이터 상태
   const [independentBookstoreMarkers, setIndependentBookstoreMarkers] =
@@ -131,88 +132,106 @@ function Milestone() {
   // } | null>(null);
 
   // 필터 타입에 따라 마커 필터링하는 함수 (상단 필터용)
-  const filterMarkersByType = (filterType: string) => {
-    console.log("🔍 상단 마커 필터링 시작:", filterType);
+  const filterMarkersByType = useCallback(
+    (filterType: string) => {
+      console.log("🔍 상단 마커 필터링 시작:", filterType);
 
-    switch (filterType) {
-      case "독립서점":
-        setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
-        setFilteredBookStayMarkers([]);
-        setFilteredBookCafeMarkers([]);
-        setFilteredReadingSpotMarkers([]);
-        // 하단 필터 마커들도 숨김
-        setFilteredTouristSpotMarkers([]);
-        setFilteredRestaurantMarkers([]);
-        setFilteredFestivalMarkers([]);
-        console.log(
-          "🔍 독립서점 마커만 표시:",
-          independentBookstoreMarkers.length,
-          "개",
-        );
-        break;
-      case "북스테이":
-        setFilteredIndependentBookstoreMarkers([]);
-        setFilteredBookStayMarkers(bookStayMarkers);
-        setFilteredBookCafeMarkers([]);
-        setFilteredReadingSpotMarkers([]);
-        // 하단 필터 마커들도 숨김
-        setFilteredTouristSpotMarkers([]);
-        setFilteredRestaurantMarkers([]);
-        setFilteredFestivalMarkers([]);
-        console.log("🔍 북스테이 마커만 표시:", bookStayMarkers.length, "개");
-        break;
-      case "북카페":
-        setFilteredIndependentBookstoreMarkers([]);
-        setFilteredBookStayMarkers([]);
-        setFilteredBookCafeMarkers(bookCafeMarkers);
-        setFilteredReadingSpotMarkers([]);
-        // 하단 필터 마커들도 숨김
-        setFilteredTouristSpotMarkers([]);
-        setFilteredRestaurantMarkers([]);
-        setFilteredFestivalMarkers([]);
-        console.log("🔍 북카페 마커만 표시:", bookCafeMarkers.length, "개");
-        break;
-      case "책갈피":
-        setFilteredIndependentBookstoreMarkers([]);
-        setFilteredBookStayMarkers([]);
-        setFilteredBookCafeMarkers([]);
-        setFilteredReadingSpotMarkers(readingSpotMarkers);
-        // 하단 필터 마커들도 숨김
-        setFilteredTouristSpotMarkers([]);
-        setFilteredRestaurantMarkers([]);
-        setFilteredFestivalMarkers([]);
-        console.log("🔍 책갈피 마커만 표시:", readingSpotMarkers.length, "개");
-        break;
-      default:
-        // 기본값 - 상단 필터 마커들만 표시, 하단 필터는 별도 관리
-        setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
-        setFilteredBookStayMarkers(bookStayMarkers);
-        setFilteredBookCafeMarkers(bookCafeMarkers);
-        setFilteredReadingSpotMarkers(readingSpotMarkers);
-        // 하단 필터 마커들은 하단 필터 상태에 따라 결정
-        setFilteredTouristSpotMarkers(
-          selectedBottomFilters.includes("가볼만한 관광지")
-            ? touristSpotMarkers
-            : [],
-        );
-        setFilteredRestaurantMarkers(
-          selectedBottomFilters.includes("주변 맛집") ? restaurantMarkers : [],
-        );
-        setFilteredFestivalMarkers(
-          selectedBottomFilters.includes("뜨는 축제") ? festivalMarkers : [],
-        );
-        console.log("🔍 상단 마커 표시:", {
-          독립서점: independentBookstoreMarkers.length,
-          북스테이: bookStayMarkers.length,
-          북카페: bookCafeMarkers.length,
-          책갈피: readingSpotMarkers.length,
-        });
-        break;
-    }
-  };
+      switch (filterType) {
+        case "독립서점":
+          setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
+          setFilteredBookStayMarkers([]);
+          setFilteredBookCafeMarkers([]);
+          setFilteredReadingSpotMarkers([]);
+          // 하단 필터 마커들도 숨김
+          setFilteredTouristSpotMarkers([]);
+          setFilteredRestaurantMarkers([]);
+          setFilteredFestivalMarkers([]);
+          console.log(
+            "🔍 독립서점 마커만 표시:",
+            independentBookstoreMarkers.length,
+            "개",
+          );
+          break;
+        case "북스테이":
+          setFilteredIndependentBookstoreMarkers([]);
+          setFilteredBookStayMarkers(bookStayMarkers);
+          setFilteredBookCafeMarkers([]);
+          setFilteredReadingSpotMarkers([]);
+          // 하단 필터 마커들도 숨김
+          setFilteredTouristSpotMarkers([]);
+          setFilteredRestaurantMarkers([]);
+          setFilteredFestivalMarkers([]);
+          console.log("🔍 북스테이 마커만 표시:", bookStayMarkers.length, "개");
+          break;
+        case "북카페":
+          setFilteredIndependentBookstoreMarkers([]);
+          setFilteredBookStayMarkers([]);
+          setFilteredBookCafeMarkers(bookCafeMarkers);
+          setFilteredReadingSpotMarkers([]);
+          // 하단 필터 마커들도 숨김
+          setFilteredTouristSpotMarkers([]);
+          setFilteredRestaurantMarkers([]);
+          setFilteredFestivalMarkers([]);
+          console.log("🔍 북카페 마커만 표시:", bookCafeMarkers.length, "개");
+          break;
+        case "책갈피":
+          setFilteredIndependentBookstoreMarkers([]);
+          setFilteredBookStayMarkers([]);
+          setFilteredBookCafeMarkers([]);
+          setFilteredReadingSpotMarkers(readingSpotMarkers);
+          // 하단 필터 마커들도 숨김
+          setFilteredTouristSpotMarkers([]);
+          setFilteredRestaurantMarkers([]);
+          setFilteredFestivalMarkers([]);
+          console.log(
+            "🔍 책갈피 마커만 표시:",
+            readingSpotMarkers.length,
+            "개",
+          );
+          break;
+        default:
+          // 기본값 - 상단 필터 마커들만 표시, 하단 필터는 별도 관리
+          setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
+          setFilteredBookStayMarkers(bookStayMarkers);
+          setFilteredBookCafeMarkers(bookCafeMarkers);
+          setFilteredReadingSpotMarkers(readingSpotMarkers);
+          // 하단 필터 마커들은 하단 필터 상태에 따라 결정
+          setFilteredTouristSpotMarkers(
+            selectedBottomFilters.includes("가볼만한 관광지")
+              ? touristSpotMarkers
+              : [],
+          );
+          setFilteredRestaurantMarkers(
+            selectedBottomFilters.includes("주변 맛집")
+              ? restaurantMarkers
+              : [],
+          );
+          setFilteredFestivalMarkers(
+            selectedBottomFilters.includes("뜨는 축제") ? festivalMarkers : [],
+          );
+          console.log("🔍 상단 마커 표시:", {
+            독립서점: independentBookstoreMarkers.length,
+            북스테이: bookStayMarkers.length,
+            북카페: bookCafeMarkers.length,
+            책갈피: readingSpotMarkers.length,
+          });
+          break;
+      }
+    },
+    [
+      independentBookstoreMarkers,
+      bookStayMarkers,
+      bookCafeMarkers,
+      readingSpotMarkers,
+      touristSpotMarkers,
+      restaurantMarkers,
+      festivalMarkers,
+      selectedBottomFilters,
+    ],
+  );
 
   // 모든 마커를 표시하는 함수 (초기 로딩 시 사용 - 관광지/맛집/축제는 하단 필터 활성화 시에만)
-  const showAllMarkers = () => {
+  const showAllMarkers = useCallback(() => {
     console.log("🌟 모든 마커 표시 시작");
     setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
     setFilteredBookStayMarkers(bookStayMarkers);
@@ -245,35 +264,142 @@ function Milestone() {
         ? festivalMarkers.length
         : 0,
     });
-  };
+  }, [
+    independentBookstoreMarkers,
+    bookStayMarkers,
+    bookCafeMarkers,
+    readingSpotMarkers,
+    touristSpotMarkers,
+    restaurantMarkers,
+    festivalMarkers,
+    selectedBottomFilters,
+  ]);
 
   // 하단 필터에 따른 마커 표시 업데이트 함수
-  const updateBottomFilterMarkers = (activeFilters: string[]) => {
-    console.log("🔍 하단 필터 업데이트:", activeFilters);
+  const updateBottomFilterMarkers = useCallback(
+    async (activeFilters: string[]) => {
+      console.log("🔍 하단 필터 업데이트:", activeFilters);
 
-    // 하단 필터에 따라 관광지/맛집/축제 마커 표시/숨김
-    setFilteredTouristSpotMarkers(
-      activeFilters.includes("가볼만한 관광지") ? touristSpotMarkers : [],
-    );
-    setFilteredRestaurantMarkers(
-      activeFilters.includes("주변 맛집") ? restaurantMarkers : [],
-    );
-    setFilteredFestivalMarkers(
-      activeFilters.includes("뜨는 축제") ? festivalMarkers : [],
-    );
+      // 활성화된 필터에 해당하는 마커 데이터가 없으면 즉시 로드
+      const needsTouristData =
+        activeFilters.includes("가볼만한 관광지") &&
+        touristSpotMarkers.length === 0;
+      const needsRestaurantData =
+        activeFilters.includes("주변 맛집") && restaurantMarkers.length === 0;
+      const needsFestivalData =
+        activeFilters.includes("뜨는 축제") && festivalMarkers.length === 0;
 
-    console.log("🔍 하단 필터 적용 완료:", {
-      관광지: activeFilters.includes("가볼만한 관광지")
-        ? touristSpotMarkers.length
-        : 0,
-      맛집: activeFilters.includes("주변 맛집") ? restaurantMarkers.length : 0,
-      축제: activeFilters.includes("뜨는 축제") ? festivalMarkers.length : 0,
-    });
-  };
+      if (needsTouristData || needsRestaurantData || needsFestivalData) {
+        console.log("🔍 하단 필터 마커 데이터 즉시 로드 시작");
+
+        if (!viewport) {
+          console.log("⚠️ 뷰포트 정보가 없어서 마커 로드 건너뜀");
+          return;
+        }
+
+        const { south, west, north, east } = viewport;
+        const apiCalls = [];
+        const apiNames = [];
+
+        if (needsTouristData) {
+          apiCalls.push(getTouristSpotMarkersAPI(south, west, north, east));
+          apiNames.push("관광지");
+        }
+        if (needsRestaurantData) {
+          apiCalls.push(getRestaurantMarkersAPI(south, west, north, east));
+          apiNames.push("맛집");
+        }
+        if (needsFestivalData) {
+          apiCalls.push(getFestivalMarkersAPI(south, west, north, east));
+          apiNames.push("축제");
+        }
+
+        try {
+          const responses = await Promise.all(apiCalls);
+          let responseIndex = 0;
+
+          if (needsTouristData) {
+            const tourRes = responses[responseIndex++];
+            const nextTour = (tourRes || []).filter(
+              (m: any) => m.latitude && m.longitude,
+            );
+            setTouristSpotMarkers(nextTour);
+            console.log("🏛️ 관광지 마커 (즉시 로드):", nextTour.length, "개");
+          }
+          if (needsRestaurantData) {
+            const restRes = responses[responseIndex++];
+            const nextRest = (restRes || []).filter(
+              (m: any) => m.latitude && m.longitude,
+            );
+            setRestaurantMarkers(nextRest);
+            console.log("🍽️ 맛집 마커 (즉시 로드):", nextRest.length, "개");
+          }
+          if (needsFestivalData) {
+            const festRes = responses[responseIndex++];
+            const nextFest = (festRes || []).filter(
+              (m: any) => m.latitude && m.longitude,
+            );
+            setFestivalMarkers(nextFest);
+            console.log("🎉 축제 마커 (즉시 로드):", nextFest.length, "개");
+          }
+        } catch (error) {
+          console.error("❌ 하단 필터 마커 즉시 로드 실패", error);
+        }
+      }
+
+      // 하단 필터에 따라 관광지/맛집/축제 마커 표시/숨김
+      setFilteredTouristSpotMarkers(
+        activeFilters.includes("가볼만한 관광지") ? touristSpotMarkers : [],
+      );
+      setFilteredRestaurantMarkers(
+        activeFilters.includes("주변 맛집") ? restaurantMarkers : [],
+      );
+      setFilteredFestivalMarkers(
+        activeFilters.includes("뜨는 축제") ? festivalMarkers : [],
+      );
+
+      console.log("🔍 하단 필터 적용 완료:", {
+        관광지: activeFilters.includes("가볼만한 관광지")
+          ? touristSpotMarkers.length
+          : 0,
+        맛집: activeFilters.includes("주변 맛집")
+          ? restaurantMarkers.length
+          : 0,
+        축제: activeFilters.includes("뜨는 축제") ? festivalMarkers.length : 0,
+      });
+    },
+    [touristSpotMarkers, restaurantMarkers, festivalMarkers, viewport],
+  );
+
+  // 하단 필터 마커 데이터가 로드된 후 필터 재적용
+  useEffect(() => {
+    if (isInitialLoad.current) return; // 초기 로딩 중이면 건너뛰기
+
+    // 하단 필터가 활성화된 경우에만 필터 재적용
+    if (selectedBottomFilters.length > 0) {
+      console.log("🔄 하단 필터 마커 데이터 로드 후 필터 재적용");
+      setFilteredTouristSpotMarkers(
+        selectedBottomFilters.includes("가볼만한 관광지")
+          ? touristSpotMarkers
+          : [],
+      );
+      setFilteredRestaurantMarkers(
+        selectedBottomFilters.includes("주변 맛집") ? restaurantMarkers : [],
+      );
+      setFilteredFestivalMarkers(
+        selectedBottomFilters.includes("뜨는 축제") ? festivalMarkers : [],
+      );
+    }
+  }, [
+    touristSpotMarkers,
+    restaurantMarkers,
+    festivalMarkers,
+    selectedBottomFilters,
+  ]);
 
   // 뷰포트 변경 시 관광지/맛집/축제 마커 뷰포트 기반 재조회 및 로그 출력 (하단 필터가 활성화된 경우만)
   useEffect(() => {
-    if (!viewport) return;
+    if (!viewport || isInitialLoad.current) return; // 초기 로딩 중이면 건너뛰기
     const { south, west, north, east } = viewport;
 
     const fetchViewportMarkers = async () => {
@@ -345,14 +471,98 @@ function Milestone() {
         }
 
         // 현재 필터 재적용
-        filterMarkersByType(filterType);
+        if (isFilterActive) {
+          // 필터가 활성화된 경우 해당 타입만 표시
+          switch (filterType) {
+            case "독립서점":
+              setFilteredIndependentBookstoreMarkers(
+                independentBookstoreMarkers,
+              );
+              setFilteredBookStayMarkers([]);
+              setFilteredBookCafeMarkers([]);
+              setFilteredReadingSpotMarkers([]);
+              setFilteredTouristSpotMarkers([]);
+              setFilteredRestaurantMarkers([]);
+              setFilteredFestivalMarkers([]);
+              break;
+            case "북스테이":
+              setFilteredIndependentBookstoreMarkers([]);
+              setFilteredBookStayMarkers(bookStayMarkers);
+              setFilteredBookCafeMarkers([]);
+              setFilteredReadingSpotMarkers([]);
+              setFilteredTouristSpotMarkers([]);
+              setFilteredRestaurantMarkers([]);
+              setFilteredFestivalMarkers([]);
+              break;
+            case "북카페":
+              setFilteredIndependentBookstoreMarkers([]);
+              setFilteredBookStayMarkers([]);
+              setFilteredBookCafeMarkers(bookCafeMarkers);
+              setFilteredReadingSpotMarkers([]);
+              setFilteredTouristSpotMarkers([]);
+              setFilteredRestaurantMarkers([]);
+              setFilteredFestivalMarkers([]);
+              break;
+            case "책갈피":
+              setFilteredIndependentBookstoreMarkers([]);
+              setFilteredBookStayMarkers([]);
+              setFilteredBookCafeMarkers([]);
+              setFilteredReadingSpotMarkers(readingSpotMarkers);
+              setFilteredTouristSpotMarkers([]);
+              setFilteredRestaurantMarkers([]);
+              setFilteredFestivalMarkers([]);
+              break;
+            default:
+              setFilteredIndependentBookstoreMarkers(
+                independentBookstoreMarkers,
+              );
+              setFilteredBookStayMarkers(bookStayMarkers);
+              setFilteredBookCafeMarkers(bookCafeMarkers);
+              setFilteredReadingSpotMarkers(readingSpotMarkers);
+              setFilteredTouristSpotMarkers(
+                selectedBottomFilters.includes("가볼만한 관광지")
+                  ? touristSpotMarkers
+                  : [],
+              );
+              setFilteredRestaurantMarkers(
+                selectedBottomFilters.includes("주변 맛집")
+                  ? restaurantMarkers
+                  : [],
+              );
+              setFilteredFestivalMarkers(
+                selectedBottomFilters.includes("뜨는 축제")
+                  ? festivalMarkers
+                  : [],
+              );
+              break;
+          }
+        } else {
+          // 필터가 비활성화된 경우 모든 마커 표시
+          setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
+          setFilteredBookStayMarkers(bookStayMarkers);
+          setFilteredBookCafeMarkers(bookCafeMarkers);
+          setFilteredReadingSpotMarkers(readingSpotMarkers);
+          setFilteredTouristSpotMarkers(
+            selectedBottomFilters.includes("가볼만한 관광지")
+              ? touristSpotMarkers
+              : [],
+          );
+          setFilteredRestaurantMarkers(
+            selectedBottomFilters.includes("주변 맛집")
+              ? restaurantMarkers
+              : [],
+          );
+          setFilteredFestivalMarkers(
+            selectedBottomFilters.includes("뜨는 축제") ? festivalMarkers : [],
+          );
+        }
       } catch (error) {
         console.error("❌ 뷰포트 기반 마커 조회 실패", error);
       }
     };
 
     fetchViewportMarkers();
-  }, [viewport, selectedBottomFilters, filterType]);
+  }, [viewport, selectedBottomFilters, filterType, isFilterActive]);
 
   // 북카페, 북스테이, 독립서점 마커 데이터 가져오기
   const fetchBookstoreMarkers = async () => {
@@ -362,8 +572,13 @@ function Milestone() {
     try {
       console.log("📚 북카페, 북스테이, 독립서점 마커 데이터 가져오기 시작");
 
-      // 독립서점 마커 가져오기
-      const independentBookstoreResponse = await getBookstoreMarkersAPI();
+      // 독립서점 마커 가져오기 (뷰포트 기반으로 변경)
+      const independentBookstoreResponse = await getBookstoreMarkersAPI(
+        33.0, // minLat
+        124.5, // minLng
+        38.6, // maxLat
+        132.0, // maxLng
+      );
       //console.log("📚 독립서점 API 응답:", independentBookstoreResponse);
 
       const filteredIndependentMarkers = (
@@ -374,8 +589,13 @@ function Milestone() {
       //console.log("📚 독립서점 마커 데이터:", filteredIndependentMarkers);
       //console.log("📚 독립서점 첫 번째 마커:", filteredIndependentMarkers[0]);
 
-      // 북스테이 마커 가져오기
-      const bookStayResponse = await getBookstayMarkersAPI();
+      // 북스테이 마커 가져오기 (뷰포트 기반으로 변경)
+      const bookStayResponse = await getBookstayMarkersAPI(
+        33.0, // minLat
+        124.5, // minLng
+        38.6, // maxLat
+        132.0, // maxLng
+      );
       //console.log("🏨 북스테이 API 응답:", bookStayResponse);
       //console.log("🏨 북스테이 API 응답 길이:", bookStayResponse?.length);
 
@@ -387,8 +607,13 @@ function Milestone() {
       //console.log("🏨 북스테이 마커 데이터:", filteredBookStayMarkers);
       //console.log("🏨 북스테이 첫 번째 마커:", filteredBookStayMarkers[0]);
 
-      // 북카페 마커 가져오기
-      const bookCafeResponse = await getBookcafeMarkersAPI();
+      // 북카페 마커 가져오기 (뷰포트 기반으로 변경)
+      const bookCafeResponse = await getBookcafeMarkersAPI(
+        33.0, // minLat
+        124.5, // minLng
+        38.6, // maxLat
+        132.0, // maxLng
+      );
       //console.log("☕ 북카페 API 응답:", bookCafeResponse);
       //console.log("☕ 북카페 API 응답 길이:", bookCafeResponse?.length);
 
@@ -400,8 +625,13 @@ function Milestone() {
       //console.log("☕ 북카페 마커 데이터:", filteredBookCafeMarkers);
       //console.log("☕ 북카페 첫 번째 마커:", filteredBookCafeMarkers[0]);
 
-      // 공간책갈피 마커 가져오기
-      const readingSpotResponse = await getReadingSpotMarkersAPI();
+      // 공간책갈피 마커 가져오기 (뷰포트 기반으로 변경)
+      const readingSpotResponse = await getReadingSpotMarkersAPI(
+        33.0, // minLat
+        124.5, // minLng
+        38.6, // maxLat
+        132.0, // maxLng
+      );
       //console.log("📚 공간책갈피 API 응답:", readingSpotResponse);
       //console.log("📚 공간책갈피 API 응답 길이:", readingSpotResponse?.length);
 
@@ -521,6 +751,9 @@ function Milestone() {
 
   // 마커 데이터가 로드된 후 자동으로 모든 마커 표시
   useEffect(() => {
+    // 초기 로딩이 아니면 건너뛰기
+    if (!isInitialLoad.current) return;
+
     // 모든 마커 데이터가 로드되었는지 확인
     if (
       independentBookstoreMarkers.length > 0 ||
@@ -531,8 +764,88 @@ function Milestone() {
       restaurantMarkers.length > 0 ||
       festivalMarkers.length > 0
     ) {
-      console.log("🔄 마커 데이터 로드 완료 - 모든 마커 표시 시작");
-      showAllMarkers();
+      console.log("🔄 마커 데이터 로드 완료 - 마커 표시 시작");
+      isInitialLoad.current = false; // 초기 로딩 완료 표시
+      // 필터가 활성화된 경우 필터링 적용, 아니면 모든 마커 표시
+      if (isFilterActive) {
+        // 필터가 활성화된 경우 해당 타입만 표시
+        switch (filterType) {
+          case "독립서점":
+            setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
+            setFilteredBookStayMarkers([]);
+            setFilteredBookCafeMarkers([]);
+            setFilteredReadingSpotMarkers([]);
+            setFilteredTouristSpotMarkers([]);
+            setFilteredRestaurantMarkers([]);
+            setFilteredFestivalMarkers([]);
+            break;
+          case "북스테이":
+            setFilteredIndependentBookstoreMarkers([]);
+            setFilteredBookStayMarkers(bookStayMarkers);
+            setFilteredBookCafeMarkers([]);
+            setFilteredReadingSpotMarkers([]);
+            setFilteredTouristSpotMarkers([]);
+            setFilteredRestaurantMarkers([]);
+            setFilteredFestivalMarkers([]);
+            break;
+          case "북카페":
+            setFilteredIndependentBookstoreMarkers([]);
+            setFilteredBookStayMarkers([]);
+            setFilteredBookCafeMarkers(bookCafeMarkers);
+            setFilteredReadingSpotMarkers([]);
+            setFilteredTouristSpotMarkers([]);
+            setFilteredRestaurantMarkers([]);
+            setFilteredFestivalMarkers([]);
+            break;
+          case "책갈피":
+            setFilteredIndependentBookstoreMarkers([]);
+            setFilteredBookStayMarkers([]);
+            setFilteredBookCafeMarkers([]);
+            setFilteredReadingSpotMarkers(readingSpotMarkers);
+            setFilteredTouristSpotMarkers([]);
+            setFilteredRestaurantMarkers([]);
+            setFilteredFestivalMarkers([]);
+            break;
+          default:
+            setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
+            setFilteredBookStayMarkers(bookStayMarkers);
+            setFilteredBookCafeMarkers(bookCafeMarkers);
+            setFilteredReadingSpotMarkers(readingSpotMarkers);
+            setFilteredTouristSpotMarkers(
+              selectedBottomFilters.includes("가볼만한 관광지")
+                ? touristSpotMarkers
+                : [],
+            );
+            setFilteredRestaurantMarkers(
+              selectedBottomFilters.includes("주변 맛집")
+                ? restaurantMarkers
+                : [],
+            );
+            setFilteredFestivalMarkers(
+              selectedBottomFilters.includes("뜨는 축제")
+                ? festivalMarkers
+                : [],
+            );
+            break;
+        }
+      } else {
+        // 필터가 비활성화된 경우 모든 마커 표시
+        setFilteredIndependentBookstoreMarkers(independentBookstoreMarkers);
+        setFilteredBookStayMarkers(bookStayMarkers);
+        setFilteredBookCafeMarkers(bookCafeMarkers);
+        setFilteredReadingSpotMarkers(readingSpotMarkers);
+        setFilteredTouristSpotMarkers(
+          selectedBottomFilters.includes("가볼만한 관광지")
+            ? touristSpotMarkers
+            : [],
+        );
+        setFilteredRestaurantMarkers(
+          selectedBottomFilters.includes("주변 맛집") ? restaurantMarkers : [],
+        );
+        setFilteredFestivalMarkers(
+          selectedBottomFilters.includes("뜨는 축제") ? festivalMarkers : [],
+        );
+      }
 
       // activeMarkerId가 있으면 해당 마커 정보를 clickedMarker로 복원
       if (activeMarkerId) {
@@ -623,6 +936,9 @@ function Milestone() {
     restaurantMarkers,
     festivalMarkers,
     activeMarkerId,
+    isFilterActive,
+    filterType,
+    selectedBottomFilters,
   ]);
 
   // moveToLocation이 변경될 때 지도 이동 후 상태 리셋

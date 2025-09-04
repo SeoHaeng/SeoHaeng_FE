@@ -217,20 +217,26 @@ export const loginAPI = async (
   }
 };
 
-// 독립서점 마커 조회 API
-export const getBookstoreMarkersAPI = async (): Promise<
-  BookstoreMarkerResponse[]
-> => {
+// 독립서점 마커 조회 API (뷰포트 기반)
+export const getBookstoreMarkersAPI = async (
+  minLat: number,
+  minLng: number,
+  maxLat: number,
+  maxLng: number,
+): Promise<BookstoreMarkerResponse[]> => {
   try {
     const headers = await getAuthHeadersAsync();
 
-    const response = await fetch(`${API_BASE_URL}/places/markers/bookstores`, {
-      method: "GET",
-      headers: {
-        ...headers,
-        accept: "*/*",
+    const response = await fetch(
+      `${API_BASE_URL}/places/markers/bookstores?minLat=${minLat}&minLng=${minLng}&maxLat=${maxLat}&maxLng=${maxLng}`,
+      {
+        method: "GET",
+        headers: {
+          ...headers,
+          accept: "*/*",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -245,20 +251,26 @@ export const getBookstoreMarkersAPI = async (): Promise<
   }
 };
 
-// 북스테이 마커 조회 API
-export const getBookstayMarkersAPI = async (): Promise<
-  BookstayMarkerResponse[]
-> => {
+// 북스테이 마커 조회 API (뷰포트 기반)
+export const getBookstayMarkersAPI = async (
+  minLat: number,
+  minLng: number,
+  maxLat: number,
+  maxLng: number,
+): Promise<BookstayMarkerResponse[]> => {
   try {
     const headers = await getAuthHeadersAsync();
 
-    const response = await fetch(`${API_BASE_URL}/places/markers/bookstays`, {
-      method: "GET",
-      headers: {
-        ...headers,
-        accept: "*/*",
+    const response = await fetch(
+      `${API_BASE_URL}/places/markers/bookstays?minLat=${minLat}&minLng=${minLng}&maxLat=${maxLat}&maxLng=${maxLng}`,
+      {
+        method: "GET",
+        headers: {
+          ...headers,
+          accept: "*/*",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -273,20 +285,26 @@ export const getBookstayMarkersAPI = async (): Promise<
   }
 };
 
-// 북카페 마커 조회 API
-export const getBookcafeMarkersAPI = async (): Promise<
-  BookcafeMarkerResponse[]
-> => {
+// 북카페 마커 조회 API (뷰포트 기반)
+export const getBookcafeMarkersAPI = async (
+  minLat: number,
+  minLng: number,
+  maxLat: number,
+  maxLng: number,
+): Promise<BookcafeMarkerResponse[]> => {
   try {
     const headers = await getAuthHeadersAsync();
 
-    const response = await fetch(`${API_BASE_URL}/places/markers/bookcafes`, {
-      method: "GET",
-      headers: {
-        ...headers,
-        accept: "*/*",
+    const response = await fetch(
+      `${API_BASE_URL}/places/markers/bookcafes?minLat=${minLat}&minLng=${minLng}&maxLat=${maxLat}&maxLng=${maxLng}`,
+      {
+        method: "GET",
+        headers: {
+          ...headers,
+          accept: "*/*",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -380,7 +398,6 @@ export const createReviewAPI = async (
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -410,7 +427,6 @@ export const getReviewListAPI = async (
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -851,26 +867,6 @@ export const authenticatedFetch = async (
   } catch (error) {
     console.log("authenticatedFetch 실패:", error);
     throw error;
-  }
-};
-
-// JWT 토큰 디코드 함수
-const decodeJWT = (token: string) => {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map(function (c) {
-          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-        })
-        .join(""),
-    );
-    return JSON.parse(jsonPayload);
-  } catch (error) {
-    console.error("JWT 디코드 실패:", error);
-    return null;
   }
 };
 
@@ -2262,15 +2258,18 @@ export const getBookmarkDetailAPI = async (
 };
 
 // 장소 상세 조회 응답 타입
-// 공간책갈피 마커 조회 API
-export const getReadingSpotMarkersAPI = async (): Promise<
-  ReadingSpotMarker[]
-> => {
+// 공간책갈피 마커 조회 API (뷰포트 기반)
+export const getReadingSpotMarkersAPI = async (
+  minLat: number,
+  minLng: number,
+  maxLat: number,
+  maxLng: number,
+): Promise<ReadingSpotMarker[]> => {
   try {
     const headers = await getAuthHeadersAsync();
 
     const response = await fetch(
-      `${API_BASE_URL}/places/markers/readingspots`,
+      `${API_BASE_URL}/places/markers/readingspots?minLat=${minLat}&minLng=${minLng}&maxLat=${maxLat}&maxLng=${maxLng}`,
       {
         method: "GET",
         headers,

@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   bookstoreName: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: "SUIT-700",
     color: "#000000",
     marginRight: 10,
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   locationText: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "SUIT-600",
     color: "#262423",
   },

@@ -74,7 +74,7 @@ export default function SignInScreen() {
         }
       } catch (error) {
         console.error("로그인 에러:", error);
-        setErrorMessage("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+        setErrorMessage("아이디 또는 비밀번호를 확인해주세요");
       } finally {
         setIsLoading(false);
       }

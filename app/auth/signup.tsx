@@ -32,7 +32,6 @@ export default function SignUpScreen() {
   const [isEmailChecked, setIsEmailChecked] = useState(false);
   const [nicknameError, setNicknameError] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [signupError, setSignupError] = useState("");
 
   // 비밀번호 유효성 검사 (API 요구사항: 8~20자, 영문, 숫자, 특수문자 포함)
@@ -173,7 +172,7 @@ export default function SignUpScreen() {
       }
     } catch (error) {
       console.error("API 호출 오류:", error);
-      return { success: false, error: "네트워크 오류가 발생했습니다." };
+      return { success: false, error: "아이디 또는 비밀번호를 확인해주세요" };
     }
   };
 
@@ -199,7 +198,6 @@ export default function SignUpScreen() {
       return;
     }
 
-    setIsLoading(true);
     setSignupError("");
 
     try {
@@ -233,8 +231,6 @@ export default function SignUpScreen() {
       console.error("회원가입 처리 오류:", error);
       setSignupError("회원가입 처리 중 오류가 발생했습니다.");
       Alert.alert("오류", "회원가입 처리 중 오류가 발생했습니다.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -284,7 +280,6 @@ export default function SignUpScreen() {
                 style={[
                   styles.duplicateButton,
                   isNicknameChecked && styles.duplicateButtonChecked,
-                  isLoading && styles.duplicateButtonDisabled,
                 ]}
                 onPress={async () => {
                   // 조건 검증 먼저 수행
@@ -313,7 +308,6 @@ export default function SignUpScreen() {
                   }
 
                   try {
-                    setIsLoading(true);
                     const result = await checkNicknameAPI(nickname.trim());
 
                     if (result.isSuccess) {
@@ -332,11 +326,8 @@ export default function SignUpScreen() {
                     console.error("닉네임 중복 확인 오류:", error);
                     setNicknameError("중복 확인 중 오류가 발생했습니다");
                     setIsNicknameChecked(false);
-                  } finally {
-                    setIsLoading(false);
                   }
                 }}
-                disabled={isLoading}
               >
                 <Text
                   style={[
@@ -344,11 +335,7 @@ export default function SignUpScreen() {
                     isNicknameChecked && styles.duplicateButtonTextChecked,
                   ]}
                 >
-                  {isLoading
-                    ? "확인 중..."
-                    : isNicknameChecked
-                      ? "확인완료"
-                      : "중복확인"}
+                  {isNicknameChecked ? "확인완료" : "중복확인"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -381,7 +368,6 @@ export default function SignUpScreen() {
                 style={[
                   styles.duplicateButton,
                   isEmailChecked && styles.duplicateButtonChecked,
-                  isLoading && styles.duplicateButtonDisabled,
                 ]}
                 onPress={async () => {
                   // 조건 검증 먼저 수행
@@ -411,7 +397,6 @@ export default function SignUpScreen() {
                   }
 
                   try {
-                    setIsLoading(true);
                     const result = await checkUsernameAPI(email.trim());
 
                     if (result.isSuccess) {
@@ -430,11 +415,8 @@ export default function SignUpScreen() {
                     console.error("아이디 중복 확인 오류:", error);
                     setEmailError("중복 확인 중 오류가 발생했습니다");
                     setIsEmailChecked(false);
-                  } finally {
-                    setIsLoading(false);
                   }
                 }}
-                disabled={isLoading}
               >
                 <Text
                   style={[
@@ -442,11 +424,7 @@ export default function SignUpScreen() {
                     isEmailChecked && styles.duplicateButtonTextChecked,
                   ]}
                 >
-                  {isLoading
-                    ? "확인 중..."
-                    : isEmailChecked
-                      ? "확인완료"
-                      : "중복확인"}
+                  {isEmailChecked ? "확인완료" : "중복확인"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -595,7 +573,7 @@ export default function SignUpScreen() {
               isSignUpButtonActive && styles.signUpButtonActive,
             ]}
             onPress={handleSignUp}
-            disabled={!isSignUpButtonActive || isLoading}
+            disabled={!isSignUpButtonActive}
           >
             <Text
               style={[
@@ -603,7 +581,7 @@ export default function SignUpScreen() {
                 isSignUpButtonActive && styles.signUpButtonTextActive,
               ]}
             >
-              {isLoading ? "처리 중..." : "회원가입"}
+              회원가입
             </Text>
           </TouchableOpacity>
 
@@ -724,9 +702,6 @@ const styles = StyleSheet.create({
   validationError: {
     color: "#F44336",
     fontSize: 11,
-  },
-  duplicateButtonDisabled: {
-    opacity: 0.7,
   },
 
   signUpButton: {

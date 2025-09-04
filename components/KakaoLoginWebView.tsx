@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -23,9 +24,8 @@ export default function KakaoLoginWebView({
   const webViewRef = useRef<WebView>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 카카오 OAuth URL
-  const kakaoOAuthUrl =
-    "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=2f457f4c7c6bc61411a671b4304b50c0&redirect_uri=http://localhost:3000/auth/kakao/callback&state=sGZAsXVZ5DriH5KWds7U8MNHIo%3D";
+  // 카카오 OAuth URL (환경변수 사용)
+  const kakaoOAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${Constants.expoConfig?.extra?.KAKAO_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.KAKAO_REDIRECT_URI}&state=${Constants.expoConfig?.extra?.KAKAO_STATE}`;
 
   // WebView에서 URL 변경 감지
   const handleNavigationStateChange = (navState: any) => {

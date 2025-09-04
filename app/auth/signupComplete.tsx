@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import React from "react";
 import {
+  Image,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -28,7 +29,11 @@ export default function SignUpCompleteScreen() {
 
       {/* 중앙 일러스트/아이콘 플레이스홀더 */}
       <View style={styles.iconContainer}>
-        <Text style={styles.iconPlaceholder}>일러스트 or 앱아이콘</Text>
+        <Image
+          source={require("../../assets/images/illu.png")}
+          style={styles.illustration}
+          resizeMode="contain"
+        />
       </View>
 
       {/* 메인 화면으로 가기 버튼 */}
@@ -60,20 +65,16 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
   iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: "#E0E0E0",
+    width: 200,
+    height: 200,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
     marginBottom: 60,
   },
-  iconPlaceholder: {
-    fontSize: 12,
-    color: "#9E9E9E",
-    textAlign: "center",
-    lineHeight: 16,
+  illustration: {
+    width: "100%",
+    height: "100%",
   },
   buttonContainer: {
     width: "100%",

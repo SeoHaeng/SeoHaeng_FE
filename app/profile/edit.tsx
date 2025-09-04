@@ -3,9 +3,9 @@ import CameraEnhanceIcon from "@/components/icons/CameraEnhanceIcon";
 import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
 import { API_BASE_URL } from "@/config/api";
 import {
-    checkNicknameDuplicateAPI,
-    checkUsernameDuplicateAPI,
-    updateProfileAPI,
+  checkNicknameDuplicateAPI,
+  checkUsernameDuplicateAPI,
+  updateProfileAPI,
 } from "@/types/api";
 import { getUserInfo, setUserInfo } from "@/types/globalState";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -13,14 +13,14 @@ import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    Alert,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -97,10 +97,7 @@ export default function ProfileEdit() {
 
         console.log("🔄 닉네임 중복확인 API 호출 시작");
         console.log("📝 요청 닉네임:", nickname.trim());
-        console.log(
-          "🔗 API URL:",
-          `${API_BASE_URL}/users/auth/check-nickname`,
-        );
+        console.log("🔗 API URL:", `${API_BASE_URL}/users/auth/check-nickname`);
 
         const response = await checkNicknameDuplicateAPI(nickname.trim());
         if (response.isSuccess) {
@@ -153,7 +150,7 @@ export default function ProfileEdit() {
       }
     } catch (error) {
       console.error("중복확인 API 에러:", error);
-      Alert.alert("오류", "네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+      Alert.alert("오류", "아이디 또는 비밀번호를 확인해주세요");
     }
   };
 
@@ -308,10 +305,7 @@ export default function ProfileEdit() {
           ],
         );
       } else {
-        Alert.alert(
-          "수정 실패",
-          "네트워크 오류가 발생했습니다. 다시 시도해주세요.",
-        );
+        Alert.alert("수정 실패", "아이디 또는 비밀번호를 확인해주세요");
       }
     }
   };

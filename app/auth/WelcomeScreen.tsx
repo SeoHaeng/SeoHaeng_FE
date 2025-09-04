@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import React from "react";
 import {
   Dimensions,
+  Image,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -53,7 +54,11 @@ export default function WelcomeScreen() {
       <View style={styles.content}>
         {/* 앱 아이콘/일러스트 영역 */}
         <View style={styles.iconContainer}>
-          <Text style={styles.iconPlaceholder}>일러스트 or 앱아이콘</Text>
+          <Image
+            source={require("../../assets/images/illu.png")}
+            style={styles.illustration}
+            resizeMode="contain"
+          />
         </View>
 
         {/* 앱 소개 텍스트 */}
@@ -92,19 +97,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: "#E0E0E0",
-    justifyContent: "center",
-    alignItems: "center",
+    width: 200,
+    height: 200,
+
     marginBottom: 40,
   },
-  iconPlaceholder: {
-    fontSize: 12,
-    color: "#9E9E9E",
-    textAlign: "center",
-    lineHeight: 16,
+  illustration: {
+    width: "100%",
+    height: "100%",
   },
   textContainer: {
     alignItems: "center",

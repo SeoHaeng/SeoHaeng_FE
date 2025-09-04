@@ -150,12 +150,7 @@ export const reissueToken = async (): Promise<boolean> => {
     const response = await reissueTokenAPI(refreshToken);
 
     if (response.isSuccess && response.result) {
-      // 응답 데이터 유효성 검증
-      const {
-        accessToken,
-        refreshToken: newRefreshToken,
-        userId,
-      } = response.result;
+      const { accessToken, refreshToken: newRefreshToken } = response.result;
 
       if (!accessToken || !newRefreshToken) {
         console.error(
@@ -165,7 +160,7 @@ export const reissueToken = async (): Promise<boolean> => {
         return false;
       }
 
-      // 기존 userId 가져오기 (재발급 시에는 userId가 응답에 없을 수 있음)
+      // 기존 userId 가져오기
       const existingUserId = await getUserId();
       if (!existingUserId) {
         console.error("기존 userId를 찾을 수 없습니다");

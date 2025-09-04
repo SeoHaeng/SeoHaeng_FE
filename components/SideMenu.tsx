@@ -4,7 +4,7 @@ import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
 import LogoutConfirmModal from "@/components/LogoutConfirmModal";
 import { deleteUser, removeToken } from "@/types/auth";
 import { getUserInfo } from "@/types/globalState";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -136,6 +136,11 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
     setShowLogoutModal(false);
   };
 
+  const handleTermsClick = () => {
+    router.push("/terms");
+    onClose();
+  };
+
   const handleDeleteUserClick = () => {
     setShowDeleteUserModal(true);
   };
@@ -256,12 +261,16 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
               style={styles.menuItem}
               onPress={handleFeedbackAndReport}
             >
-              <MaterialIcons
-                name="report-gmailerrorred"
-                size={24}
-                color="black"
-              />
+              <AntDesign name="warning" size={22} color="black" />
               <Text style={styles.menuItemText}>의견 및 신고</Text>
+              <Text style={styles.arrowIcon}>›</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={handleTermsClick}
+            >
+              <AntDesign name="filetext1" size={22} color="black" />
+              <Text style={styles.menuItemText}>이용약관 보기</Text>
               <Text style={styles.arrowIcon}>›</Text>
             </TouchableOpacity>
             {/* 구분선 */}
@@ -281,11 +290,7 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                 style={styles.menuItem}
                 onPress={handleDeleteUserClick}
               >
-                <MaterialCommunityIcons
-                  name="delete-outline"
-                  size={24}
-                  color="black"
-                />
+                <AntDesign name="delete" size={21} color="black" />
                 <Text style={styles.menuItemText}>회원 탈퇴</Text>
                 <Text style={styles.arrowIcon}>›</Text>
               </TouchableOpacity>

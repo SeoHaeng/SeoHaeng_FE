@@ -123,7 +123,6 @@ export default function BookstoreDetail({ placeDetail }: BookstoreDetailProps) {
           {placeDetail.placeDetail.reservation && (
             <View style={styles.serviceCard}>
               <PhoneIcon />
-
               <Text style={styles.serviceText}>예약</Text>
             </View>
           )}

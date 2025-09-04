@@ -379,6 +379,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   bookstoreName: {
+    maxWidth: "80%",
     fontSize: 16,
     fontFamily: "SUIT-700",
     color: "#000000",

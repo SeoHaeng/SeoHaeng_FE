@@ -92,7 +92,7 @@ export default function DatePickerModal({
           {/* 헤더 */}
           <View style={styles.header}>
             <Text style={styles.headerTitle}>
-              매장 방문 일자를{"\n"} 선택해주세요.
+              방문 일자를{"\n"} 선택해주세요.
             </Text>
             <Text style={styles.selectedDateText}>
               {formatSelectedDate(selectedDate)}

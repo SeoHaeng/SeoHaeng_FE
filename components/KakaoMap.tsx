@@ -354,6 +354,37 @@ const KakaoMap = ({
           body { margin: 0; padding: 0; height: 100%; }
           html { height: 100%; }
           #map { width: 100%; height: 100%; }
+          
+          /* 커스텀 오버레이 스타일 */
+          .customoverlay {
+            position: relative;
+            top: 0px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            border-bottom: 2px solid #ddd;
+            float: left;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+          }
+          .customoverlay:nth-of-type(n) {
+            border: 0;
+            box-shadow: 0 1px 2px #888;
+          }
+          .customoverlay .title {
+            display: block;
+            text-align: center;
+            background: #262423;
+            margin-left: -1px;
+            margin-right: -1px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #FFFFFF;
+            border-radius: 6px;
+            white-space: nowrap;
+            min-width: 60px;
+            line-height: 1.2;
+          }
         </style>
       </head>
       <body>
@@ -362,7 +393,7 @@ const KakaoMap = ({
           var map;
           var myLocationMarker;
           var selectedLocationMarker = null; // 선택된 장소 마커
-          var currentInfoWindow = null; // 현재 열린 InfoWindow
+          var currentCustomOverlay = null; // 현재 열린 커스텀 오버레이
           
           // 마커 이미지 정의
           var markerImages = {
@@ -461,10 +492,10 @@ const KakaoMap = ({
                 
                 // 지도 클릭 이벤트 리스너 등록
                 kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
-                  // InfoWindow 닫기
-                  if (currentInfoWindow) {
-                    currentInfoWindow.close();
-                    currentInfoWindow = null;
+                  // 커스텀 오버레이 닫기
+                  if (currentCustomOverlay) {
+                    currentCustomOverlay.setMap(null);
+                    currentCustomOverlay = null;
                   }
                   
                   // 마커가 클릭된 경우가 아닌 지도 자체가 클릭된 경우에만 처리
@@ -614,25 +645,33 @@ const KakaoMap = ({
                 if (data.markerId && data.markerId.startsWith('selected_location_')) {
                   console.log('🎯 WebView: 빨간색 마커 활성화 요청');
                   
-                  // 기존 InfoWindow 닫기
-                  if (currentInfoWindow) {
-                    currentInfoWindow.close();
-                    currentInfoWindow = null;
+                  // 기존 커스텀 오버레이 제거
+                  if (currentCustomOverlay) {
+                    currentCustomOverlay.setMap(null);
+                    currentCustomOverlay = null;
                   }
                   
-                  // selectedLocationMarker가 있으면 InfoWindow 표시
+                  // selectedLocationMarker가 있으면 커스텀 오버레이 표시
                   if (selectedLocationMarker) {
-                    console.log('🎯 WebView: 빨간색 마커 찾음, InfoWindow 표시');
+                    console.log('🎯 WebView: 빨간색 마커 찾음, 커스텀 오버레이 표시');
                     
-                    var infowindow = new kakao.maps.InfoWindow({
-                      content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + selectedLocationMarker.getTitle() + '</div>',
-                      removable: false,
-                      zIndex: 1000
+                    // 기존 커스텀 오버레이 제거
+                    if (currentCustomOverlay) {
+                      currentCustomOverlay.setMap(null);
+                    }
+                    
+                    var content = '<div class="customoverlay">' +
+                      '  <span class="title">' + selectedLocationMarker.getTitle() + '</span>' +
+                      '</div>';
+                    
+                    var customOverlay = new kakao.maps.CustomOverlay({
+                      map: map,
+                      position: selectedLocationMarker.getPosition(),
+                      content: content,
+                      yAnchor: 0
                     });
                     
-                    infowindow.open(map, selectedLocationMarker);
-                    currentInfoWindow = infowindow;
-                    
+                    currentCustomOverlay = customOverlay;
                     console.log('🎯 WebView: 빨간색 마커 활성화 완료');
                   } else {
                     console.log('🎯 WebView: 빨간색 마커가 없음');
@@ -644,10 +683,10 @@ const KakaoMap = ({
                 if (window.existingMarkers && window.existingMarkers.length > 0) {
                   var targetMarker = null;
                   
-                  // 기존 InfoWindow 닫기
-                  if (currentInfoWindow) {
-                    currentInfoWindow.close();
-                    currentInfoWindow = null;
+                  // 기존 커스텀 오버레이 제거
+                  if (currentCustomOverlay) {
+                    currentCustomOverlay.setMap(null);
+                    currentCustomOverlay = null;
                   }
                   
                   console.log('🎯 WebView: 기존 마커 개수:', window.existingMarkers.length);
@@ -675,18 +714,20 @@ const KakaoMap = ({
                   }
                   
                   if (targetMarker) {
-                    console.log('🎯 WebView: 대상 마커 찾음, InfoWindow 표시');
+                    console.log('🎯 WebView: 대상 마커 찾음, 커스텀 오버레이 표시');
                     
-                    // InfoWindow 생성 및 표시
-                    var infowindow = new kakao.maps.InfoWindow({
-                      content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + targetMarker.getTitle() + '</div>',
-                      removable: false,
-                      zIndex: 1000
+                    var content = '<div class="customoverlay">' +
+                      '  <span class="title">' + targetMarker.getTitle() + '</span>' +
+                      '</div>';
+                    
+                    var customOverlay = new kakao.maps.CustomOverlay({
+                      map: map,
+                      position: targetMarker.getPosition(),
+                      content: content,
+                      yAnchor: 0
                     });
                     
-                    infowindow.open(map, targetMarker);
-                    currentInfoWindow = infowindow;
-                    
+                    currentCustomOverlay = customOverlay;
                     console.log('🎯 WebView: 마커 활성화 완료');
                   } else {
                     console.log('🎯 WebView: 대상 마커를 찾을 수 없음:', data.markerId);
@@ -733,20 +774,24 @@ const KakaoMap = ({
                       
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
-                        // 기존 InfoWindow 닫기
-                        if (currentInfoWindow) {
-                          currentInfoWindow.close();
+                        // 기존 커스텀 오버레이 제거
+                        if (currentCustomOverlay) {
+                          currentCustomOverlay.setMap(null);
                         }
                         
-                        // 새로운 InfoWindow 생성 및 표시
-                        var infowindow = new kakao.maps.InfoWindow({
-                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + bookstore.name + '</div>',
-                          removable: false,
-                          zIndex: 1000
+                        // 새로운 커스텀 오버레이 생성 및 표시
+                        var content = '<div class="customoverlay">' +
+                          '  <span class="title">' + bookstore.name + '</span>' +
+                          '</div>';
+                        
+                        var customOverlay = new kakao.maps.CustomOverlay({
+                          map: map,
+                          position: marker.getPosition(),
+                          content: content,
+                          yAnchor: 0
                         });
                         
-                        infowindow.open(map, marker);
-                        currentInfoWindow = infowindow;
+                        currentCustomOverlay = customOverlay;
                         
                         // React Native로 마커 클릭 메시지 전송
                         if (window.ReactNativeWebView) {
@@ -781,20 +826,24 @@ const KakaoMap = ({
                       
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
-                        // 기존 InfoWindow 닫기
-                        if (currentInfoWindow) {
-                          currentInfoWindow.close();
+                        // 기존 커스텀 오버레이 제거
+                        if (currentCustomOverlay) {
+                          currentCustomOverlay.setMap(null);
                         }
                         
-                        // 새로운 InfoWindow 생성 및 표시
-                        var infowindow = new kakao.maps.InfoWindow({
-                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + bookstay.name + '</div>',
-                          removable: false,
-                          zIndex: 1000
+                        // 새로운 커스텀 오버레이 생성 및 표시
+                        var content = '<div class="customoverlay">' +
+                          '  <span class="title">' + bookstay.name + '</span>' +
+                          '</div>';
+                        
+                        var customOverlay = new kakao.maps.CustomOverlay({
+                          map: map,
+                          position: marker.getPosition(),
+                          content: content,
+                          yAnchor: 0
                         });
                         
-                        infowindow.open(map, marker);
-                        currentInfoWindow = infowindow;
+                        currentCustomOverlay = customOverlay;
                         
                         // React Native로 마커 클릭 메시지 전송
                         if (window.ReactNativeWebView) {
@@ -829,20 +878,24 @@ const KakaoMap = ({
                       
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
-                        // 기존 InfoWindow 닫기
-                        if (currentInfoWindow) {
-                          currentInfoWindow.close();
+                        // 기존 커스텀 오버레이 제거
+                        if (currentCustomOverlay) {
+                          currentCustomOverlay.setMap(null);
                         }
                         
-                        // 새로운 InfoWindow 생성 및 표시
-                        var infowindow = new kakao.maps.InfoWindow({
-                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + bookcafe.name + '</div>',
-                          removable: false,
-                          zIndex: 1000
+                        // 새로운 커스텀 오버레이 생성 및 표시
+                        var content = '<div class="customoverlay">' +
+                          '  <span class="title">' + bookcafe.name + '</span>' +
+                          '</div>';
+                        
+                        var customOverlay = new kakao.maps.CustomOverlay({
+                          map: map,
+                          position: marker.getPosition(),
+                          content: content,
+                          yAnchor: 0
                         });
                         
-                        infowindow.open(map, marker);
-                        currentInfoWindow = infowindow;
+                        currentCustomOverlay = customOverlay;
                         
                         // React Native로 마커 클릭 메시지 전송
                         if (window.ReactNativeWebView) {
@@ -910,20 +963,24 @@ const KakaoMap = ({
                       
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
-                        // 기존 InfoWindow 닫기
-                        if (currentInfoWindow) {
-                          currentInfoWindow.close();
+                        // 기존 커스텀 오버레이 제거
+                        if (currentCustomOverlay) {
+                          currentCustomOverlay.setMap(null);
                         }
                         
-                        // 새로운 InfoWindow 생성 및 표시
-                        var infowindow = new kakao.maps.InfoWindow({
-                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + touristSpot.name + '</div>',
-                          removable: false,
-                          zIndex: 1000
+                        // 새로운 커스텀 오버레이 생성 및 표시
+                        var content = '<div class="customoverlay">' +
+                          '  <span class="title">' + touristSpot.name + '</span>' +
+                          '</div>';
+                        
+                        var customOverlay = new kakao.maps.CustomOverlay({
+                          map: map,
+                          position: marker.getPosition(),
+                          content: content,
+                          yAnchor: 0
                         });
                         
-                        infowindow.open(map, marker);
-                        currentInfoWindow = infowindow;
+                        currentCustomOverlay = customOverlay;
                         
                         // React Native로 마커 클릭 메시지 전송
                         if (window.ReactNativeWebView) {
@@ -958,20 +1015,24 @@ const KakaoMap = ({
                       
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
-                        // 기존 InfoWindow 닫기
-                        if (currentInfoWindow) {
-                          currentInfoWindow.close();
+                        // 기존 커스텀 오버레이 제거
+                        if (currentCustomOverlay) {
+                          currentCustomOverlay.setMap(null);
                         }
                         
-                        // 새로운 InfoWindow 생성 및 표시
-                        var infowindow = new kakao.maps.InfoWindow({
-                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + restaurant.name + '</div>',
-                          removable: false,
-                          zIndex: 1000
+                        // 새로운 커스텀 오버레이 생성 및 표시
+                        var content = '<div class="customoverlay">' +
+                          '  <span class="title">' + restaurant.name + '</span>' +
+                          '</div>';
+                        
+                        var customOverlay = new kakao.maps.CustomOverlay({
+                          map: map,
+                          position: marker.getPosition(),
+                          content: content,
+                          yAnchor: 0
                         });
                         
-                        infowindow.open(map, marker);
-                        currentInfoWindow = infowindow;
+                        currentCustomOverlay = customOverlay;
                         
                         // React Native로 마커 클릭 메시지 전송
                         if (window.ReactNativeWebView) {
@@ -1006,20 +1067,24 @@ const KakaoMap = ({
                       
                       // 마커 클릭 이벤트
                       kakao.maps.event.addListener(marker, 'click', function() {
-                        // 기존 InfoWindow 닫기
-                        if (currentInfoWindow) {
-                          currentInfoWindow.close();
+                        // 기존 커스텀 오버레이 제거
+                        if (currentCustomOverlay) {
+                          currentCustomOverlay.setMap(null);
                         }
                         
-                        // 새로운 InfoWindow 생성 및 표시
-                        var infowindow = new kakao.maps.InfoWindow({
-                          content: '<div style="padding:8px;font-size:12px;font-weight:600;color:#262423;text-align:center;min-width:80px;border-radius:3px;display:flex;align-items:center;justify-content:center;">' + festival.name + '</div>',
-                          removable: false,
-                          zIndex: 1000
+                        // 새로운 커스텀 오버레이 생성 및 표시
+                        var content = '<div class="customoverlay">' +
+                          '  <span class="title">' + festival.name + '</span>' +
+                          '</div>';
+                        
+                        var customOverlay = new kakao.maps.CustomOverlay({
+                          map: map,
+                          position: marker.getPosition(),
+                          content: content,
+                          yAnchor: 0
                         });
                         
-                        infowindow.open(map, marker);
-                        currentInfoWindow = infowindow;
+                        currentCustomOverlay = customOverlay;
                         
                         // React Native로 마커 클릭 메시지 전송
                         if (window.ReactNativeWebView) {

@@ -71,6 +71,8 @@ export default function Itinerary() {
         return "관광명소";
       case "RESTAURANT":
         return "식당/카페";
+      default:
+        return placeType || "장소";
     }
   };
 
@@ -133,6 +135,11 @@ export default function Itinerary() {
       }
 
       // 3. tripData 업데이트
+      console.log("🔄 tripData 업데이트 시작:", {
+        allDates,
+        travelScheduleList,
+      });
+
       setTripData((prev) => {
         const newDays = allDates.map((dateKey: string, index: number) => {
           // 해당 날짜의 장소들 찾기
@@ -147,6 +154,11 @@ export default function Itinerary() {
               longitude: item.longitude || 0,
               placeType: item.placeType || "장소",
             }));
+
+          console.log(`📅 ${dateKey} 날짜 처리:`, {
+            daySpots,
+            spotsCount: daySpots.length,
+          });
 
           // 한국어 날짜 번호
           const koreanNumbers = [
@@ -185,11 +197,14 @@ export default function Itinerary() {
           };
         });
 
-        return {
+        const result = {
           ...prev,
           dateRange: dateRange,
           days: newDays,
         };
+
+        console.log("✅ tripData 업데이트 완료:", result);
+        return result;
       });
 
       console.log("✅ 전역 상태에서 여행 일정 로드 완료:", {
@@ -307,6 +322,18 @@ export default function Itinerary() {
 
   // 선택된 지역들을 메모이제이션하여 불필요한 재렌더링 방지
   const memoizedRegions = useMemo(() => tripData.regions, [tripData.regions]);
+
+  // 선택된 날짜의 장소들을 메모이제이션
+  const selectedDaySpots = useMemo(() => {
+    const spots = tripData.days[selectedDay]?.spots || [];
+    console.log("🗺️ selectedDaySpots 메모이제이션:", {
+      selectedDay,
+      totalDays: tripData.days.length,
+      spots,
+      spotsCount: spots.length,
+    });
+    return spots;
+  }, [tripData.days, selectedDay]);
 
   const handleAddSpot = (dayIndex: number) => {
     // 장소 검색 화면으로 이동 (일정짜기에서 온 것을 표시)
@@ -827,10 +854,11 @@ export default function Itinerary() {
         </View>
         <View style={styles.map}>
           <ItineraryMap
+            key={`itinerary-map-${selectedDay}-${selectedDaySpots.length}`}
             latitude={currentLocation.latitude}
             longitude={currentLocation.longitude}
             regions={memoizedRegions}
-            selectedDaySpots={tripData.days[selectedDay]?.spots || []}
+            selectedDaySpots={selectedDaySpots}
             ref={webViewRef}
             onMessage={(event) => {
               try {

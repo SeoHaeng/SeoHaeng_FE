@@ -116,8 +116,8 @@ export const getRefreshToken = async (): Promise<string | null> => {
 // 사용자 ID 가져오기 (AsyncStorage에서)
 export const getUserId = async (): Promise<number | null> => {
   try {
-    const userId = await AsyncStorage.getItem(STORAGE_KEYS.USER_ID);
-    return userId ? parseInt(userId, 10) : null;
+    const userIdStr = await AsyncStorage.getItem(STORAGE_KEYS.USER_ID);
+    return userIdStr ? parseInt(userIdStr, 10) : null;
   } catch (error) {
     console.error("사용자 ID 조회 실패:", error);
     return null;
@@ -157,7 +157,7 @@ export const reissueToken = async (): Promise<boolean> => {
         userId,
       } = response.result;
 
-      if (!accessToken || !newRefreshToken || !userId) {
+      if (!accessToken || !newRefreshToken) {
         console.error(
           "토큰 재발급 응답 데이터가 유효하지 않습니다:",
           response.result,
@@ -165,8 +165,15 @@ export const reissueToken = async (): Promise<boolean> => {
         return false;
       }
 
+      // 기존 userId 가져오기 (재발급 시에는 userId가 응답에 없을 수 있음)
+      const existingUserId = await getUserId();
+      if (!existingUserId) {
+        console.error("기존 userId를 찾을 수 없습니다");
+        return false;
+      }
+
       // 새로운 토큰 저장
-      await saveToken(accessToken, newRefreshToken, userId);
+      await saveToken(accessToken, newRefreshToken, existingUserId);
       console.log("토큰 재발급 성공");
       return true;
     } else {

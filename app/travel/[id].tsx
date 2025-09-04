@@ -508,8 +508,9 @@ export default function TravelDetail() {
                           styles.timelineConnector,
                           {
                             width:
+                              (travelDetail.schedules.length - dayIndex) * 226 +
                               (travelDetail.schedules.length - dayIndex - 1) *
-                              350,
+                                10,
                           },
                         ]}
                       />

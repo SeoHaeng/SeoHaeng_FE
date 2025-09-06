@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   headerSubtitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },

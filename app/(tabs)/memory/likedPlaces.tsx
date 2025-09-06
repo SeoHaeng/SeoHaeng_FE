@@ -179,14 +179,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
   },
   countContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     paddingVertical: 15,
   },
   countText: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#666666",
     fontFamily: "SUIT-500",
   },

@@ -87,10 +87,6 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
         </head>
         <body>
           <div id="map"></div>
-          <div class="map-info">
-            <div>여행 일정 지도</div>
-            <div>장소 수: ${spots.length}개</div>
-          </div>
           <script>
             let map;
             let markers = [];

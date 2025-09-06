@@ -32,6 +32,7 @@ import {
   PanGestureHandlerGestureEvent,
   State,
 } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const router = useRouter();
@@ -342,207 +343,212 @@ export default function Index() {
   };
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* 상단 헤더 */}
-        <View style={styles.header}>
-          <Text style={styles.appTitle}>서행</Text>
-          <View style={styles.headerIcons}>
-            <TouchableOpacity style={styles.iconButton} onPress={openSideMenu}>
-              <Feather name="menu" size={24} color="#9D9896" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* 개인화된 북트립 섹션 - 어두운 배경 */}
-        <View style={styles.topSection}>
-          <View style={styles.greetingContainer}>
-            <Text style={styles.greetingText}>
-              <Text style={styles.userNameText}>
-                {userInfo?.nickName && userInfo.nickName.length > 18
-                  ? `${userInfo.nickName.slice(0, 18)}...`
-                  : userInfo?.nickName}
-                님의
-              </Text>
-              {"\n"}다음 강원 북트립은?
-            </Text>
-            {lastVisitDays !== null && (
-              <View style={styles.planButton}>
-                <Text style={styles.planButtonText}>D+{lastVisitDays}</Text>
-              </View>
-            )}
-          </View>
-        </View>
-
-        <View style={styles.middleSection}>
-          <TouchableOpacity
-            onPress={() => {
-              // 스탬프 투어 링크로 이동
-              Linking.openURL(
-                "https://playar.syrup.co.kr/stamp/main.html?eventId=S000047",
-              );
-            }}
-          >
-            <Image
-              source={require("@/assets/images/stamp_tour.png")}
-              style={{
-                width: "100%",
-                resizeMode: "contain",
-                alignSelf: "center",
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.bottomSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>나의 서행</Text>
-          </View>
-
-          {/* 여행 일정이 있는 경우 */}
-          {myTravelCourses.length > 0 ? (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.cardsScrollView}
-              contentContainerStyle={styles.cardsContainer}
-            >
-              {myTravelCourses &&
-                Array.isArray(myTravelCourses) &&
-                myTravelCourses.map((course) => (
-                  <TravelCard
-                    key={course.travelCourseId}
-                    {...formatTravelData(course)}
-                    onPress={() => {
-                      router.push({
-                        pathname: "/travel/[id]",
-                        params: { id: course.travelCourseId.toString() },
-                      });
-                    }}
-                  />
-                ))}
-            </ScrollView>
-          ) : (
-            /* 여행 일정이 없는 경우 빈 상태 화면 */
-            <View style={styles.emptyStateContainer}>
-              <Text style={styles.emptyStateTitle}>
-                아직 생성된 일정이 없어요.
-              </Text>
-              <Text style={styles.emptyStateSubtitle}>
-                나의 독서 여행 일정을 생성해보세요.
-              </Text>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <GestureHandlerRootView style={styles.container}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* 상단 헤더 */}
+          <View style={styles.header}>
+            <Text style={styles.appTitle}>서행</Text>
+            <View style={styles.headerIcons}>
               <TouchableOpacity
-                onPress={() =>
-                  router.push({
-                    pathname: "/plan",
-                    params: { from: "home" },
-                  })
-                }
+                style={styles.iconButton}
+                onPress={openSideMenu}
               >
-                <Text style={styles.createScheduleButtonText}>
-                  여행 일정 생성하기 &gt;
-                </Text>
+                <Feather name="menu" size={24} color="#9D9896" />
               </TouchableOpacity>
             </View>
-          )}
-        </View>
-
-        {/* 오늘의 추천 섹션 - 하얀 배경 */}
-        <View style={styles.recommendationSection}>
-          <Text style={styles.recommendationTitle}>
-            오늘의 &apos;추천, 강원도!&apos;
-          </Text>
-
-          {/* 추천 카드 */}
-          <View style={styles.recommendationCard}>
-            {/* 나머지 추천 장소 리스트 */}
-            <View style={styles.recommendationList}>
-              {todayRecommendations &&
-                Array.isArray(todayRecommendations) &&
-                todayRecommendations.map((item, index) => (
-                  <TouchableOpacity
-                    key={item.placeId}
-                    style={styles.recommendationItem}
-                    onPress={() => {
-                      // 장소 상세 페이지로 이동
-                      router.push({
-                        pathname: `/bookstore/[id]`,
-                        params: {
-                          id: item.placeId.toString(),
-                          from: "home",
-                        },
-                      });
-                    }}
-                  >
-                    <View style={styles.recommendationImageContainer}>
-                      <Image
-                        source={{ uri: item.imageUrl }}
-                        style={styles.recommendationImage}
-                        resizeMode="cover"
-                      />
-                    </View>
-                    <View style={styles.recommendationItemContent}>
-                      <Text style={styles.recommendationItemTitle}>
-                        {item.name}
-                      </Text>
-                      <Text
-                        style={styles.recommendationItemDescription}
-                        numberOfLines={2}
-                      >
-                        {item.overview}
-                      </Text>
-                    </View>
-                    <View style={styles.arrowContainer}>
-                      <Text style={styles.arrowIcon}>&gt;</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-            </View>
-
-            {/* 로딩 중이거나 데이터가 없는 경우 */}
-            {isLoadingRecommendations && (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="small" color="#E60A34" />
-                <Text style={styles.loadingText}>
-                  추천 장소를 불러오는 중...
-                </Text>
-              </View>
-            )}
-
-            {!isLoadingRecommendations && todayRecommendations.length === 0 && (
-              <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>
-                  오늘의 추천 장소가 없습니다.
-                </Text>
-              </View>
-            )}
           </View>
-        </View>
 
-        {/* 최신 공간 책갈피 섹션 - 어두운 배경 */}
-        <View style={styles.spaceBookmarkSection}>
-          <View style={styles.spaceBookmarkHeader}>
-            <View style={styles.spaceBookmarkTitleContainer}>
-              <Text style={styles.spaceBookmarkTitle}>최신 공간 책갈피</Text>
-              {/* <Text style={styles.spaceBookmarkSubtitle}>
-                좌우로 넘겨 책갈피를 저장하세요
-              </Text> */}
+          {/* 개인화된 북트립 섹션 - 어두운 배경 */}
+          <View style={styles.topSection}>
+            <View style={styles.greetingContainer}>
+              <Text style={styles.greetingText}>
+                <Text style={styles.userNameText}>
+                  {userInfo?.nickName && userInfo.nickName.length > 18
+                    ? `${userInfo.nickName.slice(0, 18)}...`
+                    : userInfo?.nickName}
+                  님의
+                </Text>
+                {"\n"}다음 강원 북트립은?
+              </Text>
+              {lastVisitDays !== null && (
+                <View style={styles.planButton}>
+                  <Text style={styles.planButtonText}>D+{lastVisitDays}</Text>
+                </View>
+              )}
             </View>
+          </View>
+
+          <View style={styles.middleSection}>
             <TouchableOpacity
               onPress={() => {
-                router.push("/(tabs)/maru/bookmark");
+                // 스탬프 투어 링크로 이동
+                Linking.openURL(
+                  "https://playar.syrup.co.kr/stamp/main.html?eventId=S000047",
+                );
               }}
             >
-              <Text style={styles.spaceBookmarkLink}>공간책갈피 &gt;</Text>
+              <Image
+                source={require("@/assets/images/stamp_tour.png")}
+                style={{
+                  width: "100%",
+                  resizeMode: "contain",
+                  alignSelf: "center",
+                }}
+              />
             </TouchableOpacity>
           </View>
 
-          {/* 스와이프 액션 버튼과 아이콘 */}
-          {/*  <View style={styles.swipeActionContainer}>
+          <View style={styles.bottomSection}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>나의 서행</Text>
+            </View>
+
+            {/* 여행 일정이 있는 경우 */}
+            {myTravelCourses.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.cardsScrollView}
+                contentContainerStyle={styles.cardsContainer}
+              >
+                {myTravelCourses &&
+                  Array.isArray(myTravelCourses) &&
+                  myTravelCourses.map((course) => (
+                    <TravelCard
+                      key={course.travelCourseId}
+                      {...formatTravelData(course)}
+                      onPress={() => {
+                        router.push({
+                          pathname: "/travel/[id]",
+                          params: { id: course.travelCourseId.toString() },
+                        });
+                      }}
+                    />
+                  ))}
+              </ScrollView>
+            ) : (
+              /* 여행 일정이 없는 경우 빈 상태 화면 */
+              <View style={styles.emptyStateContainer}>
+                <Text style={styles.emptyStateTitle}>
+                  아직 생성된 일정이 없어요.
+                </Text>
+                <Text style={styles.emptyStateSubtitle}>
+                  나의 독서 여행 일정을 생성해보세요.
+                </Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: "/plan",
+                      params: { from: "home" },
+                    })
+                  }
+                >
+                  <Text style={styles.createScheduleButtonText}>
+                    여행 일정 생성하기 &gt;
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+
+          {/* 오늘의 추천 섹션 - 하얀 배경 */}
+          <View style={styles.recommendationSection}>
+            <Text style={styles.recommendationTitle}>
+              오늘의 &apos;추천, 강원도!&apos;
+            </Text>
+
+            {/* 추천 카드 */}
+            <View style={styles.recommendationCard}>
+              {/* 나머지 추천 장소 리스트 */}
+              <View style={styles.recommendationList}>
+                {todayRecommendations &&
+                  Array.isArray(todayRecommendations) &&
+                  todayRecommendations.map((item, index) => (
+                    <TouchableOpacity
+                      key={item.placeId}
+                      style={styles.recommendationItem}
+                      onPress={() => {
+                        // 장소 상세 페이지로 이동
+                        router.push({
+                          pathname: `/bookstore/[id]`,
+                          params: {
+                            id: item.placeId.toString(),
+                            from: "home",
+                          },
+                        });
+                      }}
+                    >
+                      <View style={styles.recommendationImageContainer}>
+                        <Image
+                          source={{ uri: item.imageUrl }}
+                          style={styles.recommendationImage}
+                          resizeMode="cover"
+                        />
+                      </View>
+                      <View style={styles.recommendationItemContent}>
+                        <Text style={styles.recommendationItemTitle}>
+                          {item.name}
+                        </Text>
+                        <Text
+                          style={styles.recommendationItemDescription}
+                          numberOfLines={2}
+                        >
+                          {item.overview}
+                        </Text>
+                      </View>
+                      <View style={styles.arrowContainer}>
+                        <Text style={styles.arrowIcon}>&gt;</Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+              </View>
+
+              {/* 로딩 중이거나 데이터가 없는 경우 */}
+              {isLoadingRecommendations && (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="small" color="#E60A34" />
+                  <Text style={styles.loadingText}>
+                    추천 장소를 불러오는 중...
+                  </Text>
+                </View>
+              )}
+
+              {!isLoadingRecommendations &&
+                todayRecommendations.length === 0 && (
+                  <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>
+                      오늘의 추천 장소가 없습니다.
+                    </Text>
+                  </View>
+                )}
+            </View>
+          </View>
+
+          {/* 최신 공간 책갈피 섹션 - 어두운 배경 */}
+          <View style={styles.spaceBookmarkSection}>
+            <View style={styles.spaceBookmarkHeader}>
+              <View style={styles.spaceBookmarkTitleContainer}>
+                <Text style={styles.spaceBookmarkTitle}>최신 공간 책갈피</Text>
+                {/* <Text style={styles.spaceBookmarkSubtitle}>
+                좌우로 넘겨 책갈피를 저장하세요
+              </Text> */}
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  router.push("/(tabs)/maru/bookmark");
+                }}
+              >
+                <Text style={styles.spaceBookmarkLink}>공간책갈피 &gt;</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* 스와이프 액션 버튼과 아이콘 */}
+            {/*  <View style={styles.swipeActionContainer}>
             <TouchableOpacity style={styles.actionButton} onPress={handleSkip}>
               <Text style={styles.actionButtonText}>넘김</Text>
             </TouchableOpacity>
@@ -557,92 +563,95 @@ export default function Index() {
             </TouchableOpacity>
           </View> */}
 
-          {/* 카드 스택 */}
-          <View style={styles.cardStackContainer}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.horizontalScrollContainer}
-            >
-              {bookmarkData &&
-                bookmarkData.readingSpotList &&
-                Array.isArray(bookmarkData.readingSpotList) &&
-                bookmarkData.readingSpotList.map((spot, index) => {
-                  console.log("템플릿 렌더링:", {
-                    templateId: spot.templateId,
-                    title: spot.title,
-                  });
-                  return (
-                    <TouchableOpacity
-                      key={spot.readingSpotId}
-                      style={styles.mainCardContainer}
-                      onPress={() => {
-                        // 북마크 상세 페이지로 이동
-                        router.push({
-                          pathname: `/bookmark/[id]`,
-                          params: {
-                            id: spot.readingSpotId.toString(),
-                            from: "index",
-                          },
-                        });
-                      }}
-                    >
-                      <BookmarkTemplate
-                        width={360}
-                        height={360}
-                        templateId={spot.templateId}
-                      />
-                      <View style={styles.mainCard}>
-                        <Image
-                          source={{ uri: spot.readingSpotImages[0] }}
-                          style={styles.cardImage}
-                          resizeMode="cover"
+            {/* 카드 스택 */}
+            <View style={styles.cardStackContainer}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalScrollContainer}
+              >
+                {bookmarkData &&
+                  bookmarkData.readingSpotList &&
+                  Array.isArray(bookmarkData.readingSpotList) &&
+                  bookmarkData.readingSpotList.map((spot, index) => {
+                    console.log("템플릿 렌더링:", {
+                      templateId: spot.templateId,
+                      title: spot.title,
+                    });
+                    return (
+                      <TouchableOpacity
+                        key={spot.readingSpotId}
+                        style={styles.mainCardContainer}
+                        onPress={() => {
+                          // 북마크 상세 페이지로 이동
+                          router.push({
+                            pathname: `/bookmark/[id]`,
+                            params: {
+                              id: spot.readingSpotId.toString(),
+                              from: "index",
+                            },
+                          });
+                        }}
+                      >
+                        <BookmarkTemplate
+                          width={360}
+                          height={360}
+                          templateId={spot.templateId}
                         />
+                        <View style={styles.mainCard}>
+                          <Image
+                            source={{ uri: spot.readingSpotImages[0] }}
+                            style={styles.cardImage}
+                            resizeMode="cover"
+                          />
 
-                        {/* 카드 내용 */}
-                        <View style={styles.cardContent}>
-                          <Text style={styles.cardTitle}>
-                            {spot.title.length > 13
-                              ? `${spot.title.slice(0, 13)}...`
-                              : spot.title}
-                          </Text>
-                          <View style={styles.cardBottomRow}>
-                            <Text style={styles.cardAddress}>
-                              {spot.address.length > 18
-                                ? `${spot.address.slice(0, 18)}...`
-                                : spot.address}
+                          {/* 카드 내용 */}
+                          <View style={styles.cardContent}>
+                            <Text style={styles.cardTitle}>
+                              {spot.title.length > 13
+                                ? `${spot.title.slice(0, 13)}...`
+                                : spot.title}
                             </Text>
-                            <TouchableOpacity
-                              style={styles.scrapButton}
-                              onPress={() =>
-                                handleScrapPress(spot.readingSpotId)
-                              }
-                            >
-                              <ScrapIcon
-                                width={24}
-                                height={24}
-                                isActive={scrapedItems.has(spot.readingSpotId)}
-                                color={
-                                  scrapedItems.has(spot.readingSpotId)
-                                    ? "#262423"
-                                    : "#716C69"
+                            <View style={styles.cardBottomRow}>
+                              <Text style={styles.cardAddress}>
+                                {spot.address.length > 18
+                                  ? `${spot.address.slice(0, 18)}...`
+                                  : spot.address}
+                              </Text>
+                              <TouchableOpacity
+                                style={styles.scrapButton}
+                                onPress={() =>
+                                  handleScrapPress(spot.readingSpotId)
                                 }
-                              />
-                            </TouchableOpacity>
+                              >
+                                <ScrapIcon
+                                  width={24}
+                                  height={24}
+                                  isActive={scrapedItems.has(
+                                    spot.readingSpotId,
+                                  )}
+                                  color={
+                                    scrapedItems.has(spot.readingSpotId)
+                                      ? "#262423"
+                                      : "#716C69"
+                                  }
+                                />
+                              </TouchableOpacity>
+                            </View>
                           </View>
                         </View>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
-            </ScrollView>
+                      </TouchableOpacity>
+                    );
+                  })}
+              </ScrollView>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
 
-      {/* 사이드 메뉴 */}
-      <SideMenu visible={sideMenuVisible} onClose={closeSideMenu} />
-    </GestureHandlerRootView>
+        {/* 사이드 메뉴 */}
+        <SideMenu visible={sideMenuVisible} onClose={closeSideMenu} />
+      </GestureHandlerRootView>
+    </SafeAreaView>
   );
 }
 
@@ -722,6 +731,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF", // 중간 섹션 하얀 배경
     paddingHorizontal: 20,
     paddingVertical: 25,
+    paddingBottom: 10,
     borderTopLeftRadius: 20, // 상단 둥근 모서리
     borderTopRightRadius: 20, // 상단 둥근 모서리
     marginTop: -20, // 어두운 배경과 겹치도록

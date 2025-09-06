@@ -1118,8 +1118,8 @@ const styles = StyleSheet.create({
   mapContainer: {},
   mapDayTag: {
     position: "absolute",
-    top: 20,
-    left: 20,
+    top: 10,
+    left: 10,
     backgroundColor: "#262423",
     paddingHorizontal: 12,
     paddingVertical: 6,

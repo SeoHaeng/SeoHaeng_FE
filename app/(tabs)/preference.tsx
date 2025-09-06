@@ -218,9 +218,6 @@ export default function Preference() {
                     </Text>{" "}
                     전이에요.
                   </Text>
-                  <TouchableOpacity>
-                    <Text style={styles.viewAllText}>전체 보기 {">"}</Text>
-                  </TouchableOpacity>
                 </View>
               )}
             </View>

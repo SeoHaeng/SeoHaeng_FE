@@ -1,5 +1,4 @@
 // components/challenge/PopularChallengeBase.tsx
-import ScrapIcon from "@/components/icons/ScrapIcon";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export interface PopularChallengeProps {
@@ -61,9 +60,6 @@ export default function PopularChallengeBase({
               <View style={styles.tagContainer}>
                 <View style={styles.yearTag}>
                   <Text style={styles.tagText}>{year}</Text>
-                </View>
-                <View style={styles.scrapButton}>
-                  <ScrapIcon />
                 </View>
               </View>
             </View>

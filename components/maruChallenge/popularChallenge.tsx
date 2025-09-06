@@ -1,5 +1,4 @@
 // components/PopularChallenge.tsx
-import ScrapIcon from "@/components/icons/ScrapIcon";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface PopularChallengeItemProps {
@@ -68,12 +67,6 @@ export default function PopularChallenge({
                   <View style={styles.yearTag}>
                     <Text style={styles.tagText}>{year}</Text>
                   </View>
-                  <View style={styles.scrapButton}>
-                    <ScrapIcon
-                      size={9}
-                      color={likedByMe ? "#302E2D" : "#716C69"}
-                    />
-                  </View>
                 </View>
               </View>
             </View>
@@ -99,7 +92,7 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     position: "absolute",
-    top: -40,
+    top: -30,
     zIndex: 100,
     left: 15,
     width: 55,
@@ -123,7 +116,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginTop: 10,
+    marginTop: 15,
   },
   username: {
     fontSize: 15,

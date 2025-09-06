@@ -1226,7 +1226,7 @@ const styles = StyleSheet.create({
   },
   timelineConnector: {
     position: "absolute",
-    top: 31,
+    top: 32,
     left: 10,
     height: 2,
     backgroundColor: "transparent",

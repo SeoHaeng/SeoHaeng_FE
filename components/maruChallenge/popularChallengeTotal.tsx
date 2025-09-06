@@ -1,4 +1,3 @@
-import ScrapIcon from "@/components/icons/ScrapIcon";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface PopularChallengeItemProps {
@@ -81,12 +80,6 @@ export default function PopularChallengeTotal({
                 <View style={styles.tagContainer}>
                   <View style={styles.yearTag}>
                     <Text style={styles.tagText}>{year}</Text>
-                  </View>
-                  <View style={styles.scrapButton}>
-                    <ScrapIcon
-                      size={9}
-                      color={likedByMe ? "#302E2D" : "#716C69"}
-                    />
                   </View>
                 </View>
               </View>

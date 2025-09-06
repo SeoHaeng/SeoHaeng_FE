@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     justifyContent: "space-between",
     padding: 20,
-    marginBottom: 40,
+    marginBottom: 25,
   },
 
   viewAll: {

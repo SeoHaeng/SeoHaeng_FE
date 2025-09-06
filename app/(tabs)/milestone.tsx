@@ -2046,7 +2046,7 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     flexDirection: "row",
-    justifyContent: "space-between",
+    gap: 5,
   },
   filterButton: {
     backgroundColor: "#FFFFFF",

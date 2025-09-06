@@ -14,6 +14,26 @@ import {
   View,
 } from "react-native";
 
+// 이미지들을 개별적으로 import
+import 강릉 from "@/assets/images/gangwondo/강릉.jpg";
+import 고성 from "@/assets/images/gangwondo/고성.jpg";
+import 동해 from "@/assets/images/gangwondo/동해.jpg";
+import 삼척 from "@/assets/images/gangwondo/삼척.jpg";
+import 속초 from "@/assets/images/gangwondo/속초.jpg";
+import 양구 from "@/assets/images/gangwondo/양구.jpg";
+import 양양 from "@/assets/images/gangwondo/양양.jpg";
+import 영월 from "@/assets/images/gangwondo/영월.jpg";
+import 원주 from "@/assets/images/gangwondo/원주.jpg";
+import 인제 from "@/assets/images/gangwondo/인제.jpg";
+import 정선 from "@/assets/images/gangwondo/정선.jpg";
+import 철원 from "@/assets/images/gangwondo/철원.jpg";
+import 춘천 from "@/assets/images/gangwondo/춘천.jpg";
+import 태백 from "@/assets/images/gangwondo/태백.jpg";
+import 평창 from "@/assets/images/gangwondo/평창.jpg";
+import 홍천 from "@/assets/images/gangwondo/홍천.jpg";
+import 화천 from "@/assets/images/gangwondo/화천.jpg";
+import 횡성 from "@/assets/images/gangwondo/횡성.jpg";
+
 interface DestinationItem {
   id: string;
   name: string;
@@ -24,92 +44,92 @@ const destinations: DestinationItem[] = [
   {
     id: "1",
     name: "강릉",
-    imageUrl: require("@/assets/images/gangwondo/강릉.jpg"),
+    imageUrl: 강릉,
   },
   {
     id: "2",
     name: "속초",
-    imageUrl: require("@/assets/images/gangwondo/속초.jpg"),
+    imageUrl: 속초,
   },
   {
     id: "3",
     name: "춘천",
-    imageUrl: require("@/assets/images/gangwondo/춘천.jpg"),
+    imageUrl: 춘천,
   },
   {
     id: "4",
     name: "원주",
-    imageUrl: require("@/assets/images/gangwondo/원주.jpg"),
+    imageUrl: 원주,
   },
   {
     id: "5",
     name: "동해",
-    imageUrl: require("@/assets/images/gangwondo/동해.jpg"),
+    imageUrl: 동해,
   },
   {
     id: "6",
     name: "태백",
-    imageUrl: require("@/assets/images/gangwondo/태백.jpg"),
+    imageUrl: 태백,
   },
   {
     id: "7",
     name: "삼척",
-    imageUrl: require("@/assets/images/gangwondo/삼척.jpg"),
+    imageUrl: 삼척,
   },
   {
     id: "8",
     name: "홍천",
-    imageUrl: require("@/assets/images/gangwondo/홍천.jpg"),
+    imageUrl: 홍천,
   },
   {
     id: "9",
     name: "횡성",
-    imageUrl: require("@/assets/images/gangwondo/횡성.jpg"),
+    imageUrl: 횡성,
   },
   {
     id: "10",
     name: "영월",
-    imageUrl: require("@/assets/images/gangwondo/영월.jpg"),
+    imageUrl: 영월,
   },
   {
     id: "11",
     name: "평창",
-    imageUrl: require("@/assets/images/gangwondo/평창.jpg"),
+    imageUrl: 평창,
   },
   {
     id: "12",
     name: "정선",
-    imageUrl: require("@/assets/images/gangwondo/정선.jpg"),
+    imageUrl: 정선,
   },
   {
     id: "13",
     name: "철원",
-    imageUrl: require("@/assets/images/gangwondo/철원.jpg"),
+    imageUrl: 철원,
   },
   {
     id: "14",
     name: "화천",
-    imageUrl: require("@/assets/images/gangwondo/화천.jpg"),
+    imageUrl: 화천,
   },
   {
     id: "15",
     name: "양구",
-    imageUrl: require("@/assets/images/gangwondo/양구.jpg"),
+    imageUrl: 양구,
   },
   {
     id: "16",
     name: "인제",
-    imageUrl: require("@/assets/images/gangwondo/인제.jpg"),
+    imageUrl: 인제,
   },
   {
     id: "17",
     name: "고성",
-    imageUrl: require("@/assets/images/gangwondo/고성.jpg"),
+    imageUrl: 고성,
   },
   {
     id: "18",
     name: "양양",
-    imageUrl: require("@/assets/images/gangwondo/양양.jpg"),
+    imageUrl: 양양,
   },
 ];
 

@@ -17,7 +17,6 @@ import { useEffect, useState } from "react";
 import {
   Image,
   Keyboard,
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
@@ -301,223 +300,215 @@ export default function BookmarkDetail() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
+      {/*  <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
+      > */}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={{ paddingBottom: keyboardHeight + 80 }}
+        showsVerticalScrollIndicator={false}
       >
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={{ paddingBottom: keyboardHeight + 80 }}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* 헤더 */}
-          <View style={styles.header}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => {
-                if (fromScreen === "milestone") {
-                  // 이정표에서 온 경우
-                  router.push("/(tabs)/milestone");
-                } else if (fromScreen === "itinerary") {
-                  // 일정짜기에서 온 경우
-                  router.push("/itinerary");
-                } else if (fromScreen === "maruBookmark") {
-                  // maru/bookmark에서 온 경우
-                  router.push("/(tabs)/maru/bookmark");
-                } else {
-                  // 기본 뒤로가기
-                  router.back();
-                }
-              }}
-            >
-              <BackIcon />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>옆으로 넘겨보세요</Text>
-            <View style={styles.headerSpacer} />
-          </View>
-
-          {/* 메인 카드 */}
-          {/* 메인 카드와 소셜미디어 포스트를 가로 스크롤로 함께 넘기기 */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.horizontalScrollContainer}
+        {/* 헤더 */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              if (fromScreen === "milestone") {
+                // 이정표에서 온 경우
+                router.push("/(tabs)/milestone");
+              } else if (fromScreen === "itinerary") {
+                // 일정짜기에서 온 경우
+                router.push("/itinerary");
+              } else if (fromScreen === "maruBookmark") {
+                // maru/bookmark에서 온 경우
+                router.push("/(tabs)/maru/bookmark");
+              } else {
+                // 기본 뒤로가기
+                router.back();
+              }
+            }}
           >
-            {/* 메인 카드 */}
-            <View style={styles.mainCardContainer}>
-              <BookmarkTemplate
-                width={360}
-                height={360}
-                templateId={bookmarkDetail.templateId}
+            <BackIcon />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>옆으로 넘겨보세요</Text>
+          <View style={styles.headerSpacer} />
+        </View>
+
+        {/* 메인 카드 */}
+        {/* 메인 카드와 소셜미디어 포스트를 가로 스크롤로 함께 넘기기 */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalScrollContainer}
+        >
+          {/* 메인 카드 */}
+          <View style={styles.mainCardContainer}>
+            <BookmarkTemplate
+              width={360}
+              height={360}
+              templateId={bookmarkDetail.templateId}
+            />
+            <View style={styles.mainCard}>
+              <Image
+                source={{ uri: bookmarkDetail.readingSpotImages[0] }}
+                style={styles.cardImage}
+                resizeMode="cover"
               />
-              <View style={styles.mainCard}>
-                <Image
-                  source={{ uri: bookmarkDetail.readingSpotImages[0] }}
-                  style={styles.cardImage}
-                  resizeMode="cover"
-                />
 
-                {/* 카드 내용 */}
-                <View style={styles.cardContent}>
-                  <Text style={styles.cardTitle}>{bookmarkDetail.title}</Text>
-                  <Text style={styles.cardAddress}>
-                    {bookmarkDetail.address}
-                  </Text>
-                </View>
+              {/* 카드 내용 */}
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>{bookmarkDetail.title}</Text>
+                <Text style={styles.cardAddress}>{bookmarkDetail.address}</Text>
               </View>
-            </View>
-
-            {/* 소셜미디어 포스트 */}
-            <View style={styles.socialPost}>
-              <View style={styles.postHeader}>
-                <Image
-                  source={{ uri: bookmarkDetail.userProfilImage }}
-                  style={styles.userAvatar}
-                />
-                <Text style={styles.username}>
-                  {bookmarkDetail.userNickname}
-                </Text>
-                <Text style={styles.postDate}>
-                  {formatDate(bookmarkDetail.createdAt)}
-                </Text>
-              </View>
-
-              <Text style={styles.postContent}>{bookmarkDetail.content}</Text>
-
-              <View style={styles.bookRecommendation}>
-                <Image
-                  source={{ uri: bookmarkDetail.bookImage }}
-                  style={styles.bookCover}
-                />
-                <View style={styles.bookInfo}>
-                  <Text style={styles.bookTitle}>
-                    {bookmarkDetail.bookTitle}
-                  </Text>
-                  <Text style={styles.bookAuthor}>
-                    {bookmarkDetail.bookAuthor}
-                  </Text>
-                  <View style={styles.bookYearContainer}>
-                    <Text style={styles.bookYear}>
-                      {bookmarkDetail.bookPubDate?.split("-")[0] ||
-                        bookmarkDetail.bookPubDate}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </ScrollView>
-
-          {/* 상호작용 및 메타데이터 */}
-          <View style={styles.interactionSection}>
-            <TouchableOpacity
-              style={styles.bookmarkLocation}
-              onPress={() => {
-                if (bookmarkDetail.latitude && bookmarkDetail.longitude) {
-                  // 전역 뷰포트에 책갈피 위치 저장
-                  setViewport({
-                    north: bookmarkDetail.latitude + 0.01,
-                    south: bookmarkDetail.latitude - 0.01,
-                    east: bookmarkDetail.longitude + 0.01,
-                    west: bookmarkDetail.longitude - 0.01,
-                    center: {
-                      lat: bookmarkDetail.latitude,
-                      lng: bookmarkDetail.longitude,
-                    },
-                    zoom: 3,
-                  });
-
-                  // 이정표 화면으로 이동
-                  router.push("/(tabs)/milestone");
-                }
-              }}
-            >
-              <Text style={styles.bookmarkLocationText}>
-                이 책갈피 위치 &gt;
-              </Text>
-            </TouchableOpacity>
-
-            <View style={styles.statsContainer}>
-              <TouchableOpacity style={styles.statItem} onPress={toggleScrap}>
-                <ScrapIcon
-                  isActive={bookmarkDetail.scraped}
-                  color={bookmarkDetail.scraped ? "#56AC70" : "#C5BFBB"}
-                />
-                <Text style={styles.statNumber}>{bookmarkDetail.scraps}</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.statItem} onPress={toggleLike}>
-                <FilledHeartIcon
-                  isActive={bookmarkDetail.liked}
-                  color={bookmarkDetail.liked ? "#E55E5E" : "#C5BFBB"}
-                />
-                <Text style={styles.statNumber}>{bookmarkDetail.likes}</Text>
-              </TouchableOpacity>
             </View>
           </View>
 
-          {/* 댓글 섹션 */}
-          <View style={styles.commentsSection}>
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 16,
-                fontFamily: "SUIT-600",
-                marginBottom: 15,
-              }}
-            >
-              댓글 ({totalComments})
-            </Text>
-            {commentList.length > 0 ? (
-              commentList.map((comment) => (
-                <ChallengeComment
-                  key={comment.commentId}
-                  userName={comment.nickName || `사용자 ${comment.userId}`}
-                  date={formatDate(comment.createdAt)}
-                  text={comment.commentContent}
-                  color="#FFFFFF"
-                  userProfileImageUrl={comment.profileImageUrl}
-                />
-              ))
-            ) : (
-              <Text
-                style={{ color: "#FFFFFF", fontSize: 14, textAlign: "center" }}
-              >
-                아직 댓글이 없습니다.
+          {/* 소셜미디어 포스트 */}
+          <View style={styles.socialPost}>
+            <View style={styles.postHeader}>
+              <Image
+                source={{ uri: bookmarkDetail.userProfilImage }}
+                style={styles.userAvatar}
+              />
+              <Text style={styles.username}>{bookmarkDetail.userNickname}</Text>
+              <Text style={styles.postDate}>
+                {formatDate(bookmarkDetail.createdAt)}
               </Text>
-            )}
+            </View>
+
+            <Text style={styles.postContent}>{bookmarkDetail.content}</Text>
+
+            <View style={styles.bookRecommendation}>
+              <Image
+                source={{ uri: bookmarkDetail.bookImage }}
+                style={styles.bookCover}
+              />
+              <View style={styles.bookInfo}>
+                <Text style={styles.bookTitle}>{bookmarkDetail.bookTitle}</Text>
+                <Text style={styles.bookAuthor}>
+                  {bookmarkDetail.bookAuthor}
+                </Text>
+                <View style={styles.bookYearContainer}>
+                  <Text style={styles.bookYear}>
+                    {bookmarkDetail.bookPubDate?.split("-")[0] ||
+                      bookmarkDetail.bookPubDate}
+                  </Text>
+                </View>
+              </View>
+            </View>
           </View>
         </ScrollView>
 
-        {/* 댓글 입력 */}
-        <View
-          style={[
-            styles.commentInputContainer,
-            {
-              position: "absolute",
-              left: 0,
-              right: 0,
-              bottom: insets.bottom,
-            },
-          ]}
-        >
-          <TextInput
-            style={styles.commentInput}
-            placeholder="댓글을 남겨주세요"
-            placeholderTextColor="#9D9896"
-            value={comment}
-            onChangeText={setComment}
-            multiline={false}
-          />
+        {/* 상호작용 및 메타데이터 */}
+        <View style={styles.interactionSection}>
           <TouchableOpacity
-            style={styles.sendButton}
-            onPress={handleSubmitComment}
+            style={styles.bookmarkLocation}
+            onPress={() => {
+              if (bookmarkDetail.latitude && bookmarkDetail.longitude) {
+                // 전역 뷰포트에 책갈피 위치 저장
+                setViewport({
+                  north: bookmarkDetail.latitude + 0.01,
+                  south: bookmarkDetail.latitude - 0.01,
+                  east: bookmarkDetail.longitude + 0.01,
+                  west: bookmarkDetail.longitude - 0.01,
+                  center: {
+                    lat: bookmarkDetail.latitude,
+                    lng: bookmarkDetail.longitude,
+                  },
+                  zoom: 3,
+                });
+
+                // 이정표 화면으로 이동
+                router.push("/(tabs)/milestone");
+              }
+            }}
           >
-            <Text style={styles.sendButtonText}>
-              {comment.trim() ? "등록" : "등록"}
-            </Text>
+            <Text style={styles.bookmarkLocationText}>이 책갈피 위치 &gt;</Text>
           </TouchableOpacity>
+
+          <View style={styles.statsContainer}>
+            <TouchableOpacity style={styles.statItem} onPress={toggleScrap}>
+              <ScrapIcon
+                isActive={bookmarkDetail.scraped}
+                color={bookmarkDetail.scraped ? "#56AC70" : "#C5BFBB"}
+              />
+              <Text style={styles.statNumber}>{bookmarkDetail.scraps}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.statItem} onPress={toggleLike}>
+              <FilledHeartIcon
+                isActive={bookmarkDetail.liked}
+                color={bookmarkDetail.liked ? "#E55E5E" : "#C5BFBB"}
+              />
+              <Text style={styles.statNumber}>{bookmarkDetail.likes}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </KeyboardAvoidingView>
+
+        {/* 댓글 섹션 */}
+        <View style={styles.commentsSection}>
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontSize: 16,
+              fontFamily: "SUIT-600",
+              marginBottom: 15,
+            }}
+          >
+            댓글 ({totalComments})
+          </Text>
+          {commentList.length > 0 ? (
+            commentList.map((comment) => (
+              <ChallengeComment
+                key={comment.commentId}
+                userName={comment.nickName || `사용자 ${comment.userId}`}
+                date={formatDate(comment.createdAt)}
+                text={comment.commentContent}
+                color="#FFFFFF"
+                userProfileImageUrl={comment.profileImageUrl}
+              />
+            ))
+          ) : (
+            <Text
+              style={{ color: "#FFFFFF", fontSize: 14, textAlign: "center" }}
+            >
+              아직 댓글이 없습니다.
+            </Text>
+          )}
+        </View>
+      </ScrollView>
+
+      {/* 댓글 입력 */}
+      <View
+        style={[
+          styles.commentInputContainer,
+          {
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: insets.bottom,
+          },
+        ]}
+      >
+        <TextInput
+          style={styles.commentInput}
+          placeholder="댓글을 남겨주세요"
+          placeholderTextColor="#9D9896"
+          value={comment}
+          onChangeText={setComment}
+          multiline={false}
+        />
+        <TouchableOpacity
+          style={styles.sendButton}
+          onPress={handleSubmitComment}
+        >
+          <Text style={styles.sendButtonText}>
+            {comment.trim() ? "등록" : "등록"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      {/*  </KeyboardAvoidingView> */}
     </SafeAreaView>
   );
 }

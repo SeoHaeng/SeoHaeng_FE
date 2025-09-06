@@ -20,7 +20,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 interface SideMenuProps {
   visible: boolean;
@@ -204,6 +203,7 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
       visible={visible}
       transparent
       animationType="none"
+      presentationStyle="overFullScreen"
       onRequestClose={handleClose}
     >
       <View style={styles.overlay}>
@@ -229,7 +229,7 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
             },
           ]}
         >
-          <SafeAreaView style={styles.menuContent}>
+          <View style={styles.menuContent}>
             {/* 사용자 프로필 섹션 */}
             <View style={styles.profileSection}>
               <View style={styles.profileIcon}>
@@ -295,7 +295,7 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                 <Text style={styles.arrowIcon}>›</Text>
               </TouchableOpacity>
             </View>
-          </SafeAreaView>
+          </View>
         </Animated.View>
       </View>
 
@@ -320,6 +320,8 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     flexDirection: "row",
+    marginTop: 0,
+    paddingTop: 0,
   },
   backdrop: {
     flex: 1,
@@ -332,11 +334,17 @@ const styles = StyleSheet.create({
     width: width * 0.8,
     height: "100%",
     backgroundColor: "#F8F4F2",
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    marginTop: 0,
+    paddingTop: 0,
   },
   menuContent: {
     flex: 1,
     padding: 20,
-    paddingTop: 40,
+    paddingTop: 30,
   },
   profileSection: {
     flexDirection: "row",

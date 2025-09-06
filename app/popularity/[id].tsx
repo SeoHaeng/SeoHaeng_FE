@@ -210,8 +210,8 @@ export default function ChallengeDetail() {
           }}
           style={{
             position: "absolute",
-            top: 20,
-            left: 20,
+            top: 10,
+            left: 10,
             zIndex: 1,
             width: 44,
             height: 44,

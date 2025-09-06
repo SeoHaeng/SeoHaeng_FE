@@ -180,7 +180,7 @@ export default function SignInScreen() {
       <View style={styles.formContainer}>
         {/* 이메일/아이디 입력 */}
         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>아이디 또는 이메일 주소</Text>
+          <Text style={styles.inputLabel}>아이디</Text>
           <TextInput
             style={styles.textInput}
             value={email}
@@ -188,7 +188,7 @@ export default function SignInScreen() {
               setEmail(text);
               if (errorMessage) setErrorMessage("");
             }}
-            placeholder="아이디 또는 이메일 주소를 입력하세요"
+            placeholder="아이디를 입력하세요"
             placeholderTextColor="#9E9E9E"
           />
           {email.length > 0 && (

@@ -1,4 +1,7 @@
+import HotPlaceIcon from "@/components/icons/HotPlaceIcon";
 import IndependentBookstoreIcon from "@/components/icons/IndependentBookstoreIcon";
+import RestaurantIcon from "@/components/icons/RestaurantIcon";
+import TouristSpotIcon from "@/components/icons/TouristSpotIcon";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -11,6 +14,22 @@ export default function BookstoreBadge({
   placeType,
   text,
 }: BookstoreBadgeProps) {
+  // placeType에 따라 아이콘 결정
+  const getIcon = () => {
+    switch (placeType) {
+      case "TOURIST_SPOT":
+        return <TouristSpotIcon width={12} height={12} />;
+      case "RESTAURANT":
+        return <RestaurantIcon width={12} height={12} />;
+      case "BOOKSTORE":
+        return <IndependentBookstoreIcon width={12} height={12} />;
+      case "FESTIVAL":
+        return <HotPlaceIcon width={12} height={12} />;
+      default:
+        return <IndependentBookstoreIcon width={12} height={12} />;
+    }
+  };
+
   // placeType에 따라 badgeText 결정
   const getBadgeText = () => {
     if (text) return text; // text prop이 있으면 우선 사용
@@ -24,20 +43,12 @@ export default function BookstoreBadge({
         return "독립서점";
       case "FESTIVAL":
         return "축제";
-      case "BOOK_CAFE":
-        return "북카페";
-      case "SPACE_BOOKMARK":
-        return "독서공간";
-      case "BOOK_STAY":
-        return "북스테이";
-      default:
-        return "독립서점";
     }
   };
 
   return (
     <View style={styles.badgeContainer}>
-      <IndependentBookstoreIcon width={10} height={10} />
+      {getIcon()}
       <Text style={styles.badgeText}>{getBadgeText()}</Text>
     </View>
   );
@@ -48,12 +59,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#DBD6D3",
-    borderRadius: 5,
-    paddingHorizontal: 3,
-    paddingVertical: 2,
+    borderRadius: 7,
+    paddingHorizontal: 5,
+    paddingVertical: 4,
   },
   badgeText: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginLeft: 3,

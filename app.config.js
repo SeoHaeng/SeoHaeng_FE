@@ -9,14 +9,15 @@ export default {
     userInterfaceStyle: "automatic",
     splash: {
       image: "./assets/images/splash.png",
-      resizeMode: "contain",
+      resizeMode: "cover",
+      backgroundColor: "#FFFFFF",
     },
     assetBundlePatterns: ["**/*"],
     ios: {
       supportsTablet: true,
     },
     android: {
-      package: process.env.ANDROID_PACKAGE_NAME,
+      package: "com.gyurijake.seohaengfe",
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
       },

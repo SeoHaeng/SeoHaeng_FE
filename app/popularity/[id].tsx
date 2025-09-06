@@ -5,29 +5,29 @@ import PlaceIcon from "@/components/icons/PlaceIcon";
 import ChallengeComment from "@/components/maruChallenge/detail/comment";
 import GiftBook from "@/components/maruChallenge/detail/giftBook";
 import {
-    createBookChallengeCommentAPI,
-    getBookChallengeCommentListAPI,
-    getBookChallengeDetailAPI,
-    getUserByIdAPI,
-    toggleBookChallengeLikeAPI,
+  createBookChallengeCommentAPI,
+  getBookChallengeCommentListAPI,
+  getBookChallengeDetailAPI,
+  getUserByIdAPI,
+  toggleBookChallengeLikeAPI,
 } from "@/types/api";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
-    Dimensions,
-    Image,
-    Keyboard,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  Image,
+  Keyboard,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import {
-    SafeAreaView,
-    useSafeAreaInsets,
+  SafeAreaView,
+  useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
 // 날짜를 "X일 전" 형식으로 변환하는 함수

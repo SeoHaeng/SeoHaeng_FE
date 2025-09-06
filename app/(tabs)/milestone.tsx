@@ -1997,7 +1997,7 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     position: "absolute",
-    top: 30,
+    top: 50,
     left: 20,
     right: 20,
     height: 50,
@@ -2042,7 +2042,7 @@ const styles = StyleSheet.create({
 
   filterContainer: {
     position: "absolute",
-    top: 90,
+    top: 110,
     left: 20,
     right: 20,
     flexDirection: "row",
@@ -2076,7 +2076,7 @@ const styles = StyleSheet.create({
   },
   myLocationButton: {
     position: "absolute",
-    top: 135,
+    top: 155,
     left: 20,
     width: 45,
     height: 45,

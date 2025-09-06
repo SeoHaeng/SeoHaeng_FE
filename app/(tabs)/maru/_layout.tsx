@@ -2,6 +2,7 @@
 import Foundation from "@expo/vector-icons/Foundation";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // 상단 탭 컴포넌트
 function CustomHeader() {
@@ -61,7 +62,10 @@ function CustomHeader() {
 // 메인 레이아웃
 export default function MaruLayout() {
   return (
-    <View style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "#FFFFFF" }}
+      edges={["top"]}
+    >
       <CustomHeader />
       <Stack
         screenOptions={{
@@ -75,7 +79,7 @@ export default function MaruLayout() {
         <Stack.Screen name="challenge" />
         <Stack.Screen name="challengeInfo" />
       </Stack>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -85,7 +89,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#FFFFFF",
-    paddingTop: 20,
+    paddingTop: 10,
     paddingHorizontal: 10,
   },
   tabsContainer: {

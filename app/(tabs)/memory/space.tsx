@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 5,
   },
   subTab: {
     paddingHorizontal: 12,

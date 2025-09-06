@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import SpaceView from "./space";
 import StampView from "./stamp";
 
@@ -7,7 +8,7 @@ export default function MemoryLayout() {
   const [activeTab, setActiveTab] = useState("내 공간");
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       {/* 상단 탭 */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -42,7 +43,7 @@ export default function MemoryLayout() {
 
       {/* 메인 콘텐츠 */}
       {activeTab === "스탬프" ? <StampView /> : <SpaceView />}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
-    paddingTop: 20,
+    paddingTop: 10,
     paddingHorizontal: 10,
   },
   tab: {

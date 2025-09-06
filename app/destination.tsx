@@ -7,12 +7,12 @@ import React, { useState } from "react";
 import {
   FlatList,
   Image,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // 이미지들을 개별적으로 import
 import 강릉 from "@/assets/images/gangwondo/강릉.jpg";
@@ -224,7 +224,7 @@ export default function Destination() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.push("/plan")}>
           <BackIcon />

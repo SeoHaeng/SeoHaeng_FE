@@ -80,6 +80,8 @@ export default function DatePickerModal({
       visible={visible}
       transparent={true}
       animationType="slide"
+      presentationStyle="overFullScreen"
+      statusBarTranslucent={true}
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
@@ -101,6 +103,7 @@ export default function DatePickerModal({
           <Calendar
             current={new Date().toISOString().split("T")[0]}
             onDayPress={handleDateSelect}
+            maxDate={new Date().toISOString().split("T")[0]} // 오늘까지만 선택 가능
             markedDates={{
               [selectedDate]: {
                 selected: true,
@@ -150,7 +153,13 @@ export default function DatePickerModal({
 
 const styles = StyleSheet.create({
   modalOverlay: {
-    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    margin: 0,
+    padding: 0,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "flex-end",
   },

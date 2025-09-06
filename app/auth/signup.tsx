@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import {
   Alert,
   Linking,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -14,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import BackIcon from "../../components/icons/BackIcon";
 import { API_BASE_URL } from "../../config/api";
 import { checkNicknameAPI, checkUsernameAPI } from "../../types/api";
@@ -241,7 +241,7 @@ export default function SignUpScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <StatusBar barStyle="dark-content" />
 
       {/* 헤더 */}
@@ -589,16 +589,6 @@ export default function SignUpScreen() {
           {signupError ? (
             <Text style={styles.validationError}>{signupError}</Text>
           ) : null}
-        </View>
-
-        {/* 하단 링크 */}
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity onPress={handleSignIn}>
-            <Text style={styles.bottomText}>
-              이미 계정이 있으신가요?{" "}
-              <Text style={styles.signInLink}>로그인 하기</Text> &gt;
-            </Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

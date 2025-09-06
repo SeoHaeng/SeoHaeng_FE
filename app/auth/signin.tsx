@@ -4,7 +4,6 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -12,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../components/AuthProvider";
 import BackIcon from "../../components/icons/BackIcon";
 import KakaoIcon from "../../components/icons/KakaoIcon";
@@ -165,7 +165,7 @@ export default function SignInScreen() {
     validateEmail(email) && validatePassword(password);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <StatusBar barStyle="dark-content" />
 
       {/* 헤더 */}

@@ -14,13 +14,13 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface TravelCourseDetail {
   travelCourseId: number;
@@ -318,7 +318,7 @@ export default function TravelDetail() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["top"]}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#E60A34" />
           <Text style={styles.loadingText}>여행 정보를 불러오는 중...</Text>
@@ -329,7 +329,7 @@ export default function TravelDetail() {
 
   if (error || !travelDetail) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["top"]}>
         <View style={styles.errorContainer}>
           <Text style={styles.errorTitle}>오류가 발생했습니다</Text>
           <Text style={styles.errorMessage}>
@@ -347,7 +347,7 @@ export default function TravelDetail() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <TouchableOpacity
         style={styles.container}
         onPress={handleScreenPress}
@@ -513,7 +513,30 @@ export default function TravelDetail() {
                                 10,
                           },
                         ]}
-                      />
+                      >
+                        {Array.from(
+                          {
+                            length: Math.floor(
+                              ((travelDetail.schedules.length - dayIndex) *
+                                226 +
+                                (travelDetail.schedules.length - dayIndex - 1) *
+                                  10) /
+                                8,
+                            ),
+                          },
+                          (_, index) => (
+                            <View
+                              key={index}
+                              style={[
+                                styles.dashSegment,
+                                {
+                                  left: index * 8,
+                                },
+                              ]}
+                            />
+                          ),
+                        )}
+                      </View>
                     )}
                   </TouchableOpacity>
                 ))}
@@ -644,8 +667,8 @@ const styles = StyleSheet.create({
   mapContainer: {},
   mapDayTag: {
     position: "absolute",
-    top: 20,
-    left: 20,
+    top: 10,
+    left: 10,
     backgroundColor: "#262423",
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -694,6 +717,7 @@ const styles = StyleSheet.create({
     paddingRight: 100,
     minWidth: "100%",
     paddingLeft: 20,
+    marginVertical: 20,
   },
   timeline: {
     flexDirection: "row",
@@ -726,13 +750,17 @@ const styles = StyleSheet.create({
   },
   timelineConnector: {
     position: "absolute",
-    top: 30,
+    top: 31,
     left: 10,
+    height: 2,
+    backgroundColor: "transparent",
+  },
+  dashSegment: {
+    position: "absolute",
+    top: 0,
+    width: 4,
     height: 1,
     backgroundColor: "#C5BFBB",
-    borderStyle: "dashed",
-    borderWidth: 1,
-    borderColor: "#C5BFBB",
   },
   timelineDate: {
     fontSize: 14,
@@ -746,13 +774,13 @@ const styles = StyleSheet.create({
   },
   dayCardsContainer: {
     paddingHorizontal: 0,
-    paddingBottom: 20,
+    paddingBottom: 0,
     paddingLeft: 10,
     paddingRight: 100,
   },
   dayCard: {
     width: 226,
-    height: 200,
+    height: "100%",
     borderRadius: 8,
     marginLeft: 10,
     marginRight: 10,

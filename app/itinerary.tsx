@@ -8,13 +8,13 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   Animated,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface ItinerarySpot {
   id: string;
@@ -676,7 +676,28 @@ export default function Itinerary() {
                           (tripData.days.length - dayIndex - 1) * 10,
                       },
                     ]}
-                  />
+                  >
+                    {Array.from(
+                      {
+                        length: Math.floor(
+                          ((tripData.days.length - dayIndex) * 226 +
+                            (tripData.days.length - dayIndex - 1) * 10) /
+                            8,
+                        ),
+                      },
+                      (_, index) => (
+                        <View
+                          key={index}
+                          style={[
+                            styles.dashSegment,
+                            {
+                              left: index * 8,
+                            },
+                          ]}
+                        />
+                      ),
+                    )}
+                  </View>
                 )}
               </View>
             ))}
@@ -765,7 +786,7 @@ export default function Itinerary() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
@@ -1138,13 +1159,13 @@ const styles = StyleSheet.create({
   },
   mapDayNumber: {
     color: "#FFFFFF",
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: "SUIT-700",
     fontWeight: "bold",
   },
   mapDayDate: {
     color: "#9D9896",
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: "SUIT-500",
   },
   map: {
@@ -1205,13 +1226,17 @@ const styles = StyleSheet.create({
   },
   timelineConnector: {
     position: "absolute",
-    top: 30,
+    top: 31,
     left: 10,
+    height: 2,
+    backgroundColor: "transparent",
+  },
+  dashSegment: {
+    position: "absolute",
+    top: 0,
+    width: 4,
     height: 1,
     backgroundColor: "#C5BFBB",
-    borderStyle: "dashed",
-    borderWidth: 1,
-    borderColor: "#C5BFBB",
   },
   timelineDate: {
     fontSize: 14,
@@ -1225,13 +1250,13 @@ const styles = StyleSheet.create({
   },
   dayCardsContainer: {
     paddingHorizontal: 0,
-    paddingBottom: 20,
+    paddingBottom: 0,
     paddingLeft: 10,
-    paddingRight: 100, // 마지막 카드까지 스크롤할 수 있도록 여유 공간 추가
+    paddingRight: 100,
   },
   dayCard: {
     width: 226,
-    height: 200,
+    height: "100%",
     borderRadius: 8,
     marginLeft: 10,
     marginRight: 10,

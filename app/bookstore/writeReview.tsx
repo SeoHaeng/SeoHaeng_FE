@@ -139,181 +139,183 @@ export default function WriteReview() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+    <>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoidingView}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          {/* 헤더 */}
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={styles.backButton}
-            >
-              <BackIcon />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>후기 작성</Text>
-          </View>
-
-          {/* 서점 정보 */}
-          <View style={styles.bookstoreInfo}>
-            {placeInfo?.placeImageUrls &&
-            placeInfo.placeImageUrls.length > 0 ? (
-              <Image
-                source={{ uri: placeInfo.placeImageUrls[0] }}
-                style={styles.bookstoreImage}
-              />
-            ) : (
-              <View style={styles.bookstoreImage} />
-            )}
-            <View style={styles.bookstoreDetails}>
-              <View style={styles.bookstoreHeader}>
-                <Text style={styles.bookstoreName}>
-                  {placeInfo?.name || "장소명"}
-                </Text>
-                <BookstoreBadge placeType={placeInfo?.placeType} />
-              </View>
-              <View style={styles.locationContainer}>
-                <PlaceIcon width={11} height={15} />
-                <Text style={styles.locationText}>
-                  {placeInfo?.address || "주소 정보 없음"}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* 평점 섹션 */}
-          <View style={styles.ratingSection}>
-            {renderStars()}
-            <View style={styles.ratingTooltip}>
-              <View style={styles.tooltipTriangle} />
-              <Text style={styles.tooltipText}>공간에 만족하셨나요?</Text>
-            </View>
-          </View>
-
-          {/* 이미지 업로드 섹션 */}
-          <View style={styles.imageSection}>
-            <Text style={styles.sectionTitle}>이미지를 추가해주세요</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.imageScrollContainer}
-            >
-              {selectedImages.length < 10 && (
-                <TouchableOpacity
-                  style={styles.imageUploadButton}
-                  onPress={pickImage}
-                >
-                  <CameraEnhanceIcon />
-                  <Text style={styles.imageCount}>
-                    {selectedImages.length}/10
-                  </Text>
-                </TouchableOpacity>
-              )}
-              {selectedImages.map((uri, index) => (
-                <View key={index} style={styles.selectedImageWrapper}>
-                  <View style={styles.selectedImageContainer}>
-                    <Image source={{ uri }} style={styles.selectedImage} />
-                    <Text style={styles.representativeText}>대표사진</Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.removeImageButton}
-                    onPress={() => removeImage(index)}
-                  >
-                    <Feather name="x" size={13} color="white" />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-
-          {/* 방문 날짜 섹션 */}
-          <View style={styles.dateSection}>
-            <Text style={styles.sectionTitle}>언제 방문했나요?</Text>
-            <TouchableOpacity
-              style={styles.dateInput}
-              onPress={() => setIsDatePickerVisible(true)}
-            >
-              <Text
-                style={[
-                  styles.datePlaceholder,
-                  selectedDate && styles.selectedDateText,
-                ]}
-              >
-                {formatSelectedDate(selectedDate)}
-              </Text>
-              <CalendarIcon width={20} height={20} />
-            </TouchableOpacity>
-          </View>
-
-          {/* 후기 작성 섹션 */}
-          <View style={styles.reviewSection}>
-            <Text style={styles.sectionTitle}>후기를 작성해주세요</Text>
-            <View style={styles.textInputContainer}>
-              <TextInput
-                style={[
-                  styles.textInput,
-                  reviewText.length > 0 &&
-                    reviewText.length < 10 &&
-                    styles.textInputError,
-                ]}
-                placeholder="책을 읽고 느꼈던 생각이나, 장소에 대한 감정을 간단히 적어보세요. 책과 여행의 여운이 더 오래 남을 거예요."
-                placeholderTextColor="#9D9896"
-                multiline
-                value={reviewText}
-                onChangeText={setReviewText}
-                maxLength={200}
-              />
-              <Text style={styles.characterCount}>
-                {reviewText.length}/200 자
-              </Text>
-            </View>
-            {reviewText.length > 0 && reviewText.length < 10 && (
-              <Text style={styles.errorMessage}>
-                최소 10자 이상 입력해주세요.
-              </Text>
-            )}
-          </View>
-
-          {/* 스크롤 끝에 여백 추가 */}
-          <View style={styles.bottomPadding} />
-        </ScrollView>
-
-        {/* 작성 완료 버튼 - 고정 */}
-        <View style={styles.fixedButtonContainer}>
-          <TouchableOpacity
-            style={[
-              styles.completeButton,
-              rating > 0 && selectedDate && reviewText.length >= 10
-                ? styles.completeButtonActive
-                : styles.completeButtonDisabled,
-            ]}
-            disabled={
-              !(rating > 0 && selectedDate && reviewText.length >= 10) ||
-              isSubmitting
-            }
-            onPress={handleSubmitReview}
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <Text style={[styles.completeButtonText]}>
-              {isSubmitting ? "작성 중..." : "작성 완료"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
+            {/* 헤더 */}
+            <View style={styles.header}>
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={styles.backButton}
+              >
+                <BackIcon />
+              </TouchableOpacity>
+              <Text style={styles.headerTitle}>후기 작성</Text>
+            </View>
 
-      {/* 달력 모달 */}
+            {/* 서점 정보 */}
+            <View style={styles.bookstoreInfo}>
+              {placeInfo?.placeImageUrls &&
+              placeInfo.placeImageUrls.length > 0 ? (
+                <Image
+                  source={{ uri: placeInfo.placeImageUrls[0] }}
+                  style={styles.bookstoreImage}
+                />
+              ) : (
+                <View style={styles.bookstoreImage} />
+              )}
+              <View style={styles.bookstoreDetails}>
+                <View style={styles.bookstoreHeader}>
+                  <Text style={styles.bookstoreName}>
+                    {placeInfo?.name || "장소명"}
+                  </Text>
+                  <BookstoreBadge placeType={placeInfo?.placeType} />
+                </View>
+                <View style={styles.locationContainer}>
+                  <PlaceIcon width={11} height={15} />
+                  <Text style={styles.locationText}>
+                    {placeInfo?.address || "주소 정보 없음"}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* 평점 섹션 */}
+            <View style={styles.ratingSection}>
+              {renderStars()}
+              <View style={styles.ratingTooltip}>
+                <View style={styles.tooltipTriangle} />
+                <Text style={styles.tooltipText}>공간에 만족하셨나요?</Text>
+              </View>
+            </View>
+
+            {/* 이미지 업로드 섹션 */}
+            <View style={styles.imageSection}>
+              <Text style={styles.sectionTitle}>이미지를 추가해주세요</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.imageScrollContainer}
+              >
+                {selectedImages.length < 10 && (
+                  <TouchableOpacity
+                    style={styles.imageUploadButton}
+                    onPress={pickImage}
+                  >
+                    <CameraEnhanceIcon />
+                    <Text style={styles.imageCount}>
+                      {selectedImages.length}/10
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                {selectedImages.map((uri, index) => (
+                  <View key={index} style={styles.selectedImageWrapper}>
+                    <View style={styles.selectedImageContainer}>
+                      <Image source={{ uri }} style={styles.selectedImage} />
+                      <Text style={styles.representativeText}>대표사진</Text>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.removeImageButton}
+                      onPress={() => removeImage(index)}
+                    >
+                      <Feather name="x" size={13} color="white" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+
+            {/* 방문 날짜 섹션 */}
+            <View style={styles.dateSection}>
+              <Text style={styles.sectionTitle}>언제 방문했나요?</Text>
+              <TouchableOpacity
+                style={styles.dateInput}
+                onPress={() => setIsDatePickerVisible(true)}
+              >
+                <Text
+                  style={[
+                    styles.datePlaceholder,
+                    selectedDate && styles.selectedDateText,
+                  ]}
+                >
+                  {formatSelectedDate(selectedDate)}
+                </Text>
+                <CalendarIcon width={20} height={20} />
+              </TouchableOpacity>
+            </View>
+
+            {/* 후기 작성 섹션 */}
+            <View style={styles.reviewSection}>
+              <Text style={styles.sectionTitle}>후기를 작성해주세요</Text>
+              <View style={styles.textInputContainer}>
+                <TextInput
+                  style={[
+                    styles.textInput,
+                    reviewText.length > 0 &&
+                      reviewText.length < 10 &&
+                      styles.textInputError,
+                  ]}
+                  placeholder="책을 읽고 느꼈던 생각이나, 장소에 대한 감정을 간단히 적어보세요. 책과 여행의 여운이 더 오래 남을 거예요."
+                  placeholderTextColor="#9D9896"
+                  multiline
+                  value={reviewText}
+                  onChangeText={setReviewText}
+                  maxLength={200}
+                />
+                <Text style={styles.characterCount}>
+                  {reviewText.length}/200 자
+                </Text>
+              </View>
+              {reviewText.length > 0 && reviewText.length < 10 && (
+                <Text style={styles.errorMessage}>
+                  최소 10자 이상 입력해주세요.
+                </Text>
+              )}
+            </View>
+
+            {/* 스크롤 끝에 여백 추가 */}
+            <View style={styles.bottomPadding} />
+          </ScrollView>
+
+          {/* 작성 완료 버튼 - 고정 */}
+          <View style={styles.fixedButtonContainer}>
+            <TouchableOpacity
+              style={[
+                styles.completeButton,
+                rating > 0 && selectedDate && reviewText.length >= 10
+                  ? styles.completeButtonActive
+                  : styles.completeButtonDisabled,
+              ]}
+              disabled={
+                !(rating > 0 && selectedDate && reviewText.length >= 10) ||
+                isSubmitting
+              }
+              onPress={handleSubmitReview}
+            >
+              <Text style={[styles.completeButtonText]}>
+                {isSubmitting ? "작성 중..." : "작성 완료"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+
+      {/* 달력 모달 - SafeAreaView 밖에 위치 */}
       <DatePickerModal
         visible={isDatePickerVisible}
         onClose={() => setIsDatePickerVisible(false)}
         onDateSelect={(date) => setSelectedDate(date)}
       />
-    </SafeAreaView>
+    </>
   );
 }
 

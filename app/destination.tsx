@@ -5,8 +5,8 @@ import Feather from "@expo/vector-icons/Feather";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-  FlatList,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// 이미지들을 개별적으로 import
+// 이미지들을 직접 import
 import 강릉 from "@/assets/images/gangwondo/강릉.jpg";
 import 고성 from "@/assets/images/gangwondo/고성.jpg";
 import 동해 from "@/assets/images/gangwondo/동해.jpg";
@@ -34,104 +34,7 @@ import 홍천 from "@/assets/images/gangwondo/홍천.jpg";
 import 화천 from "@/assets/images/gangwondo/화천.jpg";
 import 횡성 from "@/assets/images/gangwondo/횡성.jpg";
 
-interface DestinationItem {
-  id: string;
-  name: string;
-  imageUrl: any;
-}
-
-const destinations: DestinationItem[] = [
-  {
-    id: "1",
-    name: "강릉",
-    imageUrl: 강릉,
-  },
-  {
-    id: "2",
-    name: "속초",
-    imageUrl: 속초,
-  },
-  {
-    id: "3",
-    name: "춘천",
-    imageUrl: 춘천,
-  },
-  {
-    id: "4",
-    name: "원주",
-    imageUrl: 원주,
-  },
-  {
-    id: "5",
-    name: "동해",
-    imageUrl: 동해,
-  },
-  {
-    id: "6",
-    name: "태백",
-    imageUrl: 태백,
-  },
-  {
-    id: "7",
-    name: "삼척",
-    imageUrl: 삼척,
-  },
-  {
-    id: "8",
-    name: "홍천",
-    imageUrl: 홍천,
-  },
-  {
-    id: "9",
-    name: "횡성",
-    imageUrl: 횡성,
-  },
-  {
-    id: "10",
-    name: "영월",
-    imageUrl: 영월,
-  },
-  {
-    id: "11",
-    name: "평창",
-    imageUrl: 평창,
-  },
-  {
-    id: "12",
-    name: "정선",
-    imageUrl: 정선,
-  },
-  {
-    id: "13",
-    name: "철원",
-    imageUrl: 철원,
-  },
-  {
-    id: "14",
-    name: "화천",
-    imageUrl: 화천,
-  },
-  {
-    id: "15",
-    name: "양구",
-    imageUrl: 양구,
-  },
-  {
-    id: "16",
-    name: "인제",
-    imageUrl: 인제,
-  },
-  {
-    id: "17",
-    name: "고성",
-    imageUrl: 고성,
-  },
-  {
-    id: "18",
-    name: "양양",
-    imageUrl: 양양,
-  },
-];
+// destinations 배열 제거 - 각 지역을 직접 코딩
 
 export default function Destination() {
   const [selectedDestinations, setSelectedDestinations] = useState<string[]>(
@@ -147,8 +50,28 @@ export default function Destination() {
 
   const handleComplete = () => {
     // Navigate to itinerary page with selected destinations
+    const destinationNames: { [key: string]: string } = {
+      "1": "강릉",
+      "2": "속초",
+      "3": "춘천",
+      "4": "원주",
+      "5": "동해",
+      "6": "태백",
+      "7": "삼척",
+      "8": "홍천",
+      "9": "횡성",
+      "10": "영월",
+      "11": "평창",
+      "12": "정선",
+      "13": "철원",
+      "14": "화천",
+      "15": "양구",
+      "16": "인제",
+      "17": "고성",
+      "18": "양양",
+    };
     const selectedDestinationNames = selectedDestinations.map(
-      (id) => destinations.find((d) => d.id === id)?.name || "",
+      (id) => destinationNames[id] || "",
     );
 
     // 전역 상태에 선택된 지역 저장
@@ -195,34 +118,6 @@ export default function Destination() {
     });
   };
 
-  const renderDestination = ({ item }: { item: DestinationItem }) => {
-    const isSelected = selectedDestinations.includes(item.id);
-
-    return (
-      <TouchableOpacity
-        style={[
-          styles.destinationItem,
-          isSelected && styles.selectedDestination,
-        ]}
-        onPress={() => toggleDestination(item.id)}
-      >
-        <Image
-          source={item.imageUrl}
-          style={styles.destinationImage}
-          resizeMode="cover"
-        />
-        <Text
-          style={[
-            styles.destinationName,
-            isSelected && styles.selectedDestinationName,
-          ]}
-        >
-          {item.name}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.header}>
@@ -238,24 +133,486 @@ export default function Destination() {
       </View>
 
       <View style={styles.content}>
-        <FlatList
-          data={destinations}
-          renderItem={renderDestination}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          columnWrapperStyle={styles.row}
-          showsVerticalScrollIndicator={false}
-        />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* 첫 번째 행 */}
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("1") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("1")}
+            >
+              <Image
+                source={강릉}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("1") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                강릉
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("2") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("2")}
+            >
+              <Image
+                source={속초}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("2") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                속초
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 두 번째 행 */}
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("3") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("3")}
+            >
+              <Image
+                source={춘천}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("3") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                춘천
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("4") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("4")}
+            >
+              <Image
+                source={원주}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("4") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                원주
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 세 번째 행 */}
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("5") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("5")}
+            >
+              <Image
+                source={동해}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("5") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                동해
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("6") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("6")}
+            >
+              <Image
+                source={태백}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("6") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                태백
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 네 번째 행 */}
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("7") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("7")}
+            >
+              <Image
+                source={삼척}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("7") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                삼척
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("8") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("8")}
+            >
+              <Image
+                source={홍천}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("8") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                홍천
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 다섯 번째 행 */}
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("9") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("9")}
+            >
+              <Image
+                source={횡성}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("9") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                횡성
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("10") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("10")}
+            >
+              <Image
+                source={영월}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("10") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                영월
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 여섯 번째 행 */}
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("11") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("11")}
+            >
+              <Image
+                source={평창}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("11") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                평창
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("12") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("12")}
+            >
+              <Image
+                source={정선}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("12") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                정선
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 일곱 번째 행 */}
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("13") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("13")}
+            >
+              <Image
+                source={철원}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("13") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                철원
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("14") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("14")}
+            >
+              <Image
+                source={화천}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("14") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                화천
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 여덟 번째 행 */}
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("15") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("15")}
+            >
+              <Image
+                source={양구}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("15") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                양구
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("16") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("16")}
+            >
+              <Image
+                source={인제}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("16") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                인제
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 아홉 번째 행 */}
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("17") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("17")}
+            >
+              <Image
+                source={고성}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("17") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                고성
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.destinationItem,
+                selectedDestinations.includes("18") &&
+                  styles.selectedDestination,
+              ]}
+              onPress={() => toggleDestination("18")}
+            >
+              <Image
+                source={양양}
+                style={styles.destinationImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.destinationName,
+                  selectedDestinations.includes("18") &&
+                    styles.selectedDestinationName,
+                ]}
+              >
+                양양
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </View>
 
       {selectedDestinations.length > 0 && (
         <View style={styles.selectedContainer}>
           <View style={styles.selectedTags}>
             {selectedDestinations.map((id) => {
-              const destination = destinations.find((d) => d.id === id);
+              const destinationNames: { [key: string]: string } = {
+                "1": "강릉",
+                "2": "속초",
+                "3": "춘천",
+                "4": "원주",
+                "5": "동해",
+                "6": "태백",
+                "7": "삼척",
+                "8": "홍천",
+                "9": "횡성",
+                "10": "영월",
+                "11": "평창",
+                "12": "정선",
+                "13": "철원",
+                "14": "화천",
+                "15": "양구",
+                "16": "인제",
+                "17": "고성",
+                "18": "양양",
+              };
               return (
                 <View key={id} style={styles.tag}>
-                  <Text style={styles.tagText}>{destination?.name}</Text>
+                  <Text style={styles.tagText}>{destinationNames[id]}</Text>
                   <TouchableOpacity onPress={() => toggleDestination(id)}>
                     <Feather name="x" size={18} color="#9D9896" />
                   </TouchableOpacity>
@@ -307,11 +664,15 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
   },
   row: {
-    justifyContent: "space-between",
-    marginBottom: 5,
+    flexDirection: "row",
+    gap: 7,
+    marginTop: 5,
+    justifyContent: "center",
   },
   destinationItem: {
     width: "48%",
@@ -321,7 +682,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 17,
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    marginBottom: 3,
+    borderWidth: 1,
+    borderColor: "#DBD6D3",
   },
   selectedDestination: {
     backgroundColor: "#716C69",

@@ -697,7 +697,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#302E2D", // 상단 섹션 어두운 배경
     paddingHorizontal: 20,
     paddingVertical: 30,
-    paddingBottom: 120, // 하단 여백 추가
+    paddingBottom: 70, // 하단 여백 추가
   },
   greetingContainer: {
     flexDirection: "row",

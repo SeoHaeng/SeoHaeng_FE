@@ -75,7 +75,7 @@ export default function BookstoreDetail({ placeDetail }: BookstoreDetailProps) {
 
       {/* 서비스 상태 카드 섹션 */}
       <View style={styles.tabTitleContainer}>
-        <BookStayIcon />
+        <BookStayIcon color="#9D9896" width={15} height={15} />
         <Text style={styles.tabTitle}>매장 정보</Text>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -122,7 +122,7 @@ export default function BookstoreDetail({ placeDetail }: BookstoreDetailProps) {
 
           {placeDetail.placeDetail.reservation && (
             <View style={styles.serviceCard}>
-              <PhoneIcon />
+              <PhoneIcon color="#000000" width={18} height={18} />
               <Text style={styles.serviceText}>예약</Text>
             </View>
           )}

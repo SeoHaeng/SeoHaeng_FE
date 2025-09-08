@@ -249,7 +249,7 @@ export default function SignUpScreen() {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <BackIcon />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>
+        <Text style={styles.headerTitle} allowFontScaling={false}>
           회원가입을 위한{"\n"}정보를 입력해주세요.
         </Text>
       </View>
@@ -263,7 +263,9 @@ export default function SignUpScreen() {
         <View style={styles.formContainer}>
           {/* 닉네임 입력 */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>닉네임</Text>
+            <Text style={styles.inputLabel} allowFontScaling={false}>
+              닉네임
+            </Text>
             <View style={styles.inputRow}>
               <TextInput
                 style={styles.textInput}
@@ -334,15 +336,18 @@ export default function SignUpScreen() {
                     styles.duplicateButtonText,
                     isNicknameChecked && styles.duplicateButtonTextChecked,
                   ]}
+                  allowFontScaling={false}
                 >
                   {isNicknameChecked ? "확인완료" : "중복확인"}
                 </Text>
               </TouchableOpacity>
             </View>
             {nicknameError ? (
-              <Text style={styles.validationError}>{nicknameError}</Text>
+              <Text style={styles.validationError} allowFontScaling={false}>
+                {nicknameError}
+              </Text>
             ) : isNicknameChecked ? (
-              <Text style={styles.validationSuccess}>
+              <Text style={styles.validationSuccess} allowFontScaling={false}>
                 ✓ 사용 가능한 닉네임입니다
               </Text>
             ) : null}
@@ -350,7 +355,9 @@ export default function SignUpScreen() {
 
           {/* 아이디 입력 */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>아이디</Text>
+            <Text style={styles.inputLabel} allowFontScaling={false}>
+              아이디
+            </Text>
             <View style={styles.inputRow}>
               <TextInput
                 style={styles.textInput}
@@ -423,15 +430,18 @@ export default function SignUpScreen() {
                     styles.duplicateButtonText,
                     isEmailChecked && styles.duplicateButtonTextChecked,
                   ]}
+                  allowFontScaling={false}
                 >
                   {isEmailChecked ? "확인완료" : "중복확인"}
                 </Text>
               </TouchableOpacity>
             </View>
             {emailError ? (
-              <Text style={styles.validationError}>{emailError}</Text>
+              <Text style={styles.validationError} allowFontScaling={false}>
+                {emailError}
+              </Text>
             ) : isEmailChecked ? (
-              <Text style={styles.validationSuccess}>
+              <Text style={styles.validationSuccess} allowFontScaling={false}>
                 ✓ 사용 가능한 아이디입니다
               </Text>
             ) : null}
@@ -439,7 +449,9 @@ export default function SignUpScreen() {
 
           {/* 비밀번호 입력 */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>비밀번호</Text>
+            <Text style={styles.inputLabel} allowFontScaling={false}>
+              비밀번호
+            </Text>
             <View style={styles.passwordInputContainer}>
               <TextInput
                 style={styles.textInput}
@@ -466,6 +478,7 @@ export default function SignUpScreen() {
                     ? styles.validationSuccess
                     : styles.validationError,
                 ]}
+                allowFontScaling={false}
               >
                 {validatePassword(password)
                   ? "✓ 비밀번호 조건을 만족합니다"
@@ -476,7 +489,9 @@ export default function SignUpScreen() {
 
           {/* 비밀번호 확인 */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>비밀번호 확인</Text>
+            <Text style={styles.inputLabel} allowFontScaling={false}>
+              비밀번호 확인
+            </Text>
             <View style={styles.passwordInputContainer}>
               <TextInput
                 style={styles.textInput}
@@ -503,6 +518,7 @@ export default function SignUpScreen() {
                     ? styles.validationSuccess
                     : styles.validationError,
                 ]}
+                allowFontScaling={false}
               >
                 {password === confirmPassword && password.trim() !== ""
                   ? "✓ 비밀번호가 일치합니다"
@@ -520,12 +536,16 @@ export default function SignUpScreen() {
               >
                 {agreeTerms && <Entypo name="check" size={15} color="white" />}
               </TouchableOpacity>
-              <Text style={styles.termsText}>(필수) 이용약관에 동의</Text>
+              <Text style={styles.termsText} allowFontScaling={false}>
+                (필수) 이용약관에 동의
+              </Text>
               <TouchableOpacity
                 style={styles.termsLink}
                 onPress={handleTermsLink}
               >
-                <Text style={styles.termsLinkText}>자세히 보기 &gt;</Text>
+                <Text style={styles.termsLinkText} allowFontScaling={false}>
+                  자세히 보기 &gt;
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -538,11 +558,13 @@ export default function SignUpScreen() {
                   <Entypo name="check" size={15} color="white" />
                 )}
               </TouchableOpacity>
-              <Text style={styles.termsText}>
+              <Text style={styles.termsText} allowFontScaling={false}>
                 (필수) 개인정보 수집 및 이용에 동의
               </Text>
               <TouchableOpacity onPress={handlePrivacyLink}>
-                <Text style={styles.termsLinkText}>자세히 보기 &gt;</Text>
+                <Text style={styles.termsLinkText} allowFontScaling={false}>
+                  자세히 보기 &gt;
+                </Text>
               </TouchableOpacity>
             </View>
             <View style={styles.termsRow}>
@@ -557,11 +579,13 @@ export default function SignUpScreen() {
                   <Entypo name="check" size={15} color="white" />
                 )}
               </TouchableOpacity>
-              <Text style={styles.termsText}>
+              <Text style={styles.termsText} allowFontScaling={false}>
                 (필수) 위치 기반 서비스 이용약관에 동의
               </Text>
               <TouchableOpacity onPress={handleLocationServiceLink}>
-                <Text style={styles.termsLinkText}>자세히 보기 &gt;</Text>
+                <Text style={styles.termsLinkText} allowFontScaling={false}>
+                  자세히 보기 &gt;
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -580,6 +604,7 @@ export default function SignUpScreen() {
                 styles.signUpButtonText,
                 isSignUpButtonActive && styles.signUpButtonTextActive,
               ]}
+              allowFontScaling={false}
             >
               회원가입
             </Text>
@@ -587,7 +612,9 @@ export default function SignUpScreen() {
 
           {/* 에러 메시지 */}
           {signupError ? (
-            <Text style={styles.validationError}>{signupError}</Text>
+            <Text style={styles.validationError} allowFontScaling={false}>
+              {signupError}
+            </Text>
           ) : null}
         </View>
       </ScrollView>

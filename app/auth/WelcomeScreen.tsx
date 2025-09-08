@@ -63,21 +63,31 @@ export default function WelcomeScreen() {
 
         {/* 앱 소개 텍스트 */}
         <View style={styles.textContainer}>
-          <Text style={styles.subtitle}>책 타고 떠나는 느린 여행</Text>
+          <Text style={styles.subtitle} allowFontScaling={false}>
+            책 타고 떠나는 느린 여행
+          </Text>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>서</Text>
-            <Text style={styles.title}>행</Text>
+            <Text style={styles.title} allowFontScaling={false}>
+              서
+            </Text>
+            <Text style={styles.title} allowFontScaling={false}>
+              행
+            </Text>
           </View>
         </View>
 
         {/* 버튼 영역 */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-            <Text style={styles.buttonText}>회원가입</Text>
+            <Text style={styles.buttonText} allowFontScaling={false}>
+              회원가입
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.loginButton} onPress={handleSignIn}>
-            <Text style={styles.buttonText}>로그인하기</Text>
+            <Text style={styles.buttonText} allowFontScaling={false}>
+              로그인하기
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

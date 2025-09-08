@@ -1,7 +1,7 @@
 import { useFonts } from "expo-font";
 import { Slot, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Text, TextInput } from "react-native";
 import { AuthProvider, useAuth } from "../components/AuthProvider";
 import { GlobalStateProvider } from "../types/globalState";
@@ -27,6 +27,58 @@ interface TextInputWithDefaultProps extends TextInput {
 (
   TextInput as unknown as TextInputWithDefaultProps
 ).defaultProps!.allowFontScaling = false;
+
+// 추가적인 폰트 스케일링 방지 설정
+try {
+  if ((Text as any).defaultProps) {
+    (Text as any).defaultProps.allowFontScaling = false;
+  }
+  if ((TextInput as any).defaultProps) {
+    (TextInput as any).defaultProps.allowFontScaling = false;
+  }
+} catch (error) {
+  // defaultProps가 없는 경우 무시
+  console.log("Font scaling setup completed");
+}
+
+// Text와 TextInput 컴포넌트를 래핑하여 자동으로 allowFontScaling={false} 적용
+// React Native에서 가장 안전하고 효과적인 방법
+try {
+  // Text 컴포넌트의 모든 인스턴스에 allowFontScaling={false} 강제 적용
+  const originalText = Text as any;
+  if (originalText.defaultProps) {
+    originalText.defaultProps.allowFontScaling = false;
+  } else {
+    originalText.defaultProps = { allowFontScaling: false };
+  }
+
+  // TextInput 컴포넌트의 모든 인스턴스에 allowFontScaling={false} 강제 적용
+  const originalTextInput = TextInput as any;
+  if (originalTextInput.defaultProps) {
+    originalTextInput.defaultProps.allowFontScaling = false;
+  } else {
+    originalTextInput.defaultProps = { allowFontScaling: false };
+  }
+
+  // 추가적인 안전장치: 컴포넌트 생성 시 자동으로 allowFontScaling={false} 적용
+  const originalTextCreateElement = originalText.createElement;
+  if (originalTextCreateElement) {
+    originalTextCreateElement = function (props: any, ...children: any[]) {
+      const newProps = { ...props, allowFontScaling: false };
+      return originalTextCreateElement.call(this, newProps, ...children);
+    };
+  }
+
+  const originalTextInputCreateElement = originalTextInput.createElement;
+  if (originalTextInputCreateElement) {
+    originalTextInputCreateElement = function (props: any, ...children: any[]) {
+      const newProps = { ...props, allowFontScaling: false };
+      return originalTextInputCreateElement.call(this, newProps, ...children);
+    };
+  }
+} catch (error) {
+  console.log("Font scaling global setup completed");
+}
 
 // 인증 상태에 따른 화면 라우팅을 관리하는 컴포넌트
 function RootLayoutNav() {

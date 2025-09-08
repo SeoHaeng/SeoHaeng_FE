@@ -173,14 +173,18 @@ export default function SignInScreen() {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <BackIcon />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>로그인 해주세요.</Text>
+        <Text style={styles.headerTitle} allowFontScaling={false}>
+          로그인 해주세요.
+        </Text>
       </View>
 
       {/* 로그인 폼 */}
       <View style={styles.formContainer}>
         {/* 이메일/아이디 입력 */}
         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>아이디</Text>
+          <Text style={styles.inputLabel} allowFontScaling={false}>
+            아이디
+          </Text>
           <TextInput
             style={styles.textInput}
             value={email}
@@ -209,7 +213,9 @@ export default function SignInScreen() {
 
         {/* 비밀번호 입력 */}
         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>비밀번호</Text>
+          <Text style={styles.inputLabel} allowFontScaling={false}>
+            비밀번호
+          </Text>
           <View style={styles.passwordInputContainer}>
             <TextInput
               style={styles.textInput}

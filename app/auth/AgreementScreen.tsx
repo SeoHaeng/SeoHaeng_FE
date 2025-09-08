@@ -118,7 +118,9 @@ const AgreementScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>약관에 동의해주세요</Text>
+        <Text style={styles.title} allowFontScaling={false}>
+          약관에 동의해주세요
+        </Text>
 
         {/* 모두 동의 */}
         <TouchableOpacity
@@ -128,7 +130,9 @@ const AgreementScreen = () => {
           <View style={[styles.checkbox, allAgreed && styles.checkboxChecked]}>
             <Entypo name="check" size={15} color="white" />
           </View>
-          <Text style={styles.allAgreeText}>모두 동의</Text>
+          <Text style={styles.allAgreeText} allowFontScaling={false}>
+            모두 동의
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.separator} />
@@ -148,9 +152,13 @@ const AgreementScreen = () => {
               <Entypo name="check" size={15} color="white" />
             )}
           </View>
-          <Text style={styles.agreementText}>(필수) 이용약관에 동의</Text>
+          <Text style={styles.agreementText} allowFontScaling={false}>
+            (필수) 이용약관에 동의
+          </Text>
           <TouchableOpacity style={styles.detailLink} onPress={handleTermsLink}>
-            <Text style={styles.detailLinkText}>자세히 보기 &gt;</Text>
+            <Text style={styles.detailLinkText} allowFontScaling={false}>
+              자세히 보기 &gt;
+            </Text>
           </TouchableOpacity>
         </TouchableOpacity>
 
@@ -168,14 +176,16 @@ const AgreementScreen = () => {
               <Entypo name="check" size={15} color="white" />
             )}
           </View>
-          <Text style={styles.agreementText}>
+          <Text style={styles.agreementText} allowFontScaling={false}>
             (필수) 개인정보 수집 및 이용에 동의
           </Text>
           <TouchableOpacity
             style={styles.detailLink}
             onPress={handlePrivacyLink}
           >
-            <Text style={styles.detailLinkText}>자세히 보기 &gt;</Text>
+            <Text style={styles.detailLinkText} allowFontScaling={false}>
+              자세히 보기 &gt;
+            </Text>
           </TouchableOpacity>
         </TouchableOpacity>
 
@@ -193,14 +203,16 @@ const AgreementScreen = () => {
               <Entypo name="check" size={15} color="white" />
             )}
           </View>
-          <Text style={styles.agreementText}>
+          <Text style={styles.agreementText} allowFontScaling={false}>
             (필수) 위치 기반 서비스 이용약관 동의
           </Text>
           <TouchableOpacity
             style={styles.detailLink}
             onPress={handleLocationServiceLink}
           >
-            <Text style={styles.detailLinkText}>자세히 보기 &gt;</Text>
+            <Text style={styles.detailLinkText} allowFontScaling={false}>
+              자세히 보기 &gt;
+            </Text>
           </TouchableOpacity>
         </TouchableOpacity>
 
@@ -213,7 +225,9 @@ const AgreementScreen = () => {
           onPress={handleContinue}
           disabled={!allAgreed}
         >
-          <Text style={styles.continueButtonText}>계속하기</Text>
+          <Text style={styles.continueButtonText} allowFontScaling={false}>
+            계속하기
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

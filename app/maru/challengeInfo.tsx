@@ -26,18 +26,22 @@ export default function ChallengeInfoScreen() {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <BackIcon />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>북 챌린지 설명</Text>
+        <Text style={styles.headerTitle} allowFontScaling={false}>
+          북 챌린지 설명
+        </Text>
       </View>
 
       {/* Content */}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Title Section */}
         <View style={styles.titleSection}>
-          <Text style={styles.mainTitle}>
+          <Text style={styles.mainTitle} allowFontScaling={false}>
             북 챌린지 📚..{"\n"}어떻게 참여하나요?
           </Text>
 
-          <Text style={styles.memberOnly}>[서행] 회원만 참여 가능</Text>
+          <Text style={styles.memberOnly} allowFontScaling={false}>
+            [서행] 회원만 참여 가능
+          </Text>
         </View>
 
         {/* Steps */}
@@ -45,13 +49,15 @@ export default function ChallengeInfoScreen() {
           {/* Step 1 */}
           <View style={styles.stepContainer}>
             <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>1</Text>
+              <Text style={styles.stepNumberText} allowFontScaling={false}>
+                1
+              </Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>
+              <Text style={styles.stepTitle} allowFontScaling={false}>
                 이 서점의 북 챌린지 책을 수령해요.
               </Text>
-              <Text style={styles.stepDescription}>
+              <Text style={styles.stepDescription} allowFontScaling={false}>
                 • 이전 참여자가 남긴 책이 전달되며, 어떤 책인지 미리 알 수
                 없어요.
               </Text>
@@ -61,10 +67,12 @@ export default function ChallengeInfoScreen() {
           {/* Step 2 */}
           <View style={styles.stepContainer}>
             <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>2</Text>
+              <Text style={styles.stepNumberText} allowFontScaling={false}>
+                2
+              </Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>
+              <Text style={styles.stepTitle} allowFontScaling={false}>
                 다음 참여자를 위해 책 한 권을 구입해 이 곳에 남겨주세요.
               </Text>
             </View>
@@ -73,22 +81,24 @@ export default function ChallengeInfoScreen() {
           {/* Step 3 */}
           <View style={styles.stepContainer}>
             <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>3</Text>
+              <Text style={styles.stepNumberText} allowFontScaling={false}>
+                3
+              </Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>
+              <Text style={styles.stepTitle} allowFontScaling={false}>
                 [서행]에 접속해 챌린지 인증을 해주세요.
               </Text>
-              <Text style={styles.stepDescription}>
+              <Text style={styles.stepDescription} allowFontScaling={false}>
                 • 선물받고, 선물한 책은 어플에 등록되어 있어요.
               </Text>
-              <Text style={styles.stepDescription}>
+              <Text style={styles.stepDescription} allowFontScaling={false}>
                 • 버튼만 누르면 인증 끝! ✨
               </Text>
-              <Text style={styles.stepDescription}>
+              <Text style={styles.stepDescription} allowFontScaling={false}>
                 • 다음 사람에게 책과 함께 글도 남길 수 있어요.
               </Text>
-              <Text style={styles.stepDescription}>
+              <Text style={styles.stepDescription} allowFontScaling={false}>
                 • 7일 이내로 인증하지 않으면, 자동으로 책 정보가 입력된 게시글이
                 등록돼요.
               </Text>

@@ -79,7 +79,9 @@ const TermsScreen = () => {
         >
           <AntDesign name="arrowleft" size={24} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>이용약관</Text>
+        <Text style={styles.headerTitle} allowFontScaling={false}>
+          이용약관
+        </Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -90,7 +92,9 @@ const TermsScreen = () => {
             <View style={styles.iconContainer}>
               <AntDesign name="infocirlceo" size={20} color="#666666" />
             </View>
-            <Text style={styles.menuItemText}>이용약관 보기</Text>
+            <Text style={styles.menuItemText} allowFontScaling={false}>
+              이용약관 보기
+            </Text>
           </View>
         </TouchableOpacity>
 
@@ -99,7 +103,7 @@ const TermsScreen = () => {
             <View style={styles.iconContainer}>
               <AntDesign name="infocirlceo" size={20} color="#666666" />
             </View>
-            <Text style={styles.menuItemText}>
+            <Text style={styles.menuItemText} allowFontScaling={false}>
               개인정보 수집 및 이용약관 보기
             </Text>
           </View>
@@ -113,7 +117,7 @@ const TermsScreen = () => {
             <View style={styles.iconContainer}>
               <AntDesign name="infocirlceo" size={20} color="#666666" />
             </View>
-            <Text style={styles.menuItemText}>
+            <Text style={styles.menuItemText} allowFontScaling={false}>
               위치 기반 서비스 이용약관 보기
             </Text>
           </View>

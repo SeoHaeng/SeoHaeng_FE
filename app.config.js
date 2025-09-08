@@ -22,6 +22,9 @@ export default {
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
       },
+      // 폰트 스케일링 비활성화
+      allowBackup: false,
+      supportsRtl: false,
     },
     web: {
       bundler: "metro",

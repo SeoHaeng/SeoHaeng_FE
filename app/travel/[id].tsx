@@ -290,9 +290,14 @@ export default function TravelDetail() {
                 <View style={styles.spotItem}>
                   <View style={styles.spotHeader}>
                     <View style={styles.spotNumber}>
-                      <Text style={styles.spotNumberText}>{spotIndex + 1}</Text>
+                      <Text
+                        style={styles.spotNumberText}
+                        allowFontScaling={false}
+                      >
+                        {spotIndex + 1}
+                      </Text>
                     </View>
-                    <Text style={styles.spotName}>
+                    <Text style={styles.spotName} allowFontScaling={false}>
                       {placeInfo
                         ? placeInfo.name.length > 6
                           ? `${placeInfo.name.slice(0, 6)}...`
@@ -300,7 +305,10 @@ export default function TravelDetail() {
                         : `장소 ID: ${schedule.placeId}`}
                     </Text>
                     <View style={styles.spotTypeTag}>
-                      <Text style={styles.spotTypeText}>
+                      <Text
+                        style={styles.spotTypeText}
+                        allowFontScaling={false}
+                      >
                         {placeInfo
                           ? getKoreanPlaceType(placeInfo.placeType)
                           : "장소"}
@@ -321,7 +329,9 @@ export default function TravelDetail() {
       <SafeAreaView style={styles.container} edges={["top"]}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#E60A34" />
-          <Text style={styles.loadingText}>여행 정보를 불러오는 중...</Text>
+          <Text style={styles.loadingText} allowFontScaling={false}>
+            여행 정보를 불러오는 중...
+          </Text>
         </View>
       </SafeAreaView>
     );
@@ -331,15 +341,19 @@ export default function TravelDetail() {
     return (
       <SafeAreaView style={styles.container} edges={["top"]}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorTitle}>오류가 발생했습니다</Text>
-          <Text style={styles.errorMessage}>
+          <Text style={styles.errorTitle} allowFontScaling={false}>
+            오류가 발생했습니다
+          </Text>
+          <Text style={styles.errorMessage} allowFontScaling={false}>
             {error || "여행 정보를 찾을 수 없습니다."}
           </Text>
           <TouchableOpacity
             style={styles.retryButton}
             onPress={() => router.back()}
           >
-            <Text style={styles.retryButtonText}>뒤로 가기</Text>
+            <Text style={styles.retryButtonText} allowFontScaling={false}>
+              뒤로 가기
+            </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -362,7 +376,9 @@ export default function TravelDetail() {
           </View>
 
           <View style={styles.headerContent}>
-            <Text style={styles.dateRange}>{getDateRange()}</Text>
+            <Text style={styles.dateRange} allowFontScaling={false}>
+              {getDateRange()}
+            </Text>
             {currentUserId &&
               travelDetail &&
               currentUserId === travelDetail.memberId && (
@@ -377,7 +393,9 @@ export default function TravelDetail() {
           </View>
 
           <View style={styles.titleSection}>
-            <Text style={styles.tripTitle}>{travelDetail.courseTitle}</Text>
+            <Text style={styles.tripTitle} allowFontScaling={false}>
+              {travelDetail.courseTitle}
+            </Text>
           </View>
 
           <View style={styles.regionsContainer}>
@@ -386,7 +404,9 @@ export default function TravelDetail() {
                 key={`region-${region}-${regionIndex}`}
                 style={styles.regionTag}
               >
-                <Text style={styles.regionText}>{region}</Text>
+                <Text style={styles.regionText} allowFontScaling={false}>
+                  {region}
+                </Text>
               </View>
             ))}
           </View>
@@ -396,7 +416,7 @@ export default function TravelDetail() {
         <View style={styles.mapContainer}>
           <View style={styles.mapDayTag}>
             <View style={styles.mapDayContent}>
-              <Text style={styles.mapDayNumber}>
+              <Text style={styles.mapDayNumber} allowFontScaling={false}>
                 {(() => {
                   const koreanNumbers = [
                     "첫째",
@@ -416,7 +436,7 @@ export default function TravelDetail() {
                     : `${dayIndex + 1}번째 날`;
                 })()}
               </Text>
-              <Text style={styles.mapDayDate}>
+              <Text style={styles.mapDayDate} allowFontScaling={false}>
                 {travelDetail.schedules[selectedDay]
                   ? formatDate(travelDetail.schedules[selectedDay].date)
                   : formatDate(travelDetail.startDate)}
@@ -486,10 +506,16 @@ export default function TravelDetail() {
                     onPress={() => setSelectedDay(dayIndex)}
                   >
                     <View style={styles.timelineTextContainer}>
-                      <Text style={styles.timelineDate}>
+                      <Text
+                        style={styles.timelineDate}
+                        allowFontScaling={false}
+                      >
                         {daySchedule.day}일차
                       </Text>
-                      <Text style={styles.timelineDateSmall}>
+                      <Text
+                        style={styles.timelineDateSmall}
+                        allowFontScaling={false}
+                      >
                         {formatDate(daySchedule.date)}
                       </Text>
                     </View>
@@ -582,7 +608,9 @@ export default function TravelDetail() {
             </ScrollView>
           ) : (
             <View style={styles.emptyDaysContainer}>
-              <Text style={styles.emptyDaysText}>여행 일정이 없습니다</Text>
+              <Text style={styles.emptyDaysText} allowFontScaling={false}>
+                여행 일정이 없습니다
+              </Text>
             </View>
           )}
         </View>
@@ -594,7 +622,12 @@ export default function TravelDetail() {
               style={styles.deleteDropdownButton}
               onPress={handleDeleteConfirm}
             >
-              <Text style={styles.deleteDropdownButtonText}>삭제</Text>
+              <Text
+                style={styles.deleteDropdownButtonText}
+                allowFontScaling={false}
+              >
+                삭제
+              </Text>
             </TouchableOpacity>
           </View>
         )}

@@ -352,7 +352,9 @@ export default function Index() {
         >
           {/* 상단 헤더 */}
           <View style={styles.header}>
-            <Text style={styles.appTitle}>서행</Text>
+            <Text style={styles.appTitle} allowFontScaling={false}>
+              서행
+            </Text>
             <View style={styles.headerIcons}>
               <TouchableOpacity
                 style={styles.iconButton}
@@ -366,8 +368,8 @@ export default function Index() {
           {/* 개인화된 북트립 섹션 - 어두운 배경 */}
           <View style={styles.topSection}>
             <View style={styles.greetingContainer}>
-              <Text style={styles.greetingText}>
-                <Text style={styles.userNameText}>
+              <Text style={styles.greetingText} allowFontScaling={false}>
+                <Text style={styles.userNameText} allowFontScaling={false}>
                   {userInfo?.nickName && userInfo.nickName.length > 18
                     ? `${userInfo.nickName.slice(0, 18)}...`
                     : userInfo?.nickName}
@@ -377,7 +379,9 @@ export default function Index() {
               </Text>
               {lastVisitDays !== null && (
                 <View style={styles.planButton}>
-                  <Text style={styles.planButtonText}>D+{lastVisitDays}</Text>
+                  <Text style={styles.planButtonText} allowFontScaling={false}>
+                    D+{lastVisitDays}
+                  </Text>
                 </View>
               )}
             </View>
@@ -405,7 +409,9 @@ export default function Index() {
 
           <View style={styles.bottomSection}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>나의 서행</Text>
+              <Text style={styles.sectionTitle} allowFontScaling={false}>
+                나의 서행
+              </Text>
             </View>
 
             {/* 여행 일정이 있는 경우 */}
@@ -434,10 +440,13 @@ export default function Index() {
             ) : (
               /* 여행 일정이 없는 경우 빈 상태 화면 */
               <View style={styles.emptyStateContainer}>
-                <Text style={styles.emptyStateTitle}>
+                <Text style={styles.emptyStateTitle} allowFontScaling={false}>
                   아직 생성된 일정이 없어요.
                 </Text>
-                <Text style={styles.emptyStateSubtitle}>
+                <Text
+                  style={styles.emptyStateSubtitle}
+                  allowFontScaling={false}
+                >
                   나의 독서 여행 일정을 생성해보세요.
                 </Text>
                 <TouchableOpacity
@@ -448,7 +457,10 @@ export default function Index() {
                     })
                   }
                 >
-                  <Text style={styles.createScheduleButtonText}>
+                  <Text
+                    style={styles.createScheduleButtonText}
+                    allowFontScaling={false}
+                  >
                     여행 일정 생성하기 &gt;
                   </Text>
                 </TouchableOpacity>
@@ -458,7 +470,7 @@ export default function Index() {
 
           {/* 오늘의 추천 섹션 - 하얀 배경 */}
           <View style={styles.recommendationSection}>
-            <Text style={styles.recommendationTitle}>
+            <Text style={styles.recommendationTitle} allowFontScaling={false}>
               오늘의 &apos;추천, 강원도!&apos;
             </Text>
 
@@ -491,18 +503,24 @@ export default function Index() {
                         />
                       </View>
                       <View style={styles.recommendationItemContent}>
-                        <Text style={styles.recommendationItemTitle}>
+                        <Text
+                          style={styles.recommendationItemTitle}
+                          allowFontScaling={false}
+                        >
                           {item.name}
                         </Text>
                         <Text
                           style={styles.recommendationItemDescription}
                           numberOfLines={2}
+                          allowFontScaling={false}
                         >
                           {item.overview}
                         </Text>
                       </View>
                       <View style={styles.arrowContainer}>
-                        <Text style={styles.arrowIcon}>&gt;</Text>
+                        <Text style={styles.arrowIcon} allowFontScaling={false}>
+                          &gt;
+                        </Text>
                       </View>
                     </TouchableOpacity>
                   ))}
@@ -512,7 +530,7 @@ export default function Index() {
               {isLoadingRecommendations && (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="small" color="#E60A34" />
-                  <Text style={styles.loadingText}>
+                  <Text style={styles.loadingText} allowFontScaling={false}>
                     추천 장소를 불러오는 중...
                   </Text>
                 </View>
@@ -521,7 +539,7 @@ export default function Index() {
               {!isLoadingRecommendations &&
                 todayRecommendations.length === 0 && (
                   <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>
+                    <Text style={styles.emptyText} allowFontScaling={false}>
                       오늘의 추천 장소가 없습니다.
                     </Text>
                   </View>
@@ -533,7 +551,12 @@ export default function Index() {
           <View style={styles.spaceBookmarkSection}>
             <View style={styles.spaceBookmarkHeader}>
               <View style={styles.spaceBookmarkTitleContainer}>
-                <Text style={styles.spaceBookmarkTitle}>최신 공간 책갈피</Text>
+                <Text
+                  style={styles.spaceBookmarkTitle}
+                  allowFontScaling={false}
+                >
+                  최신 공간 책갈피
+                </Text>
                 {/* <Text style={styles.spaceBookmarkSubtitle}>
                 좌우로 넘겨 책갈피를 저장하세요
               </Text> */}
@@ -543,7 +566,9 @@ export default function Index() {
                   router.push("/(tabs)/maru/bookmark");
                 }}
               >
-                <Text style={styles.spaceBookmarkLink}>공간책갈피 &gt;</Text>
+                <Text style={styles.spaceBookmarkLink} allowFontScaling={false}>
+                  공간책갈피 &gt;
+                </Text>
               </TouchableOpacity>
             </View>
 

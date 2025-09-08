@@ -33,15 +33,21 @@ export default function BookstoreDetail({ placeDetail }: BookstoreDetailProps) {
     <View style={styles.tabContent}>
       <View style={styles.tabTitleContainer}>
         <BusinessHoursIcon />
-        <Text style={styles.tabTitle}>영업 시간</Text>
+        <Text style={styles.tabTitle} allowFontScaling={false}>
+          영업 시간
+        </Text>
       </View>
-      <Text style={styles.description}>{placeDetail?.usetime}</Text>
+      <Text style={styles.description} allowFontScaling={false}>
+        {placeDetail?.usetime}
+      </Text>
 
       {placeDetail?.tel && (
         <>
           <View style={styles.tabTitleContainer}>
             <PhoneIcon />
-            <Text style={styles.tabTitle}>연락처</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              연락처
+            </Text>
           </View>
           <TouchableOpacity
             onPress={() => {
@@ -50,84 +56,119 @@ export default function BookstoreDetail({ placeDetail }: BookstoreDetailProps) {
               }
             }}
           >
-            <Text style={styles.phoneLink}>{placeDetail.tel}</Text>
+            <Text style={styles.phoneLink} allowFontScaling={false}>
+              {placeDetail.tel}
+            </Text>
           </TouchableOpacity>
         </>
       )}
 
       <View style={styles.tabTitleContainer}>
         <WebsiteIcon />
-        <Text style={styles.tabTitle}>웹사이트</Text>
+        <Text style={styles.tabTitle} allowFontScaling={false}>
+          웹사이트
+        </Text>
       </View>
       {placeDetail?.websiteUrl ? (
         <TouchableOpacity onPress={handleWebsitePress}>
-          <Text style={styles.websiteLink}>{placeDetail.websiteUrl}</Text>
+          <Text style={styles.websiteLink} allowFontScaling={false}>
+            {placeDetail.websiteUrl}
+          </Text>
         </TouchableOpacity>
       ) : (
-        <Text style={styles.description}>웹사이트 정보가 없습니다.</Text>
+        <Text style={styles.description} allowFontScaling={false}>
+          웹사이트 정보가 없습니다.
+        </Text>
       )}
 
       <View style={styles.tabTitleContainer}>
         <StoreIntroIcon />
-        <Text style={styles.tabTitle}>매장 소개</Text>
+        <Text style={styles.tabTitle} allowFontScaling={false}>
+          매장 소개
+        </Text>
       </View>
-      <Text style={styles.description}>{placeDetail.placeDetail.overview}</Text>
+      <Text style={styles.description} allowFontScaling={false}>
+        {placeDetail.placeDetail.overview}
+      </Text>
 
-      {/* 서비스 상태 카드 섹션 */}
-      <View style={styles.tabTitleContainer}>
-        <BookStayIcon color="#9D9896" width={15} height={15} />
-        <Text style={styles.tabTitle}>매장 정보</Text>
-      </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View style={styles.serviceCardsContainer}>
-          {placeDetail.placeDetail.bookChallengeStatus && (
-            <View style={styles.serviceCard}>
-              <BookChallengeIcon />
+      {/* 서비스 상태 카드 섹션 - 매장 정보가 하나라도 있을 때만 표시 */}
+      {(placeDetail.placeDetail.bookChallengeStatus ||
+        placeDetail.placeDetail.readingClub ||
+        placeDetail.placeDetail.petFriendly ||
+        placeDetail.placeDetail.parking ||
+        placeDetail.placeDetail.spaceRental ||
+        placeDetail.placeDetail.reservation) && (
+        <>
+          <View style={styles.tabTitleContainer}>
+            <BookStayIcon color="#9D9896" width={15} height={15} />
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              매장 정보
+            </Text>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.serviceCardsContainer}>
+              {placeDetail.placeDetail.bookChallengeStatus && (
+                <View style={styles.serviceCard}>
+                  <BookChallengeIcon />
 
-              <Text style={styles.serviceText}>북챌린지</Text>
+                  <Text style={styles.serviceText} allowFontScaling={false}>
+                    북챌린지
+                  </Text>
+                </View>
+              )}
+
+              {placeDetail.placeDetail.readingClub && (
+                <View style={styles.serviceCard}>
+                  <BookMoimIcon />
+
+                  <Text style={styles.serviceText} allowFontScaling={false}>
+                    독서모임
+                  </Text>
+                </View>
+              )}
+
+              {placeDetail.placeDetail.petFriendly && (
+                <View style={styles.serviceCard}>
+                  <PetIcon />
+
+                  <Text style={styles.serviceText} allowFontScaling={false}>
+                    반려동물
+                  </Text>
+                </View>
+              )}
+
+              {placeDetail.placeDetail.parking && (
+                <View style={styles.serviceCard}>
+                  <ParkingIcon />
+
+                  <Text style={styles.serviceText} allowFontScaling={false}>
+                    주차
+                  </Text>
+                </View>
+              )}
+
+              {placeDetail.placeDetail.spaceRental && (
+                <View style={styles.serviceCard}>
+                  <SpaceShareIcon />
+
+                  <Text style={styles.serviceText} allowFontScaling={false}>
+                    공간대여
+                  </Text>
+                </View>
+              )}
+
+              {placeDetail.placeDetail.reservation && (
+                <View style={styles.serviceCard}>
+                  <PhoneIcon color="#000000" width={18} height={18} />
+                  <Text style={styles.serviceText} allowFontScaling={false}>
+                    예약
+                  </Text>
+                </View>
+              )}
             </View>
-          )}
-
-          {placeDetail.placeDetail.readingClub && (
-            <View style={styles.serviceCard}>
-              <BookMoimIcon />
-
-              <Text style={styles.serviceText}>독서모임</Text>
-            </View>
-          )}
-
-          {placeDetail.placeDetail.petFriendly && (
-            <View style={styles.serviceCard}>
-              <PetIcon />
-
-              <Text style={styles.serviceText}>반려동물</Text>
-            </View>
-          )}
-
-          {placeDetail.placeDetail.parking && (
-            <View style={styles.serviceCard}>
-              <ParkingIcon />
-
-              <Text style={styles.serviceText}>주차</Text>
-            </View>
-          )}
-
-          {placeDetail.placeDetail.spaceRental && (
-            <View style={styles.serviceCard}>
-              <SpaceShareIcon />
-
-              <Text style={styles.serviceText}>공간대여</Text>
-            </View>
-          )}
-
-          {placeDetail.placeDetail.reservation && (
-            <View style={styles.serviceCard}>
-              <PhoneIcon color="#000000" width={18} height={18} />
-              <Text style={styles.serviceText}>예약</Text>
-            </View>
-          )}
-        </View>
-      </ScrollView>
+          </ScrollView>
+        </>
+      )}
     </View>
   );
 }

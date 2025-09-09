@@ -155,7 +155,9 @@ export default function Popularity() {
         >
           <BackIcon />
         </TouchableOpacity>
-        <Text style={styles.title}>챌린지 인증</Text>
+        <Text style={styles.title} allowFontScaling={false}>
+          챌린지 인증
+        </Text>
       </View>
       <ScrollView
         style={styles.container}
@@ -182,7 +184,8 @@ export default function Popularity() {
           }}
         >
           <Text
-            style={{ fontSize: 13, color: "#716C69", fontFamily: "SUIT-500" }}
+            style={{ fontSize: 14, color: "#716C69", fontFamily: "SUIT-500" }}
+            allowFontScaling={false}
           >
             총 {totalElements}개
           </Text>
@@ -191,7 +194,8 @@ export default function Popularity() {
             onPress={() => setShowSortModal(true)}
           >
             <Text
-              style={{ fontSize: 12, color: "#716C69", fontFamily: "SUIT-500" }}
+              style={{ fontSize: 13, color: "#716C69", fontFamily: "SUIT-500" }}
+              allowFontScaling={false}
             >
               {sortType}
             </Text>
@@ -206,7 +210,7 @@ export default function Popularity() {
         {isLoading && challenges.length === 0 && (
           <View style={styles.initialLoadingContainer}>
             <ActivityIndicator size="large" color="#E60A34" />
-            <Text style={styles.initialLoadingText}>
+            <Text style={styles.initialLoadingText} allowFontScaling={false}>
               챌린지 인증을 불러오는 중...
             </Text>
           </View>
@@ -245,7 +249,9 @@ export default function Popularity() {
         {/* 데이터가 없을 때 */}
         {!isLoading && challenges.length === 0 && (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>챌린지 인증이 없습니다.</Text>
+            <Text style={styles.emptyText} allowFontScaling={false}>
+              챌린지 인증이 없습니다.
+            </Text>
           </View>
         )}
 
@@ -253,7 +259,7 @@ export default function Popularity() {
         {isLoading && challenges.length > 0 && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color="#E60A34" />
-            <Text style={styles.loadingText}>
+            <Text style={styles.loadingText} allowFontScaling={false}>
               더 많은 챌린지를 불러오는 중...
             </Text>
           </View>
@@ -288,6 +294,7 @@ export default function Popularity() {
                   styles.sortOptionText,
                   sortType === "최신순" && styles.selectedSortOptionText,
                 ]}
+                allowFontScaling={false}
               >
                 최신순
               </Text>
@@ -308,6 +315,7 @@ export default function Popularity() {
                   styles.sortOptionText,
                   sortType === "인기순" && styles.selectedSortOptionText,
                 ]}
+                allowFontScaling={false}
               >
                 인기순
               </Text>
@@ -351,7 +359,7 @@ const styles = StyleSheet.create({
     height: 24,
   },
   title: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#000000",
     textAlign: "center",
@@ -394,7 +402,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F0F0F0",
   },
   sortOptionText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#262423",
     textAlign: "center",
@@ -409,7 +417,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -419,7 +427,7 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   initialLoadingText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -428,7 +436,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   noMoreText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     fontStyle: "italic",
@@ -439,7 +447,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#716C69",
   },

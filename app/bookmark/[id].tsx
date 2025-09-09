@@ -211,7 +211,12 @@ export default function BookmarkDetail() {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <Text style={{ color: "#FFFFFF", fontSize: 16 }}>로딩 중...</Text>
+          <Text
+            style={{ color: "#FFFFFF", fontSize: 17 }}
+            allowFontScaling={false}
+          >
+            로딩 중...
+          </Text>
         </View>
       </SafeAreaView>
     );
@@ -224,7 +229,10 @@ export default function BookmarkDetail() {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <Text style={{ color: "#FFFFFF", fontSize: 16 }}>
+          <Text
+            style={{ color: "#FFFFFF", fontSize: 17 }}
+            allowFontScaling={false}
+          >
             북마크 정보를 불러올 수 없습니다.
           </Text>
         </View>
@@ -331,7 +339,9 @@ export default function BookmarkDetail() {
           >
             <BackIcon />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>옆으로 넘겨보세요</Text>
+          <Text style={styles.headerTitle} allowFontScaling={false}>
+            옆으로 넘겨보세요
+          </Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -358,8 +368,12 @@ export default function BookmarkDetail() {
 
               {/* 카드 내용 */}
               <View style={styles.cardContent}>
-                <Text style={styles.cardTitle}>{bookmarkDetail.title}</Text>
-                <Text style={styles.cardAddress}>{bookmarkDetail.address}</Text>
+                <Text style={styles.cardTitle} allowFontScaling={false}>
+                  {bookmarkDetail.title}
+                </Text>
+                <Text style={styles.cardAddress} allowFontScaling={false}>
+                  {bookmarkDetail.address}
+                </Text>
               </View>
             </View>
           </View>
@@ -371,13 +385,17 @@ export default function BookmarkDetail() {
                 source={{ uri: bookmarkDetail.userProfilImage }}
                 style={styles.userAvatar}
               />
-              <Text style={styles.username}>{bookmarkDetail.userNickname}</Text>
-              <Text style={styles.postDate}>
+              <Text style={styles.username} allowFontScaling={false}>
+                {bookmarkDetail.userNickname}
+              </Text>
+              <Text style={styles.postDate} allowFontScaling={false}>
                 {formatDate(bookmarkDetail.createdAt)}
               </Text>
             </View>
 
-            <Text style={styles.postContent}>{bookmarkDetail.content}</Text>
+            <Text style={styles.postContent} allowFontScaling={false}>
+              {bookmarkDetail.content}
+            </Text>
 
             <View style={styles.bookRecommendation}>
               <Image
@@ -385,12 +403,14 @@ export default function BookmarkDetail() {
                 style={styles.bookCover}
               />
               <View style={styles.bookInfo}>
-                <Text style={styles.bookTitle}>{bookmarkDetail.bookTitle}</Text>
-                <Text style={styles.bookAuthor}>
+                <Text style={styles.bookTitle} allowFontScaling={false}>
+                  {bookmarkDetail.bookTitle}
+                </Text>
+                <Text style={styles.bookAuthor} allowFontScaling={false}>
                   {bookmarkDetail.bookAuthor}
                 </Text>
                 <View style={styles.bookYearContainer}>
-                  <Text style={styles.bookYear}>
+                  <Text style={styles.bookYear} allowFontScaling={false}>
                     {bookmarkDetail.bookPubDate?.split("-")[0] ||
                       bookmarkDetail.bookPubDate}
                   </Text>
@@ -424,7 +444,9 @@ export default function BookmarkDetail() {
               }
             }}
           >
-            <Text style={styles.bookmarkLocationText}>이 책갈피 위치 &gt;</Text>
+            <Text style={styles.bookmarkLocationText} allowFontScaling={false}>
+              이 책갈피 위치 &gt;
+            </Text>
           </TouchableOpacity>
 
           <View style={styles.statsContainer}>
@@ -433,7 +455,9 @@ export default function BookmarkDetail() {
                 isActive={bookmarkDetail.scraped}
                 color={bookmarkDetail.scraped ? "#56AC70" : "#C5BFBB"}
               />
-              <Text style={styles.statNumber}>{bookmarkDetail.scraps}</Text>
+              <Text style={styles.statNumber} allowFontScaling={false}>
+                {bookmarkDetail.scraps}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.statItem} onPress={toggleLike}>
@@ -441,7 +465,9 @@ export default function BookmarkDetail() {
                 isActive={bookmarkDetail.liked}
                 color={bookmarkDetail.liked ? "#E55E5E" : "#C5BFBB"}
               />
-              <Text style={styles.statNumber}>{bookmarkDetail.likes}</Text>
+              <Text style={styles.statNumber} allowFontScaling={false}>
+                {bookmarkDetail.likes}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -451,10 +477,11 @@ export default function BookmarkDetail() {
           <Text
             style={{
               color: "#FFFFFF",
-              fontSize: 16,
+              fontSize: 17,
               fontFamily: "SUIT-600",
               marginBottom: 15,
             }}
+            allowFontScaling={false}
           >
             댓글 ({totalComments})
           </Text>
@@ -471,7 +498,8 @@ export default function BookmarkDetail() {
             ))
           ) : (
             <Text
-              style={{ color: "#FFFFFF", fontSize: 14, textAlign: "center" }}
+              style={{ color: "#FFFFFF", fontSize: 15, textAlign: "center" }}
+              allowFontScaling={false}
             >
               아직 댓글이 없습니다.
             </Text>
@@ -498,12 +526,13 @@ export default function BookmarkDetail() {
           value={comment}
           onChangeText={setComment}
           multiline={false}
+          allowFontScaling={false}
         />
         <TouchableOpacity
           style={styles.sendButton}
           onPress={handleSubmitComment}
         >
-          <Text style={styles.sendButtonText}>
+          <Text style={styles.sendButtonText} allowFontScaling={false}>
             {comment.trim() ? "등록" : "등록"}
           </Text>
         </TouchableOpacity>
@@ -533,7 +562,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     textAlign: "center",
@@ -586,7 +615,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   cardTitle: {
-    fontSize: 24,
+    fontSize: 25,
     fontFamily: "Gangwon",
     color: "#262423",
     marginBottom: 8,
@@ -594,7 +623,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   cardAddress: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#000000",
     textAlign: "left",
@@ -613,7 +642,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   bookmarkLocationText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#FFFFFF",
     textDecorationLine: "underline",
@@ -628,7 +657,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   statNumber: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
   },
@@ -677,17 +706,17 @@ const styles = StyleSheet.create({
   },
 
   username: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "Gangwon",
     color: "#716C69",
   },
   postDate: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#C5BFBB",
   },
   postContent: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-500",
     color: "#000000",
     lineHeight: 23,
@@ -715,12 +744,12 @@ const styles = StyleSheet.create({
     width: "75%",
   },
   bookTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
   bookAuthor: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-400",
     color: "#716C69",
     marginBottom: 4,
@@ -738,7 +767,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   bookYear: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-600",
     color: "#EEE9E6",
   },
@@ -749,7 +778,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#302E2D",
     borderRadius: 10,
     paddingHorizontal: 15,
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     marginRight: 10,
     color: "#FFFFFF",
@@ -765,7 +794,7 @@ const styles = StyleSheet.create({
   },
   sendButtonText: {
     color: "#C5BFBB",
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
   },
 });

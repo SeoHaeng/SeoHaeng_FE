@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    fontSize: 24,
+    fontSize: 25,
     fontWeight: "bold",
     color: "#000000",
     textAlign: "center",
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   allAgreeText: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: "600",
     color: "#000000",
     marginLeft: 12,
@@ -290,12 +290,12 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     color: "#FFFFFF",
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "bold",
   },
   agreementText: {
     flex: 1,
-    fontSize: 12,
+    fontSize: 13,
     color: "#000000",
     marginLeft: 12,
     fontFamily: "SUIT-400",
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   detailLinkText: {
-    fontSize: 11,
+    fontSize: 12,
     textDecorationLine: "underline",
     color: "#666666",
     fontFamily: "SUIT-400",
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   },
   continueButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: "600",
     fontFamily: "SUIT-600",
   },

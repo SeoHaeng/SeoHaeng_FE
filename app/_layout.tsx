@@ -41,44 +41,8 @@ try {
   console.log("Font scaling setup completed");
 }
 
-// Text와 TextInput 컴포넌트를 래핑하여 자동으로 allowFontScaling={false} 적용
-// React Native에서 가장 안전하고 효과적인 방법
-try {
-  // Text 컴포넌트의 모든 인스턴스에 allowFontScaling={false} 강제 적용
-  const originalText = Text as any;
-  if (originalText.defaultProps) {
-    originalText.defaultProps.allowFontScaling = false;
-  } else {
-    originalText.defaultProps = { allowFontScaling: false };
-  }
-
-  // TextInput 컴포넌트의 모든 인스턴스에 allowFontScaling={false} 강제 적용
-  const originalTextInput = TextInput as any;
-  if (originalTextInput.defaultProps) {
-    originalTextInput.defaultProps.allowFontScaling = false;
-  } else {
-    originalTextInput.defaultProps = { allowFontScaling: false };
-  }
-
-  // 추가적인 안전장치: 컴포넌트 생성 시 자동으로 allowFontScaling={false} 적용
-  const originalTextCreateElement = originalText.createElement;
-  if (originalTextCreateElement) {
-    originalTextCreateElement = function (props: any, ...children: any[]) {
-      const newProps = { ...props, allowFontScaling: false };
-      return originalTextCreateElement.call(this, newProps, ...children);
-    };
-  }
-
-  const originalTextInputCreateElement = originalTextInput.createElement;
-  if (originalTextInputCreateElement) {
-    originalTextInputCreateElement = function (props: any, ...children: any[]) {
-      const newProps = { ...props, allowFontScaling: false };
-      return originalTextInputCreateElement.call(this, newProps, ...children);
-    };
-  }
-} catch (error) {
-  console.log("Font scaling global setup completed");
-}
+// 전역 기본값만 사용 (권장). 추가 오버라이드는 제거하여 예측 가능하게 유지
+// 이미 위에서 defaultProps에 allowFontScaling=false를 설정했으므로 여기서는 아무 것도 하지 않음
 
 // 인증 상태에 따른 화면 라우팅을 관리하는 컴포넌트
 function RootLayoutNav() {

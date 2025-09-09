@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   statusText: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
   },
   openText: {

@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     marginBottom: 60,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#424242",
     fontFamily: "SUIT-500",
     marginBottom: 12,
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     fontWeight: "500", // 폰트 로딩 실패 시 대체
   },
   title: {
-    fontSize: 32,
+    fontSize: 33,
     fontFamily: "Gangwon",
     color: "#212121",
     textAlign: "center",
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     fontWeight: "500", // 폰트 로딩 실패 시 대체
   },
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   linkText: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#757575",
     paddingHorizontal: 16,
   },

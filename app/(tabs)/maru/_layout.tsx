@@ -22,6 +22,7 @@ function CustomHeader() {
               (pathname === "/maru/bookmark" || pathname === "/maru") &&
                 styles.activeTabText,
             ]}
+            allowFontScaling={false}
           >
             공간책갈피
           </Text>
@@ -39,6 +40,7 @@ function CustomHeader() {
               styles.tabText,
               pathname === "/maru/challenge" && styles.activeTabText,
             ]}
+            allowFontScaling={false}
           >
             북챌린지
           </Text>
@@ -103,7 +105,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   tabText: {
-    fontSize: 17,
+    fontSize: 18,
     color: "#716C69",
     fontFamily: "SUIT-700",
   },

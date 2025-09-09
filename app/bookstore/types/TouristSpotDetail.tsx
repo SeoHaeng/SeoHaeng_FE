@@ -34,9 +34,13 @@ export default function TouristSpotDetail({
         <>
           <View style={styles.tabTitleContainer}>
             <BusinessHoursIcon />
-            <Text style={styles.tabTitle}>영업 시간</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              영업 시간
+            </Text>
           </View>
-          <Text style={styles.description}>{placeDetail.usetime}</Text>
+          <Text style={styles.description} allowFontScaling={false}>
+            {placeDetail.usetime}
+          </Text>
         </>
       )}
 
@@ -44,7 +48,9 @@ export default function TouristSpotDetail({
         <>
           <View style={styles.tabTitleContainer}>
             <PhoneIcon />
-            <Text style={styles.tabTitle}>연락처</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              연락처
+            </Text>
           </View>
           <TouchableOpacity
             onPress={() => {
@@ -53,7 +59,9 @@ export default function TouristSpotDetail({
               }
             }}
           >
-            <Text style={styles.phoneLink}>{placeDetail.tel}</Text>
+            <Text style={styles.phoneLink} allowFontScaling={false}>
+              {placeDetail.tel}
+            </Text>
           </TouchableOpacity>
         </>
       )}
@@ -62,10 +70,14 @@ export default function TouristSpotDetail({
         <>
           <View style={styles.tabTitleContainer}>
             <WebsiteIcon />
-            <Text style={styles.tabTitle}>공식 웹사이트</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              공식 웹사이트
+            </Text>
           </View>
           <TouchableOpacity onPress={handleWebsitePress}>
-            <Text style={styles.websiteLink}>{placeDetail.websiteUrl}</Text>
+            <Text style={styles.websiteLink} allowFontScaling={false}>
+              {placeDetail.websiteUrl}
+            </Text>
           </TouchableOpacity>
         </>
       )}
@@ -74,9 +86,11 @@ export default function TouristSpotDetail({
         <>
           <View style={styles.tabTitleContainer}>
             <StoreIntroIcon />
-            <Text style={styles.tabTitle}>관광지 소개</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              관광지 소개
+            </Text>
           </View>
-          <Text style={styles.description}>
+          <Text style={styles.description} allowFontScaling={false}>
             {placeDetail.placeDetail.overview}
           </Text>
         </>
@@ -87,9 +101,11 @@ export default function TouristSpotDetail({
         <>
           <View style={styles.tabTitleContainer}>
             <ParkingIcon />
-            <Text style={styles.tabTitle}>주차</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              주차
+            </Text>
           </View>
-          <Text style={styles.infoText}>
+          <Text style={styles.infoText} allowFontScaling={false}>
             {placeDetail.placeDetail.parkingAvailable}
           </Text>
         </>
@@ -100,9 +116,11 @@ export default function TouristSpotDetail({
         <>
           <View style={styles.tabTitleContainer}>
             <PetIcon />
-            <Text style={styles.tabTitle}>반려동물 동반</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              반려동물 동반
+            </Text>
           </View>
-          <Text style={styles.infoText}>
+          <Text style={styles.infoText} allowFontScaling={false}>
             {placeDetail.placeDetail.petsAllowed}
           </Text>
         </>
@@ -113,9 +131,11 @@ export default function TouristSpotDetail({
         <>
           <View style={styles.tabTitleContainer}>
             <BabyIcon />
-            <Text style={styles.tabTitle}>유모차 이용</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              유모차 이용
+            </Text>
           </View>
-          <Text style={styles.infoText}>
+          <Text style={styles.infoText} allowFontScaling={false}>
             {placeDetail.placeDetail.babyCarriageAllowed}
           </Text>
         </>
@@ -126,9 +146,11 @@ export default function TouristSpotDetail({
         <>
           <View style={styles.tabTitleContainer}>
             <CreditIcon />
-            <Text style={styles.tabTitle}>신용카드 결제</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              신용카드 결제
+            </Text>
           </View>
-          <Text style={styles.infoText}>
+          <Text style={styles.infoText} allowFontScaling={false}>
             {placeDetail.placeDetail.creditCardAccepted}
           </Text>
         </>
@@ -142,32 +164,32 @@ const styles = StyleSheet.create({
     minHeight: 400,
   },
   tabTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-700",
     color: "#262423",
   },
   description: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
     lineHeight: 20,
     marginBottom: 25,
   },
   infoText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginBottom: 40,
   },
   websiteLink: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#3871E0",
     textDecorationLine: "underline",
     marginBottom: 40,
   },
   phoneLink: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#3871E0",
     textDecorationLine: "underline",

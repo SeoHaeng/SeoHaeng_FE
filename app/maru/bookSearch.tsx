@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#000000",
   },
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
   },
   searchButtonText: {
     color: "#FFFFFF",
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
   },
   searchInput: {
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 15,
     paddingVertical: 12,
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#000000",
   },
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   resultsCount: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-600",
     color: "#9D9896",
     marginBottom: 10,
@@ -414,18 +414,18 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     color: "#4D4947",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
   },
   bookTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#000000",
     marginBottom: 4,
     lineHeight: 16,
   },
   bookAuthor: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     textAlign: "left",
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   registerText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
   },
   completeButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
   },
   loadingContainer: {
@@ -479,7 +479,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   loadMoreButtonText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#302E2D",
   },
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   initialLoadingText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -513,12 +513,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   noResultsText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#716C69",
   },
   noResultsSubText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },

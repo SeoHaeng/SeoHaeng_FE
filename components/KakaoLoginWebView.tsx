@@ -117,11 +117,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   closeButtonText: {
-    fontSize: 18,
+    fontSize: 19,
     color: "#666666",
   },
   title: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    fontSize: 14,
+    fontSize: 15,
     color: "#666666",
     fontFamily: "SUIT-500",
   },

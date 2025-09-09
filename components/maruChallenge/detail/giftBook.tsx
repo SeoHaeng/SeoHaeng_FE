@@ -35,13 +35,21 @@ export default function GiftBook({
         {icon && <View style={styles.iconContainer}>{icon}</View>}
 
         <View style={styles.bookInfo}>
-          <Text style={styles.bookTitle} numberOfLines={1}>
+          <Text
+            style={styles.bookTitle}
+            numberOfLines={1}
+            allowFontScaling={false}
+          >
             {title && title.length > 11 ? `${title.slice(0, 11)}...` : title}
           </Text>
-          <Text style={styles.bookAuthor}>{formatAuthor(author || "")}</Text>
+          <Text style={styles.bookAuthor} allowFontScaling={false}>
+            {formatAuthor(author || "")}
+          </Text>
         </View>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>{status}</Text>
+          <Text style={styles.badgeText} allowFontScaling={false}>
+            {status}
+          </Text>
         </View>
       </View>
     </View>
@@ -90,11 +98,11 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   bookTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-700",
   },
   bookAuthor: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -107,7 +115,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   badgeText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-700",
   },
 });

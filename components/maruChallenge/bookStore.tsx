@@ -21,11 +21,13 @@ export default function BookStoreItem({
       ) : (
         <View style={styles.storeImage} />
       )}
-      <Text style={styles.storeName}>
+      <Text style={styles.storeName} allowFontScaling={false}>
         {name.length > 6 ? `${name.slice(0, 6)}...` : name}
       </Text>
       <View style={styles.locationButton}>
-        <Text style={styles.locationText}>{location}</Text>
+        <Text style={styles.locationText} allowFontScaling={false}>
+          {location}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
   },
   storeName: {
     fontFamily: "SUIT-700",
-    fontSize: 13,
+    fontSize: 14,
   },
   locationButton: {
     backgroundColor: "#EEE9E6",
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontFamily: "SUIT-500",
-    fontSize: 12,
+    fontSize: 13,
     color: "#9D9896",
   },
 });

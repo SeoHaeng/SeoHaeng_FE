@@ -1649,6 +1649,7 @@ function Milestone() {
           placeholder="서점, 책방, 공간 검색"
           placeholderTextColor="#999999"
           editable={false}
+          allowFontScaling={false}
         />
         {selectedLocation ? (
           <TouchableOpacity
@@ -1687,7 +1688,9 @@ function Milestone() {
           }}
         >
           <BookStayIcon style={styles.filterIcon} color="#716C69" />
-          <Text style={styles.filterText}>북스테이</Text>
+          <Text style={styles.filterText} allowFontScaling={false}>
+            북스테이
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.filterButton}
@@ -1699,7 +1702,9 @@ function Milestone() {
           }}
         >
           <IndependentBookstoreIcon style={styles.filterIcon} color="#716C69" />
-          <Text style={styles.filterText}>독립서점</Text>
+          <Text style={styles.filterText} allowFontScaling={false}>
+            독립서점
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.filterButton}
@@ -1711,7 +1716,9 @@ function Milestone() {
           }}
         >
           <SpaceBookmarkIcon style={styles.filterIcon} color="#716C69" />
-          <Text style={styles.filterText}>공간책갈피</Text>
+          <Text style={styles.filterText} allowFontScaling={false}>
+            공간책갈피
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.filterButton}
@@ -1723,7 +1730,9 @@ function Milestone() {
           }}
         >
           <BookCafeIcon style={styles.filterIcon} color="#716C69" />
-          <Text style={styles.filterText}>북카페</Text>
+          <Text style={styles.filterText} allowFontScaling={false}>
+            북카페
+          </Text>
         </TouchableOpacity>
       </View>
       {/* 나의 위치 버튼 */}
@@ -1866,6 +1875,7 @@ function Milestone() {
             styles.locationName,
             isLoadingLocation && styles.loadingLocationText,
           ]}
+          allowFontScaling={false}
         >
           {isLoadingLocation
             ? "위치 불러오는 중..."
@@ -1908,6 +1918,7 @@ function Milestone() {
                 selectedBottomFilters.includes("주변 맛집") &&
                   styles.selectedFilterText,
               ]}
+              allowFontScaling={false}
             >
               주변 맛집
             </Text>
@@ -1944,6 +1955,7 @@ function Milestone() {
                 selectedBottomFilters.includes("가볼만한 관광지") &&
                   styles.selectedFilterText,
               ]}
+              allowFontScaling={false}
             >
               가볼만한 관광지
             </Text>
@@ -1980,6 +1992,7 @@ function Milestone() {
                 selectedBottomFilters.includes("뜨는 축제") &&
                   styles.selectedFilterText,
               ]}
+              allowFontScaling={false}
             >
               뜨는 축제
             </Text>
@@ -2024,7 +2037,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#C5BFBB",
   },
@@ -2070,7 +2083,7 @@ const styles = StyleSheet.create({
     height: 16,
   },
   filterText: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-600",
     color: "#716C69",
   },
@@ -2128,7 +2141,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   zoomIcon: {
-    fontSize: 28,
+    fontSize: 29,
     fontFamily: "SUIT-800",
     color: "#262423",
   },
@@ -2145,7 +2158,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   locationName: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#000000",
     marginBottom: 15,
@@ -2178,7 +2191,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#4D4947",
   },
   bottomFilterText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-600",
     color: "#9D9896",
   },
@@ -2213,7 +2226,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   actionButtonText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
   },
@@ -2265,7 +2278,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   debugButtonText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#262423",
   },

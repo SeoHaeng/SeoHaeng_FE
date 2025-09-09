@@ -637,7 +637,7 @@ export default function Itinerary() {
     if (!tripData.days || tripData.days.length === 0) {
       return (
         <View style={styles.timelineContainer}>
-          <Text style={styles.emptyTimelineText}>
+          <Text style={styles.emptyTimelineText} allowFontScaling={false}>
             여행 일정을 먼저 설정해주세요
           </Text>
         </View>
@@ -654,8 +654,15 @@ export default function Itinerary() {
                 style={styles.timelineItem}
               >
                 <View style={styles.timelineTextContainer}>
-                  <Text style={styles.timelineDate}>{day.dayNumber}</Text>
-                  <Text style={styles.timelineDateSmall}>{day.date}</Text>
+                  <Text style={styles.timelineDate} allowFontScaling={false}>
+                    {day.dayNumber}
+                  </Text>
+                  <Text
+                    style={styles.timelineDateSmall}
+                    allowFontScaling={false}
+                  >
+                    {day.date}
+                  </Text>
                 </View>
                 <View
                   style={[
@@ -714,7 +721,9 @@ export default function Itinerary() {
             style={styles.addSpotButton}
             onPress={() => handleAddSpot(dayIndex)}
           >
-            <Text style={styles.addSpotButtonText}>+ 일정 추가</Text>
+            <Text style={styles.addSpotButtonText} allowFontScaling={false}>
+              + 일정 추가
+            </Text>
           </TouchableOpacity>
         ) : (
           <ScrollView
@@ -747,15 +756,23 @@ export default function Itinerary() {
                 >
                   <View style={styles.spotHeader}>
                     <View style={styles.spotNumber}>
-                      <Text style={styles.spotNumberText}>{spotIndex + 1}</Text>
+                      <Text
+                        style={styles.spotNumberText}
+                        allowFontScaling={false}
+                      >
+                        {spotIndex + 1}
+                      </Text>
                     </View>
-                    <Text style={styles.spotName}>
+                    <Text style={styles.spotName} allowFontScaling={false}>
                       {spot.name.length > 6
                         ? `${spot.name.slice(0, 6)}...`
                         : spot.name}
                     </Text>
                     <View style={styles.spotTypeTag}>
-                      <Text style={styles.spotTypeText}>
+                      <Text
+                        style={styles.spotTypeText}
+                        allowFontScaling={false}
+                      >
                         {getKoreanPlaceType(spot.placeType || "")}
                       </Text>
                     </View>
@@ -768,7 +785,12 @@ export default function Itinerary() {
                     style={styles.deleteButton}
                     onPress={() => handleSpotDelete(spot.id, dayIndex)}
                   >
-                    <Text style={styles.deleteButtonText}>삭제</Text>
+                    <Text
+                      style={styles.deleteButtonText}
+                      allowFontScaling={false}
+                    >
+                      삭제
+                    </Text>
                   </TouchableOpacity>
                 )}
               </Animated.View>
@@ -777,7 +799,12 @@ export default function Itinerary() {
               style={styles.addMoreSpotButton}
               onPress={() => handleAddSpot(dayIndex)}
             >
-              <Text style={styles.addMoreSpotButtonText}>+ 일정 추가</Text>
+              <Text
+                style={styles.addMoreSpotButtonText}
+                allowFontScaling={false}
+              >
+                + 일정 추가
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         )}
@@ -796,7 +823,9 @@ export default function Itinerary() {
         </View>
 
         <View style={styles.headerContent}>
-          <Text style={styles.dateRange}>{tripData.dateRange}</Text>
+          <Text style={styles.dateRange} allowFontScaling={false}>
+            {tripData.dateRange}
+          </Text>
 
           {/* 공개/비공개 토글 */}
           <View style={styles.toggleContainer}>
@@ -812,6 +841,7 @@ export default function Itinerary() {
                   styles.toggleButtonText,
                   !isPublic && styles.toggleButtonTextActive,
                 ]}
+                allowFontScaling={false}
               >
                 비공개
               </Text>
@@ -828,6 +858,7 @@ export default function Itinerary() {
                   styles.toggleButtonText,
                   isPublic && styles.toggleButtonTextActive,
                 ]}
+                allowFontScaling={false}
               >
                 공개
               </Text>
@@ -836,12 +867,16 @@ export default function Itinerary() {
         </View>
 
         <View style={styles.titleSection}>
-          <Text style={styles.tripTitle}>{tripData.title}</Text>
+          <Text style={styles.tripTitle} allowFontScaling={false}>
+            {tripData.title}
+          </Text>
           <TouchableOpacity
             style={styles.editButton}
             onPress={handleEditTripName}
           >
-            <Text style={styles.editButtonText}>수정</Text>
+            <Text style={styles.editButtonText} allowFontScaling={false}>
+              수정
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -851,7 +886,9 @@ export default function Itinerary() {
               key={`region-${region}-${regionIndex}`}
               style={styles.regionTag}
             >
-              <Text style={styles.regionText}>{region}</Text>
+              <Text style={styles.regionText} allowFontScaling={false}>
+                {region}
+              </Text>
             </View>
           ))}
         </View>
@@ -862,15 +899,17 @@ export default function Itinerary() {
         <View style={styles.mapDayTag}>
           {tripData.days[selectedDay] ? (
             <View style={styles.mapDayContent}>
-              <Text style={styles.mapDayNumber}>
+              <Text style={styles.mapDayNumber} allowFontScaling={false}>
                 {tripData.days[selectedDay].dayNumber}
               </Text>
-              <Text style={styles.mapDayDate}>
+              <Text style={styles.mapDayDate} allowFontScaling={false}>
                 {tripData.days[selectedDay].date}
               </Text>
             </View>
           ) : (
-            <Text style={styles.mapDayText}>일정 없음</Text>
+            <Text style={styles.mapDayText} allowFontScaling={false}>
+              일정 없음
+            </Text>
           )}
         </View>
         <View style={styles.map}>
@@ -956,7 +995,7 @@ export default function Itinerary() {
           </ScrollView>
         ) : (
           <View style={styles.emptyDaysContainer}>
-            <Text style={styles.emptyDaysText}>
+            <Text style={styles.emptyDaysText} allowFontScaling={false}>
               여행 일정을 먼저 설정해주세요
             </Text>
           </View>
@@ -993,6 +1032,7 @@ export default function Itinerary() {
               !tripData.days.every((day) => day.spots.length > 0) &&
                 styles.createScheduleButtonTextDisabled,
             ]}
+            allowFontScaling={false}
           >
             일정 생성하기
           </Text>
@@ -1029,12 +1069,12 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   saveButtonText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
   dateRange: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
@@ -1045,7 +1085,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   tripTitle: {
-    fontSize: 24,
+    fontSize: 25,
     fontFamily: "Gangwon",
     color: "#262423",
   },
@@ -1056,7 +1096,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   editButtonText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -1071,7 +1111,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   privacyToggleLabel: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
   },
@@ -1091,7 +1131,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#262423",
   },
   toggleButtonText: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -1105,7 +1145,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   regionText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
   },
@@ -1133,7 +1173,7 @@ const styles = StyleSheet.create({
   },
   addProfileText: {
     color: "#FFFFFF",
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-600",
   },
   mapContainer: {},
@@ -1149,7 +1189,7 @@ const styles = StyleSheet.create({
   },
   mapDayText: {
     color: "#FFFFFF",
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
   },
   mapDayContent: {
@@ -1159,13 +1199,13 @@ const styles = StyleSheet.create({
   },
   mapDayNumber: {
     color: "#FFFFFF",
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-700",
     fontWeight: "bold",
   },
   mapDayDate: {
     color: "#9D9896",
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
   },
   map: {
@@ -1176,13 +1216,13 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   mapPlaceholder: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
   mapText: {
     position: "absolute",
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#262423",
   },
@@ -1239,12 +1279,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#C5BFBB",
   },
   timelineDate: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
   timelineDateSmall: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -1270,7 +1310,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   dayCardTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
@@ -1280,13 +1320,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   emptyDayText: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-600",
     color: "#262423",
     marginBottom: 8,
   },
   emptyDaySubtext: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     textAlign: "center",
@@ -1303,7 +1343,7 @@ const styles = StyleSheet.create({
   },
   addSpotButtonText: {
     color: "#4D4947",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     textAlign: "center",
   },
@@ -1326,18 +1366,18 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
   },
   spotTime: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
   spotName: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#262423",
     marginTop: 2,
   },
   spotLocation: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     marginTop: 2,
@@ -1359,7 +1399,7 @@ const styles = StyleSheet.create({
   },
   spotNumberText: {
     color: "#FFFFFF",
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-600",
   },
   spotTypeTag: {
@@ -1370,7 +1410,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   spotTypeText: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#666666",
   },
@@ -1386,12 +1426,12 @@ const styles = StyleSheet.create({
   },
   addMoreSpotButtonText: {
     color: "#4D4947",
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     textAlign: "center",
   },
   emptyTimelineText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     textAlign: "center",
@@ -1404,7 +1444,7 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
   },
   emptyDaysText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     textAlign: "center",
@@ -1434,7 +1474,7 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: {
     color: "#FFFFFF",
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-600",
   },
   createScheduleButtonContainer: {
@@ -1453,7 +1493,7 @@ const styles = StyleSheet.create({
   },
   createScheduleButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
   },
   createScheduleButtonDisabled: {

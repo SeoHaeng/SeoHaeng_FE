@@ -17,7 +17,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabelStyle: {
             fontFamily: "SUIT-500",
-            fontSize: 10,
+            fontSize: 11,
           },
         }}
       >

@@ -275,6 +275,7 @@ const SearchScreen = () => {
           value={searchText}
           onChangeText={handleSearch}
           autoFocus
+          allowFontScaling={false}
         />
         {searchText.length > 0 && (
           <TouchableOpacity onPress={handleClearSearch}>
@@ -292,8 +293,10 @@ const SearchScreen = () => {
         {searchText.length === 0 ? (
           /* 검색 안내 메시지 */
           <View style={styles.guideSection}>
-            <Text style={styles.guideTitle}>장소를 검색해보세요</Text>
-            <Text style={styles.guideText}>
+            <Text style={styles.guideTitle} allowFontScaling={false}>
+              장소를 검색해보세요
+            </Text>
+            <Text style={styles.guideText} allowFontScaling={false}>
               찾고 싶은 장소의 이름이나 키워드를 입력하면{"\n"}
               해당 지역의 장소를 찾을 수 있습니다.
             </Text>
@@ -303,7 +306,9 @@ const SearchScreen = () => {
           <View style={styles.suggestionsSection}>
             {isLoading ? (
               <View style={styles.loadingContainer}>
-                <Text style={styles.loadingText}>검색 중...</Text>
+                <Text style={styles.loadingText} allowFontScaling={false}>
+                  검색 중...
+                </Text>
               </View>
             ) : searchResults.length > 0 ? (
               searchResults.map((item, index) => (
@@ -316,9 +321,14 @@ const SearchScreen = () => {
                     <AntDesign name="search1" size={16} color="#666666" />
                     <View style={styles.suggestionTextContainer}>
                       <View style={styles.nameAndTagContainer}>
-                        <Text style={styles.suggestionText}>{item.name}</Text>
+                        <Text
+                          style={styles.suggestionText}
+                          allowFontScaling={false}
+                        >
+                          {item.name}
+                        </Text>
                         <View style={styles.tagContainer}>
-                          <Text style={styles.tagText}>
+                          <Text style={styles.tagText} allowFontScaling={false}>
                             {item.placeType === "TOURIST_SPOT"
                               ? "관광지"
                               : item.placeType === "RESTAURANT"
@@ -331,7 +341,12 @@ const SearchScreen = () => {
                       </View>
                       <View style={styles.addressContainer}>
                         <PlaceIcon style={styles.addressIcon} />
-                        <Text style={styles.addressText}>{item.address}</Text>
+                        <Text
+                          style={styles.addressText}
+                          allowFontScaling={false}
+                        >
+                          {item.address}
+                        </Text>
                       </View>
                     </View>
                   </View>
@@ -339,7 +354,9 @@ const SearchScreen = () => {
               ))
             ) : (
               <View style={styles.noResultsContainer}>
-                <Text style={styles.noResultsText}>검색 결과가 없습니다.</Text>
+                <Text style={styles.noResultsText} allowFontScaling={false}>
+                  검색 결과가 없습니다.
+                </Text>
               </View>
             )}
           </View>
@@ -376,7 +393,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-400",
     color: "#262423",
     paddingVertical: 10,
@@ -395,14 +412,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   guideTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-600",
     color: "#262423",
     marginBottom: 12,
     textAlign: "center",
   },
   guideText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-400",
     color: "#9D9896",
     textAlign: "center",
@@ -434,7 +451,7 @@ const styles = StyleSheet.create({
   },
   suggestionText: {
     maxWidth: "75%",
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-400",
     color: "#262423",
   },
@@ -446,7 +463,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   tagText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#666666",
   },
@@ -467,7 +484,7 @@ const styles = StyleSheet.create({
     tintColor: "#999999",
   },
   addressText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-400",
     color: "#999999",
   },
@@ -479,7 +496,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   fromScreenText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#666666",
   },
@@ -488,7 +505,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#999999",
   },
@@ -497,7 +514,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   noResultsText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#999999",
   },
@@ -509,7 +526,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   viewportText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-400",
     color: "#666666",
     marginBottom: 4,
@@ -522,7 +539,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   userLocationText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#1976D2",
   },

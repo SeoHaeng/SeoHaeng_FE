@@ -356,9 +356,11 @@ const LocationPickerMap = ({
           }}
           style={styles.backButton}
         >
-          <Text style={styles.backButtonText}>←</Text>
+          <Text style={styles.backButtonText} allowFontScaling={false}>
+            ←
+          </Text>
         </TouchableOpacity>
-        <Text style={styles.instructionText}>
+        <Text style={styles.instructionText} allowFontScaling={false}>
           지도를 움직여서 위치를 선택해주세요
         </Text>
         <View style={styles.placeholder} />
@@ -394,7 +396,9 @@ const LocationPickerMap = ({
       <View style={styles.bottomContainer}>
         {selectedLocation ? (
           <View style={styles.locationInfo}>
-            <Text style={styles.addressText}>{selectedLocation.address}</Text>
+            <Text style={styles.addressText} allowFontScaling={false}>
+              {selectedLocation.address}
+            </Text>
             <TouchableOpacity
               style={styles.confirmButton}
               onPress={() => {
@@ -411,11 +415,15 @@ const LocationPickerMap = ({
                 router.push("/marker/register");
               }}
             >
-              <Text style={styles.confirmButtonText}>여기로 하기 {">"}</Text>
+              <Text style={styles.confirmButtonText} allowFontScaling={false}>
+                여기로 하기 {">"}
+              </Text>
             </TouchableOpacity>
           </View>
         ) : (
-          <Text style={styles.loadingText}>주소를 불러오는 중...</Text>
+          <Text style={styles.loadingText} allowFontScaling={false}>
+            주소를 불러오는 중...
+          </Text>
         )}
       </View>
     </View>
@@ -442,11 +450,11 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   backButtonText: {
-    fontSize: 24,
+    fontSize: 25,
     color: "#333",
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "600",
     color: "#333",
   },
@@ -463,7 +471,7 @@ const styles = StyleSheet.create({
     borderTopColor: "#E0E0E0",
   },
   instructionText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#666",
     textAlign: "center",
   },
@@ -471,7 +479,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addressText: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#333",
     marginBottom: 15,
     textAlign: "center",
@@ -484,11 +492,11 @@ const styles = StyleSheet.create({
   },
   confirmButtonText: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#999",
     textAlign: "center",
   },

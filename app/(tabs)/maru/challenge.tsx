@@ -203,7 +203,9 @@ export default function Challenge() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#E60A34" />
-        <Text style={styles.loadingText}>북챌린지 데이터를 불러오는 중...</Text>
+        <Text style={styles.loadingText} allowFontScaling={false}>
+          북챌린지 데이터를 불러오는 중...
+        </Text>
       </View>
     );
   }
@@ -239,12 +241,12 @@ export default function Challenge() {
           }
         >
           {inProgressChallengeInfo && (
-            <Text style={styles.emptyBookText}>
+            <Text style={styles.emptyBookText} allowFontScaling={false}>
               {inProgressChallengeInfo.receivedBookTitle} -{" "}
               {inProgressChallengeInfo.receivedBookAuthor}
             </Text>
           )}
-          <Text style={styles.bookComingText}>
+          <Text style={styles.bookComingText} allowFontScaling={false}>
             인증하고 나도 책 선물하기 &gt;
           </Text>
           {inProgressChallengeInfo?.receivedBookImage && (
@@ -256,15 +258,21 @@ export default function Challenge() {
         </TouchableOpacity>
       ) : (
         <View style={styles.emptyBookContainer}>
-          <Text style={styles.emptyBookText}>아직 책이 오지 않았어요</Text>
-          <Text style={styles.bookComingText}>어떤 책이 올까요?</Text>
+          <Text style={styles.emptyBookText} allowFontScaling={false}>
+            아직 책이 오지 않았어요
+          </Text>
+          <Text style={styles.bookComingText} allowFontScaling={false}>
+            어떤 책이 올까요?
+          </Text>
           <EmptyBookIcon style={styles.emptyBookImage} />
         </View>
       )}
 
       <View style={styles.bookStoreSection}>
         <View style={styles.bookStoreHeader}>
-          <Text style={styles.sectionTitle}>북챌린지 서점</Text>
+          <Text style={styles.sectionTitle} allowFontScaling={false}>
+            북챌린지 서점
+          </Text>
           <TouchableOpacity
             style={styles.applyButton}
             onPress={() => {
@@ -274,7 +282,9 @@ export default function Challenge() {
               );
             }}
           >
-            <Text style={styles.applyButtonText}>우리 서점 신청</Text>
+            <Text style={styles.applyButtonText} allowFontScaling={false}>
+              우리 서점 신청
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -302,10 +312,13 @@ export default function Challenge() {
 
       <View style={styles.popularSection}>
         <View style={styles.headerContainer}>
-          <Text style={styles.sectionTitle}>인기 챌린지 인증</Text>
+          <Text style={styles.sectionTitle} allowFontScaling={false}>
+            인기 챌린지 인증
+          </Text>
           <Text
             style={styles.viewAll}
             onPress={() => router.push("/popularity")}
+            allowFontScaling={false}
           >
             전체 보기 &gt;
           </Text>
@@ -372,12 +385,12 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   emptyBookText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#716C69",
     fontFamily: "SUIT-500",
   },
   bookComingText: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#302E2D",
     fontFamily: "SUIT-700",
   },
@@ -403,18 +416,18 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   inProgressText: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#FFFFFF",
     fontFamily: "SUIT-700",
   },
   inProgressSubText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#FFFFFF",
     fontFamily: "SUIT-500",
     opacity: 0.8,
   },
   bookInfoText: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#FFFFFF",
     fontFamily: "SUIT-600",
     opacity: 0.9,
@@ -432,7 +445,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily: "SUIT-700",
-    fontSize: 16,
+    fontSize: 17,
   },
   applyButton: {
     backgroundColor: "#EEE9E6",
@@ -445,7 +458,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   applyButtonText: {
-    fontSize: 10,
+    fontSize: 11,
     color: "#716C69",
     fontFamily: "SUIT-500",
   },
@@ -473,7 +486,7 @@ const styles = StyleSheet.create({
 
   viewAll: {
     fontFamily: "SUIT-500",
-    fontSize: 12,
+    fontSize: 13,
     color: "#716C69",
     textDecorationLine: "underline",
     textDecorationColor: "#716C69",
@@ -493,7 +506,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#716C69",
     marginTop: 16,
     fontFamily: "SUIT-500",

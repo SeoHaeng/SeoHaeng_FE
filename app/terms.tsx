@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#000000",
   },
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   menuItemText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#333333",
     flex: 1,

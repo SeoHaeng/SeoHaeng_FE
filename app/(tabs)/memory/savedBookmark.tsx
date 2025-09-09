@@ -84,7 +84,9 @@ export default function SavedBookmark() {
       <View style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#E60A34" />
-          <Text style={styles.loadingText}>저장된 책갈피를 불러오는 중...</Text>
+          <Text style={styles.loadingText} allowFontScaling={false}>
+            저장된 책갈피를 불러오는 중...
+          </Text>
         </View>
       </View>
     );
@@ -95,8 +97,10 @@ export default function SavedBookmark() {
     return (
       <View style={styles.container}>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>저장된 책갈피</Text>
-          <Text style={styles.emptySubtext}>
+          <Text style={styles.emptyTitle} allowFontScaling={false}>
+            저장된 책갈피
+          </Text>
+          <Text style={styles.emptySubtext} allowFontScaling={false}>
             아직 저장된 책갈피가 없습니다.
           </Text>
         </View>
@@ -109,7 +113,9 @@ export default function SavedBookmark() {
     return (
       <View style={styles.footerLoader}>
         <ActivityIndicator size="small" color="#E60A34" />
-        <Text style={styles.footerText}>더 많은 책갈피를 불러오는 중...</Text>
+        <Text style={styles.footerText} allowFontScaling={false}>
+          더 많은 책갈피를 불러오는 중...
+        </Text>
       </View>
     );
   };
@@ -118,7 +124,9 @@ export default function SavedBookmark() {
     <View style={styles.container}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <Text style={styles.headerSubtitle}>총 {totalElements}개</Text>
+        <Text style={styles.headerSubtitle} allowFontScaling={false}>
+          총 {totalElements}개
+        </Text>
       </View>
 
       {/* 책갈피 목록 */}
@@ -197,7 +205,9 @@ export default function SavedBookmark() {
             {isLoadingMore ? (
               <ActivityIndicator size="small" color="#E60A34" />
             ) : (
-              <Text style={styles.loadMoreText}>더 보기</Text>
+              <Text style={styles.loadMoreText} allowFontScaling={false}>
+                더 보기
+              </Text>
             )}
           </TouchableOpacity>
         )}
@@ -216,13 +226,13 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 21,
     fontFamily: "SUIT-700",
     color: "#262423",
     marginBottom: 5,
   },
   headerSubtitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -240,7 +250,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginTop: 15,
@@ -251,13 +261,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emptyTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#333333",
     marginBottom: 10,
   },
   emptySubtext: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#666666",
   },
@@ -266,7 +276,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   footerText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginTop: 10,
@@ -290,7 +300,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
   },
   loadMoreText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },

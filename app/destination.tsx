@@ -124,12 +124,14 @@ export default function Destination() {
         <TouchableOpacity onPress={() => router.push("/plan")}>
           <BackIcon />
         </TouchableOpacity>
-        <Text style={styles.headerSubtitle}>
+        <Text style={styles.headerSubtitle} allowFontScaling={false}>
           {travelScheduleList.length > 0
             ? `${travelScheduleList[0]?.day?.slice(5, 7)}.${travelScheduleList[0]?.day?.slice(8, 10)} - ${travelScheduleList[travelScheduleList.length - 1]?.day?.slice(5, 7)}.${travelScheduleList[travelScheduleList.length - 1]?.day?.slice(8, 10)}`
             : "날짜 미정"}
         </Text>
-        <Text style={styles.headerTitle}>어디로{"\n"}여행을 떠날까요?</Text>
+        <Text style={styles.headerTitle} allowFontScaling={false}>
+          어디로{"\n"}여행을 떠날까요?
+        </Text>
       </View>
 
       <View style={styles.content}>
@@ -155,6 +157,7 @@ export default function Destination() {
                   selectedDestinations.includes("1") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 강릉
               </Text>
@@ -178,6 +181,7 @@ export default function Destination() {
                   selectedDestinations.includes("2") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 속초
               </Text>
@@ -205,6 +209,7 @@ export default function Destination() {
                   selectedDestinations.includes("3") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 춘천
               </Text>
@@ -228,6 +233,7 @@ export default function Destination() {
                   selectedDestinations.includes("4") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 원주
               </Text>
@@ -255,6 +261,7 @@ export default function Destination() {
                   selectedDestinations.includes("5") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 동해
               </Text>
@@ -278,6 +285,7 @@ export default function Destination() {
                   selectedDestinations.includes("6") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 태백
               </Text>
@@ -305,6 +313,7 @@ export default function Destination() {
                   selectedDestinations.includes("7") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 삼척
               </Text>
@@ -328,6 +337,7 @@ export default function Destination() {
                   selectedDestinations.includes("8") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 홍천
               </Text>
@@ -355,6 +365,7 @@ export default function Destination() {
                   selectedDestinations.includes("9") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 횡성
               </Text>
@@ -378,6 +389,7 @@ export default function Destination() {
                   selectedDestinations.includes("10") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 영월
               </Text>
@@ -405,6 +417,7 @@ export default function Destination() {
                   selectedDestinations.includes("11") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 평창
               </Text>
@@ -428,6 +441,7 @@ export default function Destination() {
                   selectedDestinations.includes("12") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 정선
               </Text>
@@ -455,6 +469,7 @@ export default function Destination() {
                   selectedDestinations.includes("13") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 철원
               </Text>
@@ -478,6 +493,7 @@ export default function Destination() {
                   selectedDestinations.includes("14") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 화천
               </Text>
@@ -505,6 +521,7 @@ export default function Destination() {
                   selectedDestinations.includes("15") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 양구
               </Text>
@@ -528,6 +545,7 @@ export default function Destination() {
                   selectedDestinations.includes("16") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 인제
               </Text>
@@ -555,6 +573,7 @@ export default function Destination() {
                   selectedDestinations.includes("17") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 고성
               </Text>
@@ -578,6 +597,7 @@ export default function Destination() {
                   selectedDestinations.includes("18") &&
                     styles.selectedDestinationName,
                 ]}
+                allowFontScaling={false}
               >
                 양양
               </Text>
@@ -612,7 +632,9 @@ export default function Destination() {
               };
               return (
                 <View key={id} style={styles.tag}>
-                  <Text style={styles.tagText}>{destinationNames[id]}</Text>
+                  <Text style={styles.tagText} allowFontScaling={false}>
+                    {destinationNames[id]}
+                  </Text>
                   <TouchableOpacity onPress={() => toggleDestination(id)}>
                     <Feather name="x" size={18} color="#9D9896" />
                   </TouchableOpacity>
@@ -652,12 +674,12 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 25,
     fontFamily: "SUIT-700",
     color: "#262423",
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#262423",
     marginTop: 2,
@@ -696,7 +718,7 @@ const styles = StyleSheet.create({
     marginRight: 25,
   },
   destinationName: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
@@ -724,7 +746,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tagText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
   },

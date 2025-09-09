@@ -22,8 +22,16 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
         </TouchableOpacity>
       )}
       <View style={styles.headerContent}>
-        {subtitle && <Text style={styles.headerSubtitle}>{subtitle}</Text>}
-        <Text style={styles.headerTitle} numberOfLines={0}>
+        {subtitle && (
+          <Text style={styles.headerSubtitle} allowFontScaling={false}>
+            {subtitle}
+          </Text>
+        )}
+        <Text
+          style={styles.headerTitle}
+          numberOfLines={0}
+          allowFontScaling={false}
+        >
           {title}
         </Text>
       </View>

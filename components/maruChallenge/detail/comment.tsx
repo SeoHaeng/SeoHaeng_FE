@@ -28,13 +28,23 @@ export default function ChallengeComment({
           <View style={styles.commentAvatar} />
         )}
         <View style={styles.commentInfo}>
-          <Text style={[styles.commentUsername, color && { color }]}>
+          <Text
+            style={[styles.commentUsername, color && { color }]}
+            allowFontScaling={false}
+          >
             {userName}
           </Text>
-          <Text style={styles.commentDate}>{date}</Text>
+          <Text style={styles.commentDate} allowFontScaling={false}>
+            {date}
+          </Text>
         </View>
       </View>
-      <Text style={[styles.description, color && { color }]}>{text}</Text>
+      <Text
+        style={[styles.description, color && { color }]}
+        allowFontScaling={false}
+      >
+        {text}
+      </Text>
     </View>
   );
 }
@@ -61,16 +71,16 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   commentUsername: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-700",
   },
   commentDate: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
   description: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     lineHeight: 20,
   },

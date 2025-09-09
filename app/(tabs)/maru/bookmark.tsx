@@ -49,7 +49,9 @@ export default function Bookmark() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#E60A34" />
-        <Text style={styles.loadingText}>공간 책갈피를 불러오는 중...</Text>
+        <Text style={styles.loadingText} allowFontScaling={false}>
+          공간 책갈피를 불러오는 중...
+        </Text>
       </View>
     );
   }
@@ -58,8 +60,10 @@ export default function Bookmark() {
   if (!isLoading && scrapList.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyTitle}>공간 책갈피</Text>
-        <Text style={styles.emptySubtext}>
+        <Text style={styles.emptyTitle} allowFontScaling={false}>
+          공간 책갈피
+        </Text>
+        <Text style={styles.emptySubtext} allowFontScaling={false}>
           아직 등록된 공간 책갈피가 없습니다.
         </Text>
       </View>
@@ -84,7 +88,8 @@ export default function Bookmark() {
           }}
         >
           <Text
-            style={{ fontSize: 13, color: "#716C69", fontFamily: "SUIT-500" }}
+            style={{ fontSize: 14, color: "#716C69", fontFamily: "SUIT-500" }}
+            allowFontScaling={false}
           >
             총 {totalElements}개
           </Text>
@@ -106,10 +111,11 @@ export default function Bookmark() {
             >
               <Text
                 style={{
-                  fontSize: 10,
+                  fontSize: 11,
                   color: sortType === "latest" ? "#FFFFFF" : "#716C69",
                   fontFamily: "SUIT-500",
                 }}
+                allowFontScaling={false}
               >
                 최신순
               </Text>
@@ -130,10 +136,11 @@ export default function Bookmark() {
             >
               <Text
                 style={{
-                  fontSize: 10,
+                  fontSize: 11,
                   color: sortType === "popular" ? "#FFFFFF" : "#716C69",
                   fontFamily: "SUIT-500",
                 }}
+                allowFontScaling={false}
               >
                 인기순
               </Text>
@@ -193,7 +200,7 @@ export default function Bookmark() {
       </ScrollView>
       <View style={styles.bookmarkSubContainer}>
         <BookmarkSub />
-        <Text style={styles.bookmarkSubText}>
+        <Text style={styles.bookmarkSubText} allowFontScaling={false}>
           나의 숨은 독서 스팟을 공유해보세요
         </Text>
       </View>
@@ -225,7 +232,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#716C69",
     fontFamily: "SUIT-500",
     marginTop: 16,
@@ -237,13 +244,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   emptyTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#333333",
     marginBottom: 10,
   },
   emptySubtext: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#666666",
   },
@@ -257,7 +264,7 @@ const styles = StyleSheet.create({
     top: "50%",
     left: "50%",
     transform: [{ translateX: -100 }, { translateY: -11 }],
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#FFFFFF",
     textAlign: "center",

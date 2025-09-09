@@ -20,7 +20,10 @@ const CommonButton: React.FC<CommonButtonProps> = ({
       onPress={onPress}
       disabled={disabled}
     >
-      <Text style={[styles.buttonText, disabled && styles.buttonTextDisabled]}>
+      <Text
+        style={[styles.buttonText, disabled && styles.buttonTextDisabled]}
+        allowFontScaling={false}
+      >
         {title}
       </Text>
     </TouchableOpacity>

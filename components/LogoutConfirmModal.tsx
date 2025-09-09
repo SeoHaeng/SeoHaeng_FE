@@ -31,22 +31,30 @@ export default function LogoutConfirmModal({
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>로그아웃</Text>
-            <Text style={styles.modalMessage}>로그아웃 하시겠습니까?</Text>
+            <Text style={styles.modalTitle} allowFontScaling={false}>
+              로그아웃
+            </Text>
+            <Text style={styles.modalMessage} allowFontScaling={false}>
+              로그아웃 하시겠습니까?
+            </Text>
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={[styles.button, styles.cancelButton]}
                 onPress={onClose}
               >
-                <Text style={styles.cancelButtonText}>취소</Text>
+                <Text style={styles.cancelButtonText} allowFontScaling={false}>
+                  취소
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={[styles.button, styles.confirmButton]}
                 onPress={onConfirm}
               >
-                <Text style={styles.confirmButtonText}>로그아웃</Text>
+                <Text style={styles.confirmButtonText} allowFontScaling={false}>
+                  로그아웃
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -74,14 +82,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#262423",
     marginBottom: 16,
     textAlign: "center",
   },
   modalMessage: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginBottom: 24,
@@ -109,12 +117,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#302E2D",
   },
   cancelButtonText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#716C69",
   },
   confirmButtonText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
   },

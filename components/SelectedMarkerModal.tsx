@@ -362,23 +362,19 @@ const SelectedMarkerModal = ({ marker, onClose }: SelectedMarkerModalProps) => {
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <View style={styles.nameTypeContainer}>
-              <Text style={styles.modalName}>
+              <Text style={styles.modalName} allowFontScaling={false}>
                 {placeDetail?.name || marker.name}
               </Text>
-              <Text style={styles.modalType}>
+              <Text style={styles.modalType} allowFontScaling={false}>
                 {placeDetail?.placeType === "BOOKSTORE"
                   ? "독립서점"
-                  : placeDetail?.placeType === "BOOKCAFE"
-                    ? "북카페"
-                    : placeDetail?.placeType === "BOOKSTAY"
-                      ? "북스테이"
-                      : placeDetail?.placeType === "TOURIST_SPOT"
-                        ? "관광지"
-                        : placeDetail?.placeType === "RESTAURANT"
-                          ? "음식점"
-                          : placeDetail?.placeType === "FESTIVAL"
-                            ? "축제"
-                            : "장소"}
+                  : placeDetail?.placeType === "TOURIST_SPOT"
+                    ? "관광지"
+                    : placeDetail?.placeType === "RESTAURANT"
+                      ? "음식점"
+                      : placeDetail?.placeType === "FESTIVAL"
+                        ? "축제"
+                        : "장소"}
               </Text>
             </View>
             <TouchableOpacity
@@ -398,17 +394,17 @@ const SelectedMarkerModal = ({ marker, onClose }: SelectedMarkerModalProps) => {
 
           <View style={styles.modalRating}>
             <StarIcon />
-            <Text style={styles.modalRatingText}>
-              <Text style={styles.ratingScore}>
+            <Text style={styles.modalRatingText} allowFontScaling={false}>
+              <Text style={styles.ratingScore} allowFontScaling={false}>
                 {placeDetail?.rating ? placeDetail.rating.toFixed(1) : "0.0"}
               </Text>
-              <Text style={styles.reviewCount}>
+              <Text style={styles.reviewCount} allowFontScaling={false}>
                 {placeDetail?.reviewCount
                   ? ` (${placeDetail.reviewCount})`
                   : " (0)"}
               </Text>
             </Text>
-            <Text style={styles.modalDistance}>
+            <Text style={styles.modalDistance} allowFontScaling={false}>
               {placeDetail?.latitude && placeDetail?.longitude
                 ? `${calculateDistance(marker.lat, marker.lng, placeDetail.latitude, placeDetail.longitude).toFixed(1)} km`
                 : "거리 계산 중..."}
@@ -417,7 +413,7 @@ const SelectedMarkerModal = ({ marker, onClose }: SelectedMarkerModalProps) => {
           <View style={styles.addressStatusContainer}>
             <View style={styles.modalAddress}>
               <PlaceIcon />
-              <Text style={styles.modalAddressText}>
+              <Text style={styles.modalAddressText} allowFontScaling={false}>
                 {placeDetail?.address || "주소 정보 없음"}
               </Text>
             </View>
@@ -472,7 +468,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   modalImageText: {
-    fontSize: 32,
+    fontSize: 33,
   },
   modalInfo: {
     flex: 1,
@@ -490,13 +486,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   modalName: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-700",
     color: "#000000",
     maxWidth: "75%",
   },
   modalType: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#666666",
   },
@@ -506,7 +502,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   modalRatingText: {
-    fontSize: 12,
+    fontSize: 13,
     marginRight: 15,
     marginLeft: 5,
   },
@@ -519,7 +515,7 @@ const styles = StyleSheet.create({
     color: "#7E7E7E",
   },
   modalDistance: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#666666",
   },
@@ -528,7 +524,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalAddressText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginLeft: 5,
@@ -542,7 +538,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   modalStatusText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-600",
     color: "#9D9896",
   },

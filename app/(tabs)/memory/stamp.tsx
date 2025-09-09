@@ -101,16 +101,23 @@ export default function StampView() {
       {/* 진행률 */}
       <View style={styles.progressContainer}>
         <View style={styles.progressTextContainer}>
-          <Text style={styles.progressLabel}>지금까지 모은 발자국</Text>
+          <Text style={styles.progressLabel} allowFontScaling={false}>
+            지금까지 모은 발자국
+          </Text>
           <View style={styles.progressCountContainer}>
-            <Text style={styles.progressCountNumber}>{collectedCount}개</Text>
-            <Text style={styles.progressCountText}> / {totalCount}개</Text>
+            <Text style={styles.progressCountNumber} allowFontScaling={false}>
+              {collectedCount}개
+            </Text>
+            <Text style={styles.progressCountText} allowFontScaling={false}>
+              {" "}
+              / {totalCount}개
+            </Text>
           </View>
         </View>
       </View>
 
       {/* 안내 텍스트 */}
-      <Text style={styles.instructionText}>
+      <Text style={styles.instructionText} allowFontScaling={false}>
         강원도 18개 시/군에 도서여행을 떠나고{"\n"}내 발자국을 남겨봐요.
       </Text>
 
@@ -136,7 +143,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   progressLabel: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#716C69",
     marginBottom: 5,
   },
@@ -145,18 +152,18 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
   },
   progressCountNumber: {
-    fontSize: 28,
+    fontSize: 29,
     fontFamily: "SUIT-700",
     color: "#262423",
   },
   progressCountText: {
-    fontSize: 20,
+    fontSize: 21,
     fontFamily: "SUIT-700",
     color: "#9D9896",
   },
 
   instructionText: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#716C69",
     lineHeight: 20,
     marginBottom: 25,
@@ -169,7 +176,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 17,
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#716C69",
     marginTop: 16,
     fontFamily: "SUIT-500",

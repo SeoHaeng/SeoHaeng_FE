@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     top: 20,
   },
   headerTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-700",
     color: "#F8F4F2",
   },
@@ -154,14 +154,14 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
   },
   mainTitle: {
-    fontSize: 23,
+    fontSize: 24,
     fontFamily: "SUIT-700",
     color: "#FFFFFF",
     marginBottom: 8,
     lineHeight: 32,
   },
   memberOnly: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   stepNumberText: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
   },
@@ -191,14 +191,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   stepTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
     lineHeight: 24,
     marginBottom: 8,
   },
   stepDescription: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     lineHeight: 20,
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   confirmButtonText: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
   },

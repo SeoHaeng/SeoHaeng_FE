@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#000000",
   },
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   addressText: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-500",
     color: "#262423",
     marginLeft: 8,
@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
   },
   changeAddressText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#000000",
   },
@@ -525,7 +525,7 @@ const styles = StyleSheet.create({
   },
   selectedIndicatorText: {
     color: "#FFFFFF",
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "bold",
   },
   bookSection: {
@@ -545,13 +545,13 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#000000",
   },
   searchPlaceholder: {
     flex: 1,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
     paddingHorizontal: 15,
     paddingVertical: 13,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#000000",
     marginTop: 12,
@@ -589,7 +589,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
     paddingHorizontal: 15,
     paddingVertical: 12,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#000000",
     minHeight: 120,
@@ -645,7 +645,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
   },
   imageCount: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#9D9896",
     marginTop: 2,
@@ -661,7 +661,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   publicDescription: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     lineHeight: 20,
@@ -678,7 +678,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   toggleLabel: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#262423",
     flex: 1,
@@ -706,7 +706,7 @@ const styles = StyleSheet.create({
   },
   registerButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
   },
   registerButtonTextDisabled: {

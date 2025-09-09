@@ -28,16 +28,24 @@ const TravelCard: React.FC<TravelCardProps> = ({
     <Image source={image} style={styles.travelCardImage} />
     <View style={styles.travelCardContent}>
       <View style={styles.titleRow}>
-        <Text style={styles.travelCardTitle}>{title}</Text>
+        <Text style={styles.travelCardTitle} allowFontScaling={false}>
+          {title}
+        </Text>
       </View>
       <View style={styles.travelCardDateContainer}>
-        <Text style={styles.travelCardDates}>{dates}</Text>
-        <Text style={styles.travelCardDuration}>{duration}</Text>
+        <Text style={styles.travelCardDates} allowFontScaling={false}>
+          {dates}
+        </Text>
+        <Text style={styles.travelCardDuration} allowFontScaling={false}>
+          {duration}
+        </Text>
       </View>
       <View style={styles.travelCardTags}>
         {tags.map((tag, index) => (
           <View key={index} style={styles.travelCardTag}>
-            <Text style={styles.travelCardTagText}>{tag}</Text>
+            <Text style={styles.travelCardTagText} allowFontScaling={false}>
+              {tag}
+            </Text>
           </View>
         ))}
       </View>
@@ -81,7 +89,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   travelCardTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontFamily: "SUIT-700",
     color: "#262423",
     flex: 1,
@@ -91,17 +99,17 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   menuIcon: {
-    fontSize: 20,
+    fontSize: 21,
     color: "#9D9896",
     fontFamily: "SUIT-700",
   },
   travelCardDates: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
   travelCardDuration: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#4D4947",
   },
@@ -123,7 +131,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   travelCardTagText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#EEE9E6",
   },

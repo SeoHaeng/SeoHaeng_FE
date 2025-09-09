@@ -575,7 +575,7 @@ export default function Index() {
             {/* 스와이프 액션 버튼과 아이콘 */}
             {/*  <View style={styles.swipeActionContainer}>
             <TouchableOpacity style={styles.actionButton} onPress={handleSkip}>
-              <Text style={styles.actionButtonText}>넘김</Text>
+              <Text style={styles.actionButtonText} allowFontScaling={false}>넘김</Text>
             </TouchableOpacity>
 
             <View style={styles.swipeIndicatorContainer}>
@@ -584,7 +584,7 @@ export default function Index() {
             </View>
 
             <TouchableOpacity style={styles.actionButton} onPress={handleSave}>
-              <Text style={styles.actionButtonText}>저장</Text>
+              <Text style={styles.actionButtonText} allowFontScaling={false}>저장</Text>
             </TouchableOpacity>
           </View> */}
 
@@ -632,13 +632,19 @@ export default function Index() {
 
                           {/* 카드 내용 */}
                           <View style={styles.cardContent}>
-                            <Text style={styles.cardTitle}>
+                            <Text
+                              style={styles.cardTitle}
+                              allowFontScaling={false}
+                            >
                               {spot.title.length > 13
                                 ? `${spot.title.slice(0, 13)}...`
                                 : spot.title}
                             </Text>
                             <View style={styles.cardBottomRow}>
-                              <Text style={styles.cardAddress}>
+                              <Text
+                                style={styles.cardAddress}
+                                allowFontScaling={false}
+                              >
                                 {spot.address.length > 18
                                   ? `${spot.address.slice(0, 18)}...`
                                   : spot.address}
@@ -700,7 +706,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#302E2D", // 헤더도 어두운 배경
   },
   appTitle: {
-    fontSize: 22,
+    fontSize: 23,
     fontFamily: "Gangwon",
     color: "#4D4947", // 헤더 텍스트를 연한 회색으로
   },
@@ -715,7 +721,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconText: {
-    fontSize: 20,
+    fontSize: 21,
     color: "#C5BFBB", // 아이콘 색상도 연한 회색으로
   },
   topSection: {
@@ -729,7 +735,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   greetingText: {
-    fontSize: 22,
+    fontSize: 23,
     fontFamily: "SUIT-700",
     color: "#F8F4F2",
     lineHeight: 35,
@@ -737,7 +743,7 @@ const styles = StyleSheet.create({
   },
   userNameText: {
     fontFamily: "SUIT-400",
-    fontSize: 22,
+    fontSize: 23,
   },
   planButton: {
     backgroundColor: "#4D4947",
@@ -748,7 +754,7 @@ const styles = StyleSheet.create({
     borderColor: "#716C69",
   },
   planButtonText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#EEE9E6",
   },
@@ -762,7 +768,7 @@ const styles = StyleSheet.create({
     marginTop: -20, // 어두운 배경과 겹치도록
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#262423",
   },
@@ -786,10 +792,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   categoryIconText: {
-    fontSize: 24,
+    fontSize: 25,
   },
   categoryText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
     textAlign: "center",
@@ -805,7 +811,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bannerTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#262423",
     flex: 1,
@@ -817,7 +823,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   bannerGraphicText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
   },
@@ -834,7 +840,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   moreButton: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#716C69",
     textDecorationLine: "underline",
@@ -870,7 +876,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profileIconText: {
-    fontSize: 16,
+    fontSize: 17,
   },
   blueObject: {
     width: 20,
@@ -881,7 +887,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   blueObjectText: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#FFFFFF",
   },
   cardsScrollView: {
@@ -897,7 +903,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   recommendationTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#262423",
     marginBottom: 20,
@@ -919,13 +925,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   featuredTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#262423",
     marginBottom: 2,
   },
   featuredDescription: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
     lineHeight: 20,
@@ -954,13 +960,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   recommendationItemTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#262423",
     marginBottom: 4,
   },
   recommendationItemDescription: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#716C69",
     lineHeight: 18,
@@ -969,7 +975,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   arrowIcon: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#9D9896",
     fontFamily: "SUIT-600",
   },
@@ -989,18 +995,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   spaceBookmarkTitle: {
-    fontSize: 20,
+    fontSize: 21,
     fontFamily: "SUIT-700",
     color: "#FFFFFF",
   },
   spaceBookmarkSubtitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#C5BFBB",
     lineHeight: 20,
   },
   spaceBookmarkLink: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     textDecorationLine: "underline",
@@ -1021,7 +1027,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   actionButtonText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#DBD6D3",
   },
@@ -1067,7 +1073,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   cardTitle: {
-    fontSize: 24,
+    fontSize: 25,
     fontFamily: "Gangwon",
     color: "#262423",
     marginBottom: 8,
@@ -1075,7 +1081,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   cardAddress: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#000000",
     textAlign: "left",
@@ -1101,21 +1107,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   emptyStateTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#716C69",
     marginBottom: 8,
     textAlign: "center",
   },
   emptyStateSubtitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     marginBottom: 24,
     textAlign: "center",
   },
   createScheduleButtonText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
     textDecorationLine: "underline",
@@ -1126,7 +1132,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -1135,7 +1141,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   emptyText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     fontStyle: "italic",

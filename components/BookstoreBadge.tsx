@@ -49,7 +49,9 @@ export default function BookstoreBadge({
   return (
     <View style={styles.badgeContainer}>
       {getIcon()}
-      <Text style={styles.badgeText}>{getBadgeText()}</Text>
+      <Text style={styles.badgeText} allowFontScaling={false}>
+        {getBadgeText()}
+      </Text>
     </View>
   );
 }

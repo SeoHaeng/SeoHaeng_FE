@@ -4,13 +4,13 @@ import React from "react";
 import {
   Alert,
   Linking,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const TermsScreen = () => {
   // 이용약관 보기 링크 처리
@@ -68,7 +68,7 @@ const TermsScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
       {/* Header */}

@@ -252,7 +252,7 @@ export default function ChallengeDetail() {
           {challengeDetail?.proofImageUrls &&
             challengeDetail.proofImageUrls.length > 1 && (
               <View style={styles.imageCounter}>
-                <Text style={styles.imageCounterText}>
+                <Text style={styles.imageCounterText} allowFontScaling={false}>
                   {currentImageIndex + 1} /{" "}
                   {challengeDetail.proofImageUrls.length}
                 </Text>
@@ -277,10 +277,10 @@ export default function ChallengeDetail() {
                 style={styles.profileImage}
               />
               <View style={styles.userHeader}>
-                <Text style={styles.username}>
+                <Text style={styles.username} allowFontScaling={false}>
                   {userInfo.nickName || "사용자"}
                 </Text>
-                <Text style={styles.timeStamp}>
+                <Text style={styles.timeStamp} allowFontScaling={false}>
                   {challengeDetail?.createdAt
                     ? formatDateToDaysAgo(challengeDetail.createdAt)
                     : ""}
@@ -291,11 +291,11 @@ export default function ChallengeDetail() {
           {/* 서점 정보 */}
           <View style={styles.bookstoreInfo}>
             <PlaceIcon />
-            <Text style={styles.bookstoreName}>
+            <Text style={styles.bookstoreName} allowFontScaling={false}>
               {challengeDetail?.bookStoreName || "서점명 없음"}
             </Text>
           </View>
-          <Text style={styles.description}>
+          <Text style={styles.description} allowFontScaling={false}>
             {challengeDetail?.proofContent || ""}
           </Text>
 
@@ -327,7 +327,7 @@ export default function ChallengeDetail() {
               }
             />
           </View>
-          <Text style={styles.description}>
+          <Text style={styles.description} allowFontScaling={false}>
             {challengeDetail?.presentMessage || ""}
           </Text>
         </View>
@@ -348,10 +348,11 @@ export default function ChallengeDetail() {
           >
             <Text
               style={{
-                fontSize: 14,
+                fontSize: 15,
                 fontFamily: "SUIT-500",
                 color: "#716C69",
               }}
+              allowFontScaling={false}
             >
               댓글 ({totalComments})
             </Text>
@@ -368,11 +369,12 @@ export default function ChallengeDetail() {
               </TouchableOpacity>
               <Text
                 style={{
-                  fontSize: 13,
+                  fontSize: 14,
                   fontFamily: "SUIT-500",
                   color: "#C5BFBB",
                   marginLeft: 4,
                 }}
+                allowFontScaling={false}
               >
                 {challengeDetail?.likes || 0}
               </Text>
@@ -420,9 +422,10 @@ export default function ChallengeDetail() {
             value={commentText}
             onChangeText={setCommentText}
             multiline={false}
+            allowFontScaling={false}
           />
           <TouchableOpacity style={styles.sendButton} onPress={submitComment}>
-            <Text style={styles.sendButtonText}>
+            <Text style={styles.sendButtonText} allowFontScaling={false}>
               {isSubmittingComment ? "등록 중..." : "등록"}
             </Text>
           </TouchableOpacity>
@@ -457,17 +460,17 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   username: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
     color: "#000000",
   },
   timeStamp: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
   description: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#000000",
     lineHeight: 25,
@@ -486,7 +489,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F4F2",
     borderRadius: 10,
     paddingHorizontal: 15,
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     marginRight: 10,
   },
@@ -501,7 +504,7 @@ const styles = StyleSheet.create({
   },
   sendButtonText: {
     color: "#302E2D",
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
   },
 
@@ -518,7 +521,7 @@ const styles = StyleSheet.create({
     height: 16,
   },
   bookstoreName: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
   },
@@ -546,7 +549,7 @@ const styles = StyleSheet.create({
   },
   imageCounterText: {
     color: "#FFFFFF",
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-600",
   },
 });

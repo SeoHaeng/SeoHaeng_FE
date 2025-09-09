@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "bold",
     color: "#333333",
   },
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   reviewButtonText: {
     color: "#FFFFFF",
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
   },
   reviewSummary: {
@@ -76,12 +76,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   reviewCount: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#333333",
     marginBottom: 8,
   },
   reviewHint: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#666666",
   },
 });

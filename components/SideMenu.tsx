@@ -244,10 +244,12 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                 )}
               </View>
               <View style={styles.profileInfo}>
-                <Text style={styles.userName}>
+                <Text style={styles.userName} allowFontScaling={false}>
                   {userInfo?.nickName || "사용자"}
                 </Text>
-                <Text style={styles.userEmail}>{userInfo?.userName}</Text>
+                <Text style={styles.userEmail} allowFontScaling={false}>
+                  {userInfo?.userName}
+                </Text>
               </View>
             </View>
 
@@ -255,23 +257,33 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
               style={styles.editProfileButton}
               onPress={() => router.push("/profile/edit")}
             >
-              <Text style={styles.editProfileText}>프로필 수정하기</Text>
+              <Text style={styles.editProfileText} allowFontScaling={false}>
+                프로필 수정하기
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuItem}
               onPress={handleFeedbackAndReport}
             >
               <AntDesign name="warning" size={22} color="black" />
-              <Text style={styles.menuItemText}>의견 및 신고</Text>
-              <Text style={styles.arrowIcon}>›</Text>
+              <Text style={styles.menuItemText} allowFontScaling={false}>
+                의견 및 신고
+              </Text>
+              <Text style={styles.arrowIcon} allowFontScaling={false}>
+                ›
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuItem}
               onPress={handleTermsClick}
             >
               <AntDesign name="filetext1" size={22} color="black" />
-              <Text style={styles.menuItemText}>이용약관 보기</Text>
-              <Text style={styles.arrowIcon}>›</Text>
+              <Text style={styles.menuItemText} allowFontScaling={false}>
+                이용약관 보기
+              </Text>
+              <Text style={styles.arrowIcon} allowFontScaling={false}>
+                ›
+              </Text>
             </TouchableOpacity>
             {/* 구분선 */}
             <View style={styles.separator} />
@@ -282,8 +294,12 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                 onPress={handleLogoutClick}
               >
                 <MaterialIcons name="logout" size={22} color="black" />
-                <Text style={styles.menuItemText}>로그아웃</Text>
-                <Text style={styles.arrowIcon}>›</Text>
+                <Text style={styles.menuItemText} allowFontScaling={false}>
+                  로그아웃
+                </Text>
+                <Text style={styles.arrowIcon} allowFontScaling={false}>
+                  ›
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -291,8 +307,12 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
                 onPress={handleDeleteUserClick}
               >
                 <AntDesign name="delete" size={21} color="black" />
-                <Text style={styles.menuItemText}>회원 탈퇴</Text>
-                <Text style={styles.arrowIcon}>›</Text>
+                <Text style={styles.menuItemText} allowFontScaling={false}>
+                  회원 탈퇴
+                </Text>
+                <Text style={styles.arrowIcon} allowFontScaling={false}>
+                  ›
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -370,13 +390,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userName: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#262423",
     marginBottom: 4,
   },
   userEmail: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -390,7 +410,7 @@ const styles = StyleSheet.create({
   },
   editProfileText: {
     color: "#FFFFFF",
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
   },
   separator: {
@@ -417,18 +437,18 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   menuItemIconText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
   },
   menuItemText: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#262423",
     marginLeft: 10,
   },
   arrowIcon: {
-    fontSize: 18,
+    fontSize: 19,
     color: "#9D9896",
     fontFamily: "SUIT-600",
   },

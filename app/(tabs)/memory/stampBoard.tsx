@@ -30,8 +30,12 @@ export default function StampBoard({ stamps }: StampBoardProps) {
             />
 
             <View style={styles.stampOverlay}>
-              <Text style={styles.stampCity}>{stamp.city}</Text>
-              <Text style={styles.stampDate}>{stamp.date}</Text>
+              <Text style={styles.stampCity} allowFontScaling={false}>
+                {stamp.city}
+              </Text>
+              <Text style={styles.stampDate} allowFontScaling={false}>
+                {stamp.date}
+              </Text>
             </View>
           </View>
         </View>
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   stampEmoji: {
-    fontSize: 24,
+    fontSize: 25,
   },
   stampOverlay: {
     position: "absolute",
@@ -91,14 +95,14 @@ const styles = StyleSheet.create({
   },
   stampCity: {
     color: "#fff",
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-600",
     marginBottom: 2,
     textAlign: "center",
   },
   stampDate: {
     color: "#fff",
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-400",
     textAlign: "center",
   },

@@ -29,9 +29,13 @@ export default function FestivalDetail({ placeDetail }: FestivalDetailProps) {
         <>
           <View style={styles.tabTitleContainer}>
             <BusinessHoursIcon />
-            <Text style={styles.tabTitle}>영업 시간</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              영업 시간
+            </Text>
           </View>
-          <Text style={styles.description}>{placeDetail.usetime}</Text>
+          <Text style={styles.description} allowFontScaling={false}>
+            {placeDetail.usetime}
+          </Text>
         </>
       )}
 
@@ -39,7 +43,9 @@ export default function FestivalDetail({ placeDetail }: FestivalDetailProps) {
         <>
           <View style={styles.tabTitleContainer}>
             <PhoneIcon />
-            <Text style={styles.tabTitle}>연락처</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              연락처
+            </Text>
           </View>
           <TouchableOpacity
             onPress={() => {
@@ -48,7 +54,9 @@ export default function FestivalDetail({ placeDetail }: FestivalDetailProps) {
               }
             }}
           >
-            <Text style={styles.phoneLink}>{placeDetail.tel}</Text>
+            <Text style={styles.phoneLink} allowFontScaling={false}>
+              {placeDetail.tel}
+            </Text>
           </TouchableOpacity>
         </>
       )}
@@ -58,9 +66,11 @@ export default function FestivalDetail({ placeDetail }: FestivalDetailProps) {
           <>
             <View style={styles.tabTitleContainer}>
               <BusinessHoursIcon />
-              <Text style={styles.tabTitle}>축제 기간</Text>
+              <Text style={styles.tabTitle} allowFontScaling={false}>
+                축제 기간
+              </Text>
             </View>
-            <Text style={styles.description}>
+            <Text style={styles.description} allowFontScaling={false}>
               {placeDetail.placeDetail.startDate.replace(/-/g, ".")} ~{" "}
               {placeDetail.placeDetail.endDate.replace(/-/g, ".")}
             </Text>
@@ -71,27 +81,37 @@ export default function FestivalDetail({ placeDetail }: FestivalDetailProps) {
         <>
           <View style={styles.tabTitleContainer}>
             <WebsiteIcon />
-            <Text style={styles.tabTitle}>공식 웹사이트</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              공식 웹사이트
+            </Text>
           </View>
           <TouchableOpacity onPress={handleWebsitePress}>
-            <Text style={styles.websiteLink}>{placeDetail.websiteUrl}</Text>
+            <Text style={styles.websiteLink} allowFontScaling={false}>
+              {placeDetail.websiteUrl}
+            </Text>
           </TouchableOpacity>
         </>
       )}
 
       <View style={styles.tabTitleContainer}>
         <StoreIntroIcon />
-        <Text style={styles.tabTitle}>축제 소개</Text>
+        <Text style={styles.tabTitle} allowFontScaling={false}>
+          축제 소개
+        </Text>
       </View>
-      <Text style={styles.description}>{placeDetail.placeDetail.overview}</Text>
+      <Text style={styles.description} allowFontScaling={false}>
+        {placeDetail.placeDetail.overview}
+      </Text>
 
       {placeDetail?.placeDetail?.programs && (
         <>
           <View style={styles.tabTitleContainer}>
             <StoreInfoIcon />
-            <Text style={styles.tabTitle}>축제 프로그램</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              축제 프로그램
+            </Text>
           </View>
-          <Text style={styles.infoText}>
+          <Text style={styles.infoText} allowFontScaling={false}>
             {placeDetail.placeDetail.programs.replace(/<br\s*\/?>/gi, "\n")}
           </Text>
         </>
@@ -105,33 +125,33 @@ const styles = StyleSheet.create({
     minHeight: 400,
   },
   tabTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-700",
     color: "#262423",
   },
   description: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
     lineHeight: 20,
     marginBottom: 25,
   },
   infoText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginBottom: 4,
     lineHeight: 20,
   },
   websiteLink: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#3871E0",
     textDecorationLine: "underline",
     marginBottom: 40,
   },
   phoneLink: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#3871E0",
     textDecorationLine: "underline",

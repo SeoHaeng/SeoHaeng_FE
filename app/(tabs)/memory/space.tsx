@@ -36,6 +36,7 @@ export default function SpaceView() {
               styles.subTabText,
               activeSubTab === "내 책갈피" && styles.activeSubTabText,
             ]}
+            allowFontScaling={false}
           >
             내 책갈피
           </Text>
@@ -52,6 +53,7 @@ export default function SpaceView() {
               styles.subTabText,
               activeSubTab === "저장 책갈피" && styles.activeSubTabText,
             ]}
+            allowFontScaling={false}
           >
             저장 책갈피
           </Text>
@@ -68,6 +70,7 @@ export default function SpaceView() {
               styles.subTabText,
               activeSubTab === "찜한 장소" && styles.activeSubTabText,
             ]}
+            allowFontScaling={false}
           >
             찜한 장소
           </Text>
@@ -107,7 +110,7 @@ const styles = StyleSheet.create({
     borderColor: "#302E2D",
   },
   subTabText: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#333333",
     fontFamily: "SUIT-600",
   },
@@ -122,12 +125,12 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   dropdownText: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#716C69",
     fontFamily: "SUIT-500",
   },
   dropdownIcon: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#666666",
     marginLeft: 4,
   },

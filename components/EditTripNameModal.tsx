@@ -44,8 +44,12 @@ export default function EditTripNameModal({
   return (
     <View style={styles.modalOverlay}>
       <View style={styles.modalContainer}>
-        <Text style={styles.modalTitle}>여행 이름을 수정해주세요</Text>
-        <Text style={styles.modalSubtitle}>언제든지 수정할 수 있어요</Text>
+        <Text style={styles.modalTitle} allowFontScaling={false}>
+          여행 이름을 수정해주세요
+        </Text>
+        <Text style={styles.modalSubtitle} allowFontScaling={false}>
+          언제든지 수정할 수 있어요
+        </Text>
 
         <View style={styles.inputContainer}>
           <TextInput
@@ -54,16 +58,23 @@ export default function EditTripNameModal({
             onChangeText={setEditTripName}
             placeholder="여행 이름을 입력하세요"
             maxLength={12}
+            allowFontScaling={false}
           />
-          <Text style={styles.characterCount}>{editTripName.length}/12</Text>
+          <Text style={styles.characterCount} allowFontScaling={false}>
+            {editTripName.length}/12
+          </Text>
         </View>
 
         <View style={styles.modalButtons}>
           <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-            <Text style={styles.cancelButtonText}>취소</Text>
+            <Text style={styles.cancelButtonText} allowFontScaling={false}>
+              취소
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.confirmButton} onPress={handleSave}>
-            <Text style={styles.confirmButtonText}>확인</Text>
+            <Text style={styles.confirmButtonText} allowFontScaling={false}>
+              확인
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -100,13 +111,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#262423",
     marginBottom: 8,
   },
   modalSubtitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     marginBottom: 24,
@@ -120,7 +131,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#262423",
     borderWidth: 1,
@@ -130,7 +141,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 8,
     right: 8,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -145,7 +156,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cancelButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#9D9896",
   },
@@ -156,7 +167,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   confirmButtonText: {
-    fontSize: 17,
+    fontSize: 18,
     fontFamily: "SUIT-600",
     color: "#262423",
   },

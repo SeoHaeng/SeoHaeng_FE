@@ -1,11 +1,11 @@
 import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Image,
   Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 
 interface CommonPhotoSectionProps {
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#E5E5E5",
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "bold",
     color: "#333333",
     marginBottom: 15,
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   noImageText: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#999999",
   },
 });

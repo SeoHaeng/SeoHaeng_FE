@@ -131,7 +131,9 @@ export default function BookRegister() {
           >
             <BackIcon />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>도서 직접 등록</Text>
+          <Text style={styles.headerTitle} allowFontScaling={false}>
+            도서 직접 등록
+          </Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -151,7 +153,9 @@ export default function BookRegister() {
         </View>
         {/* 도서 제목 입력 섹션 */}
         <View style={styles.titleSection}>
-          <Text style={styles.sectionTitle}>도서 제목</Text>
+          <Text style={styles.sectionTitle} allowFontScaling={false}>
+            도서 제목
+          </Text>
           <TextInput
             style={styles.titleInput}
             value={bookTitle}
@@ -160,24 +164,30 @@ export default function BookRegister() {
             placeholderTextColor="#9D9896"
             multiline
             textAlignVertical="top"
+            allowFontScaling={false}
           />
         </View>
 
         {/* 저자 입력 섹션 */}
         <View style={styles.authorSection}>
-          <Text style={styles.sectionTitle}>저자</Text>
+          <Text style={styles.sectionTitle} allowFontScaling={false}>
+            저자
+          </Text>
           <TextInput
             style={styles.authorInput}
             value={bookAuthor}
             onChangeText={setBookAuthor}
             placeholder="저자 이름을 적어주세요."
             placeholderTextColor="#9D9896"
+            allowFontScaling={false}
           />
         </View>
 
         {/* 출판년도 입력 섹션 */}
         <View style={styles.pubDateSection}>
-          <Text style={styles.sectionTitle}>출판년도</Text>
+          <Text style={styles.sectionTitle} allowFontScaling={false}>
+            출판년도
+          </Text>
           <TextInput
             style={styles.pubDateInput}
             value={bookPubDate}
@@ -190,14 +200,17 @@ export default function BookRegister() {
             placeholderTextColor="#9D9896"
             keyboardType="numeric"
             maxLength={8}
+            allowFontScaling={false}
           />
           {bookPubDate.length > 0 && bookPubDate.length < 8 && (
-            <Text style={styles.pubDateHint}>
+            <Text style={styles.pubDateHint} allowFontScaling={false}>
               YYYYMMDD 형식으로 8자리 입력해주세요
             </Text>
           )}
           {bookPubDate.length === 8 && !isValidPubDate(bookPubDate) && (
-            <Text style={styles.pubDateError}>올바른 날짜 형식이 아닙니다</Text>
+            <Text style={styles.pubDateError} allowFontScaling={false}>
+              올바른 날짜 형식이 아닙니다
+            </Text>
           )}
         </View>
       </ScrollView>
@@ -212,7 +225,9 @@ export default function BookRegister() {
           onPress={handleRegister}
           disabled={!isFormValid}
         >
-          <Text style={styles.registerButtonText}>도서 등록하기</Text>
+          <Text style={styles.registerButtonText} allowFontScaling={false}>
+            도서 등록하기
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -240,7 +255,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#000000",
   },
@@ -265,12 +280,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   plusText: {
-    fontSize: 48,
+    fontSize: 49,
     color: "#9D9896",
     fontFamily: "SUIT-700",
   },
   uploadText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
     textAlign: "center",
@@ -294,7 +309,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
     color: "#000000",
     marginBottom: 10,
@@ -305,7 +320,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DBD6D3",
     borderRadius: 5,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#000000",
     textAlignVertical: "top",
@@ -316,7 +331,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DBD6D3",
     borderRadius: 5,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#000000",
   },
@@ -326,19 +341,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DBD6D3",
     borderRadius: 5,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#000000",
   },
   pubDateHint: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-400",
     color: "#716C69",
     marginTop: 5,
     marginLeft: 5,
   },
   pubDateError: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-400",
     color: "#E55E5E",
     marginTop: 5,
@@ -366,7 +381,7 @@ const styles = StyleSheet.create({
   },
   registerButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
   },
 });

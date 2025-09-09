@@ -167,7 +167,9 @@ export default function ChallengeCertification() {
             >
               <BackIcon />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>북챌린지 인증하기</Text>
+            <Text style={styles.headerTitle} allowFontScaling={false}>
+              북챌린지 인증하기
+            </Text>
             <View style={styles.headerSpacer} />
           </View>
 
@@ -176,7 +178,7 @@ export default function ChallengeCertification() {
             <View style={styles.locationContainer}>
               <View style={styles.locationInfo}>
                 <PlaceIcon width={17} height={20} color="#716C69" />
-                <Text style={styles.locationText}>
+                <Text style={styles.locationText} allowFontScaling={false}>
                   {params.bookStoreName as string}
                 </Text>
               </View>
@@ -201,7 +203,9 @@ export default function ChallengeCertification() {
 
           {/* 선물 메시지 섹션 */}
           <View style={styles.messageSection}>
-            <Text style={styles.sectionTitle}>선물 메시지 남기기</Text>
+            <Text style={styles.sectionTitle} allowFontScaling={false}>
+              선물 메시지 남기기
+            </Text>
             <View style={styles.textInputContainer}>
               <TextInput
                 style={styles.textInput}
@@ -211,20 +215,23 @@ export default function ChallengeCertification() {
                 placeholderTextColor="#9D9896"
                 multiline
                 textAlignVertical="top"
+                allowFontScaling={false}
               />
             </View>
           </View>
 
           {/* 인증샷 추가 섹션 */}
           <View style={styles.photoSection}>
-            <Text style={styles.sectionTitle}>인증샷 추가</Text>
+            <Text style={styles.sectionTitle} allowFontScaling={false}>
+              인증샷 추가
+            </Text>
             <View style={styles.imagesContainer}>
               <TouchableOpacity
                 style={styles.imageUploadButton}
                 onPress={pickImage}
               >
                 <CameraEnhanceIcon width={24} height={24} color="#9D9896" />
-                <Text style={styles.imageCount}>
+                <Text style={styles.imageCount} allowFontScaling={false}>
                   {selectedImages.length}/10
                 </Text>
               </TouchableOpacity>
@@ -244,7 +251,9 @@ export default function ChallengeCertification() {
 
           {/* 챌린지 소감 섹션 */}
           <View style={styles.reviewSection}>
-            <Text style={styles.sectionTitle}>챌린지 소감 남기기</Text>
+            <Text style={styles.sectionTitle} allowFontScaling={false}>
+              챌린지 소감 남기기
+            </Text>
             <View style={styles.textInputContainer}>
               <TextInput
                 style={styles.textInput}
@@ -254,6 +263,7 @@ export default function ChallengeCertification() {
                 placeholderTextColor="#9D9896"
                 multiline
                 textAlignVertical="top"
+                allowFontScaling={false}
               />
             </View>
           </View>
@@ -277,6 +287,7 @@ export default function ChallengeCertification() {
                 styles.completeButtonText,
                 !isFormValid && styles.completeButtonTextDisabled,
               ]}
+              allowFontScaling={false}
             >
               인증 등록하기
             </Text>
@@ -312,7 +323,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#000000",
   },
@@ -334,7 +345,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   locationText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#262423",
     marginLeft: 8,
@@ -348,7 +359,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
   },
   changeAddressText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -370,7 +381,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   moreButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#9D9896",
     fontFamily: "SUIT-700",
   },
@@ -379,7 +390,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
     color: "#000000",
     marginBottom: 15,
@@ -394,7 +405,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DBD6D3",
     borderRadius: 8,
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#000000",
     textAlignVertical: "top",
@@ -444,7 +455,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
   },
   imageCount: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#9D9896",
     marginTop: 2,
@@ -464,7 +475,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#C5BFBB",
   },
   completeButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
   },

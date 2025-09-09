@@ -277,6 +277,7 @@ export default function SignUpScreen() {
                 }}
                 placeholder="닉네임을 입력해주세요 최소2자, 최대 6자"
                 placeholderTextColor="#9E9E9E"
+                allowFontScaling={false}
               />
               <TouchableOpacity
                 style={[
@@ -370,6 +371,7 @@ export default function SignUpScreen() {
                 placeholder="아이디를 입력해주세요."
                 placeholderTextColor="#9E9E9E"
                 autoCapitalize="none"
+                allowFontScaling={false}
               />
               <TouchableOpacity
                 style={[
@@ -462,6 +464,7 @@ export default function SignUpScreen() {
                 secureTextEntry={!showPassword}
                 autoCorrect={false}
                 autoCapitalize="none"
+                allowFontScaling={false}
               />
               <TouchableOpacity
                 style={styles.eyeButton}
@@ -502,6 +505,7 @@ export default function SignUpScreen() {
                 secureTextEntry={!showConfirmPassword}
                 autoCorrect={false}
                 autoCapitalize="none"
+                allowFontScaling={false}
               />
               <TouchableOpacity
                 style={styles.eyeButton}
@@ -636,7 +640,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 25,
     fontFamily: "SUIT-700",
     color: "#212121",
   },
@@ -645,7 +649,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   guideText: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#424242",
     textAlign: "center",
   },
@@ -657,7 +661,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   inputLabel: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-700",
     color: "#424242",
     marginBottom: 8,
@@ -678,7 +682,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
     paddingHorizontal: 10,
     paddingVertical: 14,
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#424242",
     height: 48, // 고정 높이 추가
@@ -693,7 +697,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   duplicateButtonText: {
-    fontSize: 11,
+    fontSize: 12,
     color: "#FFFFFF",
   },
   duplicateButtonChecked: {
@@ -708,17 +712,17 @@ const styles = StyleSheet.create({
     top: 14,
   },
   validationText: {
-    fontSize: 11,
+    fontSize: 12,
     marginTop: 4,
     marginLeft: 4,
   },
   validationSuccess: {
     color: "#4CAF50",
-    fontSize: 11,
+    fontSize: 12,
   },
   validationError: {
     color: "#F44336",
-    fontSize: 11,
+    fontSize: 12,
   },
 
   signUpButton: {
@@ -732,7 +736,7 @@ const styles = StyleSheet.create({
   },
   signUpButtonText: {
     color: "#716C69",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
   },
   signUpButtonActive: {
@@ -750,7 +754,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   bottomText: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#4D4947",
     textAlign: "center",
     textDecorationLine: "underline",
@@ -783,11 +787,11 @@ const styles = StyleSheet.create({
     borderColor: "#4A4A4A",
   },
   checkmark: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#302E2D",
   },
   termsText: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#4D4947",
     flex: 1,
     fontFamily: "SUIT-600",
@@ -796,7 +800,7 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   termsLinkText: {
-    fontSize: 11,
+    fontSize: 12,
     color: "#4D4947",
     fontFamily: "SUIT-500",
     textDecorationLine: "underline",

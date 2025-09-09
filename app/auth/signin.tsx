@@ -194,6 +194,7 @@ export default function SignInScreen() {
             }}
             placeholder="아이디를 입력하세요"
             placeholderTextColor="#9E9E9E"
+            allowFontScaling={false}
           />
           {email.length > 0 && (
             <Text
@@ -203,6 +204,7 @@ export default function SignInScreen() {
                   ? styles.validationSuccess
                   : styles.validationError,
               ]}
+              allowFontScaling={false}
             >
               {validateEmail(email)
                 ? "✓ 아이디 조건을 만족합니다"
@@ -228,6 +230,7 @@ export default function SignInScreen() {
               placeholderTextColor="#9E9E9E"
               secureTextEntry={!showPassword}
               autoCorrect={false}
+              allowFontScaling={false}
               autoCapitalize="none"
             />
             <TouchableOpacity
@@ -245,6 +248,7 @@ export default function SignInScreen() {
                   ? styles.validationSuccess
                   : styles.validationError,
               ]}
+              allowFontScaling={false}
             >
               {validatePassword(password)
                 ? "✓ 비밀번호 조건을 만족합니다"
@@ -256,7 +260,9 @@ export default function SignInScreen() {
         {/* 에러 메시지 */}
         {errorMessage ? (
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{errorMessage}</Text>
+            <Text style={styles.errorText} allowFontScaling={false}>
+              {errorMessage}
+            </Text>
           </View>
         ) : null}
 
@@ -278,6 +284,7 @@ export default function SignInScreen() {
                 styles.loginButtonText,
                 isLoginButtonActive && styles.loginButtonTextActive,
               ]}
+              allowFontScaling={false}
             >
               로그인하기
             </Text>
@@ -291,14 +298,16 @@ export default function SignInScreen() {
           <View style={styles.kakaoIcon}>
             <KakaoIcon />
           </View>
-          <Text style={styles.kakaoButtonText}>카카오로 로그인</Text>
+          <Text style={styles.kakaoButtonText} allowFontScaling={false}>
+            카카오로 로그인
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* 하단 링크 */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity onPress={handleSignUp}>
-          <Text style={styles.bottomText}>
+          <Text style={styles.bottomText} allowFontScaling={false}>
             아직 회원이 아니신가요?{" "}
             <Text style={styles.signUpLink}>회원가입하기</Text> &gt;
           </Text>
@@ -329,7 +338,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 25,
     fontFamily: "SUIT-700",
     color: "#212121",
     fontWeight: "700", // 폰트 로딩 실패 시 대체
@@ -342,13 +351,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   inputLabel: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "600",
     color: "#424242",
     marginBottom: 8,
   },
   validationText: {
-    fontSize: 11,
+    fontSize: 12,
     marginTop: 4,
     marginLeft: 4,
   },
@@ -373,7 +382,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
     paddingHorizontal: 16,
     paddingVertical: 14,
-    fontSize: 12,
+    fontSize: 13,
     color: "#424242",
   },
 
@@ -395,7 +404,7 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: "#716C69",
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     fontWeight: "600", // 폰트 로딩 실패 시 대체
   },
@@ -413,7 +422,7 @@ const styles = StyleSheet.create({
   },
   socialButtonText: {
     marginLeft: 12,
-    fontSize: 16,
+    fontSize: 17,
     color: "#424242",
     fontWeight: "500",
   },
@@ -430,7 +439,7 @@ const styles = StyleSheet.create({
     borderColor: "#DBD6D3",
   },
   kakaoButtonText: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#262423",
     fontFamily: "SUIT-600",
   },
@@ -446,7 +455,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   bottomText: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#4D4947",
     textAlign: "center",
     textDecorationLine: "underline",
@@ -461,7 +470,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   errorText: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#F44336",
     textAlign: "center",
   },

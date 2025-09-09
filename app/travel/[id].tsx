@@ -667,7 +667,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   dateRange: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
@@ -678,7 +678,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   tripTitle: {
-    fontSize: 24,
+    fontSize: 25,
     fontFamily: "Gangwon",
     color: "#262423",
   },
@@ -693,7 +693,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   regionText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
   },
@@ -715,13 +715,13 @@ const styles = StyleSheet.create({
   },
   mapDayNumber: {
     color: "#FFFFFF",
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-700",
     fontWeight: "bold",
   },
   mapDayDate: {
     color: "#9D9896",
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
   },
   map: {
@@ -737,7 +737,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   mapText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#262423",
   },
@@ -796,12 +796,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#C5BFBB",
   },
   timelineDate: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
   timelineDateSmall: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -852,11 +852,11 @@ const styles = StyleSheet.create({
   },
   spotNumberText: {
     color: "#FFFFFF",
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-600",
   },
   spotName: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#262423",
     marginTop: 2,
@@ -870,7 +870,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   spotTypeText: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#666666",
   },
@@ -881,7 +881,7 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
   },
   emptyDaysText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     textAlign: "center",
@@ -892,7 +892,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginTop: 15,
@@ -904,13 +904,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   errorTitle: {
-    fontSize: 20,
+    fontSize: 21,
     fontFamily: "SUIT-600",
     color: "#262423",
     marginBottom: 10,
   },
   errorMessage: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-500",
     color: "#716C69",
     textAlign: "center",
@@ -924,7 +924,7 @@ const styles = StyleSheet.create({
   },
   retryButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
   },
   // 삭제 모달 스타일
@@ -957,7 +957,7 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
   },
   cancelButton: {
@@ -970,7 +970,7 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
   },
 
@@ -1007,7 +1007,7 @@ const styles = StyleSheet.create({
   },
   deleteDropdownButtonText: {
     color: "#262423",
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
   },
   deleteConfirmModal: {

@@ -391,7 +391,9 @@ export default function ProfileEdit() {
           >
             <BackIcon />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>프로필 수정</Text>
+          <Text style={styles.headerTitle} allowFontScaling={false}>
+            프로필 수정
+          </Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -419,7 +421,9 @@ export default function ProfileEdit() {
 
         {/* 닉네임 입력 섹션 */}
         <View style={styles.inputSection}>
-          <Text style={styles.inputLabel}>닉네임</Text>
+          <Text style={styles.inputLabel} allowFontScaling={false}>
+            닉네임
+          </Text>
           <View style={styles.inputRow}>
             <View style={styles.inputContainer}>
               <TextInput
@@ -428,6 +432,7 @@ export default function ProfileEdit() {
                 onChangeText={handleNicknameChange}
                 placeholder="닉네임을 입력해주세요"
                 placeholderTextColor="#9D9896"
+                allowFontScaling={false}
               />
             </View>
             <TouchableOpacity
@@ -442,18 +447,19 @@ export default function ProfileEdit() {
                   styles.duplicateCheckText,
                   isNicknameChecked && styles.duplicateCheckTextCompleted,
                 ]}
+                allowFontScaling={false}
               >
                 {isNicknameChecked ? "확인완료" : "중복확인"}
               </Text>
             </TouchableOpacity>
           </View>
           {nickname.length > 0 && !isNicknameChecked && (
-            <Text style={styles.validationText}>
+            <Text style={styles.validationText} allowFontScaling={false}>
               닉네임 중복확인이 필요합니다
             </Text>
           )}
           {isNicknameChecked && (
-            <Text style={styles.validationTextSuccess}>
+            <Text style={styles.validationTextSuccess} allowFontScaling={false}>
               사용 가능한 닉네임입니다
             </Text>
           )}
@@ -462,7 +468,9 @@ export default function ProfileEdit() {
         {/* 아이디 입력 섹션 - 카카오 로그인이 아닌 경우에만 표시 */}
         {userInfo?.loginType !== "KAKAO" && (
           <View style={styles.inputSection}>
-            <Text style={styles.inputLabel}>아이디</Text>
+            <Text style={styles.inputLabel} allowFontScaling={false}>
+              아이디
+            </Text>
             <View style={styles.inputRow}>
               <View style={styles.inputContainer}>
                 <TextInput
@@ -471,6 +479,7 @@ export default function ProfileEdit() {
                   onChangeText={handleIdChange}
                   placeholder="아이디를 입력해주세요"
                   placeholderTextColor="#9D9896"
+                  allowFontScaling={false}
                 />
               </View>
               <TouchableOpacity
@@ -485,23 +494,27 @@ export default function ProfileEdit() {
                     styles.duplicateCheckText,
                     isIdChecked && styles.duplicateCheckTextCompleted,
                   ]}
+                  allowFontScaling={false}
                 >
                   {isIdChecked ? "확인완료" : "중복확인"}
                 </Text>
               </TouchableOpacity>
             </View>
             {id.length > 0 && !validateId(id) && (
-              <Text style={styles.validationText}>
+              <Text style={styles.validationText} allowFontScaling={false}>
                 아이디는 4-12자로 입력해주세요
               </Text>
             )}
             {id.length > 0 && validateId(id) && !isIdChecked && (
-              <Text style={styles.validationText}>
+              <Text style={styles.validationText} allowFontScaling={false}>
                 아이디 중복확인이 필요합니다
               </Text>
             )}
             {isIdChecked && (
-              <Text style={styles.validationTextSuccess}>
+              <Text
+                style={styles.validationTextSuccess}
+                allowFontScaling={false}
+              >
                 사용 가능한 아이디입니다
               </Text>
             )}
@@ -511,7 +524,9 @@ export default function ProfileEdit() {
         {/* 비밀번호 입력 섹션 - 카카오 로그인이 아닌 경우에만 표시 */}
         {userInfo?.loginType !== "KAKAO" && (
           <View style={styles.inputSection}>
-            <Text style={styles.inputLabel}>비밀번호</Text>
+            <Text style={styles.inputLabel} allowFontScaling={false}>
+              비밀번호
+            </Text>
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.textInput}
@@ -520,6 +535,7 @@ export default function ProfileEdit() {
                 placeholder="영문, 숫자, 특수문자 포함 8-20자"
                 placeholderTextColor="#9D9896"
                 secureTextEntry={!showPassword}
+                allowFontScaling={false}
               />
 
               <TouchableOpacity
@@ -538,6 +554,7 @@ export default function ProfileEdit() {
                     ? styles.validationTextSuccess
                     : styles.validationTextError,
                 ]}
+                allowFontScaling={false}
               >
                 {validatePassword(password)
                   ? "✓ 비밀번호 조건을 만족합니다"
@@ -550,7 +567,9 @@ export default function ProfileEdit() {
         {/* 비밀번호 확인 입력 섹션 - 카카오 로그인이 아닌 경우에만 표시 */}
         {userInfo?.loginType !== "KAKAO" && (
           <View style={styles.inputSection}>
-            <Text style={styles.inputLabel}>비밀번호 확인</Text>
+            <Text style={styles.inputLabel} allowFontScaling={false}>
+              비밀번호 확인
+            </Text>
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.textInput}
@@ -559,6 +578,7 @@ export default function ProfileEdit() {
                 placeholder="비밀번호를 다시 입력해주세요"
                 placeholderTextColor="#9D9896"
                 secureTextEntry={!showConfirmPassword}
+                allowFontScaling={false}
               />
 
               <TouchableOpacity
@@ -569,14 +589,17 @@ export default function ProfileEdit() {
               </TouchableOpacity>
             </View>
             {confirmPassword.length > 0 && password !== confirmPassword && (
-              <Text style={styles.validationTextError}>
+              <Text style={styles.validationTextError} allowFontScaling={false}>
                 비밀번호가 일치하지 않습니다
               </Text>
             )}
             {confirmPassword.length > 0 &&
               password === confirmPassword &&
               password.length > 0 && (
-                <Text style={styles.validationTextSuccess}>
+                <Text
+                  style={styles.validationTextSuccess}
+                  allowFontScaling={false}
+                >
                   비밀번호가 일치합니다
                 </Text>
               )}
@@ -594,7 +617,9 @@ export default function ProfileEdit() {
           onPress={handleSave}
           disabled={!isFormValid}
         >
-          <Text style={styles.saveButtonText}>수정 완료</Text>
+          <Text style={styles.saveButtonText} allowFontScaling={false}>
+            수정 완료
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -625,7 +650,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#000000",
   },
@@ -654,7 +679,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profileImageText: {
-    fontSize: 48,
+    fontSize: 49,
   },
   cameraIconContainer: {
     position: "absolute",
@@ -670,14 +695,14 @@ const styles = StyleSheet.create({
     borderColor: "#4D4947",
   },
   cameraIcon: {
-    fontSize: 16,
+    fontSize: 17,
   },
   inputSection: {
     paddingHorizontal: 20,
     marginBottom: 20,
   },
   inputLabel: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
     color: "#000000",
     marginBottom: 7,
@@ -697,7 +722,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 15,
     paddingVertical: 12,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#000000",
   },
@@ -723,7 +748,7 @@ const styles = StyleSheet.create({
   },
   clearButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
   },
   duplicateCheckButton: {
@@ -740,7 +765,7 @@ const styles = StyleSheet.create({
   },
   duplicateCheckText: {
     color: "#FFFFFF",
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
   },
   duplicateCheckTextCompleted: {
@@ -771,25 +796,25 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
   },
   validationText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     marginTop: 8,
     marginLeft: 5,
   },
   validationTextSuccess: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#4D4947",
     marginTop: 8,
     marginLeft: 5,
   },
   validationTextError: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#FF6B6B",
     marginTop: 8,

@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   messageTitle: {
-    fontSize: 24,
+    fontSize: 25,
     fontFamily: "SUIT-700",
     color: "#212121",
     lineHeight: 32,
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   },
   mainButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     textAlign: "center",
     letterSpacing: 0.5,

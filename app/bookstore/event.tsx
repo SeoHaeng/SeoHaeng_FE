@@ -63,13 +63,13 @@ const styles = StyleSheet.create({
     minHeight: 400,
   },
   tabTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-700",
     color: "#262423",
     marginBottom: 15,
   },
   description: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
     lineHeight: 20,
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   noEventText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     textAlign: "center",
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   noImageText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
     textAlign: "center",

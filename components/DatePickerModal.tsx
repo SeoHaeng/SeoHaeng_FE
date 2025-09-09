@@ -91,10 +91,10 @@ export default function DatePickerModal({
           </TouchableOpacity>
           {/* 헤더 */}
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>
+            <Text style={styles.headerTitle} allowFontScaling={false}>
               방문 일자를{"\n"} 선택해주세요.
             </Text>
-            <Text style={styles.selectedDateText}>
+            <Text style={styles.selectedDateText} allowFontScaling={false}>
               {formatSelectedDate(selectedDate)}
             </Text>
           </View>
@@ -127,9 +127,9 @@ export default function DatePickerModal({
               textDayFontFamily: "SUIT-500",
               textMonthFontFamily: "SUIT-600",
               textDayHeaderFontFamily: "SUIT-500",
-              textDayFontSize: 16,
-              textMonthFontSize: 18,
-              textDayHeaderFontSize: 14,
+              textDayFontSize: 17,
+              textMonthFontSize: 19,
+              textDayHeaderFontSize: 15,
             }}
             style={styles.calendar}
           />
@@ -143,7 +143,9 @@ export default function DatePickerModal({
             onPress={handleComplete}
             disabled={!selectedDate}
           >
-            <Text style={styles.completeButtonText}>선택 완료</Text>
+            <Text style={styles.completeButtonText} allowFontScaling={false}>
+              선택 완료
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -187,18 +189,18 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   backButtonText: {
-    fontSize: 20,
+    fontSize: 21,
     color: "#4D4947",
   },
   headerTitle: {
     flex: 1,
-    fontSize: 22,
+    fontSize: 23,
     fontFamily: "SUIT-700",
     color: "#000000",
     lineHeight: 30,
   },
   selectedDateText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#262423",
   },
@@ -217,7 +219,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#C5BFBB",
   },
   completeButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
   },

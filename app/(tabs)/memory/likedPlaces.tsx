@@ -107,12 +107,12 @@ export default function LikedPlaces() {
 
       <View style={styles.placeInfo}>
         <View style={styles.nameContainer}>
-          <Text style={styles.placeName}>
+          <Text style={styles.placeName} allowFontScaling={false}>
             {place.name.length > 12
               ? `${place.name.substring(0, 12)}...`
               : place.name}
           </Text>
-          <Text style={styles.placeType}>
+          <Text style={styles.placeType} allowFontScaling={false}>
             {place.placeType === "TOURIST_SPOT"
               ? "관광지"
               : place.placeType === "RESTAURANT"
@@ -127,16 +127,20 @@ export default function LikedPlaces() {
 
         <View style={styles.ratingContainer}>
           <StarIcon size={15} style={styles.starIcon} />
-          <Text style={styles.ratingText}>
+          <Text style={styles.ratingText} allowFontScaling={false}>
             {place.averageRating.toFixed(1)}
           </Text>
-          <Text style={styles.reviewCountText}>({place.reviewCount})</Text>
-          <Text style={styles.distanceText}>{place.distance.toFixed(1)}km</Text>
+          <Text style={styles.reviewCountText} allowFontScaling={false}>
+            ({place.reviewCount})
+          </Text>
+          <Text style={styles.distanceText} allowFontScaling={false}>
+            {place.distance.toFixed(1)}km
+          </Text>
         </View>
 
         <View style={styles.addressContainer}>
           <PlaceIcon />
-          <Text style={styles.addressText}>
+          <Text style={styles.addressText} allowFontScaling={false}>
             {place.address.length > 17
               ? `${place.address.substring(0, 17)}...`
               : place.address}
@@ -144,7 +148,9 @@ export default function LikedPlaces() {
         </View>
 
         <TouchableOpacity style={styles.likedButton}>
-          <Text style={styles.likedButtonText}>찜한 장소</Text>
+          <Text style={styles.likedButtonText} allowFontScaling={false}>
+            찜한 장소
+          </Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -153,7 +159,9 @@ export default function LikedPlaces() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>찜한 장소를 불러오는 중...</Text>
+        <Text style={styles.loadingText} allowFontScaling={false}>
+          찜한 장소를 불러오는 중...
+        </Text>
       </View>
     );
   }
@@ -161,14 +169,18 @@ export default function LikedPlaces() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.countContainer}>
-        <Text style={styles.countText}>총 {places.length}개</Text>
+        <Text style={styles.countText} allowFontScaling={false}>
+          총 {places.length}개
+        </Text>
       </View>
 
       {places.length > 0 ? (
         places.map(renderPlaceItem)
       ) : (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>아직 찜한 장소가 없습니다.</Text>
+          <Text style={styles.emptyText} allowFontScaling={false}>
+            아직 찜한 장소가 없습니다.
+          </Text>
         </View>
       )}
     </ScrollView>
@@ -186,7 +198,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   countText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#666666",
     fontFamily: "SUIT-500",
   },
@@ -222,7 +234,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bookmarkText: {
-    fontSize: 12,
+    fontSize: 13,
   },
   placeInfo: {
     flex: 1,
@@ -236,13 +248,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   placeName: {
-    fontSize: 15,
+    fontSize: 16,
     color: "#262423",
     fontFamily: "SUIT-700",
     marginRight: 8,
   },
   placeType: {
-    fontSize: 11,
+    fontSize: 12,
     color: "#716C69",
     fontFamily: "SUIT-500",
   },
@@ -264,19 +276,19 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   ratingText: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#313131",
     marginRight: 4,
     fontFamily: "SUIT-700",
   },
   reviewCountText: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#7E7E7E",
     marginRight: 8,
     fontFamily: "SUIT-500",
   },
   distanceText: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#262423",
     fontFamily: "SUIT-700",
   },
@@ -285,11 +297,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   locationIcon: {
-    fontSize: 12,
+    fontSize: 13,
     marginRight: 4,
   },
   addressText: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#716C69",
     marginLeft: 5,
     flex: 1,
@@ -304,7 +316,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   likedButtonText: {
-    fontSize: 11,
+    fontSize: 12,
     color: "#EEE9E6",
     fontFamily: "SUIT-500",
   },
@@ -315,7 +327,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#666666",
     fontFamily: "SUIT-500",
   },
@@ -327,7 +339,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#666666",
     fontFamily: "SUIT-500",
   },

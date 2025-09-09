@@ -49,14 +49,18 @@ const FestivalCard: React.FC<FestivalCardProps> = ({
       <View style={styles.festivalCardOverlay}>
         <View style={styles.festivalCardContent}>
           <View style={styles.festivalCardHeader}>
-            <Text style={styles.festivalCardTitle}>{title}</Text>
+            <Text style={styles.festivalCardTitle} allowFontScaling={false}>
+              {title}
+            </Text>
             <BackIcon
               color="#FFFFFF"
               width={5}
               style={{ transform: [{ rotate: "180deg" }] }}
             />
           </View>
-          <Text style={styles.festivalCardDates}>{dates}</Text>
+          <Text style={styles.festivalCardDates} allowFontScaling={false}>
+            {dates}
+          </Text>
         </View>
       </View>
     </View>
@@ -167,7 +171,7 @@ export default function Preference() {
       <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#E60A34" />
-          <Text style={styles.loadingText}>
+          <Text style={styles.loadingText} allowFontScaling={false}>
             취향 길목 데이터를 불러오는 중...
           </Text>
         </View>
@@ -183,7 +187,9 @@ export default function Preference() {
       >
         {/* 헤더 */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>취향 길목</Text>
+          <Text style={styles.headerTitle} allowFontScaling={false}>
+            취향 길목
+          </Text>
         </View>
 
         {/* 나의 여행 섹션 */}
@@ -192,7 +198,7 @@ export default function Preference() {
             <View style={styles.sectionTitleContainer}>
               {/* 첫 번째 row: 제목과 일정짜기 버튼 */}
               <View style={styles.firstRow}>
-                <Text style={styles.sectionTitle}>
+                <Text style={styles.sectionTitle} allowFontScaling={false}>
                   이번엔{"\n"}어디로 갈까요?
                 </Text>
                 <TouchableOpacity
@@ -205,15 +211,17 @@ export default function Preference() {
                   }
                 >
                   <Feather name="calendar" size={20} color="white" />
-                  <Text style={styles.planButtonText}>일정 짜기</Text>
+                  <Text style={styles.planButtonText} allowFontScaling={false}>
+                    일정 짜기
+                  </Text>
                 </TouchableOpacity>
               </View>
               {/* 두 번째 row: 부제목과 전체보기 */}
               {lastVisitDaysAgo !== null && (
                 <View style={styles.secondRow}>
-                  <Text style={styles.sectionSubtitle}>
+                  <Text style={styles.sectionSubtitle} allowFontScaling={false}>
                     마지막 강원도 여행이{" "}
-                    <Text style={styles.highlightText}>
+                    <Text style={styles.highlightText} allowFontScaling={false}>
                       {lastVisitDaysAgo}일
                     </Text>{" "}
                     전이에요.
@@ -269,7 +277,9 @@ export default function Preference() {
           <View style={styles.firstSectionHeader}>
             <View style={styles.sectionTitleContainer}>
               <View style={styles.firstRow}>
-                <Text style={styles.headerTitle}>다른 유저의 서행</Text>
+                <Text style={styles.headerTitle} allowFontScaling={false}>
+                  다른 유저의 서행
+                </Text>
               </View>
             </View>
           </View>
@@ -318,7 +328,9 @@ export default function Preference() {
         {/* 축제 섹션 */}
         <View style={styles.secondSection}>
           <View style={styles.secondSectionHeader}>
-            <Text style={styles.headerTitle}>강원도의 축제</Text>
+            <Text style={styles.headerTitle} allowFontScaling={false}>
+              강원도의 축제
+            </Text>
           </View>
 
           <ScrollView
@@ -367,7 +379,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   headerTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontFamily: "SUIT-700",
     color: "#000000",
     fontWeight: "bold",
@@ -412,13 +424,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   sectionTitle: {
-    fontSize: 24,
+    fontSize: 25,
     fontFamily: "SUIT-700",
     color: "#262423",
     lineHeight: 33,
   },
   sectionSubtitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -437,11 +449,11 @@ const styles = StyleSheet.create({
   },
   planButtonText: {
     color: "#FFFFFF",
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
   },
   viewAllText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#716C69",
     fontFamily: "SUIT-500",
     textDecorationLine: "underline",
@@ -503,12 +515,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   festivalCardTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-700",
     color: "#FFFFFF",
   },
   festivalCardDates: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#FFFFFF",
   },
@@ -522,7 +534,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#716C69",
     fontFamily: "SUIT-500",
     marginTop: 16,

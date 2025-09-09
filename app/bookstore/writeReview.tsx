@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#000000",
   },
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   },
   bookstoreName: {
     maxWidth: "80%",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#000000",
     marginRight: 10,
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   badgeText: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginLeft: 3,
@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   locationText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     top: -6,
   },
   tooltipText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
   },
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#000000",
     marginBottom: 12,
@@ -502,7 +502,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     textAlign: "center",
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     marginTop: 7,
   },
   imageCount: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#9D9896",
     marginTop: 2,
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEE9E6",
   },
   datePlaceholder: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -561,7 +561,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DBD6D3",
     borderRadius: 8,
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#000000",
     textAlignVertical: "top",
@@ -570,7 +570,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 10,
     right: 10,
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
     borderColor: "#FF0000",
   },
   errorMessage: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#FF0000",
     marginTop: 5,
@@ -596,7 +596,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#C5BFBB",
   },
   completeButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#ffffff",
   },

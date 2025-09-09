@@ -31,8 +31,10 @@ const DeleteTravelConfirmModal: React.FC<DeleteTravelConfirmModalProps> = ({
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <View style={styles.contentContainer}>
-            <Text style={styles.title}>삭제하시겠습니까?</Text>
-            <Text style={styles.message}>
+            <Text style={styles.title} allowFontScaling={false}>
+              삭제하시겠습니까?
+            </Text>
+            <Text style={styles.message} allowFontScaling={false}>
               이 여행 일정을 삭제하면 복구할 수 없습니다.
             </Text>
           </View>
@@ -43,7 +45,9 @@ const DeleteTravelConfirmModal: React.FC<DeleteTravelConfirmModalProps> = ({
               onPress={onCancel}
               activeOpacity={0.7}
             >
-              <Text style={styles.cancelButtonText}>취소</Text>
+              <Text style={styles.cancelButtonText} allowFontScaling={false}>
+                취소
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -51,7 +55,9 @@ const DeleteTravelConfirmModal: React.FC<DeleteTravelConfirmModalProps> = ({
               onPress={onConfirm}
               activeOpacity={0.7}
             >
-              <Text style={styles.confirmButtonText}>삭제</Text>
+              <Text style={styles.confirmButtonText} allowFontScaling={false}>
+                삭제
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

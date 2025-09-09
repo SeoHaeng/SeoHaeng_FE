@@ -377,12 +377,18 @@ const KakaoMap = ({
             margin-left: -1px;
             margin-right: -1px;
             padding: 8px 12px;
-            font-size: 12px;
+            font-size: 12px !important;
             font-weight: 600;
             color: #FFFFFF;
             border-radius: 6px;
             white-space: nowrap;
             min-width: 60px;
+            /* 폰트 크기 고정을 위한 속성들 */
+            font-size-adjust: none;
+            text-size-adjust: none;
+            -webkit-text-size-adjust: none;
+            -moz-text-size-adjust: none;
+            -ms-text-size-adjust: none;
             line-height: 1.2;
           }
         </style>

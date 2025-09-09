@@ -136,12 +136,12 @@ export default function ReviewTab({ reviewData, placeId }: ReviewTabProps) {
     >
       {/* 리뷰 요약 */}
       <View style={styles.reviewSummary}>
-        <Text style={styles.reviewCount}>
+        <Text style={styles.reviewCount} allowFontScaling={false}>
           리뷰 {reviewData?.totalElements || 0}
         </Text>
         <View style={styles.ratingContainer}>
           <StarIcon size={15} style={styles.star} />
-          <Text style={styles.ratingText}>
+          <Text style={styles.ratingText} allowFontScaling={false}>
             {reviewData?.totalReviewRating?.toFixed(1) || "0.0"}
           </Text>
         </View>
@@ -161,7 +161,9 @@ export default function ReviewTab({ reviewData, placeId }: ReviewTabProps) {
           }
         }}
       >
-        <Text style={styles.writeReviewText}>나도 후기 남기기</Text>
+        <Text style={styles.writeReviewText} allowFontScaling={false}>
+          나도 후기 남기기
+        </Text>
 
         <Entypo name="chevron-small-right" size={20} color="#4D4947" />
       </TouchableOpacity>
@@ -260,7 +262,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   reviewCount: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-700",
     color: "#262423",
   },
@@ -270,7 +272,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   ratingText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-8 00",
     color: "#000000",
   },
@@ -292,7 +294,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   writeReviewText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#4D4947",
   },
@@ -318,7 +320,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#9D9896",
   },
   username: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
     color: "#716C69",
   },
@@ -327,7 +329,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   reviewDate: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#C5BFBB",
   },
@@ -336,7 +338,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   reviewText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-600",
     color: "#000000",
     lineHeight: 20,
@@ -364,7 +366,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -373,7 +375,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   noMoreText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },

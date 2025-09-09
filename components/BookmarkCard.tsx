@@ -34,7 +34,7 @@ export default function BookmarkCard({
       </View>
 
       <View style={styles.textContainer}>
-        <Text style={styles.mainTitle}>
+        <Text style={styles.mainTitle} allowFontScaling={false}>
           {title.length > 8 ? `${title.slice(0, 8)}...` : title}
         </Text>
       </View>

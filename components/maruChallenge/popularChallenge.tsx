@@ -40,10 +40,14 @@ export default function PopularChallenge({
           <View style={styles.userInfoContainer}>
             <View style={styles.userInfo}>
               <View style={styles.userHeader}>
-                <Text style={styles.username}>{userName}</Text>
-                <Text style={styles.timeStamp}>{date}</Text>
+                <Text style={styles.username} allowFontScaling={false}>
+                  {userName}
+                </Text>
+                <Text style={styles.timeStamp} allowFontScaling={false}>
+                  {date}
+                </Text>
               </View>
-              <Text style={styles.description}>
+              <Text style={styles.description} allowFontScaling={false}>
                 {text.length > 30 ? `${text.slice(0, 30)}...` : text}
               </Text>
             </View>
@@ -61,11 +65,17 @@ export default function PopularChallenge({
                 <View style={styles.receivedBookImage} />
               )}
               <View style={styles.bookTextContainer}>
-                <Text style={styles.bookTitle}>{bookName}</Text>
-                <Text style={styles.bookAuthor}>{bookAuthor}</Text>
+                <Text style={styles.bookTitle} allowFontScaling={false}>
+                  {bookName}
+                </Text>
+                <Text style={styles.bookAuthor} allowFontScaling={false}>
+                  {bookAuthor}
+                </Text>
                 <View style={styles.tagContainer}>
                   <View style={styles.yearTag}>
-                    <Text style={styles.tagText}>{year}</Text>
+                    <Text style={styles.tagText} allowFontScaling={false}>
+                      {year}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -119,16 +129,16 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   username: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-700",
   },
   timeStamp: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
   description: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#716C69",
     width: 190,
@@ -165,11 +175,11 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   bookTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
   },
   bookAuthor: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -196,7 +206,7 @@ const styles = StyleSheet.create({
   tagText: {
     color: "white",
     fontFamily: "SUIT-500",
-    fontSize: 11,
+    fontSize: 12,
   },
   menuIcon: {
     margin: 5,

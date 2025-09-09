@@ -274,7 +274,7 @@ export default function PlaceDetail() {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <Text>로딩 중...</Text>
+          <Text allowFontScaling={false}>로딩 중...</Text>
         </View>
       </SafeAreaView>
     );
@@ -317,7 +317,7 @@ export default function PlaceDetail() {
           </TouchableOpacity>
           {fromScreen && (
             <View style={styles.fromIndicator}>
-              <Text style={styles.fromText}>
+              <Text style={styles.fromText} allowFontScaling={false}>
                 {fromScreen === "home"
                   ? "홈"
                   : fromScreen === "preference"
@@ -366,7 +366,7 @@ export default function PlaceDetail() {
           {placeDetail?.placeImageUrls &&
             placeDetail.placeImageUrls.length > 1 && (
               <View style={styles.imageOverlay}>
-                <Text style={styles.imageCounter}>
+                <Text style={styles.imageCounter} allowFontScaling={false}>
                   {currentImageIndex + 1}/{placeDetail.placeImageUrls.length}
                 </Text>
               </View>
@@ -377,7 +377,9 @@ export default function PlaceDetail() {
         <View style={styles.storeInfo}>
           <View style={styles.storeHeader}>
             <View style={styles.storeTitleContainer}>
-              <Text style={styles.storeName}>{placeDetail?.name}</Text>
+              <Text style={styles.storeName} allowFontScaling={false}>
+                {placeDetail?.name}
+              </Text>
               <BookstoreBadge placeType={placeDetail?.placeType} />
             </View>
             <View style={styles.actionButtons}>
@@ -396,15 +398,15 @@ export default function PlaceDetail() {
             </View>
           </View>
           <View style={styles.storeStats}>
-            <Text style={styles.reviewText}>
+            <Text style={styles.reviewText} allowFontScaling={false}>
               리뷰{" "}
-              <Text style={styles.reviewCount}>
+              <Text style={styles.reviewCount} allowFontScaling={false}>
                 {placeDetail?.reviewCount || 0}
               </Text>
             </Text>
             <View style={styles.ratingContainer}>
               <StarIcon width={14} height={14} />
-              <Text style={styles.ratingText}>
+              <Text style={styles.ratingText} allowFontScaling={false}>
                 {placeDetail?.rating ? placeDetail.rating.toFixed(1) : "0.0"}
               </Text>
             </View>
@@ -414,7 +416,9 @@ export default function PlaceDetail() {
           >
             <PlaceIcon width={11} height={15} />
             <TouchableOpacity onPress={handleCopyAddress}>
-              <Text style={styles.storeLocation}>{placeDetail?.address}</Text>
+              <Text style={styles.storeLocation} allowFontScaling={false}>
+                {placeDetail?.address}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -443,6 +447,7 @@ export default function PlaceDetail() {
                     styles.tabText,
                     activeTab === tab && styles.activeTabText,
                   ]}
+                  allowFontScaling={false}
                 >
                   {tab}
                 </Text>
@@ -490,12 +495,12 @@ const styles = StyleSheet.create({
     borderColor: "#E8E3E0",
   },
   fromText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#000000",
     flex: 1,
@@ -529,7 +534,7 @@ const styles = StyleSheet.create({
   },
   imageCounter: {
     color: "#FFFFFF",
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
   },
   storeInfo: {
@@ -550,7 +555,7 @@ const styles = StyleSheet.create({
   },
   storeName: {
     maxWidth: "70%",
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#000000",
   },
@@ -564,7 +569,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   badgeText: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -590,12 +595,12 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   ratingText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-800",
     color: "#000000",
   },
   reviewText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#000000",
   },
@@ -603,13 +608,13 @@ const styles = StyleSheet.create({
     color: "#9D9896",
   },
   storeLocation: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-500",
     color: "#262423",
     marginLeft: 2,
   },
   storeStatus: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -628,7 +633,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#262423 ",
   },
   tabText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },

@@ -20,6 +20,7 @@ export default function MemoryLayout() {
               styles.tabText,
               activeTab === "내 공간" && styles.activeTabText,
             ]}
+            allowFontScaling={false}
           >
             내 공간
           </Text>
@@ -34,6 +35,7 @@ export default function MemoryLayout() {
               styles.tabText,
               activeTab === "스탬프" && styles.activeTabText,
             ]}
+            allowFontScaling={false}
           >
             스탬프
           </Text>
@@ -66,7 +68,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   tabText: {
-    fontSize: 17,
+    fontSize: 18,
     color: "#716C69",
     fontFamily: "SUIT-700",
   },
@@ -88,12 +90,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   spaceText: {
-    fontSize: 24,
+    fontSize: 25,
     fontWeight: "bold",
     marginBottom: 10,
   },
   spaceSubtext: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#666",
   },
 });

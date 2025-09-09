@@ -33,19 +33,25 @@ export default function DeleteUserConfirmModal({
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.title}>정말 탈퇴하시겠어요?</Text>
-            <Text style={styles.message}>
+            <Text style={styles.title} allowFontScaling={false}>
+              정말 탈퇴하시겠어요?
+            </Text>
+            <Text style={styles.message} allowFontScaling={false}>
               탈퇴할 경우 작성한 내용은 모두 삭제됩니다.
             </Text>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-                <Text style={styles.cancelButtonText}>취소</Text>
+                <Text style={styles.cancelButtonText} allowFontScaling={false}>
+                  취소
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.confirmButton}
                 onPress={onConfirm}
               >
-                <Text style={styles.confirmButtonText}>탈퇴</Text>
+                <Text style={styles.confirmButtonText} allowFontScaling={false}>
+                  탈퇴
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -81,14 +87,14 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   title: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#262423",
     marginBottom: 16,
     textAlign: "center",
   },
   message: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-500",
     color: "#716C69",
     lineHeight: 24,
@@ -109,7 +115,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cancelButtonText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#716C69",
   },
@@ -122,7 +128,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   confirmButtonText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
   },

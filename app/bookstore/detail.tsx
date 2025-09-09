@@ -32,37 +32,57 @@ export default function DetailTab({ placeDetail }: DetailTabProps) {
 
   const renderBookstoreDetail = (detail: BookstorePlaceDetail) => (
     <View style={styles.serviceList}>
-      {detail.bookStay && <Text style={styles.serviceItem}>• 북스테이</Text>}
-      {detail.bookChallengeStatus && (
-        <Text style={styles.serviceItem}>• 북챌린지</Text>
+      {detail.bookStay && (
+        <Text style={styles.serviceItem} allowFontScaling={false}>
+          • 북스테이
+        </Text>
       )}
-      {detail.readingClub && <Text style={styles.serviceItem}>• 독서모임</Text>}
+      {detail.bookChallengeStatus && (
+        <Text style={styles.serviceItem} allowFontScaling={false}>
+          • 북챌린지
+        </Text>
+      )}
+      {detail.readingClub && (
+        <Text style={styles.serviceItem} allowFontScaling={false}>
+          • 독서모임
+        </Text>
+      )}
 
-      {detail.parking && <Text style={styles.serviceItem}>• 주차</Text>}
+      {detail.parking && (
+        <Text style={styles.serviceItem} allowFontScaling={false}>
+          • 주차
+        </Text>
+      )}
       {detail.petFriendly && (
-        <Text style={styles.serviceItem}>• 반려동물 동반</Text>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
+          • 반려동물 동반
+        </Text>
       )}
     </View>
   );
 
   const renderTouristSpotDetail = (detail: TouristSpotPlaceDetail) => (
     <View style={styles.serviceList}>
-      <Text style={styles.description}>{detail.overview}</Text>
+      <Text style={styles.description} allowFontScaling={false}>
+        {detail.overview}
+      </Text>
       {detail.parkingAvailable && (
-        <Text style={styles.serviceItem}>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
           • 주차: {detail.parkingAvailable}
         </Text>
       )}
       {detail.petsAllowed && (
-        <Text style={styles.serviceItem}>• 반려동물: {detail.petsAllowed}</Text>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
+          • 반려동물: {detail.petsAllowed}
+        </Text>
       )}
       {detail.babyCarriageAllowed && (
-        <Text style={styles.serviceItem}>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
           • 유모차: {detail.babyCarriageAllowed}
         </Text>
       )}
       {detail.creditCardAccepted && (
-        <Text style={styles.serviceItem}>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
           • 신용카드: {detail.creditCardAccepted}
         </Text>
       )}
@@ -72,38 +92,50 @@ export default function DetailTab({ placeDetail }: DetailTabProps) {
   const renderRestaurantDetail = (detail: RestaurantPlaceDetail) => (
     <View style={styles.serviceList}>
       {detail.firstmenu && (
-        <Text style={styles.serviceItem}>• 대표메뉴: {detail.firstmenu}</Text>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
+          • 대표메뉴: {detail.firstmenu}
+        </Text>
       )}
       {detail.treatmenu && (
-        <Text style={styles.serviceItem}>• 추천메뉴: {detail.treatmenu}</Text>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
+          • 추천메뉴: {detail.treatmenu}
+        </Text>
       )}
       {detail.kidsfacility && detail.kidsfacility !== "0" && (
-        <Text style={styles.serviceItem}>• 키즈시설: 있음</Text>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
+          • 키즈시설: 있음
+        </Text>
       )}
       {detail.isTakeoutAvailable && (
-        <Text style={styles.serviceItem}>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
           • 포장: {detail.isTakeoutAvailable}
         </Text>
       )}
       {detail.hasParking && (
-        <Text style={styles.serviceItem}>• 주차: {detail.hasParking}</Text>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
+          • 주차: {detail.hasParking}
+        </Text>
       )}
       {detail.isReservable && (
-        <Text style={styles.serviceItem}>• 예약: {detail.isReservable}</Text>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
+          • 예약: {detail.isReservable}
+        </Text>
       )}
     </View>
   );
 
   const renderFestivalDetail = (detail: FestivalPlaceDetail) => (
     <View style={styles.serviceList}>
-      <Text style={styles.description}>{detail.overview}</Text>
+      <Text style={styles.description} allowFontScaling={false}>
+        {detail.overview}
+      </Text>
       {detail.startDate && detail.endDate && (
-        <Text style={styles.serviceItem}>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
           • 기간: {detail.startDate} ~ {detail.endDate}
         </Text>
       )}
       {detail.programs && (
-        <Text style={styles.serviceItem}>
+        <Text style={styles.serviceItem} allowFontScaling={false}>
           • 프로그램: {detail.programs.replace(/<br>/g, "\n")}
         </Text>
       )}
@@ -140,12 +172,14 @@ export default function DetailTab({ placeDetail }: DetailTabProps) {
       {placeDetail?.websiteUrl && (
         <View style={styles.tabTitleContainer}>
           <WebsiteIcon />
-          <Text style={styles.tabTitle}>웹사이트</Text>
+          <Text style={styles.tabTitle} allowFontScaling={false}>
+            웹사이트
+          </Text>
         </View>
       )}
       {placeDetail?.websiteUrl && (
         <TouchableOpacity onPress={handleWebsitePress}>
-          <Text style={styles.websiteLink}>
+          <Text style={styles.websiteLink} allowFontScaling={false}>
             {placeDetail.websiteUrl.replace(/<[^>]*>/g, "")}
           </Text>
         </TouchableOpacity>
@@ -153,11 +187,15 @@ export default function DetailTab({ placeDetail }: DetailTabProps) {
       {placeDetail?.tel && (
         <View style={styles.tabTitleContainer}>
           <PhoneIcon />
-          <Text style={styles.tabTitle}>연락처</Text>
+          <Text style={styles.tabTitle} allowFontScaling={false}>
+            연락처
+          </Text>
         </View>
       )}
       {placeDetail?.tel && (
-        <Text style={styles.infoText}>{placeDetail.tel}</Text>
+        <Text style={styles.infoText} allowFontScaling={false}>
+          {placeDetail.tel}
+        </Text>
       )}
       <View style={styles.tabTitleContainer}>
         <StoreIntroIcon />
@@ -178,25 +216,25 @@ const styles = StyleSheet.create({
     minHeight: 400,
   },
   tabTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-700",
     color: "#262423",
   },
   description: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
     lineHeight: 20,
     marginBottom: 40,
   },
   infoText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginBottom: 4,
   },
   websiteLink: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#3871E0",
     textDecorationLine: "underline",
@@ -212,7 +250,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   serviceItem: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
     lineHeight: 20,

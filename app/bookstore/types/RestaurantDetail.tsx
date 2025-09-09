@@ -29,9 +29,13 @@ export default function RestaurantDetail({
         <>
           <View style={styles.tabTitleContainer}>
             <BusinessHoursIcon />
-            <Text style={styles.tabTitle}>영업 시간</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              영업 시간
+            </Text>
           </View>
-          <Text style={styles.description}>{placeDetail.usetime}</Text>
+          <Text style={styles.description} allowFontScaling={false}>
+            {placeDetail.usetime}
+          </Text>
         </>
       )}
 
@@ -39,7 +43,9 @@ export default function RestaurantDetail({
         <>
           <View style={styles.tabTitleContainer}>
             <PhoneIcon />
-            <Text style={styles.tabTitle}>연락처</Text>
+            <Text style={styles.tabTitle} allowFontScaling={false}>
+              연락처
+            </Text>
           </View>
           <TouchableOpacity
             onPress={() => {
@@ -48,24 +54,32 @@ export default function RestaurantDetail({
               }
             }}
           >
-            <Text style={styles.phoneLink}>{placeDetail.tel}</Text>
+            <Text style={styles.phoneLink} allowFontScaling={false}>
+              {placeDetail.tel}
+            </Text>
           </TouchableOpacity>
         </>
       )}
 
       <View style={styles.tabTitleContainer}>
         <WebsiteIcon />
-        <Text style={styles.tabTitle}>공식 웹사이트</Text>
+        <Text style={styles.tabTitle} allowFontScaling={false}>
+          공식 웹사이트
+        </Text>
       </View>
       <TouchableOpacity onPress={handleWebsitePress}>
-        <Text style={styles.websiteLink}>https://www.example.com</Text>
+        <Text style={styles.websiteLink} allowFontScaling={false}>
+          https://www.example.com
+        </Text>
       </TouchableOpacity>
 
       <View style={styles.tabTitleContainer}>
         <StoreIntroIcon />
-        <Text style={styles.tabTitle}>음식점 소개</Text>
+        <Text style={styles.tabTitle} allowFontScaling={false}>
+          음식점 소개
+        </Text>
       </View>
-      <Text style={styles.description}>
+      <Text style={styles.description} allowFontScaling={false}>
         신선한 재료와 정성스러운 손맛으로 만드는 맛있는 요리를 제공하는
         음식점입니다. 가족과 친구들과 함께 즐길 수 있는 따뜻한 분위기를
         자랑합니다.
@@ -79,32 +93,32 @@ const styles = StyleSheet.create({
     minHeight: 400,
   },
   tabTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-700",
     color: "#262423",
   },
   description: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
     lineHeight: 20,
     marginBottom: 25,
   },
   infoText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginBottom: 4,
   },
   websiteLink: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#3871E0",
     textDecorationLine: "underline",
     marginBottom: 40,
   },
   phoneLink: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#3871E0",
     textDecorationLine: "underline",

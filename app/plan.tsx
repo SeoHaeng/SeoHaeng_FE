@@ -128,6 +128,7 @@ export default function Plan() {
               isSaturday && styles.saturdayText,
               (isStartDate || isEndDate) && styles.selectedDayText,
             ]}
+            allowFontScaling={false}
           >
             {day}
           </Text>
@@ -249,12 +250,14 @@ export default function Plan() {
         </TouchableOpacity>
         <View style={styles.headerContent}>
           <View style={styles.headerTextContainer}>
-            <Text style={styles.headerTitle}>
+            <Text style={styles.headerTitle} allowFontScaling={false}>
               여행 일자를{"\n"}선택해주세요.
             </Text>
 
             {selectedStartDate && selectedEndDate && (
-              <Text style={styles.dateRange}>{formatDateRange()}</Text>
+              <Text style={styles.dateRange} allowFontScaling={false}>
+                {formatDateRange()}
+              </Text>
             )}
           </View>
           {/* Days of week - Fixed */}
@@ -267,6 +270,7 @@ export default function Plan() {
                     day === "일" && styles.sundayText,
                     day === "토" && styles.saturdayText,
                   ]}
+                  allowFontScaling={false}
                 >
                   {day}
                 </Text>
@@ -286,7 +290,7 @@ export default function Plan() {
         >
           {generateMonths().map(({ year, month }, index) => (
             <View key={`${year}-${month}`} style={styles.monthSection}>
-              <Text style={styles.monthTitle}>
+              <Text style={styles.monthTitle} allowFontScaling={false}>
                 {year}.{String(month + 1).padStart(2, "0")}
               </Text>
               <View style={styles.calendarGrid}>
@@ -303,7 +307,9 @@ export default function Plan() {
           style={styles.completeButton}
           onPress={handleComplete}
         >
-          <Text style={styles.completeButtonText}>선택 완료</Text>
+          <Text style={styles.completeButtonText} allowFontScaling={false}>
+            선택 완료
+          </Text>
         </TouchableOpacity>
       )}
     </SafeAreaView>
@@ -337,19 +343,19 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 25,
     fontFamily: "SUIT-700",
     color: "#262423",
     lineHeight: 32,
   },
   fromHomeText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
     marginTop: 8,
   },
   dateRange: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
     color: "#262423",
   },
@@ -369,7 +375,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   weekDayText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
@@ -383,7 +389,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   monthTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-700",
     color: "#262423",
     marginBottom: 15,
@@ -399,7 +405,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   dayText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
   },
@@ -434,7 +440,7 @@ const styles = StyleSheet.create({
   },
   completeButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "SUIT-600",
   },
 });

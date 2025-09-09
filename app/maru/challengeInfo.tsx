@@ -110,7 +110,9 @@ export default function ChallengeInfoScreen() {
       {/* Confirm Button */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-          <Text style={styles.confirmButtonText}>확인했어요!</Text>
+          <Text style={styles.confirmButtonText} allowFontScaling={false}>
+            확인했어요!
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

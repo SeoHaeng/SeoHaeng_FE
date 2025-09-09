@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     left: 13,
   },
   mainTitle: {
-    fontSize: 17,
+    fontSize: 19,
     fontFamily: "Gangwon",
     color: "#FFFFFF",
     marginBottom: 4,

@@ -138,7 +138,9 @@ export default function BookSearch() {
           >
             <BackIcon />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>도서 검색</Text>
+          <Text style={styles.headerTitle} allowFontScaling={false}>
+            도서 검색
+          </Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -155,6 +157,7 @@ export default function BookSearch() {
                 setSearchPerformed(true);
                 searchBooks(searchQuery, 1, false);
               }}
+              allowFontScaling={false}
             />
             {searchQuery.length > 0 && (
               <TouchableOpacity
@@ -172,21 +175,25 @@ export default function BookSearch() {
               searchBooks(searchQuery, 1, false);
             }}
           >
-            <Text style={styles.searchButtonText}>검색</Text>
+            <Text style={styles.searchButtonText} allowFontScaling={false}>
+              검색
+            </Text>
           </TouchableOpacity>
         </View>
 
         {/* 검색 결과 */}
         <View style={styles.resultsContainer}>
           {searchPerformed && !isLoading && (
-            <Text style={styles.resultsCount}>총 {books.length}개</Text>
+            <Text style={styles.resultsCount} allowFontScaling={false}>
+              총 {books.length}개
+            </Text>
           )}
 
           {/* 로딩 중일 때 */}
           {isLoading && books.length === 0 && (
             <View style={styles.initialLoadingContainer}>
               <ActivityIndicator size="large" color="#E60A34" />
-              <Text style={styles.initialLoadingText}>
+              <Text style={styles.initialLoadingText} allowFontScaling={false}>
                 도서를 검색하는 중...
               </Text>
             </View>
@@ -215,10 +222,14 @@ export default function BookSearch() {
                       </>
                     )}
                   </View>
-                  <Text style={styles.bookTitle} numberOfLines={2}>
+                  <Text
+                    style={styles.bookTitle}
+                    numberOfLines={2}
+                    allowFontScaling={false}
+                  >
                     {book.title}
                   </Text>
-                  <Text style={styles.bookAuthor}>
+                  <Text style={styles.bookAuthor} allowFontScaling={false}>
                     {formatAuthor(book.author)}
                   </Text>
                 </TouchableOpacity>
@@ -229,8 +240,10 @@ export default function BookSearch() {
           {/* 검색 결과가 없을 때 */}
           {searchPerformed && !isLoading && books.length === 0 && (
             <View style={styles.noResultsContainer}>
-              <Text style={styles.noResultsText}>검색 결과가 없습니다</Text>
-              <Text style={styles.noResultsSubText}>
+              <Text style={styles.noResultsText} allowFontScaling={false}>
+                검색 결과가 없습니다
+              </Text>
+              <Text style={styles.noResultsSubText} allowFontScaling={false}>
                 다른 검색어로 시도해보세요
               </Text>
             </View>
@@ -240,7 +253,9 @@ export default function BookSearch() {
           {isLoading && books.length > 0 && (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="small" color="#E60A34" />
-              <Text style={styles.loadingText}>책을 불러오는 중...</Text>
+              <Text style={styles.loadingText} allowFontScaling={false}>
+                책을 불러오는 중...
+              </Text>
             </View>
           )}
 
@@ -250,18 +265,24 @@ export default function BookSearch() {
               style={styles.loadMoreButton}
               onPress={loadMoreBooks}
             >
-              <Text style={styles.loadMoreButtonText}>더 보기</Text>
+              <Text style={styles.loadMoreButtonText} allowFontScaling={false}>
+                더 보기
+              </Text>
             </TouchableOpacity>
           )}
         </View>
 
         {/* 직접 등록하기 링크 */}
         <View style={styles.registerContainer}>
-          <Text style={styles.registerText}>찾는 도서가 없으신가요? </Text>
+          <Text style={styles.registerText} allowFontScaling={false}>
+            찾는 도서가 없으신가요?{" "}
+          </Text>
           <TouchableOpacity
             onPress={() => router.push(`/maru/bookRegister?type=${bookType}`)}
           >
-            <Text style={styles.registerLink}>직접 등록하기 &gt;</Text>
+            <Text style={styles.registerLink} allowFontScaling={false}>
+              직접 등록하기 &gt;
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -276,7 +297,9 @@ export default function BookSearch() {
           onPress={handleComplete}
           disabled={!selectedBook}
         >
-          <Text style={styles.completeButtonText}>도서 선택 완료</Text>
+          <Text style={styles.completeButtonText} allowFontScaling={false}>
+            도서 선택 완료
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

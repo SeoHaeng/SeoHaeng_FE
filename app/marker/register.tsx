@@ -144,7 +144,9 @@ export default function MarkerRegister() {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <BackIcon />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>마커 등록</Text>
+        <Text style={styles.headerTitle} allowFontScaling={false}>
+          마커 등록
+        </Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -156,13 +158,17 @@ export default function MarkerRegister() {
         <View style={styles.addressSection}>
           <View style={styles.addressInfo}>
             <PlaceIcon width={20} height={20} />
-            <Text style={styles.addressText}>{address}</Text>
+            <Text style={styles.addressText} allowFontScaling={false}>
+              {address}
+            </Text>
           </View>
         </View>
 
         {/* 템플릿 선택 섹션 */}
         <View style={styles.templateSection}>
-          <Text style={styles.sectionTitle}>템플릿 선택</Text>
+          <Text style={styles.sectionTitle} allowFontScaling={false}>
+            템플릿 선택
+          </Text>
           <View style={styles.templateContainer}>
             {templates.map((templateId) => (
               <TouchableOpacity
@@ -196,13 +202,16 @@ export default function MarkerRegister() {
             router.push("/maru/bookSearch?type=marker");
           }}
         >
-          <Text style={styles.sectionTitle}>도서 선택</Text>
+          <Text style={styles.sectionTitle} allowFontScaling={false}>
+            도서 선택
+          </Text>
           <View style={styles.searchContainer}>
             <Text
               style={[
                 styles.searchPlaceholder,
                 isBookSelected && styles.selectedBookText,
               ]}
+              allowFontScaling={false}
             >
               {bookTitle || "도서 검색해서 추가하기"}
             </Text>
@@ -212,19 +221,24 @@ export default function MarkerRegister() {
 
         {/* 장소 이름 섹션 */}
         <View style={styles.placeSection}>
-          <Text style={styles.sectionTitle}>장소 이름</Text>
+          <Text style={styles.sectionTitle} allowFontScaling={false}>
+            장소 이름
+          </Text>
           <TextInput
             style={styles.textInput}
             placeholder="나만의 장소 이름을 적어주세요. ex) 해변 앞 구불구불길"
             placeholderTextColor="#9D9896"
             value={placeName}
             onChangeText={setPlaceName}
+            allowFontScaling={false}
           />
         </View>
 
         {/* 감상 입력 섹션 */}
         <View style={styles.impressionsSection}>
-          <Text style={styles.sectionTitle}>나의 감상</Text>
+          <Text style={styles.sectionTitle} allowFontScaling={false}>
+            나의 감상
+          </Text>
           <TextInput
             style={styles.impressionsInput}
             placeholder="책을 읽고 느꼈던 생각이나, 장소에 대한 감정을 간단히 적어보세요. 책과 여행의 여운이 더 오래 남을 거예요."
@@ -233,19 +247,24 @@ export default function MarkerRegister() {
             value={impressions}
             onChangeText={setImpressions}
             textAlignVertical="top"
+            allowFontScaling={false}
           />
         </View>
 
         {/* 이미지 추가 섹션 */}
         <View style={styles.photoSection}>
-          <Text style={styles.sectionTitle}>이미지 추가</Text>
+          <Text style={styles.sectionTitle} allowFontScaling={false}>
+            이미지 추가
+          </Text>
           <View style={styles.imagesContainer}>
             <TouchableOpacity
               style={styles.imageUploadButton}
               onPress={pickImage}
             >
               <CameraEnhanceIcon width={24} height={24} color="#9D9896" />
-              <Text style={styles.imageCount}>{selectedImages.length}/10</Text>
+              <Text style={styles.imageCount} allowFontScaling={false}>
+                {selectedImages.length}/10
+              </Text>
             </TouchableOpacity>
             {selectedImages.map((image, index) => (
               <View key={index} style={styles.imageContainer}>
@@ -264,13 +283,15 @@ export default function MarkerRegister() {
         {/* 공개 여부 섹션 */}
         <View style={styles.publicSection}>
           <View style={styles.publicHeader}>
-            <Text style={styles.sectionTitle}>공개 여부</Text>
-            <Text style={styles.publicDescription}>
+            <Text style={styles.sectionTitle} allowFontScaling={false}>
+              공개 여부
+            </Text>
+            <Text style={styles.publicDescription} allowFontScaling={false}>
               공개 설정 시 다른 사용자와 장소를 공유할 수 있어요
             </Text>
           </View>
           <View style={styles.toggleContainer}>
-            <Text style={styles.toggleLabel}>
+            <Text style={styles.toggleLabel} allowFontScaling={false}>
               마커를 다른 유저들에게 공개할래요.
             </Text>
             <Switch
@@ -407,6 +428,7 @@ export default function MarkerRegister() {
               styles.registerButtonText,
               !isFormValid && styles.registerButtonTextDisabled,
             ]}
+            allowFontScaling={false}
           >
             등록하기
           </Text>

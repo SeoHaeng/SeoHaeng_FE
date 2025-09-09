@@ -68,7 +68,13 @@ const DeleteTravelConfirmModal: React.FC<DeleteTravelConfirmModalProps> = ({
 
 const styles = StyleSheet.create({
   overlay: {
-    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
@@ -92,14 +98,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-600",
     color: "#262423",
     marginBottom: 12,
     textAlign: "center",
   },
   message: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "SUIT-500",
     color: "#716C69",
     textAlign: "center",
@@ -119,7 +125,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   cancelButtonText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#716C69",
   },
@@ -133,7 +139,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   confirmButtonText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SUIT-600",
     color: "#FFFFFF",
   },

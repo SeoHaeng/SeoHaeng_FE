@@ -159,7 +159,9 @@ export default function WriteReview() {
               >
                 <BackIcon />
               </TouchableOpacity>
-              <Text style={styles.headerTitle}>후기 작성</Text>
+              <Text style={styles.headerTitle} allowFontScaling={false}>
+                후기 작성
+              </Text>
             </View>
 
             {/* 서점 정보 */}
@@ -175,14 +177,14 @@ export default function WriteReview() {
               )}
               <View style={styles.bookstoreDetails}>
                 <View style={styles.bookstoreHeader}>
-                  <Text style={styles.bookstoreName}>
+                  <Text style={styles.bookstoreName} allowFontScaling={false}>
                     {placeInfo?.name || "장소명"}
                   </Text>
                   <BookstoreBadge placeType={placeInfo?.placeType} />
                 </View>
                 <View style={styles.locationContainer}>
                   <PlaceIcon width={11} height={15} />
-                  <Text style={styles.locationText}>
+                  <Text style={styles.locationText} allowFontScaling={false}>
                     {placeInfo?.address || "주소 정보 없음"}
                   </Text>
                 </View>
@@ -194,13 +196,17 @@ export default function WriteReview() {
               {renderStars()}
               <View style={styles.ratingTooltip}>
                 <View style={styles.tooltipTriangle} />
-                <Text style={styles.tooltipText}>공간에 만족하셨나요?</Text>
+                <Text style={styles.tooltipText} allowFontScaling={false}>
+                  공간에 만족하셨나요?
+                </Text>
               </View>
             </View>
 
             {/* 이미지 업로드 섹션 */}
             <View style={styles.imageSection}>
-              <Text style={styles.sectionTitle}>이미지를 추가해주세요</Text>
+              <Text style={styles.sectionTitle} allowFontScaling={false}>
+                이미지를 추가해주세요
+              </Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -212,7 +218,7 @@ export default function WriteReview() {
                     onPress={pickImage}
                   >
                     <CameraEnhanceIcon />
-                    <Text style={styles.imageCount}>
+                    <Text style={styles.imageCount} allowFontScaling={false}>
                       {selectedImages.length}/10
                     </Text>
                   </TouchableOpacity>
@@ -221,7 +227,12 @@ export default function WriteReview() {
                   <View key={index} style={styles.selectedImageWrapper}>
                     <View style={styles.selectedImageContainer}>
                       <Image source={{ uri }} style={styles.selectedImage} />
-                      <Text style={styles.representativeText}>대표사진</Text>
+                      <Text
+                        style={styles.representativeText}
+                        allowFontScaling={false}
+                      >
+                        대표사진
+                      </Text>
                     </View>
                     <TouchableOpacity
                       style={styles.removeImageButton}
@@ -236,7 +247,9 @@ export default function WriteReview() {
 
             {/* 방문 날짜 섹션 */}
             <View style={styles.dateSection}>
-              <Text style={styles.sectionTitle}>언제 방문했나요?</Text>
+              <Text style={styles.sectionTitle} allowFontScaling={false}>
+                언제 방문했나요?
+              </Text>
               <TouchableOpacity
                 style={styles.dateInput}
                 onPress={() => setIsDatePickerVisible(true)}
@@ -246,6 +259,7 @@ export default function WriteReview() {
                     styles.datePlaceholder,
                     selectedDate && styles.selectedDateText,
                   ]}
+                  allowFontScaling={false}
                 >
                   {formatSelectedDate(selectedDate)}
                 </Text>
@@ -255,7 +269,9 @@ export default function WriteReview() {
 
             {/* 후기 작성 섹션 */}
             <View style={styles.reviewSection}>
-              <Text style={styles.sectionTitle}>후기를 작성해주세요</Text>
+              <Text style={styles.sectionTitle} allowFontScaling={false}>
+                후기를 작성해주세요
+              </Text>
               <View style={styles.textInputContainer}>
                 <TextInput
                   style={[
@@ -270,13 +286,14 @@ export default function WriteReview() {
                   value={reviewText}
                   onChangeText={setReviewText}
                   maxLength={200}
+                  allowFontScaling={false}
                 />
-                <Text style={styles.characterCount}>
+                <Text style={styles.characterCount} allowFontScaling={false}>
                   {reviewText.length}/200 자
                 </Text>
               </View>
               {reviewText.length > 0 && reviewText.length < 10 && (
-                <Text style={styles.errorMessage}>
+                <Text style={styles.errorMessage} allowFontScaling={false}>
                   최소 10자 이상 입력해주세요.
                 </Text>
               )}
@@ -301,7 +318,10 @@ export default function WriteReview() {
               }
               onPress={handleSubmitReview}
             >
-              <Text style={[styles.completeButtonText]}>
+              <Text
+                style={[styles.completeButtonText]}
+                allowFontScaling={false}
+              >
                 {isSubmitting ? "작성 중..." : "작성 완료"}
               </Text>
             </TouchableOpacity>

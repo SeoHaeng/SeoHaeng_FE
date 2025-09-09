@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   travelCardTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: "SUIT-700",
     color: "#262423",
     flex: 1,

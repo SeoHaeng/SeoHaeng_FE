@@ -180,7 +180,7 @@ export default function PlaceDetail() {
     if (!placeDetail) return;
 
     try {
-      const shareUrl = `seohaeng://${placeDetail.placeType.toLowerCase()}/${placeDetail.placeId}`;
+      const shareUrl = `https://seo-haeng-lzhhfydkd-jakes-projects-9747705d.vercel.app/bookstore/${placeDetail.placeId}`;
       const shareMessage = `[서행] ${placeDetail.name}\n${placeDetail.address}\n\n${shareUrl}`;
 
       await Share.share({

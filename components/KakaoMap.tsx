@@ -1,6 +1,6 @@
 import Constants from "expo-constants";
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { WebView } from "react-native-webview";
 import {
   createCulturalMarkerImages,
@@ -56,6 +56,7 @@ const KakaoMap = ({
   const apiKey = Constants.expoConfig?.extra?.KAKAO_MAP_JS_KEY;
   const webViewRef = useRef<WebView>(null);
   const [isWebViewReady, setIsWebViewReady] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
 
   console.log("🎯 KakaoMap 컴포넌트 렌더링:", {
     activeMarkerId,
@@ -78,6 +79,10 @@ const KakaoMap = ({
       if (data.type === "mapReady") {
         // console.log("🗺️ 지도 준비됨 - WebView 준비 상태 설정");
         setIsWebViewReady(true);
+        setMapError(null); // 지도 로드 성공 시 에러 초기화
+      } else if (data.type === "mapError") {
+        console.error("🗺️ 지도 로드 에러:", data.message);
+        setMapError(data.message);
       } else if (data.type === "testResponse") {
         // console.log("✅ WebView 테스트 응답 수신:", data.message);
       } else if (data.type === "markerClicked") {
@@ -524,7 +529,14 @@ const KakaoMap = ({
               }
               
             } else {
-              // console.error('Kakao Maps is not available');
+              console.error('Kakao Maps is not available');
+              // React Native로 에러 메시지 전송
+              if (window.ReactNativeWebView) {
+                window.ReactNativeWebView.postMessage(JSON.stringify({
+                  type: 'mapError',
+                  message: 'Kakao Maps API를 로드할 수 없습니다. API 키를 확인해주세요.'
+                }));
+              }
             }
           };
 
@@ -1234,20 +1246,37 @@ const KakaoMap = ({
 
   return (
     <View style={styles.container}>
-      <WebView
-        ref={webViewRef}
-        originWhitelist={["*"]}
-        source={{ html: htmlContent }}
-        style={styles.webview}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        onMessage={handleMessage}
-        onError={(e) => console.error("WebView error: ", e.nativeEvent)}
-        androidLayerType="hardware"
-        allowsInlineMediaPlayback={true}
-        mediaPlaybackRequiresUserAction={false}
-        onLoad={handleWebViewLoad}
-      />
+      {mapError ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle} allowFontScaling={false}>
+            지도 로드 실패
+          </Text>
+          <Text style={styles.errorMessage} allowFontScaling={false}>
+            {mapError}
+          </Text>
+          <Text style={styles.errorSubMessage} allowFontScaling={false}>
+            잠시 후 다시 시도해주세요.
+          </Text>
+        </View>
+      ) : (
+        <WebView
+          ref={webViewRef}
+          originWhitelist={["*"]}
+          source={{ html: htmlContent }}
+          style={styles.webview}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          onMessage={handleMessage}
+          onError={(e) => {
+            console.error("WebView error: ", e.nativeEvent);
+            setMapError("WebView 로드 중 오류가 발생했습니다.");
+          }}
+          androidLayerType="hardware"
+          allowsInlineMediaPlayback={true}
+          mediaPlaybackRequiresUserAction={false}
+          onLoad={handleWebViewLoad}
+        />
+      )}
     </View>
   );
 };
@@ -1258,6 +1287,34 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F8F8F8",
+    padding: 20,
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontFamily: "SUIT-700",
+    color: "#FF4444",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  errorMessage: {
+    fontSize: 14,
+    fontFamily: "SUIT-500",
+    color: "#666666",
+    marginBottom: 8,
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  errorSubMessage: {
+    fontSize: 12,
+    fontFamily: "SUIT-400",
+    color: "#999999",
+    textAlign: "center",
   },
 });
 

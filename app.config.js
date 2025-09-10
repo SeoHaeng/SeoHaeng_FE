@@ -25,6 +25,19 @@ export default {
       // 폰트 스케일링 비활성화
       allowBackup: false,
       supportsRtl: false,
+      intentFilters: [
+        {
+          action: "VIEW",
+          autoVerify: true,
+          data: [
+            {
+              scheme: "https",
+              host: "seo-haeng-lzhhfydkd-jakes-projects-9747705d.vercel.app",
+            },
+          ],
+          category: ["BROWSABLE", "DEFAULT"],
+        },
+      ],
     },
     web: {
       bundler: "metro",

@@ -1,4 +1,5 @@
 import { useFonts } from "expo-font";
+import * as Linking from "expo-linking";
 import { Slot, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
@@ -36,7 +37,7 @@ try {
   if ((TextInput as any).defaultProps) {
     (TextInput as any).defaultProps.allowFontScaling = false;
   }
-} catch (error) {
+} catch {
   // defaultProps가 없는 경우 무시
   console.log("Font scaling setup completed");
 }
@@ -49,6 +50,71 @@ function RootLayoutNav() {
   const { authState, isLoading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+
+  // 딥링크 처리
+  useEffect(() => {
+    const handleDeepLink = (url: string) => {
+      console.log("🔗 딥링크 수신:", url);
+
+      // URL 파싱
+      const parsedUrl = Linking.parse(url);
+      console.log("📱 파싱된 URL:", parsedUrl);
+
+      // 카카오 로그인 리다이렉트 처리
+      if (parsedUrl.path?.includes("auth/kakao/callback")) {
+        const code = parsedUrl.queryParams?.code;
+        const state = parsedUrl.queryParams?.state;
+
+        if (code) {
+          console.log("✅ 카카오 인증 코드 받음:", code);
+          // 여기서 카카오 로그인 처리 로직 추가
+          // 예: AuthProvider의 로그인 함수 호출
+        }
+        return;
+      }
+
+      // 카카오맵 리다이렉트 처리
+      if (parsedUrl.path?.includes("map/callback")) {
+        const placeId = parsedUrl.queryParams?.placeId;
+        const placeName = parsedUrl.queryParams?.placeName;
+
+        if (placeId) {
+          console.log("📍 카카오맵 장소 정보:", { placeId, placeName });
+          // 여기서 카카오맵 장소 정보 처리 로직 추가
+        }
+        return;
+      }
+
+      // 일반 경로에 따라 라우팅
+      if (parsedUrl.path) {
+        const path = parsedUrl.path.replace(/^\//, ""); // 앞의 슬래시 제거
+
+        if (path === "milestone") {
+          router.push("/(tabs)/milestone");
+        } else if (path === "maru") {
+          router.push("/(tabs)/maru");
+        } else {
+          // 기본적으로 홈으로 이동
+          router.push("/(tabs)");
+        }
+      }
+    };
+
+    // 앱이 실행 중일 때 딥링크 처리
+    const subscription = Linking.addEventListener("url", ({ url }) => {
+      handleDeepLink(url);
+    });
+
+    // 앱이 종료된 상태에서 딥링크로 실행된 경우 처리
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        console.log("🚀 초기 딥링크:", url);
+        handleDeepLink(url);
+      }
+    });
+
+    return () => subscription?.remove();
+  }, [router]);
 
   useEffect(() => {
     if (isLoading) {
@@ -94,6 +160,7 @@ function RootLayoutNav() {
   }, [
     authState.isAuthenticated,
     authState.accessToken,
+    authState.refreshToken,
     segments,
     isLoading,
     router,
@@ -104,7 +171,7 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
+  const [loaded] = useFonts({
     "SUIT-400": require("@/assets/fonts/SUIT-Regular.ttf"),
     "SUIT-500": require("@/assets/fonts/SUIT-Medium.ttf"),
     "SUIT-600": require("@/assets/fonts/SUIT-SemiBold.ttf"),
@@ -114,12 +181,12 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (loaded || error) {
+    if (loaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, error]);
+  }, [loaded]);
 
-  if (!loaded && !error) {
+  if (!loaded) {
     return null;
   }
 

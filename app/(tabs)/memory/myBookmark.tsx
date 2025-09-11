@@ -143,9 +143,9 @@ export default function MyBookmark() {
           />
         }
       >
-        <View style={{ flexDirection: "row", paddingHorizontal: 15 }}>
+        <View style={{ flexDirection: "row", gap: 8, paddingHorizontal: 15 }}>
           {/* 왼쪽 열 */}
-          <View style={{ flex: 1, alignItems: "flex-start", gap: 6 }}>
+          <View style={{ flexDirection: "column", gap: 6 }}>
             {bookmarkList
               .filter((_, index) => index % 2 === 0)
               .map((item) => (
@@ -169,9 +169,7 @@ export default function MyBookmark() {
           </View>
 
           {/* 오른쪽 열 */}
-          <View
-            style={{ flex: 1, alignItems: "flex-end", paddingTop: 30, gap: 6 }}
-          >
+          <View style={{ flexDirection: "column", paddingTop: 30, gap: 6 }}>
             {bookmarkList
               .filter((_, index) => index % 2 === 1)
               .map((item) => (

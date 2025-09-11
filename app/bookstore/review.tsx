@@ -184,11 +184,11 @@ export default function ReviewTab({ reviewData, placeId }: ReviewTabProps) {
               ) : (
                 <View style={styles.userAvatar} />
               )}
-              <Text style={styles.username}>
+              <Text style={styles.username} allowFontScaling={false}>
                 {userInfoMap[review.creatorId]?.nickName ||
                   `사용자 ${review.creatorId}`}
               </Text>
-              <Text style={styles.reviewDate}>
+              <Text style={styles.reviewDate} allowFontScaling={false}>
                 {new Date(review.createdAt)
                   .toLocaleDateString("ko-KR", {
                     year: "numeric",
@@ -207,7 +207,9 @@ export default function ReviewTab({ reviewData, placeId }: ReviewTabProps) {
           </View>
 
           {/* 리뷰 텍스트 */}
-          <Text style={styles.reviewText}>{review.reviewContent}</Text>
+          <Text style={styles.reviewText} allowFontScaling={false}>
+            {review.reviewContent}
+          </Text>
 
           {/* 리뷰 이미지들 */}
           {review.reviewImageList && review.reviewImageList.length > 0 && (
@@ -237,14 +239,18 @@ export default function ReviewTab({ reviewData, placeId }: ReviewTabProps) {
       {/* 무한 스크롤 로딩 인디케이터 */}
       {isLoadingMore && (
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>리뷰를 불러오는 중...</Text>
+          <Text style={styles.loadingText} allowFontScaling={false}>
+            리뷰를 불러오는 중...
+          </Text>
         </View>
       )}
 
       {/* 더 이상 로드할 리뷰가 없음 */}
       {!hasMore && allReviews.length > 0 && (
         <View style={styles.noMoreContainer}>
-          <Text style={styles.noMoreText}>모든 리뷰를 불러왔습니다</Text>
+          <Text style={styles.noMoreText} allowFontScaling={false}>
+            모든 리뷰를 불러왔습니다
+          </Text>
         </View>
       )}
     </ScrollView>

@@ -21,7 +21,9 @@ export default function PhotoTab({ placeImageUrls }: PhotoTabProps) {
             />
           ))
         ) : (
-          <Text style={styles.noPhotos}>사진이 없습니다.</Text>
+          <Text style={styles.noPhotos} allowFontScaling={false}>
+            사진이 없습니다.
+          </Text>
         )}
       </View>
     </View>

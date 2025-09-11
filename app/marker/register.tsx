@@ -116,25 +116,25 @@ export default function MarkerRegister() {
   };
 
   const pickImage = async () => {
-    if (selectedImages.length >= 10) {
-      alert("최대 10장까지 선택할 수 있습니다.");
+    if (selectedImages.length >= 1) {
+      alert("이미지는 1장만 선택할 수 있습니다.");
       return;
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true,
+      allowsMultipleSelection: false,
       quality: 0.8,
     });
 
     if (!result.canceled) {
-      const newImages = result.assets.map((asset) => asset.uri);
-      setSelectedImages((prev) => [...prev, ...newImages].slice(0, 10));
+      const newImage = result.assets[0].uri;
+      setSelectedImages([newImage]);
     }
   };
 
   const removeImage = (index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+    setSelectedImages([]);
   };
 
   return (
@@ -263,7 +263,7 @@ export default function MarkerRegister() {
             >
               <CameraEnhanceIcon width={24} height={24} color="#9D9896" />
               <Text style={styles.imageCount} allowFontScaling={false}>
-                {selectedImages.length}/10
+                {selectedImages.length}/1
               </Text>
             </TouchableOpacity>
             {selectedImages.map((image, index) => (
@@ -379,10 +379,7 @@ export default function MarkerRegister() {
               console.log("");
               console.log(" 이미지 정보:");
               console.log("  - 선택된 이미지 개수:", selectedImages.length);
-              console.log(
-                "  - 메인 이미지 인덱스:",
-                requestData.mainImageIndex,
-              );
+              console.log("  - 메인 이미지 인덱스: 0 (단일 이미지)");
               console.log("================================");
 
               const response = await createReadingSpotAPI(

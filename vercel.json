@@ -16,12 +16,5 @@
       "source": "/bookmark/(.*)",
       "destination": "/bookmark/[id]"
     }
-  ],
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/index.html",
-      "permanent": false
-    }
   ]
 }

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카카오 로그인 처리 중...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #FEE500;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .sub-message {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        <div class="message">카카오 로그인 처리 중...</div>
+        <div class="sub-message">잠시 후 앱으로 이동합니다.</div>
+    </div>
+
+    <script>
+        // URL에서 쿼리 파라미터 추출
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        const error = urlParams.get('error');
+
+        console.log('카카오 콜백 수신:', { code, state, error });
+
+        if (error) {
+            console.error('카카오 로그인 오류:', error);
+            document.querySelector('.message').textContent = '로그인 중 오류가 발생했습니다.';
+            document.querySelector('.sub-message').textContent = '잠시 후 다시 시도해주세요.';
+            return;
+        }
+
+        if (!code) {
+            console.error('카카오 인증 코드가 없습니다.');
+            document.querySelector('.message').textContent = '인증 코드를 받지 못했습니다.';
+            document.querySelector('.sub-message').textContent = '잠시 후 다시 시도해주세요.';
+            return;
+        }
+
+        // 앱으로 리다이렉트 시도
+        function redirectToApp() {
+            const appUrl = `seohaeng://auth/kakao/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || '')}`;
+            
+            console.log('앱으로 리다이렉트 시도:', appUrl);
+            
+            // Android Intent 시도
+            const androidIntent = `intent://auth/kakao/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || '')}#Intent;scheme=seohaeng;package=com.gyurijake.seohaengfe;end`;
+            
+            // 앱이 설치되어 있는지 확인하기 위해 iframe으로 시도
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = appUrl;
+            document.body.appendChild(iframe);
+            
+            // Android Intent도 시도
+            setTimeout(() => {
+                window.location.href = androidIntent;
+            }, 100);
+            
+            // 앱이 열렸는지 확인
+            let appOpened = false;
+            const checkAppOpened = () => {
+                if (document.hidden || document.visibilityState === 'hidden') {
+                    appOpened = true;
+                    console.log('앱이 열렸습니다.');
+                }
+            };
+            
+            document.addEventListener('visibilitychange', checkAppOpened);
+            window.addEventListener('blur', checkAppOpened);
+            
+            // 3초 후에도 앱이 열리지 않으면 플레이스토어로 이동
+            setTimeout(() => {
+                if (!appOpened) {
+                    console.log('앱이 열리지 않음. 플레이스토어로 이동.');
+                    window.location.href = 'https://play.google.com/store/apps/details?id=com.gyurijake.seohaengfe';
+                }
+            }, 3000);
+        }
+
+        // 페이지 로드 후 즉시 리다이렉트 시도
+        setTimeout(redirectToApp, 500);
+    </script>
+</body>
+</html>

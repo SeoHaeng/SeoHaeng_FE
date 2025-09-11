@@ -6,13 +6,34 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "KAKAO_MAP_JS_KEY": "$KAKAO_MAP_JS_KEY",
+        "KAKAO_CLIENT_ID": "$KAKAO_CLIENT_ID",
+        "KAKAO_REDIRECT_URI": "$KAKAO_REDIRECT_URI",
+        "KAKAO_STATE": "$KAKAO_STATE",
+        "ANDROID_PACKAGE_NAME": "com.gyurijake.seohaengfe"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "KAKAO_MAP_JS_KEY": "$KAKAO_MAP_JS_KEY",
+        "KAKAO_CLIENT_ID": "$KAKAO_CLIENT_ID",
+        "KAKAO_REDIRECT_URI": "$KAKAO_REDIRECT_URI",
+        "KAKAO_STATE": "$KAKAO_STATE",
+        "ANDROID_PACKAGE_NAME": "com.gyurijake.seohaengfe"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "KAKAO_MAP_JS_KEY": "$KAKAO_MAP_JS_KEY",
+        "KAKAO_CLIENT_ID": "$KAKAO_CLIENT_ID",
+        "KAKAO_REDIRECT_URI": "$KAKAO_REDIRECT_URI",
+        "KAKAO_STATE": "$KAKAO_STATE",
+        "ANDROID_PACKAGE_NAME": "com.gyurijake.seohaengfe"
+      }
     }
   },
   "submit": {

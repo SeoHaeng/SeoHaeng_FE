@@ -2,14 +2,14 @@ export default {
   expo: {
     name: "서행",
     slug: "SeoHaeng_FE",
-    version: "1.0.1",
+    version: "1.0.2",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "seohaeng",
     userInterfaceStyle: "automatic",
     splash: {
       image: "./assets/images/splash.png",
-      resizeMode: "contain",
+      resizeMode: "stretch",
       backgroundColor: "#FFFFFF",
     },
     assetBundlePatterns: ["**/*"],
@@ -32,7 +32,18 @@ export default {
           data: [
             {
               scheme: "https",
-              host: "seo-haeng-lzhhfydkd-jakes-projects-9747705d.vercel.app",
+              host: "seo-haeng-fe.vercel.app",
+            },
+          ],
+          category: ["BROWSABLE", "DEFAULT"],
+        },
+        {
+          action: "VIEW",
+          data: [
+            {
+              scheme: "market",
+              host: "details",
+              query: "id=com.gyurijake.seohaengfe",
             },
           ],
           category: ["BROWSABLE", "DEFAULT"],

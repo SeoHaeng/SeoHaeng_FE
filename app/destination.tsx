@@ -15,24 +15,24 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 이미지들을 직접 import
-import 강릉 from "@/assets/images/gangwondo/강릉.jpg";
-import 고성 from "@/assets/images/gangwondo/고성.jpg";
-import 동해 from "@/assets/images/gangwondo/동해.jpg";
-import 삼척 from "@/assets/images/gangwondo/삼척.jpg";
-import 속초 from "@/assets/images/gangwondo/속초.jpg";
-import 양구 from "@/assets/images/gangwondo/양구.jpg";
-import 양양 from "@/assets/images/gangwondo/양양.jpg";
-import 영월 from "@/assets/images/gangwondo/영월.jpg";
-import 원주 from "@/assets/images/gangwondo/원주.jpg";
-import 인제 from "@/assets/images/gangwondo/인제.jpg";
-import 정선 from "@/assets/images/gangwondo/정선.jpg";
-import 철원 from "@/assets/images/gangwondo/철원.jpg";
-import 춘천 from "@/assets/images/gangwondo/춘천.jpg";
-import 태백 from "@/assets/images/gangwondo/태백.jpg";
-import 평창 from "@/assets/images/gangwondo/평창.jpg";
-import 홍천 from "@/assets/images/gangwondo/홍천.jpg";
-import 화천 from "@/assets/images/gangwondo/화천.jpg";
-import 횡성 from "@/assets/images/gangwondo/횡성.jpg";
+import 강릉 from "@/assets/images/gangwondo/강릉.png";
+import 고성 from "@/assets/images/gangwondo/고성.png";
+import 동해 from "@/assets/images/gangwondo/동해.png";
+import 삼척 from "@/assets/images/gangwondo/삼척.png";
+import 속초 from "@/assets/images/gangwondo/속초.png";
+import 양구 from "@/assets/images/gangwondo/양구.png";
+import 양양 from "@/assets/images/gangwondo/양양.png";
+import 영월 from "@/assets/images/gangwondo/영월.png";
+import 원주 from "@/assets/images/gangwondo/원주.png";
+import 인제 from "@/assets/images/gangwondo/인제.png";
+import 정선 from "@/assets/images/gangwondo/정선.png";
+import 철원 from "@/assets/images/gangwondo/철원.png";
+import 춘천 from "@/assets/images/gangwondo/춘천.png";
+import 태백 from "@/assets/images/gangwondo/태백.png";
+import 평창 from "@/assets/images/gangwondo/평창.png";
+import 홍천 from "@/assets/images/gangwondo/홍천.png";
+import 화천 from "@/assets/images/gangwondo/화천.png";
+import 횡성 from "@/assets/images/gangwondo/횡성.png";
 
 // destinations 배열 제거 - 각 지역을 직접 코딩
 

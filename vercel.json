@@ -16,5 +16,11 @@
       "source": "/bookmark/(.*)",
       "destination": "/bookmark/[id]"
     }
+  ],
+  "routes": [
+    {
+      "src": "/auth/kakao/callback",
+      "dest": "/auth/kakao/callback.html"
+    }
   ]
 }

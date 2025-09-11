@@ -54,6 +54,24 @@ export default {
       bundler: "metro",
       output: "static",
       favicon: "./assets/images/icon.png",
+      rewrites: [
+        {
+          source: "/bookstore/(.*)",
+          destination: "/bookstore/[id]",
+        },
+        {
+          source: "/travel/(.*)",
+          destination: "/travel/[id]",
+        },
+        {
+          source: "/popularity/(.*)",
+          destination: "/popularity/[id]",
+        },
+        {
+          source: "/bookmark/(.*)",
+          destination: "/bookmark/[id]",
+        },
+      ],
     },
     plugins: ["expo-router", "expo-web-browser"],
     experiments: {

@@ -62,9 +62,13 @@ export default function KakaoLoginWebView({
         {/* 헤더 */}
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>✕</Text>
+            <Text style={styles.closeButtonText} allowFontScaling={false}>
+              ✕
+            </Text>
           </TouchableOpacity>
-          <Text style={styles.title}>카카오 로그인</Text>
+          <Text style={styles.title} allowFontScaling={false}>
+            카카오 로그인
+          </Text>
           <View style={styles.placeholder} />
         </View>
 
@@ -73,7 +77,7 @@ export default function KakaoLoginWebView({
           {isLoading && (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#E60A34" />
-              <Text style={styles.loadingText}>
+              <Text style={styles.loadingText} allowFontScaling={false}>
                 카카오 로그인 페이지를 불러오는 중...
               </Text>
             </View>

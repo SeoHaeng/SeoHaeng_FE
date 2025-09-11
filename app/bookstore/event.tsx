@@ -10,7 +10,7 @@ export default function EventTab({ bookChallengeEvent }: EventTabProps) {
   if (!bookChallengeEvent) {
     return (
       <View style={styles.tabContent}>
-        <Text style={styles.noEventText}>
+        <Text style={styles.noEventText} allowFontScaling={false}>
           진행 중인 북챌린지 이벤트가 없습니다.
         </Text>
       </View>
@@ -19,12 +19,16 @@ export default function EventTab({ bookChallengeEvent }: EventTabProps) {
 
   return (
     <View style={styles.tabContent}>
-      <Text style={styles.tabTitle}>북챌린지 이벤트</Text>
-      <Text style={styles.description}>
+      <Text style={styles.tabTitle} allowFontScaling={false}>
+        북챌린지 이벤트
+      </Text>
+      <Text style={styles.description} allowFontScaling={false}>
         {bookChallengeEvent.eventDescription}
       </Text>
 
-      <Text style={styles.tabTitle}>챌린지 리워드</Text>
+      <Text style={styles.tabTitle} allowFontScaling={false}>
+        챌린지 리워드
+      </Text>
       {bookChallengeEvent.rewardImageUrls &&
       bookChallengeEvent.rewardImageUrls.length > 0 ? (
         <ScrollView
@@ -45,15 +49,21 @@ export default function EventTab({ bookChallengeEvent }: EventTabProps) {
         </ScrollView>
       ) : (
         <View style={styles.noImageContainer}>
-          <Text style={styles.noImageText}>리워드 이미지가 없습니다.</Text>
+          <Text style={styles.noImageText} allowFontScaling={false}>
+            리워드 이미지가 없습니다.
+          </Text>
         </View>
       )}
-      <Text style={styles.description}>
+      <Text style={styles.description} allowFontScaling={false}>
         {bookChallengeEvent.rewardDescription}
       </Text>
 
-      <Text style={styles.tabTitle}>사장님 한 마디</Text>
-      <Text style={styles.description}>{bookChallengeEvent.ownerMessage}</Text>
+      <Text style={styles.tabTitle} allowFontScaling={false}>
+        사장님 한 마디
+      </Text>
+      <Text style={styles.description} allowFontScaling={false}>
+        {bookChallengeEvent.ownerMessage}
+      </Text>
     </View>
   );
 }
@@ -66,14 +76,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "SUIT-700",
     color: "#262423",
-    marginBottom: 15,
+    marginBottom: 12,
   },
   description: {
     fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#262423",
     lineHeight: 20,
-    marginBottom: 50,
+    marginBottom: 40,
   },
   rewardContainer: {
     marginBottom: 15,

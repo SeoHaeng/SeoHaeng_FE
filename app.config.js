@@ -15,6 +15,7 @@ export default {
     assetBundlePatterns: ["**/*"],
     ios: {
       supportsTablet: true,
+      associatedDomains: ["applinks:seo-haeng-fe.vercel.app"],
     },
     android: {
       package: "com.gyurijake.seohaengfe",

@@ -150,7 +150,7 @@ export default function Destination() {
                 source={강릉}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="강릉"
+                key="강릉-1"
               />
               <Text
                 style={[
@@ -175,7 +175,7 @@ export default function Destination() {
                 source={속초}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="속초"
+                key="속초-2"
               />
               <Text
                 style={[
@@ -204,7 +204,7 @@ export default function Destination() {
                 source={춘천}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="춘천"
+                key="춘천-3"
               />
               <Text
                 style={[
@@ -229,7 +229,7 @@ export default function Destination() {
                 source={원주}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="원주"
+                key="원주-4"
               />
               <Text
                 style={[
@@ -258,7 +258,7 @@ export default function Destination() {
                 source={동해}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="동해"
+                key="동해-5"
               />
               <Text
                 style={[
@@ -283,7 +283,7 @@ export default function Destination() {
                 source={태백}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="태백"
+                key="태백-6"
               />
               <Text
                 style={[
@@ -312,7 +312,7 @@ export default function Destination() {
                 source={삼척}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="삼척"
+                key="삼척-7"
               />
               <Text
                 style={[
@@ -337,7 +337,7 @@ export default function Destination() {
                 source={홍천}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="홍천"
+                key="홍천-8"
               />
               <Text
                 style={[
@@ -366,7 +366,7 @@ export default function Destination() {
                 source={횡성}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="횡성"
+                key="횡성-9"
               />
               <Text
                 style={[
@@ -391,7 +391,7 @@ export default function Destination() {
                 source={영월}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="영월"
+                key="영월-10"
               />
               <Text
                 style={[
@@ -420,7 +420,7 @@ export default function Destination() {
                 source={평창}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="평창"
+                key="평창-11"
               />
               <Text
                 style={[
@@ -445,7 +445,7 @@ export default function Destination() {
                 source={정선}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="정선"
+                key="정선-12"
               />
               <Text
                 style={[
@@ -474,7 +474,7 @@ export default function Destination() {
                 source={철원}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="철원"
+                key="철원-13"
               />
               <Text
                 style={[
@@ -499,7 +499,7 @@ export default function Destination() {
                 source={화천}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="화천"
+                key="화천-14"
               />
               <Text
                 style={[
@@ -528,7 +528,7 @@ export default function Destination() {
                 source={양구}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="양구"
+                key="양구-15"
               />
               <Text
                 style={[
@@ -553,7 +553,7 @@ export default function Destination() {
                 source={인제}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="인제"
+                key="인제-16"
               />
               <Text
                 style={[
@@ -582,7 +582,7 @@ export default function Destination() {
                 source={고성}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="고성"
+                key="고성-17"
               />
               <Text
                 style={[
@@ -607,7 +607,7 @@ export default function Destination() {
                 source={양양}
                 style={styles.destinationImage}
                 resizeMode="cover"
-                key="양양"
+                key="양양-18"
               />
               <Text
                 style={[

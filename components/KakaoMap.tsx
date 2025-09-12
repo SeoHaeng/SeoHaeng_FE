@@ -352,12 +352,13 @@ const KakaoMap = ({
   const htmlContent = `
     <!DOCTYPE html>
     <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&libraries=services"></script>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+          <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&libraries=services"></script>
         <style>
-          body { margin: 0; padding: 0; height: 100%; }
-          html { height: 100%; }
+          body { margin: 0; padding: 0; height: 100vh; }
+          html { height: 100vh; }
           #map { width: 100%; height: 100%; }
           
           /* 커스텀 오버레이 스타일 */

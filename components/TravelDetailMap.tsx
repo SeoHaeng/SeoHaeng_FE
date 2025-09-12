@@ -51,7 +51,8 @@ const TravelDetailMap = forwardRef<TravelDetailMapRef, TravelDetailMapProps>(
       <html>
         <head>
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&libraries=services"></script>
+          <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+          <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey || "undefined"}&libraries=services"></script>
           <style>
             body { 
               margin: 0; 
@@ -91,25 +92,40 @@ const TravelDetailMap = forwardRef<TravelDetailMapRef, TravelDetailMapProps>(
           <script>
             let map;
             let markers = [];
+            let isInitialized = false;
             
-            // 카카오맵 SDK 로딩 대기 함수
-            function waitForKakaoMap() {
-              console.log("🔄 카카오맵 SDK 로딩 대기 중...");
-              
-              if (typeof kakao !== 'undefined' && kakao.maps) {
-                console.log("✅ 카카오맵 SDK 로드 완료");
-                initializeMap();
-              } else {
-                console.log("⏳ 카카오맵 SDK 아직 로딩 중, 100ms 후 재시도");
-                setTimeout(waitForKakaoMap, 100);
-              }
-            }
-            
-            // 지도 초기화 함수
             function initializeMap() {
-              console.log("🗺️ 여행 상세 지도 초기화 시작");
+              console.log("맵 초기화 함수 호출됨");
+              console.log("API Key: ${apiKey ? apiKey.substring(0, 10) + "..." : "undefined"}");
+              
+              if (isInitialized) {
+                console.log("이미 초기화됨");
+                return;
+              }
+              
+              if (!window.kakao) {
+                console.log("카카오 API 아직 로드되지 않음, 재시도...");
+                setTimeout(initializeMap, 500);
+                return;
+              }
+              
+              if (!kakao.maps) {
+                console.log("kakao.maps 아직 로드되지 않음, 재시도...");
+                setTimeout(initializeMap, 500);
+                return;
+              }
+              
+              if (!kakao.maps.services) {
+                console.log("kakao.maps.services 아직 로드되지 않음, 재시도...");
+                setTimeout(initializeMap, 500);
+                return;
+              }
+              
+              console.log("kakao 객체들 모두 로드 완료");
               
               try {
+                console.log("🗺️ 여행 상세 지도 초기화 시작");
+                
                 const mapContainer = document.getElementById('map');
                 if (!mapContainer) {
                   console.error("❌ map 컨테이너를 찾을 수 없음");
@@ -129,6 +145,9 @@ const TravelDetailMap = forwardRef<TravelDetailMapRef, TravelDetailMapProps>(
                 
                 map = new kakao.maps.Map(mapContainer, mapOption);
                 console.log("✅ 지도 객체 생성 완료");
+                
+                isInitialized = true;
+                console.log("맵 초기화 완료");
                 
 
                 
@@ -216,11 +235,51 @@ const TravelDetailMap = forwardRef<TravelDetailMapRef, TravelDetailMapProps>(
               }
             }
             
-            // 페이지 로드 시 카카오맵 SDK 로딩 대기
-            window.onload = function() {
-              console.log("🌐 TravelDetailMap WebView 로드 시작");
-              waitForKakaoMap();
-            };
+            // 카카오 API 로드 완료 대기
+            function waitForKakao() {
+              if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
+                console.log("카카오 API 완전히 로드됨");
+                initializeMap();
+              } else {
+                console.log("카카오 API 로딩 대기 중...");
+                setTimeout(waitForKakao, 100);
+              }
+            }
+            
+            // 카카오 API 로드 완료 대기 (추가 안전장치)
+            function waitForKakaoMap() {
+              if (typeof kakao !== 'undefined' && kakao.maps && kakao.maps.services) {
+                console.log("✅ 카카오맵 SDK 로드 완료");
+                initializeMap();
+              } else {
+                console.log("⏳ 카카오맵 SDK 아직 로딩 중, 100ms 후 재시도");
+                setTimeout(waitForKakaoMap, 100);
+              }
+            }
+            
+            // 시작
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', waitForKakao);
+            } else {
+              waitForKakao();
+            }
+            
+            // 추가 안전장치
+            window.addEventListener('load', function() {
+              console.log("윈도우 로드 완료");
+              if (!isInitialized) {
+                setTimeout(waitForKakao, 1000);
+                setTimeout(waitForKakaoMap, 1500);
+              }
+            });
+            
+            // 최종 안전장치
+            setTimeout(function() {
+              if (!isInitialized) {
+                console.log("최종 안전장치 실행");
+                waitForKakaoMap();
+              }
+            }, 3000);
 
             // React Native에서 메시지 받기
             window.addEventListener('message', function(event) {

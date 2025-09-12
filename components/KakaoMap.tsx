@@ -442,10 +442,49 @@ const KakaoMap = ({
             )
           };
           
-          window.onload = function() {
-            // console.log('Kakao Map API Loaded');
-            if (typeof kakao !== 'undefined' && kakao.maps) {
-              // console.log('Kakao Maps is available');
+          let isInitialized = false;
+          
+          function sendLog(message) {
+            const logMessage = {
+              type: 'log',
+              message: message
+            };
+            
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage(JSON.stringify(logMessage));
+            }
+          }
+          
+          function initializeMap() {
+            sendLog("맵 초기화 함수 호출됨");
+            sendLog("API Key: ${apiKey ? apiKey.substring(0, 10) + "..." : "undefined"}");
+            
+            if (isInitialized) {
+              sendLog("이미 초기화됨");
+              return;
+            }
+            
+            if (!window.kakao) {
+              sendLog("카카오 API 아직 로드되지 않음, 재시도...");
+              setTimeout(initializeMap, 500);
+              return;
+            }
+            
+            if (!kakao.maps) {
+              sendLog("kakao.maps 아직 로드되지 않음, 재시도...");
+              setTimeout(initializeMap, 500);
+              return;
+            }
+            
+            if (!kakao.maps.services) {
+              sendLog("kakao.maps.services 아직 로드되지 않음, 재시도...");
+              setTimeout(initializeMap, 500);
+              return;
+            }
+            
+            sendLog("kakao 객체들 모두 로드 완료");
+            
+            try {
               var mapContainer = document.getElementById('map');
               
               var mapOption = {
@@ -453,7 +492,10 @@ const KakaoMap = ({
                 level: 3
               };
               map = new kakao.maps.Map(mapContainer, mapOption);
-
+              
+              isInitialized = true;
+              sendLog("맵 초기화 완료");
+              
               // 내 위치 마커 추가 (예쁜 파란색 원형 마커)
               // userLocation이 있으면 사용, 없으면 기본값 사용
               var myLocationPosition = new kakao.maps.LatLng(
@@ -479,12 +521,8 @@ const KakaoMap = ({
               // 내 위치 마커는 절대 제거되지 않도록 보호
               myLocationMarker.setDraggable(false);
               
-              // console.log('Map and 내 위치 마커 created successfully');
-              
               // 지도 로드 완료 후 이벤트 리스너 등록
               kakao.maps.event.addListener(map, 'tilesloaded', function() {
-                // console.log('🗺️ 지도 타일 로드 완료 - 이벤트 리스너 등록 시작');
-                
                 // 초기 뷰포트 정보 전송
                 updateViewport();
                 
@@ -518,7 +556,6 @@ const KakaoMap = ({
                     }));
                   }
                 });
-               
               });
               
               // React Native로 메시지 전송
@@ -528,8 +565,8 @@ const KakaoMap = ({
                 }));
               }
               
-            } else {
-              console.error('Kakao Maps is not available');
+            } catch (error) {
+              console.error('Kakao Maps 초기화 중 오류:', error);
               // React Native로 에러 메시지 전송
               if (window.ReactNativeWebView) {
                 window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -538,7 +575,33 @@ const KakaoMap = ({
                 }));
               }
             }
-          };
+          }
+
+          // 카카오 API 로드 완료 대기
+          function waitForKakao() {
+            if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
+              sendLog("카카오 API 완전히 로드됨");
+              initializeMap();
+            } else {
+              sendLog("카카오 API 로딩 대기 중...");
+              setTimeout(waitForKakao, 100);
+            }
+          }
+          
+          // 시작
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', waitForKakao);
+          } else {
+            waitForKakao();
+          }
+          
+          // 추가 안전장치
+          window.addEventListener('load', function() {
+            sendLog("윈도우 로드 완료");
+            if (!isInitialized) {
+              setTimeout(waitForKakao, 1000);
+            }
+          });
 
           // React Native에서 보낸 메시지 처리 - document.addEventListener 사용
           // console.log('🗺️ WebView: 메시지 수신 리스너 등록 시작');
@@ -1267,14 +1330,23 @@ const KakaoMap = ({
           javaScriptEnabled={true}
           domStorageEnabled={true}
           onMessage={handleMessage}
-          onError={(e) => {
-            console.error("WebView error: ", e.nativeEvent);
+          onLoad={() => {
+            console.log("WebView 로드 완료");
+          }}
+          onError={(syntheticEvent) => {
+            const { nativeEvent } = syntheticEvent;
+            console.log("WebView 에러:", nativeEvent);
             setMapError("WebView 로드 중 오류가 발생했습니다.");
+          }}
+          onLoadEnd={() => {
+            console.log("WebView 로드 종료");
           }}
           androidLayerType="hardware"
           allowsInlineMediaPlayback={true}
           mediaPlaybackRequiresUserAction={false}
-          onLoad={handleWebViewLoad}
+          mixedContentMode="compatibility"
+          allowsFullscreenVideo={true}
+          startInLoadingState={true}
         />
       )}
     </View>

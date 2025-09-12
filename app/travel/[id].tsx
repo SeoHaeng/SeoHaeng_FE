@@ -50,6 +50,7 @@ interface PlaceInfo {
 export default function TravelDetail() {
   const params = useLocalSearchParams();
   const travelCourseId = params.id as string;
+  const from = params.from as string; // 어디서 왔는지 확인
 
   const [travelDetail, setTravelDetail] = useState<TravelCourseDetail | null>(
     null,
@@ -370,7 +371,20 @@ export default function TravelDetail() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerTop}>
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity
+              onPress={() => {
+                // 어디서 왔는지에 따라 다른 경로로 돌아가기
+                if (from === "home") {
+                  router.push("/(tabs)");
+                } else if (from === "preference") {
+                  router.push("/(tabs)/preference");
+                } else {
+                  // 기본적으로 이전 화면으로 돌아가기
+                  router.back();
+                }
+              }}
+              style={styles.backButton}
+            >
               <BackIcon />
             </TouchableOpacity>
           </View>
@@ -659,6 +673,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 15,
+  },
+  backButton: {
+    paddingRight: 20,
   },
   headerContent: {
     marginBottom: 15,

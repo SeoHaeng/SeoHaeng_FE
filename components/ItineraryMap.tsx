@@ -93,7 +93,7 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
             
             // 카카오맵 SDK 로딩 대기
             function waitForKakaoMap() {
-              if (typeof kakao !== 'undefined' && kakao.maps) {
+              if (typeof kakao !== 'undefined' && kakao.maps && kakao.maps.services) {
                 console.log("✅ 카카오맵 SDK 로드 완료");
                 initializeMap();
               } else {

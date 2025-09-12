@@ -335,7 +335,9 @@ const SearchScreen = () => {
                                 ? "음식점"
                                 : item.placeType === "FESTIVAL"
                                   ? "축제"
-                                  : item.placeType}
+                                  : item.placeType === "BOOKSTORE"
+                                    ? "서점"
+                                    : "장소"}
                           </Text>
                         </View>
                       </View>

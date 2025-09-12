@@ -51,7 +51,8 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
       <html>
         <head>
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&libraries=services"></script>
+          <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+          <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&libraries=services"></script>
           <style>
             body { 
               margin: 0; 
@@ -90,23 +91,50 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
           <script>
             let map;
             let markers = [];
+            let isInitialized = false;
             
-            // 카카오맵 SDK 로딩 대기
-            function waitForKakaoMap() {
-              if (typeof kakao !== 'undefined' && kakao.maps && kakao.maps.services) {
-                console.log("✅ 카카오맵 SDK 로드 완료");
-                initializeMap();
-              } else {
-                console.log("⏳ 카카오맵 SDK 아직 로딩 중, 100ms 후 재시도");
-                setTimeout(waitForKakaoMap, 100);
+            function sendLog(message) {
+              const logMessage = {
+                type: 'log',
+                message: message
+              };
+              
+              if (window.ReactNativeWebView) {
+                window.ReactNativeWebView.postMessage(JSON.stringify(logMessage));
               }
             }
             
-            // 지도 초기화 함수
             function initializeMap() {
-              console.log("🗺️ 여행 일정 지도 초기화 시작");
+              sendLog("맵 초기화 함수 호출됨");
+              sendLog("API Key: ${apiKey ? apiKey.substring(0, 10) + "..." : "undefined"}");
+              
+              if (isInitialized) {
+                sendLog("이미 초기화됨");
+                return;
+              }
+              
+              if (!window.kakao) {
+                sendLog("카카오 API 아직 로드되지 않음, 재시도...");
+                setTimeout(initializeMap, 500);
+                return;
+              }
+              
+              if (!kakao.maps) {
+                sendLog("kakao.maps 아직 로드되지 않음, 재시도...");
+                setTimeout(initializeMap, 500);
+                return;
+              }
+              
+              if (!kakao.maps.services) {
+                sendLog("kakao.maps.services 아직 로드되지 않음, 재시도...");
+                setTimeout(initializeMap, 500);
+                return;
+              }
+              
+              sendLog("kakao 객체들 모두 로드 완료");
               
               try {
+                console.log("🗺️ 여행 일정 지도 초기화 시작");
                 const mapContainer = document.getElementById('map');
                 if (!mapContainer) {
                   console.error("❌ map 컨테이너를 찾을 수 없음");
@@ -126,6 +154,9 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
                 
                 map = new kakao.maps.Map(mapContainer, mapOption);
                 console.log("✅ 지도 객체 생성 완료");
+                
+                isInitialized = true;
+                sendLog("맵 초기화 완료");
 
                 
                 // 여행 장소 마커들 (빨간색) - 일차별로 번호 표시
@@ -213,11 +244,31 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
               }
             }
             
-            // 페이지 로드 시 카카오맵 SDK 로딩 대기
-            window.onload = function() {
-              console.log("🌐 ItineraryMap WebView 로드 시작");
-              waitForKakaoMap();
-            };
+            // 카카오 API 로드 완료 대기
+            function waitForKakao() {
+              if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
+                sendLog("카카오 API 완전히 로드됨");
+                initializeMap();
+              } else {
+                sendLog("카카오 API 로딩 대기 중...");
+                setTimeout(waitForKakao, 100);
+              }
+            }
+            
+            // 시작
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', waitForKakao);
+            } else {
+              waitForKakao();
+            }
+            
+            // 추가 안전장치
+            window.addEventListener('load', function() {
+              sendLog("윈도우 로드 완료");
+              if (!isInitialized) {
+                setTimeout(waitForKakao, 1000);
+              }
+            });
           </script>
         </body>
       </html>
@@ -227,19 +278,28 @@ const ItineraryMap = forwardRef<ItineraryMapRef, ItineraryMapProps>(
     return (
       <WebView
         ref={webViewRef}
+        originWhitelist={["*"]}
         source={{ html: htmlContent }}
         style={{ flex: 1 }}
         onMessage={onMessage}
         javaScriptEnabled={true}
         domStorageEnabled={true}
-        startInLoadingState={true}
-        scalesPageToFit={true}
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={false}
-        bounces={false}
+        onLoad={() => {
+          console.log("WebView 로드 완료");
+        }}
+        onError={(syntheticEvent) => {
+          const { nativeEvent } = syntheticEvent;
+          console.log("WebView 에러:", nativeEvent);
+        }}
+        onLoadEnd={() => {
+          console.log("WebView 로드 종료");
+        }}
+        androidLayerType="hardware"
         allowsInlineMediaPlayback={true}
         mediaPlaybackRequiresUserAction={false}
+        mixedContentMode="compatibility"
+        allowsFullscreenVideo={true}
+        startInLoadingState={true}
       />
     );
   },

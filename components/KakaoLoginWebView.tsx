@@ -30,13 +30,21 @@ export default function KakaoLoginWebView({
   // WebView에서 URL 변경 감지
   const handleNavigationStateChange = (navState: any) => {
     const { url } = navState;
+    const redirectUri = Constants.expoConfig?.extra?.KAKAO_REDIRECT_URI;
+
+    console.log("🔍 WebView URL 변경:", url);
+    console.log("🔍 설정된 리다이렉트 URI:", redirectUri);
 
     // redirect_uri로 리다이렉트되는지 확인
-    if (url.includes("localhost:3000/auth/kakao/callback")) {
+    if (redirectUri && url.includes(redirectUri)) {
       // URL에서 인가 코드 추출
       const urlParams = new URL(url);
       const code = urlParams.searchParams.get("code");
       const state = urlParams.searchParams.get("state");
+
+      console.log("✅ 리다이렉트 URI 매칭됨:", redirectUri);
+      console.log("✅ 추출된 코드:", code);
+      console.log("✅ 추출된 state:", state);
 
       if (code) {
         console.log("✅ 카카오 인가 코드 받음:", code);

@@ -15,24 +15,24 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 이미지들을 직접 import
-import 강릉 from "@/assets/images/gangwondo/강릉.png";
-import 고성 from "@/assets/images/gangwondo/고성.png";
-import 동해 from "@/assets/images/gangwondo/동해.png";
-import 삼척 from "@/assets/images/gangwondo/삼척.png";
-import 속초 from "@/assets/images/gangwondo/속초.png";
-import 양구 from "@/assets/images/gangwondo/양구.png";
-import 양양 from "@/assets/images/gangwondo/양양.png";
-import 영월 from "@/assets/images/gangwondo/영월.png";
-import 원주 from "@/assets/images/gangwondo/원주.png";
-import 인제 from "@/assets/images/gangwondo/인제.png";
-import 정선 from "@/assets/images/gangwondo/정선.png";
-import 철원 from "@/assets/images/gangwondo/철원.png";
-import 춘천 from "@/assets/images/gangwondo/춘천.png";
-import 태백 from "@/assets/images/gangwondo/태백.png";
-import 평창 from "@/assets/images/gangwondo/평창.png";
-import 홍천 from "@/assets/images/gangwondo/홍천.png";
-import 화천 from "@/assets/images/gangwondo/화천.png";
-import 횡성 from "@/assets/images/gangwondo/횡성.png";
+import Cheorwon from "@/assets/images/gangwondo/Cheorwon.png";
+import Chuncheon from "@/assets/images/gangwondo/Chuncheon.png";
+import Donghae from "@/assets/images/gangwondo/Donghae.png";
+import Gangneung from "@/assets/images/gangwondo/Gangneung.png";
+import Goseong from "@/assets/images/gangwondo/Goseong.png";
+import Hoengseong from "@/assets/images/gangwondo/Hoengseong.png";
+import Hongcheon from "@/assets/images/gangwondo/Hongcheon.png";
+import Hwacheon from "@/assets/images/gangwondo/Hwacheon.png";
+import Inje from "@/assets/images/gangwondo/Inje.png";
+import Jeongseon from "@/assets/images/gangwondo/Jeongseon.png";
+import Pyeongchang from "@/assets/images/gangwondo/Pyeongchang.png";
+import Samcheok from "@/assets/images/gangwondo/Samcheok.png";
+import Sokcho from "@/assets/images/gangwondo/Sokcho.png";
+import Taebaek from "@/assets/images/gangwondo/Taebaek.png";
+import Wonju from "@/assets/images/gangwondo/Wonju.png";
+import Yanggu from "@/assets/images/gangwondo/Yanggu.png";
+import Yangyang from "@/assets/images/gangwondo/Yangyang.png";
+import Yeongwol from "@/assets/images/gangwondo/Yeongwol.png";
 
 // destinations 배열 제거 - 각 지역을 직접 코딩
 
@@ -147,7 +147,7 @@ export default function Destination() {
               onPress={() => toggleDestination("1")}
             >
               <Image
-                source={강릉}
+                source={Gangneung}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="강릉-1"
@@ -172,7 +172,7 @@ export default function Destination() {
               onPress={() => toggleDestination("2")}
             >
               <Image
-                source={속초}
+                source={Sokcho}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="속초-2"
@@ -201,7 +201,7 @@ export default function Destination() {
               onPress={() => toggleDestination("3")}
             >
               <Image
-                source={춘천}
+                source={Chuncheon}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="춘천-3"
@@ -226,7 +226,7 @@ export default function Destination() {
               onPress={() => toggleDestination("4")}
             >
               <Image
-                source={원주}
+                source={Wonju}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="원주-4"
@@ -255,7 +255,7 @@ export default function Destination() {
               onPress={() => toggleDestination("5")}
             >
               <Image
-                source={동해}
+                source={Donghae}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="동해-5"
@@ -280,7 +280,7 @@ export default function Destination() {
               onPress={() => toggleDestination("6")}
             >
               <Image
-                source={태백}
+                source={Taebaek}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="태백-6"
@@ -309,7 +309,7 @@ export default function Destination() {
               onPress={() => toggleDestination("7")}
             >
               <Image
-                source={삼척}
+                source={Samcheok}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="삼척-7"
@@ -334,7 +334,7 @@ export default function Destination() {
               onPress={() => toggleDestination("8")}
             >
               <Image
-                source={홍천}
+                source={Hongcheon}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="홍천-8"
@@ -363,7 +363,7 @@ export default function Destination() {
               onPress={() => toggleDestination("9")}
             >
               <Image
-                source={횡성}
+                source={Hoengseong}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="횡성-9"
@@ -388,7 +388,7 @@ export default function Destination() {
               onPress={() => toggleDestination("10")}
             >
               <Image
-                source={영월}
+                source={Yeongwol}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="영월-10"
@@ -417,7 +417,7 @@ export default function Destination() {
               onPress={() => toggleDestination("11")}
             >
               <Image
-                source={평창}
+                source={Pyeongchang}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="평창-11"
@@ -442,7 +442,7 @@ export default function Destination() {
               onPress={() => toggleDestination("12")}
             >
               <Image
-                source={정선}
+                source={Jeongseon}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="정선-12"
@@ -471,7 +471,7 @@ export default function Destination() {
               onPress={() => toggleDestination("13")}
             >
               <Image
-                source={철원}
+                source={Cheorwon}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="철원-13"
@@ -496,7 +496,7 @@ export default function Destination() {
               onPress={() => toggleDestination("14")}
             >
               <Image
-                source={화천}
+                source={Hwacheon}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="화천-14"
@@ -525,7 +525,7 @@ export default function Destination() {
               onPress={() => toggleDestination("15")}
             >
               <Image
-                source={양구}
+                source={Yanggu}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="양구-15"
@@ -550,7 +550,7 @@ export default function Destination() {
               onPress={() => toggleDestination("16")}
             >
               <Image
-                source={인제}
+                source={Inje}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="인제-16"
@@ -579,7 +579,7 @@ export default function Destination() {
               onPress={() => toggleDestination("17")}
             >
               <Image
-                source={고성}
+                source={Goseong}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="고성-17"
@@ -604,7 +604,7 @@ export default function Destination() {
               onPress={() => toggleDestination("18")}
             >
               <Image
-                source={양양}
+                source={Yangyang}
                 style={styles.destinationImage}
                 resizeMode="cover"
                 key="양양-18"
@@ -675,7 +675,7 @@ export default function Destination() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8F4F2",
   },
   header: {
     flexDirection: "column",

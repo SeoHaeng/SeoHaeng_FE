@@ -689,7 +689,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF", // 전체 배경을 하얀색으로
+    backgroundColor: "#F8F4F2",
   },
   scrollView: {
     flex: 1,

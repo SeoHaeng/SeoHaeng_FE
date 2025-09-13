@@ -85,7 +85,7 @@ export default function WelcomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.loginButton} onPress={handleSignIn}>
-            <Text style={styles.buttonText} allowFontScaling={false}>
+            <Text style={styles.loginButtonText} allowFontScaling={false}>
               로그인하기
             </Text>
           </TouchableOpacity>
@@ -98,7 +98,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#F8F4F2",
   },
   content: {
     flex: 1,
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   signUpButton: {
-    backgroundColor: "#424242",
+    backgroundColor: "#302E2D",
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 8,
@@ -153,7 +153,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loginButton: {
-    backgroundColor: "#757575",
+    backgroundColor: "#C5BFBB",
+    borderWidth: 1,
+    borderColor: "#9D9896",
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 8,
@@ -161,9 +163,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#FFFFFF",
-    fontSize: 17,
+    fontSize: 16,
     fontFamily: "SUIT-500",
-    fontWeight: "500", // 폰트 로딩 실패 시 대체
+  },
+  loginButtonText: {
+    color: "#262423",
+    fontSize: 16,
+    fontFamily: "SUIT-500",
   },
 
   linkContainer: {

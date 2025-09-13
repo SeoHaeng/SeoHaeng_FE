@@ -12,8 +12,8 @@ export default function TabsLayout() {
       <StatusBar style="auto" animated />
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#000000",
-          tabBarInactiveTintColor: "#716C69",
+          tabBarActiveTintColor: "#262423",
+          tabBarInactiveTintColor: "#C5BFBB",
           headerShown: false,
           tabBarLabelStyle: {
             fontFamily: "SUIT-500",

@@ -317,13 +317,12 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   continueButtonActive: {
-    backgroundColor: "#4A4A4A",
+    backgroundColor: "#302E2D",
   },
   continueButtonText: {
     color: "#FFFFFF",
-    fontSize: 17,
-    fontWeight: "600",
-    fontFamily: "SUIT-600",
+    fontSize: 16,
+    fontFamily: "SUIT-500",
   },
 });
 

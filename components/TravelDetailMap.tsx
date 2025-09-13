@@ -138,7 +138,7 @@ const TravelDetailMap = forwardRef<TravelDetailMapRef, TravelDetailMapProps>(
                 
                 const mapOption = {
                   center: new kakao.maps.LatLng(${latitude}, ${longitude}),
-                  level: 8
+                  level: 5
                 };
                 
                 console.log("🗺️ 지도 옵션:", mapOption);

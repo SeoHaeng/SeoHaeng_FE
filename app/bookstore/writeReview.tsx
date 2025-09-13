@@ -342,7 +342,7 @@ export default function WriteReview() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8F4F2",
   },
   keyboardAvoidingView: {
     flex: 1,

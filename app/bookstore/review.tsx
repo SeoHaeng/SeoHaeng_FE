@@ -260,6 +260,7 @@ export default function ReviewTab({ reviewData, placeId }: ReviewTabProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#F8F4F2",
   },
   reviewSummary: {
     flexDirection: "row",

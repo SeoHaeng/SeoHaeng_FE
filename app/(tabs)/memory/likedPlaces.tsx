@@ -190,7 +190,7 @@ export default function LikedPlaces() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8F4F2",
     paddingHorizontal: 15,
   },
   countContainer: {

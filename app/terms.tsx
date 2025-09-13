@@ -130,7 +130,7 @@ const TermsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#F8F4F2",
   },
   header: {
     flexDirection: "row",

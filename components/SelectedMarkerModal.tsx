@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "SUIT-700",
     color: "#000000",
-    maxWidth: "75%",
+    maxWidth: "90%",
   },
   modalType: {
     fontSize: 12,

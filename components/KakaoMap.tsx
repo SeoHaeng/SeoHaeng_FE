@@ -635,7 +635,7 @@ const KakaoMap = ({
                 // 지도 중심을 새로운 위치로 강제 이동 (애니메이션 없이)
                 // console.log('🗺️ WebView: 지도 강제 이동 시작');
                 map.setCenter(newPosition);
-                map.setLevel(3);
+                map.setLevel(4);
                 // console.log('🗺️ WebView: 지도 강제 이동 완료');
                 
                 // 내 위치 마커도 새로운 위치로 이동
@@ -671,7 +671,7 @@ const KakaoMap = ({
                 // 지도 중심을 검색 선택 장소로 강제 이동
                 console.log('🔍 WebView: 검색 선택 장소로 지도 이동 시작');
                 map.setCenter(newPosition);
-                map.setLevel(3);
+                map.setLevel(4);
                 console.log('🔍 WebView: 검색 선택 장소로 지도 이동 완료');
                 
                 // 검색 선택 장소에 빨간색 마커 표시
@@ -703,7 +703,7 @@ const KakaoMap = ({
                 // console.log('🗺️ WebView: 지도 중심점 강제 업데이트 메시지 수신:', data);
                 var newCenter = new kakao.maps.LatLng(data.latitude, data.longitude);
                 map.setCenter(newCenter);
-                map.setLevel(3);
+                map.setLevel(4);
                 // console.log('🗺️ WebView: 지도 중심점 강제 업데이트 완료:', newCenter.toString());
                 
                 // 내 위치 마커는 이동시키지 않음 (원래 위치에 유지)
@@ -712,7 +712,7 @@ const KakaoMap = ({
                 // console.log('🗺️ WebView: 지도 중심점 업데이트 메시지 수신:', data);
                 var newCenter = new kakao.maps.LatLng(data.latitude, data.longitude);
                 map.setCenter(newCenter);
-                map.setLevel(3);
+                map.setLevel(4);
                 // console.log('🗺️ WebView: 지도 중심점 업데이트 완료:', newCenter.toString());
                 
                 // 내 위치 마커는 이동시키지 않음 (원래 위치에 유지)

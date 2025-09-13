@@ -64,7 +64,7 @@ export default function WelcomeScreen() {
         {/* 앱 소개 텍스트 */}
         <View style={styles.textContainer}>
           <Text style={styles.subtitle} allowFontScaling={false}>
-            책 타고 떠나는 느린 여행
+            책 타고 떠나는 느린 강원도 여행
           </Text>
           <View style={styles.titleContainer}>
             <Text style={styles.title} allowFontScaling={false}>

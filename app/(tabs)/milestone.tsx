@@ -70,7 +70,7 @@ function Milestone() {
   const [isFilterActive, setIsFilterActive] = useState(false);
   const [activeFilterText, setActiveFilterText] = useState("");
 
-  const [filterType, setFilterType] = useState<string>("가볼만한 관광지"); // 기본 필터 타입 설정
+  const [filterType, setFilterType] = useState<string>("관광지"); // 기본 필터 타입 설정
   const [moveToLocation, setMoveToLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -229,17 +229,13 @@ function Milestone() {
           setFilteredReadingSpotMarkers(readingSpotMarkers);
           // 하단 필터 마커들은 하단 필터 상태에 따라 결정
           setFilteredTouristSpotMarkers(
-            selectedBottomFilters.includes("가볼만한 관광지")
-              ? touristSpotMarkers
-              : [],
+            selectedBottomFilters.includes("관광지") ? touristSpotMarkers : [],
           );
           setFilteredRestaurantMarkers(
-            selectedBottomFilters.includes("주변 맛집")
-              ? restaurantMarkers
-              : [],
+            selectedBottomFilters.includes("음식점") ? restaurantMarkers : [],
           );
           setFilteredFestivalMarkers(
-            selectedBottomFilters.includes("뜨는 축제") ? festivalMarkers : [],
+            selectedBottomFilters.includes("축제") ? festivalMarkers : [],
           );
           console.log("🔍 상단 마커 표시:", {
             독립서점: independentBookstoreMarkers.length,
@@ -271,30 +267,26 @@ function Milestone() {
     setFilteredReadingSpotMarkers(readingSpotMarkers);
     // 하단 필터 마커들은 하단 필터 상태에 따라 결정
     setFilteredTouristSpotMarkers(
-      selectedBottomFilters.includes("가볼만한 관광지")
-        ? touristSpotMarkers
-        : [],
+      selectedBottomFilters.includes("관광지") ? touristSpotMarkers : [],
     );
     setFilteredRestaurantMarkers(
-      selectedBottomFilters.includes("주변 맛집") ? restaurantMarkers : [],
+      selectedBottomFilters.includes("음식점") ? restaurantMarkers : [],
     );
     setFilteredFestivalMarkers(
-      selectedBottomFilters.includes("뜨는 축제") ? festivalMarkers : [],
+      selectedBottomFilters.includes("축제") ? festivalMarkers : [],
     );
     console.log("🌟 모든 마커 표시 완료:", {
       독립서점: independentBookstoreMarkers.length,
       북스테이: bookStayMarkers.length,
       북카페: bookCafeMarkers.length,
       책갈피: readingSpotMarkers.length,
-      관광지: selectedBottomFilters.includes("가볼만한 관광지")
+      관광지: selectedBottomFilters.includes("관광지")
         ? touristSpotMarkers.length
         : 0,
-      맛집: selectedBottomFilters.includes("주변 맛집")
+      맛집: selectedBottomFilters.includes("음식점")
         ? restaurantMarkers.length
         : 0,
-      축제: selectedBottomFilters.includes("뜨는 축제")
-        ? festivalMarkers.length
-        : 0,
+      축제: selectedBottomFilters.includes("축제") ? festivalMarkers.length : 0,
     });
 
     // 필터링된 마커 상세 정보 로그 출력
@@ -332,7 +324,7 @@ function Milestone() {
     );
     console.log(
       "🌟 필터링된 관광지 마커:",
-      selectedBottomFilters.includes("가볼만한 관광지")
+      selectedBottomFilters.includes("관광지")
         ? touristSpotMarkers.map((m) => ({
             name: m.name,
             lat: m.latitude,
@@ -342,7 +334,7 @@ function Milestone() {
     );
     console.log(
       "🌟 필터링된 맛집 마커:",
-      selectedBottomFilters.includes("주변 맛집")
+      selectedBottomFilters.includes("음식점")
         ? restaurantMarkers.map((m) => ({
             name: m.name,
             lat: m.latitude,
@@ -352,7 +344,7 @@ function Milestone() {
     );
     console.log(
       "🌟 필터링된 축제 마커:",
-      selectedBottomFilters.includes("뜨는 축제")
+      selectedBottomFilters.includes("축제")
         ? festivalMarkers.map((m) => ({
             name: m.name,
             lat: m.latitude,
@@ -378,12 +370,11 @@ function Milestone() {
 
       // 활성화된 필터에 해당하는 마커 데이터가 없으면 즉시 로드
       const needsTouristData =
-        activeFilters.includes("가볼만한 관광지") &&
-        touristSpotMarkers.length === 0;
+        activeFilters.includes("관광지") && touristSpotMarkers.length === 0;
       const needsRestaurantData =
-        activeFilters.includes("주변 맛집") && restaurantMarkers.length === 0;
+        activeFilters.includes("음식점") && restaurantMarkers.length === 0;
       const needsFestivalData =
-        activeFilters.includes("뜨는 축제") && festivalMarkers.length === 0;
+        activeFilters.includes("축제") && festivalMarkers.length === 0;
 
       if (needsTouristData || needsRestaurantData || needsFestivalData) {
         console.log("🔍 하단 필터 마커 데이터 즉시 로드 시작");
@@ -451,23 +442,21 @@ function Milestone() {
 
       // 하단 필터에 따라 관광지/맛집/축제 마커 표시/숨김
       setFilteredTouristSpotMarkers(
-        activeFilters.includes("가볼만한 관광지") ? touristSpotMarkers : [],
+        activeFilters.includes("관광지") ? touristSpotMarkers : [],
       );
       setFilteredRestaurantMarkers(
-        activeFilters.includes("주변 맛집") ? restaurantMarkers : [],
+        activeFilters.includes("음식점") ? restaurantMarkers : [],
       );
       setFilteredFestivalMarkers(
-        activeFilters.includes("뜨는 축제") ? festivalMarkers : [],
+        activeFilters.includes("축제") ? festivalMarkers : [],
       );
 
       console.log("🔍 하단 필터 적용 완료:", {
-        관광지: activeFilters.includes("가볼만한 관광지")
+        관광지: activeFilters.includes("관광지")
           ? touristSpotMarkers.length
           : 0,
-        맛집: activeFilters.includes("주변 맛집")
-          ? restaurantMarkers.length
-          : 0,
-        축제: activeFilters.includes("뜨는 축제") ? festivalMarkers.length : 0,
+        맛집: activeFilters.includes("음식점") ? restaurantMarkers.length : 0,
+        축제: activeFilters.includes("축제") ? festivalMarkers.length : 0,
       });
     },
     [touristSpotMarkers, restaurantMarkers, festivalMarkers, viewport],
@@ -481,15 +470,13 @@ function Milestone() {
     if (selectedBottomFilters.length > 0) {
       console.log("🔄 하단 필터 마커 데이터 로드 후 필터 재적용");
       setFilteredTouristSpotMarkers(
-        selectedBottomFilters.includes("가볼만한 관광지")
-          ? touristSpotMarkers
-          : [],
+        selectedBottomFilters.includes("관광지") ? touristSpotMarkers : [],
       );
       setFilteredRestaurantMarkers(
-        selectedBottomFilters.includes("주변 맛집") ? restaurantMarkers : [],
+        selectedBottomFilters.includes("음식점") ? restaurantMarkers : [],
       );
       setFilteredFestivalMarkers(
-        selectedBottomFilters.includes("뜨는 축제") ? festivalMarkers : [],
+        selectedBottomFilters.includes("축제") ? festivalMarkers : [],
       );
     }
   }, [
@@ -534,15 +521,15 @@ function Milestone() {
         apiNames.push("책갈피");
 
         // 하단 필터가 활성화된 경우에만 해당 API 호출
-        if (selectedBottomFilters.includes("가볼만한 관광지")) {
+        if (selectedBottomFilters.includes("관광지")) {
           apiCalls.push(getTouristSpotMarkersAPI(south, west, north, east));
           apiNames.push("관광지");
         }
-        if (selectedBottomFilters.includes("주변 맛집")) {
+        if (selectedBottomFilters.includes("음식점")) {
           apiCalls.push(getRestaurantMarkersAPI(south, west, north, east));
           apiNames.push("맛집");
         }
-        if (selectedBottomFilters.includes("뜨는 축제")) {
+        if (selectedBottomFilters.includes("축제")) {
           apiCalls.push(getFestivalMarkersAPI(south, west, north, east));
           apiNames.push("축제");
         }
@@ -593,7 +580,7 @@ function Milestone() {
         );
 
         // 하단 필터 마커들 처리
-        if (selectedBottomFilters.includes("가볼만한 관광지")) {
+        if (selectedBottomFilters.includes("관광지")) {
           const tourRes = responses[responseIndex++];
           const nextTour = (tourRes || []).filter(
             (m: any) => m.latitude && m.longitude,
@@ -601,7 +588,7 @@ function Milestone() {
           setTouristSpotMarkers(nextTour);
           console.log("🏛️ 관광지 마커 (뷰포트):", nextTour.length, "개");
         }
-        if (selectedBottomFilters.includes("주변 맛집")) {
+        if (selectedBottomFilters.includes("음식점")) {
           const restRes = responses[responseIndex++];
           const nextRest = (restRes || []).filter(
             (m: any) => m.latitude && m.longitude,
@@ -609,7 +596,7 @@ function Milestone() {
           setRestaurantMarkers(nextRest);
           console.log("🍽️ 맛집 마커 (뷰포트):", nextRest.length, "개");
         }
-        if (selectedBottomFilters.includes("뜨는 축제")) {
+        if (selectedBottomFilters.includes("축제")) {
           const festRes = responses[responseIndex++];
           const nextFest = (festRes || []).filter(
             (m: any) => m.latitude && m.longitude,
@@ -668,19 +655,17 @@ function Milestone() {
               setFilteredBookCafeMarkers(bookCafeMarkers);
               setFilteredReadingSpotMarkers(readingSpotMarkers);
               setFilteredTouristSpotMarkers(
-                selectedBottomFilters.includes("가볼만한 관광지")
+                selectedBottomFilters.includes("관광지")
                   ? touristSpotMarkers
                   : [],
               );
               setFilteredRestaurantMarkers(
-                selectedBottomFilters.includes("주변 맛집")
+                selectedBottomFilters.includes("음식점")
                   ? restaurantMarkers
                   : [],
               );
               setFilteredFestivalMarkers(
-                selectedBottomFilters.includes("뜨는 축제")
-                  ? festivalMarkers
-                  : [],
+                selectedBottomFilters.includes("축제") ? festivalMarkers : [],
               );
               break;
           }
@@ -691,17 +676,13 @@ function Milestone() {
           setFilteredBookCafeMarkers(bookCafeMarkers);
           setFilteredReadingSpotMarkers(readingSpotMarkers);
           setFilteredTouristSpotMarkers(
-            selectedBottomFilters.includes("가볼만한 관광지")
-              ? touristSpotMarkers
-              : [],
+            selectedBottomFilters.includes("관광지") ? touristSpotMarkers : [],
           );
           setFilteredRestaurantMarkers(
-            selectedBottomFilters.includes("주변 맛집")
-              ? restaurantMarkers
-              : [],
+            selectedBottomFilters.includes("음식점") ? restaurantMarkers : [],
           );
           setFilteredFestivalMarkers(
-            selectedBottomFilters.includes("뜨는 축제") ? festivalMarkers : [],
+            selectedBottomFilters.includes("축제") ? festivalMarkers : [],
           );
         }
       } catch (error) {
@@ -1077,19 +1058,15 @@ function Milestone() {
             setFilteredBookCafeMarkers(bookCafeMarkers);
             setFilteredReadingSpotMarkers(readingSpotMarkers);
             setFilteredTouristSpotMarkers(
-              selectedBottomFilters.includes("가볼만한 관광지")
+              selectedBottomFilters.includes("관광지")
                 ? touristSpotMarkers
                 : [],
             );
             setFilteredRestaurantMarkers(
-              selectedBottomFilters.includes("주변 맛집")
-                ? restaurantMarkers
-                : [],
+              selectedBottomFilters.includes("음식점") ? restaurantMarkers : [],
             );
             setFilteredFestivalMarkers(
-              selectedBottomFilters.includes("뜨는 축제")
-                ? festivalMarkers
-                : [],
+              selectedBottomFilters.includes("축제") ? festivalMarkers : [],
             );
             break;
         }
@@ -1100,15 +1077,13 @@ function Milestone() {
         setFilteredBookCafeMarkers(bookCafeMarkers);
         setFilteredReadingSpotMarkers(readingSpotMarkers);
         setFilteredTouristSpotMarkers(
-          selectedBottomFilters.includes("가볼만한 관광지")
-            ? touristSpotMarkers
-            : [],
+          selectedBottomFilters.includes("관광지") ? touristSpotMarkers : [],
         );
         setFilteredRestaurantMarkers(
-          selectedBottomFilters.includes("주변 맛집") ? restaurantMarkers : [],
+          selectedBottomFilters.includes("음식점") ? restaurantMarkers : [],
         );
         setFilteredFestivalMarkers(
-          selectedBottomFilters.includes("뜨는 축제") ? festivalMarkers : [],
+          selectedBottomFilters.includes("축제") ? festivalMarkers : [],
         );
       }
 
@@ -1622,7 +1597,7 @@ function Milestone() {
               if (isFilterActive) {
                 setIsFilterActive(false);
                 setActiveFilterText("");
-                setFilterType("가볼만한 관광지"); // 필터 타입 초기화 (기본값으로 복원)
+                setFilterType("관광지"); // 필터 타입 초기화 (기본값으로 복원)
                 showAllMarkers(); // 모든 마커 표시
               }
             }}
@@ -1889,11 +1864,11 @@ function Milestone() {
           <TouchableOpacity
             style={[
               styles.bottomFilterButton,
-              selectedBottomFilters.includes("주변 맛집") &&
+              selectedBottomFilters.includes("음식점") &&
                 styles.selectedFilterButton,
             ]}
             onPress={() => {
-              const filter = "주변 맛집";
+              const filter = "음식점";
               const newFilters = selectedBottomFilters.includes(filter)
                 ? selectedBottomFilters.filter((f) => f !== filter) // 이미 선택된 경우 제거
                 : [...selectedBottomFilters, filter]; // 선택되지 않은 경우 추가
@@ -1907,30 +1882,28 @@ function Milestone() {
             <RestaurantIcon
               style={styles.bottomFilterIcon}
               color={
-                selectedBottomFilters.includes("주변 맛집")
-                  ? "#FFFFFF"
-                  : "#9D9896"
+                selectedBottomFilters.includes("음식점") ? "#FFFFFF" : "#9D9896"
               }
             />
             <Text
               style={[
                 styles.bottomFilterText,
-                selectedBottomFilters.includes("주변 맛집") &&
+                selectedBottomFilters.includes("음식점") &&
                   styles.selectedFilterText,
               ]}
               allowFontScaling={false}
             >
-              주변 맛집
+              음식점
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.bottomFilterButton,
-              selectedBottomFilters.includes("가볼만한 관광지") &&
+              selectedBottomFilters.includes("관광지") &&
                 styles.selectedFilterButton,
             ]}
             onPress={() => {
-              const filter = "가볼만한 관광지";
+              const filter = "관광지";
               const newFilters = selectedBottomFilters.includes(filter)
                 ? selectedBottomFilters.filter((f) => f !== filter) // 이미 선택된 경우 제거
                 : [...selectedBottomFilters, filter]; // 선택되지 않은 경우 추가
@@ -1944,30 +1917,28 @@ function Milestone() {
             <TouristSpotIcon
               style={styles.bottomFilterIcon}
               color={
-                selectedBottomFilters.includes("가볼만한 관광지")
-                  ? "#FFFFFF"
-                  : "#9D9896"
+                selectedBottomFilters.includes("관광지") ? "#FFFFFF" : "#9D9896"
               }
             />
             <Text
               style={[
                 styles.bottomFilterText,
-                selectedBottomFilters.includes("가볼만한 관광지") &&
+                selectedBottomFilters.includes("관광지") &&
                   styles.selectedFilterText,
               ]}
               allowFontScaling={false}
             >
-              가볼만한 관광지
+              관광지
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.bottomFilterButton,
-              selectedBottomFilters.includes("뜨는 축제") &&
+              selectedBottomFilters.includes("축제") &&
                 styles.selectedFilterButton,
             ]}
             onPress={() => {
-              const filter = "뜨는 축제";
+              const filter = "축제";
               const newFilters = selectedBottomFilters.includes(filter)
                 ? selectedBottomFilters.filter((f) => f !== filter) // 이미 선택된 경우 제거
                 : [...selectedBottomFilters, filter]; // 선택되지 않은 경우 추가
@@ -1981,20 +1952,18 @@ function Milestone() {
             <HotPlaceIcon
               style={styles.bottomFilterIcon}
               color={
-                selectedBottomFilters.includes("뜨는 축제")
-                  ? "#FFFFFF"
-                  : "#9D9896"
+                selectedBottomFilters.includes("축제") ? "#FFFFFF" : "#9D9896"
               }
             />
             <Text
               style={[
                 styles.bottomFilterText,
-                selectedBottomFilters.includes("뜨는 축제") &&
+                selectedBottomFilters.includes("축제") &&
                   styles.selectedFilterText,
               ]}
               allowFontScaling={false}
             >
-              뜨는 축제
+              축제
             </Text>
           </TouchableOpacity>
         </View>

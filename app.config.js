@@ -8,7 +8,7 @@ export default {
     scheme: "seohaeng",
     userInterfaceStyle: "automatic",
     splash: {
-      image: "./assets/images/splash.png",
+      image: "./assets/images/illu.png",
       resizeMode: "contain",
       backgroundColor: "#302E2D",
     },

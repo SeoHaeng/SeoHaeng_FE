@@ -466,7 +466,7 @@ export default function PlaceDetail() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8F4F2",
   },
   scrollView: {
     flex: 1,

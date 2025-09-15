@@ -759,7 +759,7 @@ const styles = StyleSheet.create({
     color: "#EEE9E6",
   },
   middleSection: {
-    backgroundColor: "#FFFFFF", // 중간 섹션 하얀 배경
+    backgroundColor: "#F8F4F2", // 중간 섹션 하얀 배경
     paddingHorizontal: 20,
     paddingVertical: 25,
     paddingBottom: 10,
@@ -828,7 +828,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   bottomSection: {
-    backgroundColor: "#FFFFFF", // 하단 섹션 하얀 배경
+    backgroundColor: "#F8F4F2", // 하단 섹션 하얀 배경
     paddingVertical: 25,
     marginTop: 0, // 상단 여백 제거
   },
@@ -897,7 +897,7 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   recommendationSection: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8F4F2",
     paddingHorizontal: 20,
     paddingVertical: 25,
     paddingBottom: 40,

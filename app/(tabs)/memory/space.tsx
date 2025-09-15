@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   subTabContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8F4F2",
     paddingHorizontal: 20,
     paddingVertical: 5,
   },

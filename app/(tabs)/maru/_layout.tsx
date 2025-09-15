@@ -65,14 +65,14 @@ function CustomHeader() {
 export default function MaruLayout() {
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: "#FFFFFF" }}
+      style={{ flex: 1, backgroundColor: "#F8F4F2" }}
       edges={["top"]}
     >
       <CustomHeader />
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: "#FFFFFF" },
+          contentStyle: { backgroundColor: "#F8F4F2" },
           animation: "none",
         }}
       >
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8F4F2",
     paddingTop: 10,
     paddingHorizontal: 10,
   },

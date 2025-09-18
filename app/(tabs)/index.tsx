@@ -909,7 +909,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   recommendationCard: {
-    backgroundColor: "#F8F4F2",
+    backgroundColor: "#EEE9E6",
     borderRadius: 12,
     padding: 20,
   },

@@ -199,9 +199,11 @@ export default function Plan() {
       clearViewport(); // 지도 뷰포트 초기화
       clearUserLocation(); // 사용자 위치 초기화
 
-      // 선택된 날짜 범위를 전역으로 저장
+      // 선택된 날짜 범위를 전역으로 저장 (+1일 추가하여 저장)
       const startDate = new Date(selectedStartDate);
+      startDate.setDate(startDate.getDate() + 1);
       const endDate = new Date(selectedEndDate);
+      endDate.setDate(endDate.getDate() + 1);
 
       // 날짜 범위 내의 모든 날짜를 전역 상태에 저장
       const currentDate = new Date(startDate);

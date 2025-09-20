@@ -592,6 +592,7 @@ const styles = StyleSheet.create({
     fontFamily: "SUIT-400",
     color: "#262423",
     paddingVertical: 10,
+    paddingBottom: 5,
   },
   searchButton: {
     marginLeft: 10,
@@ -742,6 +743,7 @@ const styles = StyleSheet.create({
   likedPlacesSection: {
     width: "100%",
     paddingBottom: 50,
+    paddingTop: 15,
   },
   sectionTitle: {
     fontSize: 14,

@@ -243,8 +243,6 @@ export default function Plan() {
               router.push("/(tabs)");
             } else if (fromPreference) {
               router.push("/(tabs)/preference");
-            } else {
-              router.push("/(tabs)/milestone");
             }
           }}
         >

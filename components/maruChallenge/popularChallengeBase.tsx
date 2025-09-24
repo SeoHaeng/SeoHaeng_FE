@@ -1,5 +1,5 @@
 // components/challenge/PopularChallengeBase.tsx
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export interface PopularChallengeProps {
   id: number;
@@ -32,12 +32,7 @@ export default function PopularChallengeBase({
       onPress={onPress}
       style={[styles.container, isTotal && styles.totalContainer]}
     >
-      {!isTotal && (
-        <Image
-          source={require("@/assets/images/인기챌린지 사진.png")}
-          style={styles.profileImage}
-        />
-      )}
+      {!isTotal && <View style={styles.profileImage} />}
 
       <View style={styles.contentContainer}>
         <View style={styles.userInfoContainer}>
@@ -45,47 +40,42 @@ export default function PopularChallengeBase({
             style={{ flexDirection: "column", justifyContent: "space-between" }}
           >
             <View style={[styles.userInfo, isTotal && styles.userInfoTotal]}>
-              {isTotal && (
-                <Image
-                  source={require("@/assets/images/인기챌린지 사진.png")}
-                  style={styles.totalProfileImage}
-                />
-              )}
+              {isTotal && <View style={styles.totalProfileImage} />}
               <View style={styles.userHeader}>
-                <Text style={styles.username}>{userName}</Text>
-                <Text style={styles.timeStamp}>{date}일 전</Text>
+                <Text style={styles.username} allowFontScaling={false}>
+                  {userName}
+                </Text>
+                <Text style={styles.timeStamp} allowFontScaling={false}>
+                  {date}일 전
+                </Text>
               </View>
             </View>
-            <Text style={styles.description}>{text}</Text>
+            <Text style={styles.description} allowFontScaling={false}>
+              {text}
+            </Text>
           </View>
-          <Image
-            source={require("@/assets/images/인기챌린지 책.png")}
-            style={styles.bookImage}
-          />
+          <View style={styles.bookImage} />
         </View>
 
         <View style={styles.bookInfoContainer}>
           <View style={styles.bookDetails}>
-            <Image
-              source={require("@/assets/images/물고기는 존재하지 않는다.png")}
-            />
+            <View style={styles.receivedBookImage} />
             <View style={styles.bookTextContainer}>
-              <Text style={styles.bookTitle}>{bookName}</Text>
-              <Text style={styles.bookAuthor}>{bookAuthor}</Text>
+              <Text style={styles.bookTitle} allowFontScaling={false}>
+                {bookName}
+              </Text>
+              <Text style={styles.bookAuthor} allowFontScaling={false}>
+                {bookAuthor}
+              </Text>
               <View style={styles.tagContainer}>
                 <View style={styles.yearTag}>
-                  <Text style={styles.tagText}>{year}</Text>
-                </View>
-                <View style={styles.scrapButton}>
-                  <Image source={require("@/assets/images/scrap.png")} />
+                  <Text style={styles.tagText} allowFontScaling={false}>
+                    {year}
+                  </Text>
                 </View>
               </View>
             </View>
           </View>
-          <Image
-            source={require("@/assets/images/three_dote.png")}
-            style={styles.menuIcon}
-          />
         </View>
       </View>
     </TouchableOpacity>
@@ -115,10 +105,14 @@ const styles = StyleSheet.create({
     left: 15,
     width: 60,
     height: 60,
+    borderRadius: 30,
+    backgroundColor: "#C5BFBB",
   },
   totalProfileImage: {
     width: 43,
     height: 43,
+    borderRadius: 21.5,
+    backgroundColor: "#C5BFBB",
   },
   contentContainer: {
     flexDirection: "column",
@@ -144,16 +138,16 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   username: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
   },
   timeStamp: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
   description: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#716C69",
     width: 190,
@@ -162,6 +156,15 @@ const styles = StyleSheet.create({
   bookImage: {
     width: 87,
     height: 87,
+    backgroundColor: "#C5BFBB",
+    borderRadius: 5,
+  },
+  receivedBookImage: {
+    width: 50,
+    height: 70,
+    borderRadius: 3,
+    marginRight: 10,
+    backgroundColor: "#C5BFBB",
   },
   bookInfoContainer: {
     width: "100%",
@@ -184,11 +187,11 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   bookTitle: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
   },
   bookAuthor: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -215,7 +218,7 @@ const styles = StyleSheet.create({
   tagText: {
     color: "white",
     fontFamily: "SUIT-500",
-    fontSize: 11,
+    fontSize: 12,
   },
   menuIcon: {
     margin: 5,

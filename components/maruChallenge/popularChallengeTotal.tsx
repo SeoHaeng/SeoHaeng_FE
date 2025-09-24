@@ -5,10 +5,13 @@ interface PopularChallengeItemProps {
   date: string;
   text: string;
   imageSource?: any;
-  bookImageSource?: any;
+  bookImageSource?: string;
+  receivedBookImage?: string;
+  profileImageUrl?: string;
   bookName: string;
   bookAuthor: string;
   year: string;
+  likedByMe?: boolean;
   onPress?: () => void;
 }
 
@@ -16,9 +19,13 @@ export default function PopularChallengeTotal({
   userName,
   date,
   text,
+  bookImageSource,
+  receivedBookImage,
+  profileImageUrl,
   bookName,
   bookAuthor,
   year,
+  likedByMe,
   onPress,
 }: PopularChallengeItemProps) {
   return (
@@ -34,45 +41,59 @@ export default function PopularChallengeTotal({
             >
               <View style={styles.userInfo}>
                 <Image
-                  source={require("@/assets/images/인기챌린지 사진.png")}
+                  source={{ uri: profileImageUrl }}
                   style={styles.profileImage}
                 />
                 <View style={styles.userHeader}>
-                  <Text style={styles.username}>{userName}</Text>
-                  <Text style={styles.timeStamp}>{date}일 전</Text>
+                  <Text style={styles.username} allowFontScaling={false}>
+                    {userName}
+                  </Text>
+                  <Text style={styles.timeStamp} allowFontScaling={false}>
+                    {date}
+                  </Text>
                 </View>
               </View>
 
-              <Text style={styles.description}>{text}</Text>
+              <Text style={styles.description} allowFontScaling={false}>
+                {text.length > 40 ? `${text.slice(0, 40)}...` : text}
+              </Text>
             </View>
-            <Image
-              source={require("@/assets/images/인기챌린지 책.png")}
-              style={styles.bookImage}
-            />
+            {bookImageSource ? (
+              <Image
+                source={{ uri: bookImageSource }}
+                style={styles.bookImage}
+              />
+            ) : (
+              <View style={styles.bookImage} />
+            )}
           </View>
 
           <View style={styles.bookInfoContainer}>
             <View style={styles.bookDetails}>
-              <Image
-                source={require("@/assets/images/물고기는 존재하지 않는다.png")}
-              />
+              {receivedBookImage ? (
+                <Image
+                  source={{ uri: receivedBookImage }}
+                  style={styles.receivedBookImage}
+                />
+              ) : (
+                <View style={styles.receivedBookImage} />
+              )}
               <View style={styles.bookTextContainer}>
-                <Text style={styles.bookTitle}>{bookName}</Text>
-                <Text style={styles.bookAuthor}>{bookAuthor}</Text>
+                <Text style={styles.bookTitle} allowFontScaling={false}>
+                  {bookName}
+                </Text>
+                <Text style={styles.bookAuthor} allowFontScaling={false}>
+                  {bookAuthor}
+                </Text>
                 <View style={styles.tagContainer}>
                   <View style={styles.yearTag}>
-                    <Text style={styles.tagText}>{year}</Text>
-                  </View>
-                  <View style={styles.scrapButton}>
-                    <Image source={require("@/assets/images/scrap.png")} />
+                    <Text style={styles.tagText} allowFontScaling={false}>
+                      {year}
+                    </Text>
                   </View>
                 </View>
               </View>
             </View>
-            <Image
-              source={require("@/assets/images/three_dote.png")}
-              style={styles.menuIcon}
-            />
           </View>
         </View>
       </View>
@@ -88,7 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "#DBD6D3",
-    padding: 20,
+    padding: 17,
     position: "relative",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -96,6 +117,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 43,
     height: 43,
+    borderRadius: 50,
   },
   contentContainer: {
     flexDirection: "column",
@@ -113,20 +135,19 @@ const styles = StyleSheet.create({
   },
   userHeader: {
     flexDirection: "column",
-    alignItems: "center",
     gap: 5,
   },
   username: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
   },
   timeStamp: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
   description: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#716C69",
     width: 190,
@@ -135,6 +156,14 @@ const styles = StyleSheet.create({
   bookImage: {
     width: 87,
     height: 87,
+    borderRadius: 5,
+    backgroundColor: "#C5BFBB",
+  },
+  receivedBookImage: {
+    width: 50,
+    height: 70,
+    borderRadius: 3,
+    marginRight: 10,
   },
   bookInfoContainer: {
     width: "100%",
@@ -157,11 +186,11 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   bookTitle: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
   },
   bookAuthor: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -188,7 +217,7 @@ const styles = StyleSheet.create({
   tagText: {
     color: "white",
     fontFamily: "SUIT-500",
-    fontSize: 11,
+    fontSize: 12,
   },
   menuIcon: {
     margin: 5,

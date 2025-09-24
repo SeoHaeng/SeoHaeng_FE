@@ -1,9 +1,20 @@
 // app/popularity/[id].tsx
+import BackIcon from "@/components/icons/BackIcon";
+import FilledHeartIcon from "@/components/icons/FilledHeartIcon";
+import PlaceIcon from "@/components/icons/PlaceIcon";
 import ChallengeComment from "@/components/maruChallenge/detail/comment";
 import GiftBook from "@/components/maruChallenge/detail/giftBook";
-import { useFocusEffect, useRouter } from "expo-router";
+import {
+  createBookChallengeCommentAPI,
+  getBookChallengeCommentListAPI,
+  getBookChallengeDetailAPI,
+  getUserByIdAPI,
+  toggleBookChallengeLikeAPI,
+} from "@/types/api";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
+  Dimensions,
   Image,
   Keyboard,
   Platform,
@@ -19,10 +30,33 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
+// 날짜를 "X일 전" 형식으로 변환하는 함수
+const formatDateToDaysAgo = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffHours = diffTime / (1000 * 60 * 60);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffHours < 1) return "방금 전";
+  if (diffHours < 24) return `${Math.floor(diffHours)}시간 전`;
+  if (diffDays === 1) return "어제";
+  return `${diffDays}일 전`;
+};
+
 export default function ChallengeDetail() {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [challengeDetail, setChallengeDetail] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<any>(null);
+  const [commentList, setCommentList] = useState<any[]>([]);
+  const [totalComments, setTotalComments] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [commentText, setCommentText] = useState("");
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { id } = useLocalSearchParams();
 
   // 네비게이션 스택 안정화를 위한 focus effect
   useFocusEffect(
@@ -33,6 +67,44 @@ export default function ChallengeDetail() {
       };
     }, []),
   );
+
+  // 북챌린지 상세 정보 조회
+  useEffect(() => {
+    const fetchChallengeDetail = async () => {
+      if (!id) return;
+
+      try {
+        setIsLoading(true);
+        const response = await getBookChallengeDetailAPI(Number(id));
+        if (response.isSuccess) {
+          setChallengeDetail(response.result);
+
+          // 작성자 정보 조회
+          const userResponse = await getUserByIdAPI(response.result.creatorId);
+          if (userResponse.isSuccess) {
+            setUserInfo(userResponse.result);
+          }
+
+          // 댓글 목록 조회
+          const commentResponse = await getBookChallengeCommentListAPI(
+            Number(id),
+            1,
+            10,
+          );
+          if (commentResponse.isSuccess) {
+            setCommentList(commentResponse.result.getBookChallengeCommentList);
+            setTotalComments(commentResponse.result.totalElements);
+          }
+        }
+      } catch (error) {
+        console.error("북챌린지 상세 조회 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchChallengeDetail();
+  }, [id]);
 
   useEffect(() => {
     const showListener = Keyboard.addListener(
@@ -53,11 +125,66 @@ export default function ChallengeDetail() {
       hideListener.remove();
     };
   }, []);
+
+  // 좋아요 토글 함수
+  const toggleLike = async () => {
+    if (!id) return;
+
+    try {
+      const response = await toggleBookChallengeLikeAPI(Number(id));
+
+      if (response.isSuccess) {
+        // 좋아요 상태 토글
+        setChallengeDetail((prev: any) => ({
+          ...prev,
+          likedByMe: !prev?.likedByMe,
+          likes: response.result.nowLikeCount,
+        }));
+      }
+    } catch (error) {
+      console.error("좋아요 토글 실패:", error);
+    }
+  };
+
+  // 댓글 등록 함수
+  const submitComment = async () => {
+    if (!commentText.trim() || !id) return;
+
+    try {
+      setIsSubmittingComment(true);
+      const response = await createBookChallengeCommentAPI(
+        Number(id),
+        commentText.trim(),
+      );
+
+      if (response.isSuccess) {
+        // 댓글 등록 성공 시 입력창 초기화
+        setCommentText("");
+
+        // 댓글 목록 새로고침
+        const commentResponse = await getBookChallengeCommentListAPI(
+          Number(id),
+          1,
+          10,
+        );
+        if (commentResponse.isSuccess) {
+          setCommentList(commentResponse.result.getBookChallengeCommentList);
+          setTotalComments(commentResponse.result.totalElements);
+        }
+      }
+    } catch (error) {
+      console.error("댓글 등록 실패:", error);
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
+
   return (
     <SafeAreaView
       style={{
         flex: 1,
         position: "relative",
+        backgroundColor: "#FFFFFF",
       }}
     >
       {/*  <KeyboardAvoidingView
@@ -81,14 +208,57 @@ export default function ChallengeDetail() {
               router.push("/popularity");
             }
           }}
-          style={{ position: "absolute", top: 20, left: 20, zIndex: 1 }}
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 1,
+            width: 44,
+            height: 44,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 10,
+          }}
         >
-          <Image source={require("@/assets/images/BackWhite.png")} />
+          <BackIcon color="#FFFFFF" />
         </TouchableOpacity>
-        <Image
-          source={require("@/assets/images/인기챌린지 책.png")}
-          style={{ width: 404, height: 404 }}
-        />
+        <View style={styles.imageContainer}>
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={(event) => {
+              const index = Math.round(
+                event.nativeEvent.contentOffset.x /
+                  Dimensions.get("window").width,
+              );
+              setCurrentImageIndex(index);
+            }}
+            style={styles.imageScrollView}
+          >
+            {challengeDetail?.proofImageUrls?.map(
+              (imageUrl: string, index: number) => (
+                <Image
+                  key={index}
+                  source={{ uri: imageUrl }}
+                  style={styles.challengeImage}
+                  resizeMode="cover"
+                />
+              ),
+            )}
+          </ScrollView>
+
+          {/* 이미지 개수 표시 */}
+          {challengeDetail?.proofImageUrls &&
+            challengeDetail.proofImageUrls.length > 1 && (
+              <View style={styles.imageCounter}>
+                <Text style={styles.imageCounterText} allowFontScaling={false}>
+                  {currentImageIndex + 1} /{" "}
+                  {challengeDetail.proofImageUrls.length}
+                </Text>
+              </View>
+            )}
+        </View>
         <View
           style={{
             padding: 20,
@@ -96,37 +266,69 @@ export default function ChallengeDetail() {
             borderBottomWidth: 7,
           }}
         >
-          <View style={styles.userInfo}>
-            <Image
-              source={require("@/assets/images/인기챌린지 사진.png")}
-              style={styles.profileImage}
-            />
-            <View style={styles.userHeader}>
-              <Text style={styles.username}>유딘딘</Text>
-              <Text style={styles.timeStamp}>1일 전</Text>
+          {userInfo && (
+            <View style={styles.userInfo}>
+              <Image
+                source={{
+                  uri:
+                    userInfo.profileImageUrl ||
+                    "https://via.placeholder.com/40x40",
+                }}
+                style={styles.profileImage}
+              />
+              <View style={styles.userHeader}>
+                <Text style={styles.username} allowFontScaling={false}>
+                  {userInfo.nickName || "사용자"}
+                </Text>
+                <Text style={styles.timeStamp} allowFontScaling={false}>
+                  {challengeDetail?.createdAt
+                    ? formatDateToDaysAgo(challengeDetail.createdAt)
+                    : ""}
+                </Text>
+              </View>
             </View>
+          )}
+          {/* 서점 정보 */}
+          <View style={styles.bookstoreInfo}>
+            <PlaceIcon />
+            <Text style={styles.bookstoreName} allowFontScaling={false}>
+              {challengeDetail?.bookStoreName || "서점명 없음"}
+            </Text>
           </View>
-          <Text style={styles.description}>
-            대박 이 책을 받을 줄은 몰랐어요 잘 읽겠습니다 강릉 여행와서 기분이
-            너무 좋네요
+          <Text style={styles.description} allowFontScaling={false}>
+            {challengeDetail?.proofContent || ""}
           </Text>
+
           <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
+            style={{
+              flexDirection: "row",
+              marginBottom: 20,
+              gap: 10,
+            }}
           >
             <GiftBook
-              title="물고기는 존재하지 않는다"
-              author="룰루 밀러 / 정지인"
+              title={challengeDetail?.receivedBookTitle || ""}
+              author={challengeDetail?.receivedBookAuthor || ""}
               status="선물받은 책"
+              bookImage={
+                challengeDetail?.receivedBookImage
+                  ? { uri: challengeDetail.receivedBookImage }
+                  : undefined
+              }
             />
             <GiftBook
-              title="물고기는 존재하지 않는다"
-              author="룰루 밀러 / 정지인"
+              title={challengeDetail?.givenBookTitle || ""}
+              author={challengeDetail?.givenBookAuthor || ""}
               status="선물할 책"
+              bookImage={
+                challengeDetail?.givenBookImage
+                  ? { uri: challengeDetail.givenBookImage }
+                  : undefined
+              }
             />
           </View>
-          <Text style={styles.description}>
-            대박 이 책을 받을 줄은 몰랐어요 잘 읽겠습니다 강릉 여행와서 기분이
-            너무 좋네요
+          <Text style={styles.description} allowFontScaling={false}>
+            {challengeDetail?.presentMessage || ""}
           </Text>
         </View>
         <View
@@ -146,39 +348,48 @@ export default function ChallengeDetail() {
           >
             <Text
               style={{
-                fontSize: 13,
+                fontSize: 15,
                 fontFamily: "SUIT-500",
                 color: "#716C69",
               }}
+              allowFontScaling={false}
             >
-              댓글 (2)
+              댓글 ({totalComments})
             </Text>
             <View
               style={{ flexDirection: "row", gap: 3, alignItems: "center" }}
             >
-              <Image source={require("@/assets/images/Heart.png")} />
+              <TouchableOpacity onPress={toggleLike} activeOpacity={0.7}>
+                <FilledHeartIcon
+                  color="#FF6B6B"
+                  isActive={challengeDetail?.likedByMe || false}
+                  width={17}
+                  height={17}
+                />
+              </TouchableOpacity>
               <Text
                 style={{
-                  fontSize: 13,
+                  fontSize: 14,
                   fontFamily: "SUIT-500",
                   color: "#C5BFBB",
+                  marginLeft: 4,
                 }}
+                allowFontScaling={false}
               >
-                65
+                {challengeDetail?.likes || 0}
               </Text>
             </View>
           </View>
           <View style={{ flexDirection: "column", gap: 25 }}>
-            <ChallengeComment
-              userName="책벌레 501"
-              date="25.05.13"
-              text="저도 저 책 읽어봐야 겠어요! 사진 감성 너무 조아요. . 힐링"
-            />
-            <ChallengeComment
-              userName="책벌레 501"
-              date="25.05.13"
-              text="저도 저 책 읽어봐야 겠어요! 사진 감성 너무 조아요. . 힐링"
-            />
+            {commentList.map((comment, index) => (
+              <ChallengeComment
+                key={index}
+                userName={comment.nickname}
+                date={formatDateToDaysAgo(comment.createdAt)}
+                text={comment.comment}
+                userProfileImageUrl={comment.userProfileImageUrl}
+              />
+            ))}
           </View>
         </View>
       </ScrollView>
@@ -190,7 +401,7 @@ export default function ChallengeDetail() {
             position: "absolute",
             left: 0,
             right: 0,
-            bottom: insets.bottom + keyboardHeight,
+            bottom: insets.bottom,
           },
         ]}
       >
@@ -208,9 +419,15 @@ export default function ChallengeDetail() {
             style={styles.commentInput}
             placeholder="댓글을 남겨주세요"
             placeholderTextColor="#9D9896"
+            value={commentText}
+            onChangeText={setCommentText}
+            multiline={false}
+            allowFontScaling={false}
           />
-          <TouchableOpacity style={styles.sendButton}>
-            <Text style={styles.sendButtonText}>등록</Text>
+          <TouchableOpacity style={styles.sendButton} onPress={submitComment}>
+            <Text style={styles.sendButtonText} allowFontScaling={false}>
+              {isSubmittingComment ? "등록 중..." : "등록"}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -240,50 +457,99 @@ const styles = StyleSheet.create({
   },
   userHeader: {
     flexDirection: "column",
+    gap: 3,
   },
   username: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
     color: "#000000",
   },
   timeStamp: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
   description: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     color: "#000000",
-    lineHeight: 20,
+    lineHeight: 25,
     marginBottom: 15,
   },
   commentInputContainer: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 10,
     backgroundColor: "#DBD6D3",
   },
   commentInput: {
     flex: 1,
-    height: 40,
+    height: 45,
     backgroundColor: "#F8F4F2",
     borderRadius: 10,
     paddingHorizontal: 15,
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     marginRight: 10,
   },
   sendButton: {
-    backgroundColor: "#F5F3F2",
+    backgroundColor: "#F8F4F2",
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,
+    height: 45,
+    justifyContent: "center",
+    alignItems: "center",
   },
   sendButtonText: {
     color: "#302E2D",
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: "SUIT-700",
+  },
+
+  bookstoreInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 5,
+    marginBottom: 30,
+    marginLeft: 10,
+  },
+  bookstoreIcon: {
+    width: 16,
+    height: 16,
+  },
+  bookstoreName: {
+    fontSize: 15,
+    fontFamily: "SUIT-500",
+    color: "#262423",
+  },
+  imageContainer: {
+    position: "relative",
+    width: "100%",
+    height: 404,
+  },
+  imageScrollView: {
+    width: "100%",
+    height: 404,
+  },
+  challengeImage: {
+    width: Dimensions.get("window").width,
+    height: 404,
+  },
+  imageCounter: {
+    position: "absolute",
+    bottom: 15,
+    right: 15,
+    backgroundColor: "rgba(217, 217, 217, 0.33)",
+    borderRadius: 15,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  imageCounterText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontFamily: "SUIT-600",
   },
 });

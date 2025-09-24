@@ -1,32 +1,55 @@
 // components/GiftBook.tsx
+import EmptyBookIcon from "@/components/icons/EmptyBookIcon";
 import { Image, StyleSheet, Text, View } from "react-native";
 
 type BookStatus = "선물받은 책" | "선물할 책";
 
 interface GiftBookProps {
-  title: string;
-  author: string;
+  title?: string;
+  author?: string;
   status: BookStatus;
+  icon?: React.ReactNode;
+  bookImage?: { uri: string };
 }
 
-export default function GiftBook({ title, author, status }: GiftBookProps) {
+export default function GiftBook({
+  title,
+  author,
+  status,
+  icon,
+  bookImage,
+}: GiftBookProps) {
+  // 저자명의 ^를 ,로 변환하는 함수
+  const formatAuthor = (authorName: string) => {
+    return authorName.replace(/\^/g, ", ");
+  };
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
-        <Image
-          source={require("@/assets/images/물고기는 존재하지 않는다.png")}
-          style={styles.bookImage}
-        />
-        <Image
-          source={require("@/assets/images/three_dote.png")}
-          style={styles.menuIcon}
-        />
+        {bookImage && bookImage.uri ? (
+          <Image source={bookImage} style={styles.bookImage} />
+        ) : (
+          <EmptyBookIcon width={63} height={90} style={styles.bookImage} />
+        )}
+        {icon && <View style={styles.iconContainer}>{icon}</View>}
+
         <View style={styles.bookInfo}>
-          <Text style={styles.bookTitle}>{title}</Text>
-          <Text style={styles.bookAuthor}>{author}</Text>
+          <Text
+            style={styles.bookTitle}
+            numberOfLines={1}
+            allowFontScaling={false}
+          >
+            {title && title.length > 11 ? `${title.slice(0, 11)}...` : title}
+          </Text>
+          <Text style={styles.bookAuthor} allowFontScaling={false}>
+            {formatAuthor(author || "")}
+          </Text>
         </View>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>{status}</Text>
+          <Text style={styles.badgeText} allowFontScaling={false}>
+            {status}
+          </Text>
         </View>
       </View>
     </View>
@@ -35,8 +58,8 @@ export default function GiftBook({ title, author, status }: GiftBookProps) {
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginTop: 50,
-    marginBottom: 25,
+    marginTop: 20,
+    marginBottom: 5,
   },
   container: {
     width: 170,
@@ -50,13 +73,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingTop: 80,
-    gap: 20,
+    gap: 15,
   },
   bookImage: {
     width: 63,
     height: 90,
     position: "absolute",
     top: -18,
+    borderRadius: 3,
+  },
+  iconContainer: {
+    position: "absolute",
+    top: 15,
+    right: 15,
   },
   menuIcon: {
     position: "absolute",
@@ -69,11 +98,11 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   bookTitle: {
-    fontSize: 11,
+    fontSize: 14,
     fontFamily: "SUIT-700",
   },
   bookAuthor: {
-    fontSize: 10,
+    fontSize: 13,
     fontFamily: "SUIT-500",
     color: "#716C69",
   },
@@ -86,7 +115,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   badgeText: {
-    fontSize: 10,
+    fontSize: 13,
     fontFamily: "SUIT-700",
   },
 });

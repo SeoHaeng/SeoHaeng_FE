@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import LikedPlaces from "./likedPlaces";
 import MyBookmark from "./myBookmark";
 import SavedBookmark from "./savedBookmark";
 
 export default function SpaceView() {
-  const [activeSubTab, setActiveSubTab] = useState("찜한 장소");
+  const [activeSubTab, setActiveSubTab] = useState("내 책갈피");
 
   const renderSubTabContent = () => {
     switch (activeSubTab) {
@@ -36,6 +36,7 @@ export default function SpaceView() {
               styles.subTabText,
               activeSubTab === "내 책갈피" && styles.activeSubTabText,
             ]}
+            allowFontScaling={false}
           >
             내 책갈피
           </Text>
@@ -52,6 +53,7 @@ export default function SpaceView() {
               styles.subTabText,
               activeSubTab === "저장 책갈피" && styles.activeSubTabText,
             ]}
+            allowFontScaling={false}
           >
             저장 책갈피
           </Text>
@@ -68,16 +70,11 @@ export default function SpaceView() {
               styles.subTabText,
               activeSubTab === "찜한 장소" && styles.activeSubTabText,
             ]}
+            allowFontScaling={false}
           >
             찜한 장소
           </Text>
         </TouchableOpacity>
-
-        {/* 드롭다운 메뉴 */}
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.dropdownText}>목록 보기</Text>
-          <Image source={require("@/assets/images/downArrow.png")} />
-        </View>
       </View>
 
       {/* 메인 콘텐츠 */}
@@ -89,14 +86,14 @@ export default function SpaceView() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8F4F2",
   },
   subTabContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8F4F2",
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 5,
   },
   subTab: {
     paddingHorizontal: 12,
@@ -128,12 +125,12 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   dropdownText: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#716C69",
     fontFamily: "SUIT-500",
   },
   dropdownIcon: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#666666",
     marginLeft: 4,
   },

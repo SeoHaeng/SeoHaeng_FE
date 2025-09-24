@@ -84,6 +84,8 @@ export default {
       KAKAO_STATE: process.env.KAKAO_STATE,
       NAVER_CLIENT_ID: process.env.NAVER_CLIENT_ID,
       NAVER_STATE: process.env.NAVER_STATE,
+      GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+      GOOGLE_STATE: process.env.GOOGLE_STATE,
       OAUTH_REDIRECT_URI: process.env.OAUTH_REDIRECT_URI,
       ANDROID_PACKAGE_NAME: process.env.ANDROID_PACKAGE_NAME,
       eas: {

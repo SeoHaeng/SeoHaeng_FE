@@ -1,7 +1,7 @@
 import React from "react";
 import Svg, { Defs, Image, Pattern, Rect, Use } from "react-native-svg";
 
-const KakaoLoginIcon = () => {
+const NaverLoginIcon = () => {
   return (
     <Svg width="17" height="15" viewBox="0 0 17 15" fill="none">
       <Rect width="17" height="15" fill="url(#pattern0_2409_159)" />
@@ -29,4 +29,4 @@ const KakaoLoginIcon = () => {
   );
 };
 
-export default KakaoLoginIcon;
+export default NaverLoginIcon;

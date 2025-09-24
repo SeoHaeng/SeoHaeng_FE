@@ -81,8 +81,10 @@ export default {
     extra: {
       KAKAO_MAP_JS_KEY: process.env.KAKAO_MAP_JS_KEY,
       KAKAO_CLIENT_ID: process.env.KAKAO_CLIENT_ID,
-      KAKAO_REDIRECT_URI: process.env.KAKAO_REDIRECT_URI,
       KAKAO_STATE: process.env.KAKAO_STATE,
+      NAVER_CLIENT_ID: process.env.NAVER_CLIENT_ID,
+      NAVER_STATE: process.env.NAVER_STATE,
+      OAUTH_REDIRECT_URI: process.env.OAUTH_REDIRECT_URI,
       ANDROID_PACKAGE_NAME: process.env.ANDROID_PACKAGE_NAME,
       eas: {
         projectId: "723ac499-62aa-4ede-8dd0-da0dcbf3b826",

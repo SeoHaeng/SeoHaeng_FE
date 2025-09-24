@@ -16,11 +16,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../components/AuthProvider";
+import GoogleLoginWebView from "../../components/GoogleLoginWebView";
 import BackIcon from "../../components/icons/BackIcon";
 import KakaoIcon from "../../components/icons/SocialLoginIcon/KakaoIcon";
 import KakaoLoginWebView from "../../components/KakaoLoginWebView";
 import NaverLoginWebView from "../../components/NaverLoginWebView";
 import {
+  googleLoginWithCodeAPI,
   kakaoLoginWithCodeAPI,
   loginAPI,
   naverLoginWithCodeAPI,
@@ -35,6 +37,7 @@ export default function SignInScreen() {
   const [errorMessage, setErrorMessage] = useState("");
   const [showKakaoWebView, setShowKakaoWebView] = useState(false);
   const [showNaverWebView, setShowNaverWebView] = useState(false);
+  const [showGoogleWebView, setShowGoogleWebView] = useState(false);
   const { refreshAuthState } = useAuth();
 
   const handleBack = () => {
@@ -194,6 +197,64 @@ export default function SignInScreen() {
     } finally {
       setIsLoading(false);
       setShowNaverWebView(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+      const googleOAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${Constants.expoConfig?.extra?.GOOGLE_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI}&state=${Constants.expoConfig?.extra?.GOOGLE_STATE}&scope=email`;
+      console.log("🔵 구글 로그인 시작:", googleOAuthUrl);
+      setShowGoogleWebView(true);
+    } catch (error) {
+      console.error("❌ 구글 로그인 에러:", error);
+      setErrorMessage("구글 로그인 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLoginWithCode = async (code: string) => {
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+
+      console.log("🔵 구글 인가코드로 로그인 시작:", code);
+
+      const response = await googleLoginWithCodeAPI(code);
+
+      if (response.isSuccess && response.result) {
+        // 토큰과 사용자 정보 저장
+        await saveToken(
+          response.result.accessToken,
+          response.result.refreshToken,
+          response.result.userId,
+        );
+
+        console.log("✅ 구글 로그인 성공:", response.result);
+        setErrorMessage("");
+
+        // 신규 사용자인 경우 약관 동의 화면으로 이동
+        if (response.result.isNewUser) {
+          console.log("🔄 신규 사용자 - 약관 동의 화면으로 이동");
+          router.push("/auth/AgreementScreen");
+        } else {
+          console.log("🔄 기존 사용자 - 홈 화면으로 이동");
+          // 인증 상태 새로고침 후 홈 화면으로 이동
+          await refreshAuthState();
+          router.push("/(tabs)");
+        }
+      } else {
+        console.error("❌ 구글 로그인 실패:", response.message);
+        setErrorMessage(response.message || "구글 로그인에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("❌ 구글 로그인 에러:", error);
+      setErrorMessage("구글 로그인 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+      setShowGoogleWebView(false);
     }
   };
 
@@ -380,7 +441,10 @@ export default function SignInScreen() {
             네이버로 로그인
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.kakaoButton} onPress={handleNaverLogin}>
+        <TouchableOpacity
+          style={styles.kakaoButton}
+          onPress={handleGoogleLogin}
+        >
           <View style={styles.googleIcon}>
             <GoogleIcon />
           </View>
@@ -410,6 +474,11 @@ export default function SignInScreen() {
         visible={showNaverWebView}
         onClose={() => setShowNaverWebView(false)}
         onCodeReceived={handleNaverLoginWithCode}
+      />
+      <GoogleLoginWebView
+        visible={showGoogleWebView}
+        onClose={() => setShowGoogleWebView(false)}
+        onCodeReceived={handleGoogleLoginWithCode}
       />
     </SafeAreaView>
   );

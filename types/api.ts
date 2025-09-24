@@ -2053,6 +2053,43 @@ export const naverLoginWithCodeAPI = async (
   }
 };
 
+export const googleLoginWithCodeAPI = async (
+  code: string,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result?: {
+    isNewUser: boolean;
+    accessToken: string;
+    refreshToken: string;
+    userId: number;
+  };
+}> => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/users/auth/google?code=${code}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("구글 로그인 API 호출 실패:", error);
+    throw error;
+  }
+};
+
 // 공간 책갈피 스크랩 토글 API
 export const toggleReadingSpotScrapAPI = async (
   readingSpotId: number,

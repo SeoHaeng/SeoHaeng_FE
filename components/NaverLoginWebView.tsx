@@ -1,5 +1,5 @@
 import Constants from "expo-constants";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Modal,
@@ -10,54 +10,75 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 
-interface KakaoLoginWebViewProps {
+interface NaverLoginWebViewProps {
   visible: boolean;
   onClose: () => void;
   onCodeReceived: (code: string) => void;
 }
 
-export default function KakaoLoginWebView({
+const NaverLoginWebView: React.FC<NaverLoginWebViewProps> = ({
   visible,
   onClose,
   onCodeReceived,
-}: KakaoLoginWebViewProps) {
+}) => {
   const webViewRef = useRef<WebView>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 카카오 OAuth URL (환경변수 사용)
-  const kakaoOAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${Constants.expoConfig?.extra?.KAKAO_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI}&state=${Constants.expoConfig?.extra?.KAKAO_STATE}`;
+  useEffect(() => {
+    if (visible) {
+      console.log("🔵 네이버 로그인 WebView 열림");
+    }
+  }, [visible]);
 
-  // WebView에서 URL 변경 감지
   const handleNavigationStateChange = (navState: any) => {
     const { url } = navState;
-    const redirectUri = Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI;
+    console.log("🔵 네이버 WebView 네비게이션:", url);
 
-    console.log("🔍 WebView URL 변경:", url);
-    console.log("🔍 설정된 리다이렉트 URI:", redirectUri);
+    // 네이버 로그인 성공 시 리다이렉트 URL에서 인가코드 추출
+    if (
+      url.includes("code=") &&
+      url.includes(Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI)
+    ) {
+      console.log("🔵 네이버 로그인 성공 URL 감지:", url);
 
-    // redirect_uri로 리다이렉트되는지 확인
-    if (redirectUri && url.includes(redirectUri)) {
-      // URL에서 인가 코드 추출
-      const urlParams = new URL(url);
-      const code = urlParams.searchParams.get("code");
-      const state = urlParams.searchParams.get("state");
+      // URL에서 인가코드 추출
+      const urlParams = new URLSearchParams(url.split("?")[1]);
+      const code = urlParams.get("code");
+      const state = urlParams.get("state");
 
-      console.log("✅ 리다이렉트 URI 매칭됨:", redirectUri);
-      console.log("✅ 추출된 코드:", code);
-      console.log("✅ 추출된 state:", state);
+      console.log("🔵 네이버 인가코드:", code);
+      console.log("🔵 네이버 state:", state);
 
       if (code) {
-        console.log("✅ 카카오 인가 코드 받음:", code);
+        // 인가코드를 부모 컴포넌트로 전달
         onCodeReceived(code);
+        onClose();
+      } else {
+        console.error("❌ 네이버 인가코드를 찾을 수 없음");
         onClose();
       }
     }
+
+    // 에러 처리
+    if (url.includes("error=")) {
+      console.error("❌ 네이버 로그인 에러:", url);
+      onClose();
+    }
   };
 
-  // WebView 로딩 완료
   const handleLoadEnd = () => {
     setIsLoading(false);
   };
+
+  const handleError = (syntheticEvent: any) => {
+    const { nativeEvent } = syntheticEvent;
+    console.error("❌ 네이버 WebView 에러:", nativeEvent);
+    onClose();
+  };
+
+  if (!visible) return null;
+
+  const naverOAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${Constants.expoConfig?.extra?.NAVER_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI}&state=${Constants.expoConfig?.extra?.NAVER_STATE}`;
 
   return (
     <Modal
@@ -75,7 +96,7 @@ export default function KakaoLoginWebView({
             </Text>
           </TouchableOpacity>
           <Text style={styles.title} allowFontScaling={false}>
-            카카오 로그인
+            네이버 로그인
           </Text>
           <View style={styles.placeholder} />
         </View>
@@ -84,68 +105,72 @@ export default function KakaoLoginWebView({
         <View style={styles.webViewContainer}>
           {isLoading && (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#E60A34" />
+              <ActivityIndicator size="large" color="#03C75A" />
               <Text style={styles.loadingText} allowFontScaling={false}>
-                카카오 로그인 페이지를 불러오는 중...
+                네이버 로그인 페이지를 불러오는 중...
               </Text>
             </View>
           )}
 
           <WebView
             ref={webViewRef}
-            source={{ uri: kakaoOAuthUrl }}
+            source={{ uri: naverOAuthUrl }}
             style={styles.webView}
             onNavigationStateChange={handleNavigationStateChange}
             onLoadEnd={handleLoadEnd}
+            onError={handleError}
             javaScriptEnabled={true}
             domStorageEnabled={true}
             startInLoadingState={true}
             scalesPageToFit={true}
+            allowsInlineMediaPlayback={true}
+            mediaPlaybackRequiresUserAction={false}
+            mixedContentMode="compatibility"
+            allowsFullscreenVideo={true}
+            androidLayerType="hardware"
           />
         </View>
       </View>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F4F2",
+    backgroundColor: "#FFFFFF",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: "#E5E5E5",
+    borderBottomColor: "#E0E0E0",
   },
   closeButton: {
-    width: 32,
-    height: 32,
+    width: 30,
+    height: 30,
     alignItems: "center",
     justifyContent: "center",
   },
   closeButtonText: {
-    fontSize: 19,
+    fontSize: 18,
     color: "#666666",
+    fontWeight: "bold",
   },
   title: {
-    fontSize: 19,
-    fontFamily: "SUIT-600",
-    color: "#262423",
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#333333",
   },
   placeholder: {
-    width: 32,
+    width: 30,
   },
   webViewContainer: {
     flex: 1,
     position: "relative",
-  },
-  webView: {
-    flex: 1,
   },
   loadingContainer: {
     position: "absolute",
@@ -159,9 +184,13 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   loadingText: {
-    marginTop: 12,
-    fontSize: 15,
+    marginTop: 10,
+    fontSize: 14,
     color: "#666666",
-    fontFamily: "SUIT-500",
+  },
+  webView: {
+    flex: 1,
   },
 });
+
+export default NaverLoginWebView;

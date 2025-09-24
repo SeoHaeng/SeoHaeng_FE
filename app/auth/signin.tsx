@@ -1,5 +1,7 @@
 // import * as KakaoLogins from "@react-native-seoul/kakao-login";
+import NaverIcon from "@/components/icons/SocialLoginIcon/NaverIcon";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Constants from "expo-constants";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -14,9 +16,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../components/AuthProvider";
 import BackIcon from "../../components/icons/BackIcon";
-import KakaoIcon from "../../components/icons/KakaoIcon";
+import KakaoIcon from "../../components/icons/SocialLoginIcon/KakaoIcon";
 import KakaoLoginWebView from "../../components/KakaoLoginWebView";
-import { kakaoLoginWithCodeAPI, loginAPI } from "../../types/api";
+import NaverLoginWebView from "../../components/NaverLoginWebView";
+import {
+  kakaoLoginWithCodeAPI,
+  loginAPI,
+  naverLoginWithCodeAPI,
+} from "../../types/api";
 import { saveToken } from "../../types/auth";
 
 export default function SignInScreen() {
@@ -26,6 +33,7 @@ export default function SignInScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showKakaoWebView, setShowKakaoWebView] = useState(false);
+  const [showNaverWebView, setShowNaverWebView] = useState(false);
   const { refreshAuthState } = useAuth();
 
   const handleBack = () => {
@@ -124,6 +132,67 @@ export default function SignInScreen() {
       setErrorMessage("카카오 로그인 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleNaverLogin = async () => {
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+
+      // 네이버 OAuth URL 생성
+      const naverOAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${Constants.expoConfig?.extra?.NAVER_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI}&state=${Constants.expoConfig?.extra?.NAVER_STATE}`;
+
+      console.log("🔵 네이버 로그인 시작:", naverOAuthUrl);
+      setShowNaverWebView(true);
+    } catch (error) {
+      console.error("❌ 네이버 로그인 에러:", error);
+      setErrorMessage("네이버 로그인 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleNaverLoginWithCode = async (code: string) => {
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+
+      console.log("🔵 네이버 인가코드로 로그인 시작:", code);
+
+      const response = await naverLoginWithCodeAPI(code);
+
+      if (response.isSuccess && response.result) {
+        // 토큰과 사용자 정보 저장
+        await saveToken(
+          response.result.accessToken,
+          response.result.refreshToken,
+          response.result.userId,
+        );
+
+        console.log("✅ 네이버 로그인 성공:", response.result);
+        setErrorMessage("");
+
+        // 신규 사용자인 경우 약관 동의 화면으로 이동
+        if (response.result.isNewUser) {
+          console.log("🔄 신규 사용자 - 약관 동의 화면으로 이동");
+          router.push("/auth/AgreementScreen");
+        } else {
+          console.log("🔄 기존 사용자 - 홈 화면으로 이동");
+          // 인증 상태 새로고침 후 홈 화면으로 이동
+          await refreshAuthState();
+          router.push("/(tabs)");
+        }
+      } else {
+        console.error("❌ 네이버 로그인 실패:", response.message);
+        setErrorMessage(response.message || "네이버 로그인에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("❌ 네이버 로그인 에러:", error);
+      setErrorMessage("네이버 로그인 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+      setShowNaverWebView(false);
     }
   };
 
@@ -302,6 +371,14 @@ export default function SignInScreen() {
             카카오로 로그인
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.kakaoButton} onPress={handleNaverLogin}>
+          <View style={styles.naverIcon}>
+            <NaverIcon />
+          </View>
+          <Text style={styles.kakaoButtonText} allowFontScaling={false}>
+            네이버로 로그인
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {/* 하단 링크 */}
@@ -319,6 +396,11 @@ export default function SignInScreen() {
         visible={showKakaoWebView}
         onClose={() => setShowKakaoWebView(false)}
         onCodeReceived={handleKakaoCodeReceived}
+      />
+      <NaverLoginWebView
+        visible={showNaverWebView}
+        onClose={() => setShowNaverWebView(false)}
+        onCodeReceived={handleNaverLoginWithCode}
       />
     </SafeAreaView>
   );
@@ -447,6 +529,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 15,
     top: 13,
+  },
+  naverIcon: {
+    position: "absolute",
+    left: 16,
+    top: 15,
   },
   bottomContainer: {
     paddingHorizontal: 20,

@@ -1,4 +1,5 @@
 // import * as KakaoLogins from "@react-native-seoul/kakao-login";
+import GoogleIcon from "@/components/icons/SocialLoginIcon/GoogleIcon";
 import NaverIcon from "@/components/icons/SocialLoginIcon/NaverIcon";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Constants from "expo-constants";
@@ -379,6 +380,14 @@ export default function SignInScreen() {
             네이버로 로그인
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.kakaoButton} onPress={handleNaverLogin}>
+          <View style={styles.googleIcon}>
+            <GoogleIcon />
+          </View>
+          <Text style={styles.kakaoButtonText} allowFontScaling={false}>
+            구글로 로그인
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {/* 하단 링크 */}
@@ -534,6 +543,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 16,
     top: 15,
+  },
+  googleIcon: {
+    position: "absolute",
+    left: 14,
+    top: 14,
   },
   bottomContainer: {
     paddingHorizontal: 20,

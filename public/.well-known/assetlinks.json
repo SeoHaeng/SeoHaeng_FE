@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.gyurijake.seohaengfe",
+      "sha256_cert_fingerprints": [
+        "0A:17:8A:AC:1C:67:7E:60:8F:C2:4E:AD:42:42:77:19:F5:9E:B3:74:AF:7E:40:2C:A2:20:D6:DE:16:95:4D:11"
+      ]
+    }
+  }
+]

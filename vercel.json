@@ -1,0 +1,24 @@
+{
+  "rewrites": [
+    {
+      "source": "/bookstore/(.*)",
+      "destination": "/bookstore/[id]"
+    },
+    {
+      "source": "/travel/(.*)",
+      "destination": "/travel/[id]"
+    },
+    {
+      "source": "/popularity/(.*)",
+      "destination": "/popularity/[id]"
+    },
+    {
+      "source": "/bookmark/(.*)",
+      "destination": "/bookmark/[id]"
+    },
+    {
+      "source": "/auth/kakao/callback",
+      "destination": "/auth/kakao/callback.html"
+    }
+  ]
+}

@@ -5,26 +5,46 @@ interface PopularChallengeItemProps {
   date: string;
   text: string;
   imageSource?: any;
+  color?: string;
+  userProfileImageUrl?: string;
 }
 
 export default function ChallengeComment({
   userName,
   date,
   text,
+  color,
+  userProfileImageUrl,
 }: PopularChallengeItemProps) {
   return (
     <View style={styles.commentContainer}>
       <View style={styles.commentHeader}>
-        <Image
-          source={require("@/assets/images/인기챌린지 사진.png")}
-          style={styles.commentAvatar}
-        />
+        {userProfileImageUrl ? (
+          <Image
+            source={{ uri: userProfileImageUrl }}
+            style={styles.commentAvatar}
+          />
+        ) : (
+          <View style={styles.commentAvatar} />
+        )}
         <View style={styles.commentInfo}>
-          <Text style={styles.commentUsername}>{userName}</Text>
-          <Text style={styles.commentDate}>{date}</Text>
+          <Text
+            style={[styles.commentUsername, color && { color }]}
+            allowFontScaling={false}
+          >
+            {userName}
+          </Text>
+          <Text style={styles.commentDate} allowFontScaling={false}>
+            {date}
+          </Text>
         </View>
       </View>
-      <Text style={styles.description}>{text}</Text>
+      <Text
+        style={[styles.description, color && { color }]}
+        allowFontScaling={false}
+      >
+        {text}
+      </Text>
     </View>
   );
 }
@@ -33,6 +53,7 @@ const styles = StyleSheet.create({
   commentContainer: {
     flexDirection: "column",
     gap: 10,
+    marginBottom: 12,
   },
   commentHeader: {
     flexDirection: "row",
@@ -42,22 +63,24 @@ const styles = StyleSheet.create({
   commentAvatar: {
     width: 35,
     height: 35,
+    borderRadius: 50,
+    backgroundColor: "#C5BFBB",
   },
   commentInfo: {
     flexDirection: "column",
     gap: 3,
   },
   commentUsername: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "SUIT-700",
   },
   commentDate: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: "SUIT-500",
     color: "#9D9896",
   },
   description: {
-    fontSize: 13,
+    fontSize: 15,
     fontFamily: "SUIT-500",
     lineHeight: 20,
   },

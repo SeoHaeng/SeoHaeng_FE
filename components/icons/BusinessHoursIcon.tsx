@@ -1,0 +1,22 @@
+import React from "react";
+import Svg, { Path, SvgProps } from "react-native-svg";
+
+interface BusinessHoursIconProps extends SvgProps {
+  color?: string;
+}
+
+const BusinessHoursIcon: React.FC<BusinessHoursIconProps> = ({
+  color = "#9D9896",
+  ...props
+}) => {
+  return (
+    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none" {...props}>
+      <Path
+        d="M7.992 0C3.576 0 0 3.584 0 8C0 12.416 3.576 16 7.992 16C12.416 16 16 12.416 16 8C16 3.584 12.416 0 7.992 0ZM10.632 11.768L7.2 8.328V4H8.8V7.672L11.768 10.64L10.632 11.768Z"
+        fill={color}
+      />
+    </Svg>
+  );
+};
+
+export default BusinessHoursIcon;

@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import SpaceView from "./space";
 import StampView from "./stamp";
 
 export default function MemoryLayout() {
-  const [activeTab, setActiveTab] = useState("스탬프");
+  const [activeTab, setActiveTab] = useState("내 공간");
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       {/* 상단 탭 */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -19,6 +20,7 @@ export default function MemoryLayout() {
               styles.tabText,
               activeTab === "내 공간" && styles.activeTabText,
             ]}
+            allowFontScaling={false}
           >
             내 공간
           </Text>
@@ -33,6 +35,7 @@ export default function MemoryLayout() {
               styles.tabText,
               activeTab === "스탬프" && styles.activeTabText,
             ]}
+            allowFontScaling={false}
           >
             스탬프
           </Text>
@@ -42,20 +45,20 @@ export default function MemoryLayout() {
 
       {/* 메인 콘텐츠 */}
       {activeTab === "스탬프" ? <StampView /> : <SpaceView />}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8F4F2",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    paddingTop: 50,
+    backgroundColor: "#F8F4F2",
+    paddingTop: 10,
     paddingHorizontal: 10,
   },
   tab: {
@@ -65,7 +68,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   tabText: {
-    fontSize: 17,
+    fontSize: 18,
     color: "#716C69",
     fontFamily: "SUIT-700",
   },
@@ -87,12 +90,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   spaceText: {
-    fontSize: 24,
+    fontSize: 25,
     fontWeight: "bold",
     marginBottom: 10,
   },
   spaceSubtext: {
-    fontSize: 16,
+    fontSize: 17,
     color: "#666",
   },
 });

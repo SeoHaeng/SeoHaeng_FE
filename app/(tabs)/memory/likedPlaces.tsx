@@ -1,83 +1,188 @@
-import React from "react";
+import PlaceIcon from "@/components/icons/PlaceIcon";
+import StarIcon from "@/components/icons/StarIcon";
+import { getLikedPlacesAPI } from "@/types/api";
+import { useGlobalState } from "@/types/globalState";
+import * as Location from "expo-location";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function LikedPlaces() {
-  // 예시 데이터
-  const places = [
-    {
-      id: 1,
-      name: "한낮의 바다",
-      type: "독립서점",
-      rating: 4.2,
-      reviewCount: 103,
-      distance: "1.2 km",
-      address: "양양시 금하로 760, 지상 1층",
-      image: require("@/assets/images/독립서점.png"),
-    },
-    {
-      id: 2,
-      name: "한낮의 바다",
-      type: "독립서점",
-      rating: 4.2,
-      reviewCount: 103,
-      distance: "1.2 km",
-      address: "양양시 금하로 760, 지상 1층",
-      image: require("@/assets/images/독립서점.png"),
-    },
-  ];
+  const router = useRouter();
+  const [places, setPlaces] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { userLocation } = useGlobalState();
+
+  // 찜한 장소 조회
+  useEffect(() => {
+    const fetchLikedPlaces = async () => {
+      try {
+        setIsLoading(true);
+
+        // 전역 상태에서 사용자 위치 가져오기
+        if (!userLocation) {
+          console.log("전역 상태에 위치가 없습니다. 새로 위치를 가져옵니다.");
+
+          // 위치 권한 요청
+          const { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== "granted") {
+            console.error("위치 권한이 거부되었습니다.");
+            setIsLoading(false);
+            return;
+          }
+
+          // 현재 위치 가져오기
+          const location = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
+          });
+
+          const { latitude, longitude } = location.coords;
+          console.log("새로 가져온 위치:", { latitude, longitude });
+
+          // 찜한 장소 조회 API 호출
+          const response = await getLikedPlacesAPI(latitude, longitude);
+
+          if (response.isSuccess) {
+            setPlaces(response.result);
+            console.log("찜한 장소 조회 성공:", response.result);
+          } else {
+            console.error("찜한 장소 조회 실패:", response.message);
+          }
+        } else {
+          // 전역 상태의 위치 사용
+          console.log("전역 상태의 위치 사용:", userLocation);
+
+          // 찜한 장소 조회 API 호출
+          const response = await getLikedPlacesAPI(
+            userLocation.latitude,
+            userLocation.longitude,
+          );
+
+          if (response.isSuccess) {
+            setPlaces(response.result);
+            console.log("찜한 장소 조회 성공:", response.result);
+          } else {
+            console.error("찜한 장소 조회 실패:", response.message);
+          }
+        }
+      } catch (error) {
+        console.error("찜한 장소 조회 에러:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLikedPlaces();
+  }, [userLocation]);
 
   const renderPlaceItem = (place: any) => (
-    <View key={place.id} style={styles.placeItem}>
+    <TouchableOpacity
+      key={place.placeId}
+      style={styles.placeItem}
+      onPress={() =>
+        router.push({
+          pathname: `/bookstore/[id]`,
+          params: {
+            id: place.placeId.toString(),
+            from: "likedPlaces",
+          },
+        })
+      }
+      activeOpacity={0.8}
+    >
       <View style={styles.placeImageContainer}>
-        <Image source={place.image} style={styles.placeImage} />
+        {place.imageUrl ? (
+          <Image source={{ uri: place.imageUrl }} style={styles.placeImage} />
+        ) : (
+          <View style={styles.placeImage} />
+        )}
       </View>
 
       <View style={styles.placeInfo}>
         <View style={styles.nameContainer}>
-          <Text style={styles.placeName}>{place.name}</Text>
-          <Text style={styles.placeType}>{place.type}</Text>
+          <Text style={styles.placeName} allowFontScaling={false}>
+            {place.name.length > 12
+              ? `${place.name.substring(0, 12)}...`
+              : place.name}
+          </Text>
+          <Text style={styles.placeType} allowFontScaling={false}>
+            {place.placeType === "TOURIST_SPOT"
+              ? "관광지"
+              : place.placeType === "RESTAURANT"
+                ? "음식점"
+                : place.placeType === "FESTIVAL"
+                  ? "축제"
+                  : place.placeType === "BOOKSTORE"
+                    ? "독립서점"
+                    : place.placeType}
+          </Text>
         </View>
-        <Image
-          source={require("@/assets/images/scrap.png")}
-          style={styles.scrapIcon}
-        />
 
         <View style={styles.ratingContainer}>
-          <Image
-            source={require("@/assets/images/Star.png")}
-            style={styles.starIcon}
-          />
-          <Text style={styles.ratingText}>{place.rating}</Text>
-          <Text style={styles.reviewCountText}>({place.reviewCount})</Text>
-          <Text style={styles.distanceText}>{place.distance}</Text>
+          <StarIcon size={15} style={styles.starIcon} />
+          <Text style={styles.ratingText} allowFontScaling={false}>
+            {place.averageRating.toFixed(1)}
+          </Text>
+          <Text style={styles.reviewCountText} allowFontScaling={false}>
+            ({place.reviewCount})
+          </Text>
+          <Text style={styles.distanceText} allowFontScaling={false}>
+            {place.distance.toFixed(1)}km
+          </Text>
         </View>
 
         <View style={styles.addressContainer}>
-          <Image source={require("@/assets/images/place.png")} />
-          <Text style={styles.addressText}>{place.address}</Text>
+          <PlaceIcon />
+          <Text style={styles.addressText} allowFontScaling={false}>
+            {place.address.length > 17
+              ? `${place.address.substring(0, 17)}...`
+              : place.address}
+          </Text>
         </View>
 
         <TouchableOpacity style={styles.likedButton}>
-          <Text style={styles.likedButtonText}>찜한 장소</Text>
+          <Text style={styles.likedButtonText} allowFontScaling={false}>
+            찜한 장소
+          </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText} allowFontScaling={false}>
+          찜한 장소를 불러오는 중...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.countContainer}>
-        <Text style={styles.countText}>총 {places.length}개</Text>
+        <Text style={styles.countText} allowFontScaling={false}>
+          총 {places.length}개
+        </Text>
       </View>
 
-      {places.map(renderPlaceItem)}
+      {places.length > 0 ? (
+        places.map(renderPlaceItem)
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText} allowFontScaling={false}>
+            아직 찜한 장소가 없습니다.
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -85,11 +190,11 @@ export default function LikedPlaces() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 10,
+    backgroundColor: "#F8F4F2",
+    paddingHorizontal: 15,
   },
   countContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     paddingVertical: 15,
   },
   countText: {
@@ -115,6 +220,7 @@ const styles = StyleSheet.create({
     width: 101,
     height: 101,
     borderRadius: 8,
+    backgroundColor: "#C5BFBB",
   },
   bookmarkIcon: {
     position: "absolute",
@@ -128,7 +234,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bookmarkText: {
-    fontSize: 12,
+    fontSize: 13,
   },
   placeInfo: {
     flex: 1,
@@ -142,7 +248,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   placeName: {
-    fontSize: 17,
+    fontSize: 16,
     color: "#262423",
     fontFamily: "SUIT-700",
     marginRight: 8,
@@ -191,7 +297,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   locationIcon: {
-    fontSize: 12,
+    fontSize: 13,
     marginRight: 4,
   },
   addressText: {
@@ -210,8 +316,31 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   likedButtonText: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#EEE9E6",
+    fontFamily: "SUIT-500",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F8F4F2",
+  },
+  loadingText: {
+    fontSize: 17,
+    color: "#666666",
+    fontFamily: "SUIT-500",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F8F4F2",
+    paddingVertical: 20,
+  },
+  emptyText: {
+    fontSize: 17,
+    color: "#666666",
     fontFamily: "SUIT-500",
   },
 });

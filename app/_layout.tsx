@@ -73,6 +73,19 @@ function RootLayoutNav() {
         return;
       }
 
+      // 구글 로그인 리다이렉트 처리
+      if (parsedUrl.path?.includes("auth/google/callback")) {
+        const code = parsedUrl.queryParams?.code;
+        const state = parsedUrl.queryParams?.state;
+
+        if (code) {
+          console.log("✅ 구글 인증 코드 받음:", code);
+          // 여기서 구글 로그인 처리 로직 추가
+          // 예: AuthProvider의 로그인 함수 호출
+        }
+        return;
+      }
+
       // 카카오맵 리다이렉트 처리
       if (parsedUrl.path?.includes("map/callback")) {
         const placeId = parsedUrl.queryParams?.placeId;

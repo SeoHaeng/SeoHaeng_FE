@@ -1,12 +1,12 @@
 // import * as KakaoLogins from "@react-native-seoul/kakao-login";
-import GoogleIcon from "@/components/icons/SocialLoginIcon/GoogleIcon";
-import NaverIcon from "@/components/icons/SocialLoginIcon/NaverIcon";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Constants from "expo-constants";
 import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -16,9 +16,10 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../components/AuthProvider";
-import GoogleLoginWebView from "../../components/GoogleLoginWebView";
 import BackIcon from "../../components/icons/BackIcon";
+import GoogleIcon from "../../components/icons/SocialLoginIcon/GoogleIcon";
 import KakaoIcon from "../../components/icons/SocialLoginIcon/KakaoIcon";
+import NaverIcon from "../../components/icons/SocialLoginIcon/NaverIcon";
 import KakaoLoginWebView from "../../components/KakaoLoginWebView";
 import NaverLoginWebView from "../../components/NaverLoginWebView";
 import {
@@ -37,7 +38,7 @@ export default function SignInScreen() {
   const [errorMessage, setErrorMessage] = useState("");
   const [showKakaoWebView, setShowKakaoWebView] = useState(false);
   const [showNaverWebView, setShowNaverWebView] = useState(false);
-  const [showGoogleWebView, setShowGoogleWebView] = useState(false);
+  // Google은 시스템 브라우저를 사용하므로 WebView 상태 불필요
   const { refreshAuthState } = useAuth();
 
   const handleBack = () => {
@@ -145,7 +146,7 @@ export default function SignInScreen() {
       setErrorMessage("");
 
       // 네이버 OAuth URL 생성
-      const naverOAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${Constants.expoConfig?.extra?.NAVER_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI}&state=${Constants.expoConfig?.extra?.NAVER_STATE}`;
+      const naverOAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${Constants.expoConfig?.extra?.NAVER_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.OAUTH_BASE_URL}/auth/naver/callback&state=${Constants.expoConfig?.extra?.NAVER_STATE}`;
 
       console.log("🔵 네이버 로그인 시작:", naverOAuthUrl);
       setShowNaverWebView(true);
@@ -204,9 +205,109 @@ export default function SignInScreen() {
     try {
       setIsLoading(true);
       setErrorMessage("");
-      const googleOAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${Constants.expoConfig?.extra?.GOOGLE_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI}&state=${Constants.expoConfig?.extra?.GOOGLE_STATE}&scope=email`;
-      console.log("🔵 구글 로그인 시작:", googleOAuthUrl);
-      setShowGoogleWebView(true);
+
+      // 환경변수 검증
+      const googleClientId = Constants.expoConfig?.extra?.GOOGLE_CLIENT_ID;
+      const oauthBaseUrl = Constants.expoConfig?.extra?.OAUTH_BASE_URL;
+      const googleState = Constants.expoConfig?.extra?.GOOGLE_STATE;
+
+      if (!googleClientId) {
+        console.error("❌ GOOGLE_CLIENT_ID가 설정되지 않았습니다.");
+        setErrorMessage("구글 클라이언트 ID가 설정되지 않았습니다.");
+        return;
+      }
+
+      if (!oauthBaseUrl) {
+        console.error("❌ OAUTH_BASE_URL이 설정되지 않았습니다.");
+        setErrorMessage("OAuth 기본 URL이 설정되지 않았습니다.");
+        return;
+      }
+
+      console.log("🔍 구글 OAuth 설정 검증:");
+      console.log("- 클라이언트 ID:", googleClientId ? "✅ 설정됨" : "❌ 누락");
+      console.log("- OAuth 기본 URL:", oauthBaseUrl);
+      console.log("- 상태값:", googleState);
+
+      // 네이티브: 웹 리다이렉트 URI 사용 (AuthSession 사용)
+      if (Platform.OS !== "web") {
+        WebBrowser.maybeCompleteAuthSession();
+
+        // 웹과 동일한 리다이렉트 URI 사용
+        const redirectUri = `${oauthBaseUrl}/auth/google/callback`;
+
+        // 필수 파라미터만 사용하여 URL 구성
+        const params = new URLSearchParams({
+          response_type: "code",
+          client_id: googleClientId,
+          redirect_uri: redirectUri,
+          scope: "openid email profile",
+          access_type: "offline",
+          prompt: "select_account", // consent 대신 select_account 사용
+        });
+
+        if (googleState) {
+          params.append("state", googleState);
+        }
+
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+        console.log("🔵 구글 로그인 시작 (AuthSession):", authUrl);
+        console.log("🔵 리다이렉트 URI:", redirectUri);
+
+        const result = await WebBrowser.openAuthSessionAsync(
+          authUrl,
+          redirectUri,
+        );
+
+        if (result.type === "success" && result.url) {
+          try {
+            const urlObj = new URL(result.url);
+            const code = urlObj.searchParams.get("code");
+            const error = urlObj.searchParams.get("error");
+
+            if (error) {
+              const errorDescription =
+                urlObj.searchParams.get("error_description");
+              console.error("❌ 구글 OAuth 에러:", error, errorDescription);
+              setErrorMessage(`구글 로그인 오류: ${errorDescription || error}`);
+            } else if (code) {
+              await handleGoogleLoginWithCode(code);
+            } else {
+              setErrorMessage("인가 코드가 없습니다.");
+            }
+          } catch (parseError) {
+            console.error("❌ URL 파싱 에러:", parseError);
+            setErrorMessage("응답 URL 파싱 중 오류가 발생했습니다.");
+          }
+        } else if (result.type === "dismiss" || result.type === "cancel") {
+          setErrorMessage("구글 로그인을 취소했습니다.");
+        } else {
+          setErrorMessage("구글 로그인 중 오류가 발생했습니다.");
+        }
+      } else {
+        // 웹: 서비스 콜백으로 리다이렉트
+        const redirectUri = `${oauthBaseUrl}/auth/google/callback`;
+
+        const params = new URLSearchParams({
+          response_type: "code",
+          client_id: googleClientId,
+          redirect_uri: redirectUri,
+          scope: "openid email profile",
+          access_type: "offline",
+          prompt: "select_account",
+        });
+
+        if (googleState) {
+          params.append("state", googleState);
+        }
+
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+        console.log("🔵 구글 로그인 시작 (web):", authUrl);
+        console.log("🔵 리다이렉트 URI:", redirectUri);
+
+        if (typeof window !== "undefined") {
+          (window as any).location.href = authUrl;
+        }
+      }
     } catch (error) {
       console.error("❌ 구글 로그인 에러:", error);
       setErrorMessage("구글 로그인 중 오류가 발생했습니다.");
@@ -254,7 +355,6 @@ export default function SignInScreen() {
       setErrorMessage("구글 로그인 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);
-      setShowGoogleWebView(false);
     }
   };
 
@@ -388,15 +488,6 @@ export default function SignInScreen() {
           )}
         </View>
 
-        {/* 에러 메시지 */}
-        {errorMessage ? (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText} allowFontScaling={false}>
-              {errorMessage}
-            </Text>
-          </View>
-        ) : null}
-
         {/* 로그인 버튼 */}
         <TouchableOpacity
           style={[
@@ -422,37 +513,14 @@ export default function SignInScreen() {
           )}
         </TouchableOpacity>
       </View>
-
-      {/* 소셜 로그인 */}
-      <View style={styles.socialContainer}>
-        <TouchableOpacity style={styles.kakaoButton} onPress={handleKakaoLogin}>
-          <View style={styles.kakaoIcon}>
-            <KakaoIcon />
-          </View>
-          <Text style={styles.kakaoButtonText} allowFontScaling={false}>
-            카카오로 로그인
+      {/* 에러 메시지 */}
+      {errorMessage ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText} allowFontScaling={false}>
+            {errorMessage}
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.kakaoButton} onPress={handleNaverLogin}>
-          <View style={styles.naverIcon}>
-            <NaverIcon />
-          </View>
-          <Text style={styles.kakaoButtonText} allowFontScaling={false}>
-            네이버로 로그인
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.kakaoButton}
-          onPress={handleGoogleLogin}
-        >
-          <View style={styles.googleIcon}>
-            <GoogleIcon />
-          </View>
-          <Text style={styles.kakaoButtonText} allowFontScaling={false}>
-            구글로 로그인
-          </Text>
-        </TouchableOpacity>
-      </View>
+        </View>
+      ) : null}
 
       {/* 하단 링크 */}
       <View style={styles.bottomContainer}>
@@ -461,6 +529,25 @@ export default function SignInScreen() {
             아직 회원이 아니신가요?{" "}
             <Text style={styles.signUpLink}>회원가입하기</Text> &gt;
           </Text>
+        </TouchableOpacity>
+      </View>
+      {/* 소셜 로그인 */}
+      <View style={styles.socialContainer}>
+        <Text style={styles.socialTitle} allowFontScaling={false}>
+          소셜 로그인
+        </Text>
+
+        <TouchableOpacity style={styles.kakaoButton} onPress={handleKakaoLogin}>
+          <KakaoIcon />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.kakaoButton} onPress={handleNaverLogin}>
+          <NaverIcon />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.kakaoButton}
+          onPress={handleGoogleLogin}
+        >
+          <GoogleIcon />
         </TouchableOpacity>
       </View>
 
@@ -475,11 +562,7 @@ export default function SignInScreen() {
         onClose={() => setShowNaverWebView(false)}
         onCodeReceived={handleNaverLoginWithCode}
       />
-      <GoogleLoginWebView
-        visible={showGoogleWebView}
-        onClose={() => setShowGoogleWebView(false)}
-        onCodeReceived={handleGoogleLoginWithCode}
-      />
+      {/* Google은 시스템 브라우저(AuthSession) 사용 */}
     </SafeAreaView>
   );
 }
@@ -505,7 +588,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     paddingHorizontal: 20,
-    marginBottom: 40,
+    marginBottom: 20,
   },
   inputContainer: {
     marginBottom: 24,
@@ -553,6 +636,7 @@ const styles = StyleSheet.create({
     borderColor: "#C5BFBB",
     paddingVertical: 16,
     alignItems: "center",
+    marginTop: 20,
   },
   loginButtonActive: {
     backgroundColor: "#302E2D",
@@ -572,57 +656,34 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   socialContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  socialButton: {
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  socialButtonText: {
-    marginLeft: 12,
-    fontSize: 17,
-    color: "#424242",
-    fontWeight: "500",
-  },
-  kakaoButton: {
-    position: "relative",
-    alignItems: "center",
+    gap: 50,
     justifyContent: "center",
-    backgroundColor: "#EEE9E6",
-    borderRadius: 5,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#DBD6D3",
+    paddingTop: 30,
+    marginHorizontal: 20,
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#9D9896",
+    position: "relative",
   },
-  kakaoButtonText: {
-    fontSize: 15,
-    color: "#262423",
+
+  socialTitle: {
+    fontSize: 16,
+    color: "#9D9896",
     fontFamily: "SUIT-600",
-  },
-  kakaoIcon: {
+    paddingHorizontal: 10,
     position: "absolute",
-    left: 15,
-    top: 13,
+    top: -9,
+    backgroundColor: "#F8F4F2",
+    left: "50%",
+    transform: [{ translateX: -50 }], // 👈 정확히 가운데로 이동
   },
-  naverIcon: {
-    position: "absolute",
-    left: 16,
-    top: 15,
-  },
-  googleIcon: {
-    position: "absolute",
-    left: 14,
-    top: 14,
-  },
+  kakaoButton: { backgroundColor: "#F8F4F2" },
+
   bottomContainer: {
     paddingHorizontal: 20,
     alignItems: "center",
-    marginTop: 20,
-    marginBottom: 40,
+    marginBottom: 50,
   },
   bottomText: {
     fontSize: 15,

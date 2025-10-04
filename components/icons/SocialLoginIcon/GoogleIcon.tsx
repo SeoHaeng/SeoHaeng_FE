@@ -1,25 +1,103 @@
 import React from "react";
-import Svg, { Path } from "react-native-svg";
+import Svg, {
+  ClipPath,
+  Defs,
+  FeBlend,
+  FeColorMatrix,
+  FeComposite,
+  FeFlood,
+  FeOffset,
+  Filter,
+  G,
+  Path,
+  Rect,
+} from "react-native-svg";
 
 const GoogleIcon = () => {
   return (
-    <Svg width="19" height="19" viewBox="0 0 19 19" fill="none">
-      <Path
-        d="M9.5 3.5C11.1579 3.5 12.6316 4.18421 13.7105 5.26316L16.2632 2.71053C14.4211 0.868421 12.1053 0 9.5 0C5.84211 0 2.68421 2.21053 1.10526 5.5L4.15789 7.84211C4.89474 5.52632 7.02632 3.5 9.5 3.5Z"
-        fill="#EA4335"
-      />
-      <Path
-        d="M18.5 9.5C18.5 8.84211 18.4474 8.18421 18.3421 7.55263H9.5V11.1842H14.7105C14.5263 12.1842 14.0263 13.0526 13.2895 13.7105L16.3421 16.2632C17.6842 14.9737 18.5 13.3158 18.5 9.5Z"
-        fill="#4285F4"
-      />
-      <Path
-        d="M4.15789 11.1579C3.84211 10.3684 3.68421 9.52632 3.68421 8.68421C3.68421 7.84211 3.84211 7 4.15789 6.21053L1.10526 3.84211C0.394737 5.15789 0 6.68421 0 8.31579C0 9.94737 0.394737 11.4737 1.10526 12.7895L4.15789 11.1579Z"
-        fill="#FBBC05"
-      />
-      <Path
-        d="M9.5 19C12.1053 19 14.4211 18.1316 16.2632 16.2895L13.7105 13.7368C12.6316 14.8158 11.1579 15.5 9.5 15.5C7.02632 15.5 4.89474 13.4737 4.15789 11.1579L1.10526 13.5263C2.68421 16.8158 5.84211 19 9.5 19Z"
-        fill="#34A853"
-      />
+    <Svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+      <G>
+        <Path
+          d="M0 30C0 13.4315 13.4315 0 30 0C46.5685 0 60 13.4315 60 30C60 46.5685 46.5685 60 30 60C13.4315 60 0 46.5685 0 30Z"
+          fill="white"
+          shape-rendering="crispEdges"
+        />
+        <Path
+          d="M30 0.5C46.2924 0.5 59.5 13.7076 59.5 30C59.5 46.2924 46.2924 59.5 30 59.5C13.7076 59.5 0.5 46.2924 0.5 30C0.5 13.7076 13.7076 0.5 30 0.5Z"
+          stroke="#F7F7F7"
+          shape-rendering="crispEdges"
+        />
+        <G clip-path="url(#clip0_2471_1534)">
+          <Path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M39.6 30.2271C39.6 29.518 39.5364 28.8362 39.4182 28.1816H30V32.0498H35.3818C35.15 33.2998 34.4455 34.3589 33.3864 35.068V37.5771H36.6182C38.5091 35.8362 39.6 33.2725 39.6 30.2271Z"
+            fill="#4285F4"
+          />
+          <Path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M29.9998 39.9999C32.6998 39.9999 34.9635 39.1044 36.618 37.5772L33.3862 35.0681C32.4907 35.6681 31.3453 36.0226 29.9998 36.0226C27.3953 36.0226 25.1907 34.2635 24.4044 31.8999H21.0635V34.4908C22.7089 37.759 26.0907 39.9999 29.9998 39.9999Z"
+            fill="#34A853"
+          />
+          <Path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M24.4045 31.9002C24.2045 31.3002 24.0909 30.6593 24.0909 30.0002C24.0909 29.3411 24.2045 28.7002 24.4045 28.1002V25.5093H21.0636C20.3864 26.8593 20 28.3866 20 30.0002C20 31.6138 20.3864 33.1411 21.0636 34.4911L24.4045 31.9002Z"
+            fill="#FBBC05"
+          />
+          <Path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M29.9998 23.9773C31.468 23.9773 32.7862 24.4818 33.8226 25.4727L36.6907 22.6045C34.9589 20.9909 32.6953 20 29.9998 20C26.0907 20 22.7089 22.2409 21.0635 25.5091L24.4044 28.1C25.1907 25.7364 27.3953 23.9773 29.9998 23.9773Z"
+            fill="#EA4335"
+          />
+        </G>
+      </G>
+      <Defs>
+        <Filter
+          id="filter0_d_2471_1534"
+          x="0"
+          y="0"
+          width="60"
+          height="60"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <FeFlood flood-opacity="0" result="BackgroundImageFix" />
+          <FeColorMatrix
+            in="SourceAlpha"
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha"
+          />
+          <FeOffset />
+          <FeComposite in2="hardAlpha" operator="out" />
+          <FeColorMatrix
+            type="matrix"
+            values="0 0 0 0 0.0705882 0 0 0 0 0.0705882 0 0 0 0 0.0705882 0 0 0 0.05 0"
+          />
+          <FeBlend
+            mode="normal"
+            in2="BackgroundImageFix"
+            result="effect1_dropShadow_2471_1534"
+          />
+          <FeBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="effect1_dropShadow_2471_1534"
+            result="shape"
+          />
+        </Filter>
+        <ClipPath id="clip0_2471_1534">
+          <Rect
+            width="20"
+            height="20"
+            fill="white"
+            transform="translate(20 20)"
+          />
+        </ClipPath>
+      </Defs>
     </Svg>
   );
 };

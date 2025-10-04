@@ -72,6 +72,14 @@ export default {
           source: "/bookmark/(.*)",
           destination: "/bookmark/[id]",
         },
+        {
+          source: "/auth/kakao/callback",
+          destination: "/auth/kakao/callback.html",
+        },
+        {
+          source: "/auth/google/callback",
+          destination: "/auth/google/callback.html",
+        },
       ],
     },
     plugins: ["expo-router", "expo-web-browser"],
@@ -86,7 +94,7 @@ export default {
       NAVER_STATE: process.env.NAVER_STATE,
       GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
       GOOGLE_STATE: process.env.GOOGLE_STATE,
-      OAUTH_REDIRECT_URI: process.env.OAUTH_REDIRECT_URI,
+      OAUTH_BASE_URL: process.env.OAUTH_BASE_URL,
       ANDROID_PACKAGE_NAME: process.env.ANDROID_PACKAGE_NAME,
       eas: {
         projectId: "723ac499-62aa-4ede-8dd0-da0dcbf3b826",

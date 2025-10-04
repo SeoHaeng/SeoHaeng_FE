@@ -19,6 +19,10 @@
     {
       "source": "/auth/kakao/callback",
       "destination": "/auth/kakao/callback.html"
+    },
+    {
+      "source": "/auth/google/callback",
+      "destination": "/auth/google/callback.html"
     }
   ]
 }

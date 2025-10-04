@@ -25,12 +25,12 @@ export default function KakaoLoginWebView({
   const [isLoading, setIsLoading] = useState(true);
 
   // 카카오 OAuth URL (환경변수 사용)
-  const kakaoOAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${Constants.expoConfig?.extra?.KAKAO_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI}&state=${Constants.expoConfig?.extra?.KAKAO_STATE}`;
+  const kakaoOAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${Constants.expoConfig?.extra?.KAKAO_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.OAUTH_BASE_URL}/auth/kakao/callback&state=${Constants.expoConfig?.extra?.KAKAO_STATE}`;
 
   // WebView에서 URL 변경 감지
   const handleNavigationStateChange = (navState: any) => {
     const { url } = navState;
-    const redirectUri = Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI;
+    const redirectUri = `${Constants.expoConfig?.extra?.OAUTH_BASE_URL}/auth/kakao/callback`;
 
     console.log("🔍 WebView URL 변경:", url);
     console.log("🔍 설정된 리다이렉트 URI:", redirectUri);

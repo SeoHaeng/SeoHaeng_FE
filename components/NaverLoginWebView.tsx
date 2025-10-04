@@ -37,7 +37,9 @@ const NaverLoginWebView: React.FC<NaverLoginWebViewProps> = ({
     // 네이버 로그인 성공 시 리다이렉트 URL에서 인가코드 추출
     if (
       url.includes("code=") &&
-      url.includes(Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI)
+      url.includes(
+        `${Constants.expoConfig?.extra?.OAUTH_BASE_URL}/auth/naver/callback`,
+      )
     ) {
       console.log("🔵 네이버 로그인 성공 URL 감지:", url);
 
@@ -78,7 +80,7 @@ const NaverLoginWebView: React.FC<NaverLoginWebViewProps> = ({
 
   if (!visible) return null;
 
-  const naverOAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${Constants.expoConfig?.extra?.NAVER_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.OAUTH_REDIRECT_URI}&state=${Constants.expoConfig?.extra?.NAVER_STATE}`;
+  const naverOAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${Constants.expoConfig?.extra?.NAVER_CLIENT_ID}&redirect_uri=${Constants.expoConfig?.extra?.OAUTH_BASE_URL}/auth/naver/callback&state=${Constants.expoConfig?.extra?.NAVER_STATE}`;
 
   return (
     <Modal

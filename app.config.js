@@ -42,6 +42,15 @@ export default {
           action: "VIEW",
           data: [
             {
+              scheme: "seohaeng",
+            },
+          ],
+          category: ["BROWSABLE", "DEFAULT"],
+        },
+        {
+          action: "VIEW",
+          data: [
+            {
               scheme: "market",
               host: "details",
               query: "id=com.gyurijake.seohaengfe",

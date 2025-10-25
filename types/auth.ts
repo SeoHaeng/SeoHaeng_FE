@@ -259,17 +259,17 @@ export const removeToken = async () => {
 export const logout = async (): Promise<boolean> => {
   try {
     console.log("로그아웃 시작");
-    
+
     // 서버에 로그아웃 요청
     const { logoutAPI } = await import("./api");
     const response = await logoutAPI();
-    
+
     if (response.isSuccess) {
       console.log("서버 로그아웃 성공:", response.result);
-      
+
       // 로컬 토큰 삭제
       await removeToken();
-      
+
       console.log("로그아웃 완료");
       return true;
     } else {

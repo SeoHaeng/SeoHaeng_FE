@@ -44,3 +44,4 @@ android/
 .vercel
 
 local-bastion-459517-e8-3a31794b6ea4.json
+*.log

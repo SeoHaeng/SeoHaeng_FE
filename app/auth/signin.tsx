@@ -1,10 +1,10 @@
 // import * as KakaoLogins from "@react-native-seoul/kakao-login";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import * as Google from "expo-auth-session/providers/google";
 import Constants from "expo-constants";
 import * as Linking from "expo-linking";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import * as WebBrowser from "expo-web-browser";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   StatusBar,
@@ -201,81 +201,67 @@ export default function SignInScreen() {
     }
   };
 
-  // Expo AuthSession 방식으로 구글 로그인 설정
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: Constants.expoConfig?.extra?.GOOGLE_CLIENT_ID,
-  });
-
-  // 구글 로그인 응답 처리
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { authentication } = response;
-      if (authentication?.accessToken) {
-        handleGoogleLoginWithToken(authentication.accessToken);
-      }
-    } else if (response?.type === "error") {
-      console.error("구글 로그인 에러:", response.error);
-      setErrorMessage("구글 로그인 중 오류가 발생했습니다.");
-    }
-  }, [response]);
-
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
       setErrorMessage("");
 
-      if (!request) {
-        setErrorMessage("구글 로그인 요청을 준비할 수 없습니다.");
+      // 환경변수 검증
+      const googleClientId = Constants.expoConfig?.extra?.GOOGLE_CLIENT_ID;
+      const oauthBaseUrl = Constants.expoConfig?.extra?.OAUTH_BASE_URL;
+
+      if (!googleClientId) {
+        setErrorMessage("구글 클라이언트 ID가 설정되지 않았습니다.");
         return;
       }
 
-      await promptAsync();
-    } catch (error) {
-      console.error("❌ 구글 로그인 에러:", error);
-      setErrorMessage("구글 로그인 중 오류가 발생했습니다.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      if (!oauthBaseUrl) {
+        setErrorMessage("OAuth 기본 URL이 설정되지 않았습니다.");
+        return;
+      }
 
-  // 토큰으로 로그인 처리 (기존 코드와 호환)
-  const handleGoogleLoginWithToken = async (accessToken: string) => {
-    try {
-      setIsLoading(true);
-      setErrorMessage("");
+      // 웹: 서비스 콜백으로 리다이렉트
+      const redirectUri = `${oauthBaseUrl}/auth/google/callback.html`;
 
-      // 토큰을 서버에 전송하여 사용자 정보 가져오기
-      const response = await fetch(
-        `${Constants.expoConfig?.extra?.API_BASE_URL}/auth/google/token`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ accessToken }),
-        },
+      const params = new URLSearchParams({
+        response_type: "code",
+        client_id: googleClientId,
+        redirect_uri: redirectUri,
+        scope: "openid email profile",
+        access_type: "offline",
+        prompt: "select_account",
+      });
+
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+
+      console.log("🔵 구글 로그인 URL:", authUrl);
+
+      // WebBrowser를 사용하여 시스템 브라우저에서 구글 로그인
+      const result = await WebBrowser.openAuthSessionAsync(
+        authUrl,
+        redirectUri,
       );
 
-      const data = await response.json();
+      console.log("🔵 WebBrowser 결과:", result);
 
-      if (data.isSuccess && data.result) {
-        await saveToken(
-          data.result.accessToken,
-          data.result.refreshToken,
-          data.result.userId,
-        );
+      if (result.type === "success" && result.url) {
+        // URL에서 code 파라미터 추출
+        const url = new URL(result.url);
+        const code = url.searchParams.get("code");
 
-        console.log("✅ 구글 로그인 성공:", data.result);
-        setErrorMessage("");
-
-        if (data.result.isNewUser) {
-          router.push("/auth/AgreementScreen");
+        if (code) {
+          console.log("✅ 구글 인증 코드 받음:", code);
+          await handleGoogleLoginWithCode(code);
         } else {
-          await refreshAuthState();
-          router.push("/(tabs)");
+          console.error("❌ 인증 코드를 받지 못함");
+          setErrorMessage("구글 로그인에 실패했습니다.");
         }
+      } else if (result.type === "cancel") {
+        console.log("❌ 사용자가 구글 로그인을 취소함");
+        setErrorMessage("구글 로그인이 취소되었습니다.");
       } else {
-        setErrorMessage(data.message || "구글 로그인에 실패했습니다.");
+        console.error("❌ 구글 로그인 실패:", result);
+        setErrorMessage("구글 로그인에 실패했습니다.");
       }
     } catch (error) {
       console.error("❌ 구글 로그인 에러:", error);
@@ -285,47 +271,50 @@ export default function SignInScreen() {
     }
   };
 
-  const handleGoogleLoginWithCode = async (code: string) => {
-    try {
-      setIsLoading(true);
-      setErrorMessage("");
-
-      console.log("🔵 구글 인가코드로 로그인 시작:", code);
-
-      const response = await googleLoginWithCodeAPI(code);
-
-      if (response.isSuccess && response.result) {
-        // 토큰과 사용자 정보 저장
-        await saveToken(
-          response.result.accessToken,
-          response.result.refreshToken,
-          response.result.userId,
-        );
-
-        console.log("✅ 구글 로그인 성공:", response.result);
+  const handleGoogleLoginWithCode = useCallback(
+    async (code: string) => {
+      try {
+        setIsLoading(true);
         setErrorMessage("");
 
-        // 신규 사용자인 경우 약관 동의 화면으로 이동
-        if (response.result.isNewUser) {
-          console.log("🔄 신규 사용자 - 약관 동의 화면으로 이동");
-          router.push("/auth/AgreementScreen");
+        console.log("🔵 구글 인가코드로 로그인 시작:", code);
+
+        const response = await googleLoginWithCodeAPI(code);
+
+        if (response.isSuccess && response.result) {
+          // 토큰과 사용자 정보 저장
+          await saveToken(
+            response.result.accessToken,
+            response.result.refreshToken,
+            response.result.userId,
+          );
+
+          console.log("✅ 구글 로그인 성공:", response.result);
+          setErrorMessage("");
+
+          // 신규 사용자인 경우 약관 동의 화면으로 이동
+          if (response.result.isNewUser) {
+            console.log("🔄 신규 사용자 - 약관 동의 화면으로 이동");
+            router.push("/auth/AgreementScreen");
+          } else {
+            console.log("🔄 기존 사용자 - 홈 화면으로 이동");
+            // 인증 상태 새로고침 후 홈 화면으로 이동
+            await refreshAuthState();
+            router.push("/(tabs)");
+          }
         } else {
-          console.log("🔄 기존 사용자 - 홈 화면으로 이동");
-          // 인증 상태 새로고침 후 홈 화면으로 이동
-          await refreshAuthState();
-          router.push("/(tabs)");
+          console.error("❌ 구글 로그인 실패:", response.message);
+          setErrorMessage(response.message || "구글 로그인에 실패했습니다.");
         }
-      } else {
-        console.error("❌ 구글 로그인 실패:", response.message);
-        setErrorMessage(response.message || "구글 로그인에 실패했습니다.");
+      } catch (error) {
+        console.error("❌ 구글 로그인 에러:", error);
+        setErrorMessage("구글 로그인 중 오류가 발생했습니다.");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("❌ 구글 로그인 에러:", error);
-      setErrorMessage("구글 로그인 중 오류가 발생했습니다.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [refreshAuthState],
+  );
 
   const handleSignUp = () => {
     // 회원가입 화면으로 이동
@@ -382,7 +371,7 @@ export default function SignInScreen() {
     return () => {
       subscription?.remove();
     };
-  }, []);
+  }, [handleGoogleLoginWithCode]);
 
   // 아이디 유효성 검사
   const validateEmail = (email: string) => {

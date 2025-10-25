@@ -1874,6 +1874,34 @@ export const postUserAgreementAPI = async (agreementData: {
   }
 };
 
+// 로그아웃 API
+export const logoutAPI = async (): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: string;
+}> => {
+  try {
+    const headers = await getAuthHeadersAsync();
+
+    const response = await fetch(`${API_BASE_URL}/users/auth/logout`, {
+      method: "POST",
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("로그아웃 API 호출 실패:", error);
+    throw error;
+  }
+};
+
 // 회원탈퇴 API
 export const deleteUserAPI = async (): Promise<{
   isSuccess: boolean;

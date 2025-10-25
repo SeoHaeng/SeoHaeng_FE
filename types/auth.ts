@@ -255,13 +255,38 @@ export const removeToken = async () => {
   }
 };
 
-// 로그아웃 (토큰 삭제 + 홈 화면으로 이동)
-export const logout = async () => {
+// 로그아웃 (서버 API 호출 + 토큰 삭제)
+export const logout = async (): Promise<boolean> => {
   try {
-    await removeToken();
-    console.log("로그아웃 완료");
+    console.log("로그아웃 시작");
+    
+    // 서버에 로그아웃 요청
+    const { logoutAPI } = await import("./api");
+    const response = await logoutAPI();
+    
+    if (response.isSuccess) {
+      console.log("서버 로그아웃 성공:", response.result);
+      
+      // 로컬 토큰 삭제
+      await removeToken();
+      
+      console.log("로그아웃 완료");
+      return true;
+    } else {
+      console.error("서버 로그아웃 실패:", response.message);
+      // 서버 로그아웃이 실패해도 로컬 토큰은 삭제
+      await removeToken();
+      return false;
+    }
   } catch (error) {
-    console.error("로그아웃 실패:", error);
+    console.error("로그아웃 중 오류:", error);
+    // 오류가 발생해도 로컬 토큰은 삭제
+    try {
+      await removeToken();
+    } catch (tokenError) {
+      console.error("토큰 삭제 실패:", tokenError);
+    }
+    return false;
   }
 };
 

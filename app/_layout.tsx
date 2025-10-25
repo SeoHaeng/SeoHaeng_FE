@@ -2,9 +2,11 @@ import { useFonts } from "expo-font";
 import * as Linking from "expo-linking";
 import { Slot, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Text, TextInput } from "react-native";
 import { AuthProvider, useAuth } from "../components/AuthProvider";
+import { googleLoginWithCodeAPI } from "../types/api";
+import { saveToken } from "../types/auth";
 import { GlobalStateProvider } from "../types/globalState";
 
 SplashScreen.preventAutoHideAsync();
@@ -47,9 +49,44 @@ try {
 
 // 인증 상태에 따른 화면 라우팅을 관리하는 컴포넌트
 function RootLayoutNav() {
-  const { authState, isLoading } = useAuth();
+  const { authState, isLoading, refreshAuthState } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+
+  // 구글 로그인 처리 함수
+  const handleGoogleLoginWithCode = async (code: string) => {
+    try {
+      console.log("🔵 구글 인가코드로 로그인 시작:", code);
+
+      const response = await googleLoginWithCodeAPI(code);
+
+      if (response.isSuccess && response.result) {
+        // 토큰과 사용자 정보 저장
+        await saveToken(
+          response.result.accessToken,
+          response.result.refreshToken,
+          response.result.userId,
+        );
+
+        console.log("✅ 구글 로그인 성공:", response.result);
+
+        // 신규 사용자인 경우 약관 동의 화면으로 이동
+        if (response.result.isNewUser) {
+          console.log("🔄 신규 사용자 - 약관 동의 화면으로 이동");
+          router.push("/auth/AgreementScreen");
+        } else {
+          console.log("🔄 기존 사용자 - 홈 화면으로 이동");
+          // 인증 상태 새로고침 후 홈 화면으로 이동
+          await refreshAuthState();
+          router.push("/(tabs)");
+        }
+      } else {
+        console.error("❌ 구글 로그인 실패:", response.message);
+      }
+    } catch (error) {
+      console.error("❌ 구글 로그인 에러:", error);
+    }
+  };
 
   // 딥링크 처리
   useEffect(() => {
@@ -73,15 +110,15 @@ function RootLayoutNav() {
         return;
       }
 
-      // 구글 로그인 리다이렉트 처리
-      if (parsedUrl.path?.includes("auth/google/callback")) {
+      // 구글 로그인 리다이렉트 처리 (유니버셜 링크)
+      if (parsedUrl.path?.includes("auth/google/callback.html")) {
         const code = parsedUrl.queryParams?.code;
         const state = parsedUrl.queryParams?.state;
 
-        if (code) {
-          console.log("✅ 구글 인증 코드 받음:", code);
-          // 여기서 구글 로그인 처리 로직 추가
-          // 예: AuthProvider의 로그인 함수 호출
+        if (code && typeof code === "string") {
+          console.log("✅ 구글 인증 코드 받음 (유니버셜 링크):", code);
+          // 구글 로그인 처리 로직
+          handleGoogleLoginWithCode(code);
         }
         return;
       }

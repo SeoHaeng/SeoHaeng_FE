@@ -32,6 +32,11 @@
         "KAKAO_CLIENT_ID": "$KAKAO_CLIENT_ID",
         "KAKAO_REDIRECT_URI": "$KAKAO_REDIRECT_URI",
         "KAKAO_STATE": "$KAKAO_STATE",
+        "NAVER_CLIENT_ID": "$NAVER_CLIENT_ID",
+        "NAVER_STATE": "$NAVER_STATE",
+        "GOOGLE_CLIENT_ID": "$GOOGLE_CLIENT_ID",
+        "GOOGLE_STATE": "$GOOGLE_STATE",
+        "OAUTH_BASE_URL": "$OAUTH_BASE_URL",
         "ANDROID_PACKAGE_NAME": "com.gyurijake.seohaengfe"
       }
     }

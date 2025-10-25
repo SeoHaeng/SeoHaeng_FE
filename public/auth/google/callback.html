@@ -22,7 +22,7 @@
       }
       .spinner {
         border: 4px solid #f3f3f3;
-        border-top: 4px solid #4285f4;
+        border-top: 4px solid #E60A34;
         border-radius: 50%;
         width: 40px;
         height: 40px;
@@ -56,76 +56,55 @@
     </div>
 
     <script>
-      // URL에서 쿼리 파라미터 추출
+      // URL에서 파라미터 추출
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get("code");
       const state = urlParams.get("state");
       const error = urlParams.get("error");
 
-      console.log("구글 콜백 수신:", { code, state, error });
-
-      if (error) {
-        console.error("구글 로그인 오류:", error);
-        document.querySelector(".message").textContent =
-          "로그인 중 오류가 발생했습니다.";
-        document.querySelector(".sub-message").textContent =
-          "잠시 후 다시 시도해주세요.";
-        return;
-      }
-
-      if (!code) {
-        console.error("구글 인증 코드가 없습니다.");
-        document.querySelector(".message").textContent =
-          "인증 코드를 받지 못했습니다.";
-        document.querySelector(".sub-message").textContent =
-          "잠시 후 다시 시도해주세요.";
-        return;
-      }
-
-      // 앱으로 리다이렉트 시도
+      // 앱 열기 시도 (유니버셜 링크 → 딥링크 폴백)
       function redirectToApp() {
-        const appUrl = `seohaeng://auth/google/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || "")}`;
-
-        console.log("앱으로 리다이렉트 시도:", appUrl);
-
-        // Android Intent 시도
-        const androidIntent = `intent://auth/google/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || "")}#Intent;scheme=seohaeng;package=com.gyurijake.seohaengfe;end`;
-
-        // 앱이 설치되어 있는지 확인하기 위해 iframe으로 시도
-        const iframe = document.createElement("iframe");
-        iframe.style.display = "none";
-        iframe.src = appUrl;
-        document.body.appendChild(iframe);
-
-        // Android Intent도 시도
+        const universalLink = `https://seo-haeng-fe.vercel.app/auth/google/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || "")}`;
+        const deepLink = `seohaeng://auth/google/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || "")}`;
+        
+        // 페이지 상태 업데이트
+        document.querySelector(".message").textContent = "앱 열기 시도 중...";
+        document.querySelector(".sub-message").textContent = "유니버셜 링크로 시도합니다.";
+        
+        // 1차 시도: 유니버셜 링크
+        window.location.href = universalLink;
+        
+        // 2초 후 유니버셜 링크 실패 시 딥링크 시도
         setTimeout(() => {
-          window.location.href = androidIntent;
-        }, 100);
-
-        // 앱이 열렸는지 확인
-        let appOpened = false;
-        const checkAppOpened = () => {
-          if (document.hidden || document.visibilityState === "hidden") {
-            appOpened = true;
-            console.log("앱이 열렸습니다.");
-          }
-        };
-
-        document.addEventListener("visibilitychange", checkAppOpened);
-        window.addEventListener("blur", checkAppOpened);
-
-        // 3초 후에도 앱이 열리지 않으면 플레이스토어로 이동
-        setTimeout(() => {
-          if (!appOpened) {
-            console.log("앱이 열리지 않음. 플레이스토어로 이동.");
-            window.location.href =
-              "https://play.google.com/store/apps/details?id=com.gyurijake.seohaengfe";
-          }
-        }, 3000);
+          document.querySelector(".sub-message").textContent = "딥링크로 시도합니다.";
+          window.location.href = deepLink;
+          
+          // 3초 후 사용자에게 안내
+          setTimeout(() => {
+            document.querySelector(".message").textContent = "앱으로 이동 중...";
+            document.querySelector(".sub-message").innerHTML = 
+              `브라우저를 닫고 앱을 열어주세요. 로그인이 완료됩니다.<br>
+               <a href="${universalLink}" style="color: #E60A34; text-decoration: underline;">유니버셜 링크 직접 클릭</a> | 
+               <a href="${deepLink}" style="color: #E60A34; text-decoration: underline;">딥링크 직접 클릭</a>`;
+          }, 1000);
+        }, 2000);
       }
 
-      // 페이지 로드 후 즉시 리다이렉트 시도
-      setTimeout(redirectToApp, 500);
+      // 에러 처리
+      if (error) {
+        document.querySelector(".message").textContent = "❌ 구글 로그인 오류 발생";
+        document.querySelector(".sub-message").textContent = `오류: ${error}. 잠시 후 다시 시도해주세요.`;
+      } else if (!code) {
+        document.querySelector(".message").textContent = "❌ 인증 코드 없음";
+        document.querySelector(".sub-message").textContent = "구글에서 인증 코드를 받지 못했습니다. 다시 시도해주세요.";
+      } else {
+        // 성공적으로 코드를 받았을 때
+        document.querySelector(".message").textContent = "✅ 구글 로그인 성공";
+        document.querySelector(".sub-message").textContent = "인증 코드를 받았습니다. 앱으로 이동합니다...";
+        
+        // 페이지 로드 후 즉시 리다이렉트 시도
+        setTimeout(redirectToApp, 500);
+      }
     </script>
   </body>
 </html>

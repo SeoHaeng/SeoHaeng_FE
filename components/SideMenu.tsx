@@ -2,7 +2,7 @@ import { useAuth } from "@/components/AuthProvider";
 import DeleteUserConfirmModal from "@/components/DeleteUserConfirmModal";
 import DefaultProfileIcon from "@/components/icons/DefaultProfileIcon";
 import LogoutConfirmModal from "@/components/LogoutConfirmModal";
-import { deleteUser, removeToken } from "@/types/auth";
+import { deleteUser, logout } from "@/types/auth";
 import { getUserInfo } from "@/types/globalState";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -105,8 +105,14 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
 
   const handleLogoutConfirm = async () => {
     try {
-      // 토큰 삭제
-      await removeToken();
+      // 서버 로그아웃 API 호출 (토큰 삭제 포함)
+      const logoutSuccess = await logout();
+
+      if (logoutSuccess) {
+        console.log("로그아웃 성공");
+      } else {
+        console.log("서버 로그아웃 실패했지만 로컬 토큰은 삭제됨");
+      }
 
       // 전역 상태 초기화
       setUserInfo(null);
@@ -128,6 +134,8 @@ export default function SideMenu({ visible, onClose }: SideMenuProps) {
       }, 100);
     } catch (error) {
       console.error("로그아웃 실패:", error);
+      // 오류가 발생해도 로그인 화면으로 이동
+      router.replace("/auth");
     }
   };
 

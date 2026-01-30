@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../config/api";
 import { getAuthHeadersAsync, handleTokenError } from "./auth";
 
@@ -1911,9 +1912,17 @@ export const deleteUserAPI = async (): Promise<{
   try {
     const headers = await getAuthHeadersAsync();
 
+    const refreshToken = await AsyncStorage.getItem("refreshToken");
+
     const response = await fetch(`${API_BASE_URL}/users`, {
       method: "DELETE",
-      headers,
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refreshToken: refreshToken,
+      }),
     });
 
     if (!response.ok) {

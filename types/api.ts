@@ -1883,11 +1883,18 @@ export const logoutAPI = async (): Promise<{
   result: string;
 }> => {
   try {
-    const headers = await getAuthHeadersAsync();
+    const accessToken = await AsyncStorage.getItem("accessToken");
+    const refreshToken = await AsyncStorage.getItem("refreshToken");
 
     const response = await fetch(`${API_BASE_URL}/users/auth/logout`, {
       method: "POST",
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      },
+      body: JSON.stringify({
+        refreshToken: refreshToken,
+      }),
     });
 
     if (!response.ok) {

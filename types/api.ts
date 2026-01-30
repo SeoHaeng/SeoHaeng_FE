@@ -903,7 +903,7 @@ export const getReadingSpotsAPI = async (
     const headers = await getAuthHeadersAsync();
 
     const response = await fetch(
-      `${API_BASE_URL}/reading-spot?page=${page}&size=${size}&sort=${sort}`,
+      `${API_BASE_URL}/reading-spots?page=${page}&size=${size}&sort=${sort}`,
       {
         method: "GET",
         headers,
@@ -932,7 +932,7 @@ export const getMyScrapedReadingSpotsAPI = async (
     const headers = await getAuthHeadersAsync();
 
     const response = await fetch(
-      `${API_BASE_URL}/reading-spot/scraps/my?page=${page}&size=${size}`,
+      `${API_BASE_URL}/reading-spots/scraps/my?page=${page}&size=${size}`,
       {
         method: "GET",
         headers,
@@ -961,7 +961,7 @@ export const getMyCreatedReadingSpotsAPI = async (
     const headers = await getAuthHeadersAsync();
 
     const response = await fetch(
-      `${API_BASE_URL}/reading-spot/my?page=${page}&size=${size}`,
+      `${API_BASE_URL}/reading-spots/my?page=${page}&size=${size}`,
       {
         method: "GET",
         headers,
@@ -1023,7 +1023,7 @@ export const createReadingSpotAPI = async (
       formData.append("images", imageFile);
     });
 
-    const response = await fetch(`${API_BASE_URL}/reading-spot`, {
+    const response = await fetch(`${API_BASE_URL}/reading-spots`, {
       method: "POST",
       headers: {
         ...headers,
@@ -2130,12 +2130,12 @@ export const toggleReadingSpotScrapAPI = async (
   console.log("toggleReadingSpotScrapAPI 시작:", readingSpotId);
   console.log(
     "API URL:",
-    `${API_BASE_URL}/reading-spot/${readingSpotId}/scraps`,
+    `${API_BASE_URL}/reading-spots/${readingSpotId}/scraps`,
   );
   try {
     const headers = await getAuthHeadersAsync();
     const response = await fetch(
-      `${API_BASE_URL}/reading-spot/${readingSpotId}/scraps`,
+      `${API_BASE_URL}/reading-spots/${readingSpotId}/scraps`,
       {
         method: "POST",
         headers: {
@@ -2168,12 +2168,12 @@ export const toggleReadingSpotLikeAPI = async (
   console.log("toggleReadingSpotLikeAPI 시작:", readingSpotId);
   console.log(
     "API URL:",
-    `${API_BASE_URL}/reading-spot/${readingSpotId}/likes`,
+    `${API_BASE_URL}/reading-spots/${readingSpotId}/likes`,
   );
   try {
     const headers = await getAuthHeadersAsync();
     const response = await fetch(
-      `${API_BASE_URL}/reading-spot/${readingSpotId}/likes`,
+      `${API_BASE_URL}/reading-spots/${readingSpotId}/likes`,
       {
         method: "POST",
         headers: {
@@ -2210,12 +2210,12 @@ export const createReadingSpotCommentAPI = async (
   });
   console.log(
     "API URL:",
-    `${API_BASE_URL}/reading-spot/${readingSpotId}/comments`,
+    `${API_BASE_URL}/reading-spots/${readingSpotId}/comments`,
   );
   try {
     const headers = await getAuthHeadersAsync();
     const response = await fetch(
-      `${API_BASE_URL}/reading-spot/${readingSpotId}/comments`,
+      `${API_BASE_URL}/reading-spots/${readingSpotId}/comments`,
       {
         method: "POST",
         headers: {
@@ -2267,12 +2267,12 @@ export const getReadingSpotCommentListAPI = async (
   });
   console.log(
     "API URL:",
-    `${API_BASE_URL}/reading-spot/${readingSpotId}/comments?page=${page}&size=${size}`,
+    `${API_BASE_URL}/reading-spots/${readingSpotId}/comments?page=${page}&size=${size}`,
   );
   try {
     const headers = await getAuthHeadersAsync();
     const response = await fetch(
-      `${API_BASE_URL}/reading-spot/${readingSpotId}/comments?page=${page}&size=${size}`,
+      `${API_BASE_URL}/reading-spots/${readingSpotId}/comments?page=${page}&size=${size}`,
       {
         method: "GET",
         headers,
@@ -2323,11 +2323,11 @@ export const getBookmarkDetailAPI = async (
   };
 }> => {
   console.log("getBookmarkDetailAPI 시작:", readingSpotId);
-  console.log("API URL:", `${API_BASE_URL}/reading-spot/${readingSpotId}`);
+  console.log("API URL:", `${API_BASE_URL}/reading-spots/${readingSpotId}`);
   try {
     const headers = await getAuthHeadersAsync();
     const response = await fetch(
-      `${API_BASE_URL}/reading-spot/${readingSpotId}`,
+      `${API_BASE_URL}/reading-spots/${readingSpotId}`,
       {
         method: "GET",
         headers,
